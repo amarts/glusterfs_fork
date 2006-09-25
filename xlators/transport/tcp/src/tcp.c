@@ -879,11 +879,12 @@ brick_open (struct xlator *xl,
   }
   ret = 0;
   {
+    void **tmp;
     struct file_context *trav = ctx;
     struct file_context *brick_ctx = calloc (1, sizeof (struct file_context));
     brick_ctx->volume = xl;
     brick_ctx->next = NULL;
-    void **tmp;
+
     tmp = &(brick_ctx->context);
     *(long *)tmp = data_to_int (dict_get (&reply, "FD"));
     
