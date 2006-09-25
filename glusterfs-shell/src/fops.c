@@ -44,7 +44,7 @@ gf_open (SCM scm_volume, SCM scm_path, SCM scm_flags)
     return SCM_BOOL_F; /* this should be an indication of error */
   }
   
-  return SCM_MAKINUM ((long)ctxt);
+  return SCM_MAKINUM ((unsigned long)ctxt);
 }
 
 SCM 
@@ -455,7 +455,7 @@ gf_opendir (SCM scm_volume, SCM scm_pathname)
       free (ctxt);
       return SCM_BOOL_F;
     }
-    return SCM_MAKINUM ((long)ctxt);;
+    return SCM_MAKINUM ((unsigned long)ctxt);;
   }
   
   return SCM_BOOL_F;
