@@ -17,14 +17,14 @@
   Boston, MA 02110-1301 USA
 */ 
 
-#ifndef _NUFA_H
-#define _NUFA_H
+#ifndef __WRITE_AGGREGATE_H__
+#define __WRITE_AGGREGATE_H__
 
-#include "scheduler.h"
+typedef struct _write_buf_t {
+  int32_t offset;
+  int32_t size;
+  int32_t flushed;
+  char *buf;
+} write_buf_t;
 
-struct nufa_struct {
-  struct xlator *sched_xl;
-  int32_t child_count;
-};
-
-#endif /* _NUFA_H */
+#endif /* __WRITE-AGGREGATE_H__ */
