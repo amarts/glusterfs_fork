@@ -24,7 +24,7 @@
 
 struct random_sched_struct {
   struct xlator *xl;
-  unsigned char eligible;
+  uint8_t eligible;
 };
 
 struct random_struct {

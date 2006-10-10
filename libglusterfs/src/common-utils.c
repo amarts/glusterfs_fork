@@ -30,10 +30,10 @@
 #include <arpa/inet.h>
 #include "logging.h"
 
-char *
-stripwhite (char *string)
+int8_t *
+stripwhite (int8_t *string)
 {
-  register char *s, *t;
+  register int8_t *s, *t;
 
   for (s = string; isspace (*s); s++)
     ;
@@ -49,13 +49,13 @@ stripwhite (char *string)
   return s;
 }
 
-char *
+int8_t *
 get_token (char **line)
 {
-  char *command;
+  int8_t *command;
   while (1)
     {
-      command = (char *) strsep (line, " ,");
+      command = (int8_t *) strsep (line, " ,");
       if (!command)
         break;
       if (*(command))
@@ -67,8 +67,8 @@ get_token (char **line)
   return command;
 }
 
-int32_t
-str2int64_t (char *str, int32_t base, int64_t *l)
+int32_t 
+str2long (char *str, int32_t base, int64_t *l)
 {
   int64_t value;
   char *tail = NULL;
@@ -90,7 +90,7 @@ str2int64_t (char *str, int32_t base, int64_t *l)
 }
 
 int32_t 
-str2uint64_t (char *str, int32_t base, uint64_t *ul)
+str2ulong (char *str, int32_t base, uint64_t *ul)
 {
   int64_t l;
   uint64_t value;
@@ -126,7 +126,7 @@ str2uint64_t (char *str, int32_t base, uint64_t *ul)
 }
 
 int32_t 
-str2int32_t (char *str, int32_t base, int32_t *i)
+str2int (int8_t *str, int32_t base, int32_t *i)
 {
   int64_t l;
   
@@ -143,7 +143,7 @@ str2int32_t (char *str, int32_t base, int32_t *i)
 }
 
 int32_t 
-str2uint32_t (char *str, int32_t base, uint64_t *ui)
+str2uint (int8_t *str, int32_t base, uint32_t *ui)
 {
   uint64_t ul;
   
@@ -160,7 +160,7 @@ str2uint32_t (char *str, int32_t base, uint64_t *ui)
 }
 
 int32_t 
-str2double (char *str, double *d)
+str2double (int8_t *str, double *d)
 {
   double value;
   char *tail = NULL;
@@ -185,7 +185,7 @@ str2double (char *str, double *d)
 }
 
 int32_t 
-validate_ip_address (char *ip_address)
+validate_ip_address (int8_t *ip_address)
 {
   struct in_addr inp;
   int32_t i;
@@ -206,14 +206,14 @@ validate_ip_address (char *ip_address)
   return (!inet_aton (ip_address, &inp));
 }
 
-typedef int32_t (*rw_op_t)(int32_t fd, char *buf, int32_t size);
+typedef int32_t (*rw_op_t)(int32_t fd, int8_t *buf, int32_t size);
 
 static int32_t 
-full_rw (int32_t fd, char *buf, int32_t size, 
+full_rw (int32_t fd, int8_t *buf, int32_t size, 
 	 rw_op_t op)
 {
   int32_t bytes_xferd = 0;
-  char *p = buf;
+  int8_t *p = buf;
 
   while (bytes_xferd < size) {
     int32_t ret = op (fd, p, size - bytes_xferd);
@@ -237,7 +237,7 @@ full_rw (int32_t fd, char *buf, int32_t size,
   Make sure size bytes are read from the fd into the buf
 */
 int32_t 
-full_read (int32_t fd, char *buf, int32_t size)
+full_read (int32_t fd, int8_t *buf, int32_t size)
 {
   return full_rw (fd, buf, size, (rw_op_t)read);
 }
@@ -246,7 +246,7 @@ full_read (int32_t fd, char *buf, int32_t size)
   Make sure size bytes are written to the fd from the buf
 */
 int32_t 
-full_write (int32_t fd, const char *buf, int32_t size)
+full_write (int32_t fd, const int8_t *buf, int32_t size)
 {
-  return full_rw (fd, (char *)buf, size, (rw_op_t)write);
+  return full_rw (fd, (int8_t *)buf, size, (rw_op_t)write);
 }

@@ -29,7 +29,7 @@
 # define F_L64 "%ll"
 #endif
 
-int
+int32_t 
 glusterfsd_open (struct sock_private *sock_priv)
 {
   
@@ -58,7 +58,7 @@ glusterfsd_open (struct sock_private *sock_priv)
     goto fail;
   }
 
-  char *path = data_to_bin (path_data);
+  int8_t *path = data_to_bin (path_data);
   
   if (!path) {
     gf_log ("glusterfsd", GF_LOG_DEBUG, "glusterfsd-fops.c->glusterfsd_open: data_to_bin failed to to get \"PATH\"");
@@ -116,7 +116,7 @@ glusterfsd_open (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_release (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -180,7 +180,7 @@ glusterfsd_release (struct sock_private *sock_priv)
   return  0;
 }
 
-int
+int32_t 
 glusterfsd_flush (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -219,7 +219,7 @@ glusterfsd_flush (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_fsync (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -259,7 +259,7 @@ glusterfsd_fsync (struct sock_private *sock_priv)
   return  0;
 }
 
-int
+int32_t 
 glusterfsd_write (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -321,7 +321,7 @@ glusterfsd_write (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_read (struct sock_private *sock_priv)
 {
   int32_t len = 0;
@@ -346,7 +346,7 @@ glusterfsd_read (struct sock_private *sock_priv)
     return -1;
   struct xlator *xl = sock_priv->xl;
   int32_t size = data_to_int (dict_get (dict, "LEN"));
-  static char *data = NULL;
+  static int8_t *data = NULL;
   static int32_t data_len = 0;
 
   {
@@ -401,7 +401,7 @@ glusterfsd_read (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_readdir (struct sock_private *sock_priv)
 {
   int32_t ret = 0;
@@ -425,7 +425,7 @@ glusterfsd_readdir (struct sock_private *sock_priv)
   if (!dict)
     return -1;
   struct xlator *xl = sock_priv->xl;
-  char *buf = xl->fops->readdir (xl,
+  int8_t *buf = xl->fops->readdir (xl,
 				 data_to_str (dict_get (dict, "PATH")),
 				 data_to_int (dict_get (dict, "OFFSET")));
   
@@ -448,7 +448,7 @@ glusterfsd_readdir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_readlink (struct sock_private *sock_priv)
 {
 
@@ -471,8 +471,8 @@ glusterfsd_readlink (struct sock_private *sock_priv)
   if (!dict)
     return -1;
   struct xlator *xl = sock_priv->xl;
-  char buf[PATH_MAX];
-  char *data = data_to_str (dict_get (dict, "PATH"));
+  int8_t buf[PATH_MAX];
+  int8_t *data = data_to_str (dict_get (dict, "PATH"));
   int32_t len = data_to_int (dict_get (dict, "LEN"));
 
   if (len >= PATH_MAX)
@@ -499,7 +499,7 @@ glusterfsd_readlink (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_mknod (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -545,7 +545,7 @@ glusterfsd_mknod (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_mkdir (struct sock_private *sock_priv)
 {
 
@@ -589,7 +589,7 @@ glusterfsd_mkdir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_unlink (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -626,7 +626,7 @@ glusterfsd_unlink (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_chmod (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -665,7 +665,7 @@ glusterfsd_chmod (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_chown (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -705,7 +705,7 @@ glusterfsd_chown (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_truncate (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -743,7 +743,7 @@ glusterfsd_truncate (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_ftruncate (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -782,7 +782,7 @@ glusterfsd_ftruncate (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_utime (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -826,7 +826,7 @@ glusterfsd_utime (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_rmdir (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -860,7 +860,7 @@ glusterfsd_rmdir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_symlink (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -902,7 +902,7 @@ glusterfsd_symlink (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_rename (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -944,7 +944,7 @@ glusterfsd_rename (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_link (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -986,7 +986,7 @@ glusterfsd_link (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_getattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1009,7 +1009,7 @@ glusterfsd_getattr (struct sock_private *sock_priv)
   if (!dict)
     return -1;
   struct xlator *xl = sock_priv->xl;
-  char buffer[256] = {0,};
+  int8_t buffer[256] = {0,};
   int32_t ret = xl->fops->getattr (xl,
 			       data_to_bin (dict_get (dict, "PATH")),
 			       &stbuf);
@@ -1063,7 +1063,7 @@ glusterfsd_getattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_statfs (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1096,7 +1096,7 @@ glusterfsd_statfs (struct sock_private *sock_priv)
   dict_set (dict, "ERRNO", int_to_data (errno));
 
   if (ret == 0) {
-    char buffer[256] = {0,};
+    int8_t buffer[256] = {0,};
 
     uint32_t bsize = stbuf.f_bsize;
     uint32_t frsize = stbuf.f_frsize;
@@ -1131,7 +1131,7 @@ glusterfsd_statfs (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_setxattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1174,7 +1174,7 @@ glusterfsd_setxattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_getxattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1196,7 +1196,7 @@ glusterfsd_getxattr (struct sock_private *sock_priv)
     return -1;
   struct xlator *xl = sock_priv->xl;
   int32_t size = data_to_int (dict_get (dict, "COUNT"));
-  char *buf = calloc (1, size);
+  int8_t *buf = calloc (1, size);
   int32_t ret = xl->fops->getxattr (xl,
 				data_to_str (dict_get (dict, "PATH")),
 				data_to_str (dict_get (dict, "BUF")),
@@ -1216,7 +1216,7 @@ glusterfsd_getxattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_removexattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1253,7 +1253,7 @@ glusterfsd_removexattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_listxattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1275,11 +1275,11 @@ glusterfsd_listxattr (struct sock_private *sock_priv)
     return -1;
   struct xlator *xl = sock_priv->xl;
 
-  char *list = calloc (1, 4096);
+  int8_t *list = calloc (1, 4096);
 
-  /* listgetxaatr prototype says 3rd arg is 'const char *', arg-3 passed here is char ** */
+  /* listgetxaatr prototype says 3rd arg is 'const int8_t *', arg-3 passed here is int8_t ** */
   int32_t ret = xl->fops->listxattr (xl,
-				 (char *)data_to_bin (dict_get (dict, "PATH")),
+				 (int8_t *)data_to_bin (dict_get (dict, "PATH")),
 				 list,
 				 (size_t)data_to_bin (dict_get (dict, "COUNT")));
 
@@ -1297,7 +1297,7 @@ glusterfsd_listxattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_opendir (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1334,7 +1334,7 @@ glusterfsd_opendir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_releasedir (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1345,7 +1345,7 @@ glusterfsd_releasedir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_fsyncdir (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1356,7 +1356,7 @@ glusterfsd_fsyncdir (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_init (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1367,7 +1367,7 @@ glusterfsd_init (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_destroy (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1378,7 +1378,7 @@ glusterfsd_destroy (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_access (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1415,7 +1415,7 @@ glusterfsd_access (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_create (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1426,7 +1426,7 @@ glusterfsd_create (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_fgetattr (struct sock_private *sock_priv)
 {
   if (!sock_priv) {
@@ -1448,7 +1448,7 @@ glusterfsd_fgetattr (struct sock_private *sock_priv)
     return -1;
   struct xlator *xl = sock_priv->xl;
   struct stat stbuf;
-  char buffer[256] = {0,};
+  int8_t buffer[256] = {0,};
   int32_t ret = xl->fops->fgetattr (xl,
 				data_to_bin (dict_get (dict, "PATH")),
 				&stbuf,
@@ -1532,15 +1532,15 @@ glusterfsd_bulk_getattr (struct sock_private *sock_priv)
   if (!dict)
     return -1;
   struct xlator *xl = sock_priv->xl;
-  char buffer[PATH_MAX*257] = {0,};
-  char *buffer_ptr = NULL;
+  int8_t buffer[PATH_MAX*257] = {0,};
+  int8_t *buffer_ptr = NULL;
   data_t *path_data = dict_get (dict, "PATH");
   
   if (!path_data){
     gf_log ("glusterfsd", GF_LOG_ERROR, "glusterfsd-fops.c->bulk_getattr: dictionary entry for path missing\n");
     goto fail;
   }
-  char *path_bin = data_to_bin (path_data);
+  int8_t *path_bin = data_to_bin (path_data);
   
   if (!path_bin){
     gf_log ("glusterfsd", GF_LOG_ERROR, "glusterfsd-fops.c->bulk_getattr: getting pathname from dict failed\n");
@@ -1641,7 +1641,7 @@ glusterfsd_bulk_getattr (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 handle_fops (glusterfsd_fn_t *gfopsd, struct sock_private *sock_priv)
 {
   if (!sock_priv || !gfopsd) {

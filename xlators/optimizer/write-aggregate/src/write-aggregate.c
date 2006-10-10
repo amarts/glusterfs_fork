@@ -26,8 +26,8 @@
 #define DEFAULT_BUFFER_SIZE	131072  /* 128 KiB */
 static int32_t buffer_size;
 
-static int
-flush_buffer (struct file_context *ctx, struct xlator *this, const char *path)
+int32_t 
+flush_buffer (struct file_context *ctx, struct xlator *this, const int8_t *path)
 {
   struct file_context *my_ctx;
   FILL_MY_CTX (my_ctx, ctx, this);
@@ -49,9 +49,13 @@ flush_buffer (struct file_context *ctx, struct xlator *this, const char *path)
   return ret;
 }
 
-static int
+int32_t 
 write_aggregate_open (struct xlator *this,
+<<<<<<< HEAD
 		      const char *path,
+=======
+		      const int8_t *path,
+>>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 		      int32_t flags,
 		      mode_t mode,
 		      struct file_context *ctx)
@@ -75,10 +79,10 @@ write_aggregate_open (struct xlator *this,
   return this->first_child->fops->open (this->first_child, path, flags, mode, ctx);
 }
 
-static int
+int32_t 
 write_aggregate_read (struct xlator *this,
-		      const char *path,
-		      char *buf,
+		      const int8_t *path,
+		      int8_t *buf,
 		      size_t size,
 		      off_t offset,
 		      struct file_context *ctx)		      
@@ -101,10 +105,10 @@ write_aggregate_read (struct xlator *this,
   return this->first_child->fops->read (this->first_child, path, buf, size, offset, ctx);
 }
 
-static int
+int32_t 
 write_aggregate_write (struct xlator *this,
-		       const char *path,
-		       const char *buf,
+		       const int8_t *path,
+		       const int8_t *buf,
 		       size_t size,
 		       off_t offset,
 		       struct file_context *ctx)
@@ -148,9 +152,9 @@ write_aggregate_write (struct xlator *this,
   return size;
 }
 
-static int
+int32_t 
 write_aggregate_release  (struct xlator *this,
-			  const char *path,
+			  const int8_t *path,
 			  struct file_context *ctx)
 {
   struct file_context *my_ctx;
@@ -179,9 +183,9 @@ write_aggregate_release  (struct xlator *this,
   return retval;
 }
 
-static int
+int32_t 
 write_aggregate_flush (struct xlator *this,
-		       const char *path,
+		       const int8_t *path,
 		       struct file_context *ctx)
 {
   struct file_context *my_ctx;
@@ -200,9 +204,13 @@ write_aggregate_flush (struct xlator *this,
   return this->first_child->fops->flush (this->first_child, path, ctx);
 }
 
-static int
+int32_t 
 write_aggregate_fsync (struct xlator *this,
+<<<<<<< HEAD
 		       const char *path,
+=======
+		       const int8_t *path,
+>>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 		       int32_t datasync,
 		       struct file_context *ctx)
 {
@@ -222,7 +230,7 @@ write_aggregate_fsync (struct xlator *this,
   return this->first_child->fops->fsync (this->first_child, path, datasync, ctx);
 }
 
-int
+int32_t 
 init (struct xlator *this)
 {
   data_t *buf_size = dict_get (this->options, "buffer-size");

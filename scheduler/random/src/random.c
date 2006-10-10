@@ -21,7 +21,7 @@
 #include <sys/time.h>
 #include "random.h"
 
-static int
+static int32_t
 random_init (struct xlator *xl)
 {
   struct random_struct *random_buf = calloc (1, sizeof (struct random_struct));

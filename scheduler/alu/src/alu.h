@@ -27,7 +27,7 @@ struct alu_sched;
 struct alu_sched_struct {
   struct xlator *xl;
   struct xlator_stats stats;
-  unsigned char eligible;
+  uint8_t eligible;
 };
 
 // Write better name for these functions
@@ -42,7 +42,7 @@ struct alu_threshold {
   struct alu_threshold *next;
   int64_t (*diff_value) (struct xlator_stats *max, struct xlator_stats *min); /* Diff b/w max and min */
   int64_t (*entry_value) (struct xlator_stats *); /* Limit specified user */
-  int64_t (*exit_value) (struct xlator_stats *); /* Exit point32_t for the limit */
+  int64_t (*exit_value) (struct xlator_stats *); /* Exit point for the limit */
   int64_t (*sched_value) (struct xlator_stats *); /* This will return the index of the child area */
 };
 

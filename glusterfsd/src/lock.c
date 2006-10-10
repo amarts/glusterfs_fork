@@ -28,7 +28,7 @@
 
 static lock_inner_t *global_lock[LOCK_HASH];
 
-int
+int32_t 
 gf_listlocks (void)
 {
   int32_t index = 0;
@@ -49,12 +49,12 @@ gf_listlocks (void)
   return count;
 }
 
-int
-gf_lock_try_acquire (const char *path)
+int32_t 
+gf_lock_try_acquire (const int8_t *path)
 {
   GF_ERROR_IF_NULL (path);
   
-  uint32_t hashval = SuperFastHash ((char *)path, strlen (path));
+  uint32_t hashval = SuperFastHash ((int8_t *)path, strlen (path));
   lock_inner_t *trav;
 
   hashval = hashval % LOCK_HASH;
@@ -84,12 +84,12 @@ gf_lock_try_acquire (const char *path)
   return -1;
 }
 
-int
-gf_lock_release (const char *path)
+int32_t 
+gf_lock_release (const int8_t *path)
 {
   GF_ERROR_IF_NULL (path);
 
-  uint32_t hashval = SuperFastHash ((char *)path, strlen (path));
+  uint32_t hashval = SuperFastHash ((int8_t *)path, strlen (path));
   lock_inner_t *trav, *prev;
 
   hashval = hashval % LOCK_HASH;

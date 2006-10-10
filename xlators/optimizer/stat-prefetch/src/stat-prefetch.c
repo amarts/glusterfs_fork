@@ -23,9 +23,9 @@
 #include "dict.h"
 #include "xlator.h"
 
-static int
+int32_t 
 getattr_getattr (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct stat *stbuf)
 {
   struct getattr_private *priv = xl->private;
@@ -106,10 +106,10 @@ getattr_getattr (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_readlink (struct xlator *xl,
-		 const char *path,
-		 char *dest,
+		 const int8_t *path,
+		 int8_t *dest,
 		 size_t size)
 {
   int32_t ret = 0;
@@ -131,9 +131,9 @@ getattr_readlink (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_mknod (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode,
 	      dev_t dev,
 	      uid_t uid,
@@ -157,9 +157,9 @@ getattr_mknod (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_mkdir (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode,
 	      uid_t uid,
 	      gid_t gid)
@@ -183,9 +183,9 @@ getattr_mkdir (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_unlink (struct xlator *xl,
-	       const char *path)
+	       const int8_t *path)
 {
   int32_t ret = 0;
   struct getattr_private *priv = xl->private;
@@ -206,9 +206,9 @@ getattr_unlink (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_rmdir (struct xlator *xl,
-	      const char *path)
+	      const int8_t *path)
 {
   int32_t ret = 0;
   struct getattr_private *priv = xl->private;
@@ -230,10 +230,10 @@ getattr_rmdir (struct xlator *xl,
 
 
 
-static int
+int32_t 
 getattr_symlink (struct xlator *xl,
-		const char *oldpath,
-		const char *newpath,
+		const int8_t *oldpath,
+		const int8_t *newpath,
 		uid_t uid,
 		gid_t gid)
 {
@@ -255,10 +255,10 @@ getattr_symlink (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_rename (struct xlator *xl,
-	       const char *oldpath,
-	       const char *newpath,
+	       const int8_t *oldpath,
+	       const int8_t *newpath,
 	       uid_t uid,
 	       gid_t gid)
 {
@@ -280,10 +280,10 @@ getattr_rename (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_link (struct xlator *xl,
-	     const char *oldpath,
-	     const char *newpath,
+	     const int8_t *oldpath,
+	     const int8_t *newpath,
 	     uid_t uid,
 	     gid_t gid)
 {
@@ -306,9 +306,9 @@ getattr_link (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_chmod (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode)
 {
   int32_t ret = 0;
@@ -330,9 +330,9 @@ getattr_chmod (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_chown (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      uid_t uid,
 	      gid_t gid)
 {
@@ -355,9 +355,9 @@ getattr_chown (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_truncate (struct xlator *xl,
-		 const char *path,
+		 const int8_t *path,
 		 off_t offset)
 {
   int32_t ret = 0;
@@ -379,9 +379,9 @@ getattr_truncate (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_utime (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      struct utimbuf *buf)
 {
   int32_t ret = 0;
@@ -403,9 +403,13 @@ getattr_utime (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_open (struct xlator *xl,
+<<<<<<< HEAD
 	     const char *path,
+=======
+	     const int8_t *path,
+>>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 	     int32_t flags,
 	     mode_t mode,
 	     struct file_context *ctx)
@@ -433,10 +437,10 @@ getattr_open (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_read (struct xlator *xl,
-	     const char *path,
-	     char *buf,
+	     const int8_t *path,
+	     int8_t *buf,
 	     size_t size,
 	     off_t offset,
 	     struct file_context *ctx)
@@ -465,10 +469,10 @@ getattr_read (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_write (struct xlator *xl,
-	      const char *path,
-	      const char *buf,
+	      const int8_t *path,
+	      const int8_t *buf,
 	      size_t size,
 	      off_t offset,
 	      struct file_context *ctx)
@@ -497,9 +501,9 @@ getattr_write (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_statfs (struct xlator *xl,
-	       const char *path,
+	       const int8_t *path,
 	       struct statvfs *buf)
 {
   int32_t ret = 0;
@@ -520,9 +524,9 @@ getattr_statfs (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_flush (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -549,9 +553,9 @@ getattr_flush (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_release (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -581,9 +585,13 @@ getattr_release (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_fsync (struct xlator *xl,
+<<<<<<< HEAD
 	      const char *path,
+=======
+	      const int8_t *path,
+>>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 	      int32_t datasync,
 	      struct file_context *ctx)
 {
@@ -611,11 +619,11 @@ getattr_fsync (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_setxattr (struct xlator *xl,
-		 const char *path,
-		 const char *name,
-		 const char *value,
+		 const int8_t *path,
+		 const int8_t *name,
+		 const int8_t *value,
 		 size_t size,
 		 int32_t flags)
 {
@@ -637,11 +645,11 @@ getattr_setxattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_getxattr (struct xlator *xl,
-		 const char *path,
-		 const char *name,
-		 char *value,
+		 const int8_t *path,
+		 const int8_t *name,
+		 int8_t *value,
 		 size_t size)
 {
   int32_t ret = 0;
@@ -662,10 +670,10 @@ getattr_getxattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_listxattr (struct xlator *xl,
-		  const char *path,
-		  char *list,
+		  const int8_t *path,
+		  int8_t *list,
 		  size_t size)
 {
   int32_t ret = 0;
@@ -686,10 +694,10 @@ getattr_listxattr (struct xlator *xl,
   return ret;
 }
 		     
-static int
+int32_t 
 getattr_removexattr (struct xlator *xl,
-		    const char *path,
-		    const char *name)
+		    const int8_t *path,
+		    const int8_t *name)
 {
   int32_t ret = 0;
   struct getattr_private *priv = xl->private;
@@ -709,9 +717,9 @@ getattr_removexattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_opendir (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -732,13 +740,13 @@ getattr_opendir (struct xlator *xl,
   return ret;
 }
 
-static char *
+static int8_t *
 getattr_readdir (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		off_t offset)
 {
-  char *ret = NULL;
-  char *buffer = NULL;
+  int8_t *ret = NULL;
+  int8_t *buffer = NULL;
   struct getattr_private *priv = xl->private;
   struct getattr_node *prev = NULL, *head = priv->head;
 
@@ -827,9 +835,9 @@ getattr_readdir (struct xlator *xl,
   return buffer;
 }
 
-static int
+int32_t 
 getattr_releasedir (struct xlator *xl,
-		   const char *path,
+		   const int8_t *path,
 		   struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -850,9 +858,13 @@ getattr_releasedir (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_fsyncdir (struct xlator *xl,
+<<<<<<< HEAD
 		 const char *path,
+=======
+		 const int8_t *path,
+>>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 		 int32_t datasync,
 		 struct file_context *ctx)
 {
@@ -875,9 +887,9 @@ getattr_fsyncdir (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 getattr_access (struct xlator *xl,
-	       const char *path,
+	       const int8_t *path,
 	       mode_t mode)
 {
   int32_t ret = 0;
@@ -898,9 +910,9 @@ getattr_access (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_ftruncate (struct xlator *xl,
-		  const char *path,
+		  const int8_t *path,
 		  off_t offset,
 		  struct file_context *ctx)
 {
@@ -928,9 +940,9 @@ getattr_ftruncate (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_fgetattr (struct xlator *xl,
-		 const char *path,
+		 const int8_t *path,
 		 struct stat *buf,
 		 struct file_context *ctx)
 {
@@ -953,21 +965,21 @@ getattr_fgetattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 getattr_bulk_getattr (struct xlator *xl,
-		      const char *path,
+		      const int8_t *path,
 		      struct bulk_stat *bstbuf)
 {
   return 0;
 }
 
-static int
+int32_t 
 stat_prefetch_stats (struct xlator *xl, struct xlator_stats *stats)
 {
   return 0;
 }
 
-int
+int32_t 
 init (struct xlator *xl)
 {
   struct getattr_private *_private = calloc (1, sizeof (*_private));

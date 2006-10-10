@@ -23,7 +23,7 @@
 #include "lock.h"
 #include "ns.h"
 
-int
+int32_t 
 glusterfsd_getspec (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -82,7 +82,7 @@ glusterfsd_getspec (struct sock_private *sock_priv)
 
 }
 
-int
+int32_t 
 glusterfsd_setspec (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -137,7 +137,7 @@ glusterfsd_setspec (struct sock_private *sock_priv)
   return ret;
 }
 
-int
+int32_t 
 glusterfsd_lock (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -156,7 +156,7 @@ glusterfsd_lock (struct sock_private *sock_priv)
     return -1;
   }
 
-  char *path = data_to_str (path_data);
+  int8_t *path = data_to_str (path_data);
 
   ret = gf_lock_try_acquire (path);
 
@@ -178,7 +178,7 @@ glusterfsd_lock (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_unlock (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -189,7 +189,7 @@ glusterfsd_unlock (struct sock_private *sock_priv)
   free (blk->data);
 
   data_t *path_data = dict_get (dict, "PATH");
-  char *path = data_to_str (path_data);
+  int8_t *path = data_to_str (path_data);
 
 
   if (!path_data) {
@@ -234,7 +234,7 @@ glusterfsd_unlock (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_listlocks (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -282,7 +282,7 @@ glusterfsd_listlocks (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_nslookup (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -293,10 +293,10 @@ glusterfsd_nslookup (struct sock_private *sock_priv)
   free (blk->data);  
 
   data_t *path_data = dict_get (dict, "PATH");
-  char *path = data_to_str (path_data);
+  int8_t *path = data_to_str (path_data);
   char *ns = ns_lookup (path);
 
-  ns = ns ? (ret = 0, remote_errno = 0, ns) : "";
+  ns = ns ? (ret = 0, remote_errno = 0, (char *)ns) : "";
   
   dict_set (dict, "NS", str_to_data (ns));
 
@@ -311,7 +311,7 @@ glusterfsd_nslookup (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_nsupdate (struct sock_private *sock_priv)
 {
   int32_t ret = -1;
@@ -322,7 +322,7 @@ glusterfsd_nsupdate (struct sock_private *sock_priv)
   free (blk->data);
 
   data_t *path_data = dict_get (dict, "PATH");
-  char *path = data_to_str (path_data);
+  int8_t *path = data_to_str (path_data);
   data_t *ns_data = dict_get (dict, "NS");
   ns_data->is_static = 1;
   path_data->is_static = 1;
@@ -342,13 +342,13 @@ glusterfsd_nsupdate (struct sock_private *sock_priv)
 }
 
 
-int
+int32_t 
 glusterfsd_getvolume (struct sock_private *sock_priv)
 {
   return 0;
 }
 
-int
+int32_t 
 glusterfsd_setvolume (struct sock_private *sock_priv)
 {
   int32_t ret = 0;
@@ -359,7 +359,7 @@ glusterfsd_setvolume (struct sock_private *sock_priv)
   dict_unserialize (blk->data, blk->size, &dict);
   free (blk->data);
   
-  char *name = data_to_str (dict_get (dict, "remote-subvolume"));
+  int8_t *name = data_to_str (dict_get (dict, "remote-subvolume"));
   struct xlator *xl = gf_get_xlator_tree_node ();
   FUNCTION_CALLED;
 
@@ -419,7 +419,7 @@ glusterfsd_setvolume (struct sock_private *sock_priv)
   return ret;
 }
 
-int
+int32_t 
 glusterfsd_stats (struct sock_private *sock_priv)
 {
   FUNCTION_CALLED;
@@ -429,7 +429,7 @@ glusterfsd_stats (struct sock_private *sock_priv)
   dict_unserialize (blk->data, blk->size, &dict);
   free (blk->data);
 
-  extern int64_t glusterfsd_stats_nr_clients;
+  extern int32_t glusterfsd_stats_nr_clients;
 
   if (!dict)
     return -1;
@@ -442,15 +442,15 @@ glusterfsd_stats (struct sock_private *sock_priv)
   dict_set (dict, "ERRNO", int_to_data (errno));
 
   if (ret == 0) {
-    char buffer[256] = {0,};
-    sprintf (buffer, GF_MGMT_STATS_PRINT_FMT_STR,
-	     stats.nr_files,
-	     stats.disk_usage,
-	     stats.free_disk,
-	     stats.read_usage,
-	     stats.write_usage,
-	     stats.disk_speed,
-	     glusterfsd_stats_nr_clients);
+    int8_t buffer[256] = {0,};
+    sprintf (buffer, "%llx,%llx,%llx,%llx,%llx,%llx,%llx\n",
+	     (int64_t)stats.nr_files,
+	     (int64_t)stats.disk_usage,
+	     (int64_t)stats.free_disk,
+	     (int64_t)stats.read_usage,
+	     (int64_t)stats.write_usage,
+	     (int64_t)stats.disk_speed,
+	     (int64_t)glusterfsd_stats_nr_clients);
     dict_set (dict, "BUF", str_to_data (buffer));
   }
 
@@ -460,7 +460,7 @@ glusterfsd_stats (struct sock_private *sock_priv)
   return 0;
 }
 
-int
+int32_t 
 handle_mgmt (glusterfsd_fn_t *gmgmtd, struct sock_private *sock_priv)
 {
   int32_t ret;

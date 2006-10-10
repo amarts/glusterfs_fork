@@ -55,9 +55,9 @@ memdup (void *old,
   return newdata;
 }
 
-int32_t
+int32_t 
 is_data_equal (data_t *one,
-	      data_t *two)
+	       data_t *two)
 {
   if (one == two)
     return 1;
@@ -99,9 +99,9 @@ data_copy (data_t *old)
   return newdata;
 }
 
-int32_t
+int32_t 
 dict_set (dict_t *this, 
-	  char *key, 
+	  int8_t *key, 
 	  data_t *value)
 {
   data_pair_t *pair = this->members;
@@ -121,7 +121,7 @@ dict_set (dict_t *this,
   }
 
   pair = (data_pair_t *) calloc (1, sizeof (*pair));
-  pair->key = (char *) calloc (1, strlen (key) + 1);
+  pair->key = (int8_t *) calloc (1, strlen (key) + 1);
   strcpy (pair->key, key);
   pair->value = (value);
   pair->next = this->members;
@@ -132,10 +132,10 @@ dict_set (dict_t *this,
 }
 
 
-int32_t
+int32_t 
 dict_case_set (dict_t *this, 
-	  char *key, 
-	  data_t *value)
+	       int8_t *key, 
+	       data_t *value)
 {
   data_pair_t *pair = this->members;
   int32_t count = this->count;
@@ -154,7 +154,7 @@ dict_case_set (dict_t *this,
   }
 
   pair = (data_pair_t *) calloc (1, sizeof (*pair));
-  pair->key = (char *) calloc (1, strlen (key) + 1);
+  pair->key = (int8_t *) calloc (1, strlen (key) + 1);
   strcpy (pair->key, key);
   pair->value = (value);
   pair->next = this->members;
@@ -166,7 +166,7 @@ dict_case_set (dict_t *this,
 
 data_t *
 dict_get (dict_t *this,
-	  char *key)
+	  int8_t *key)
 {
   data_pair_t *pair = this->members;
 
@@ -181,7 +181,7 @@ dict_get (dict_t *this,
 
 data_t *
 dict_case_get (dict_t *this,
-	       char *key)
+	       int8_t *key)
 {
   data_pair_t *pair = this->members;
 
@@ -195,7 +195,7 @@ dict_case_get (dict_t *this,
 
 void
 dict_del (dict_t *this,
-	  char *key)
+	  int8_t *key)
 {
   data_pair_t *pair = this->members;
   data_pair_t *prev = NULL;
@@ -221,7 +221,7 @@ dict_del (dict_t *this,
 
 void
 dict_case_del (dict_t *this,
-	       char *key)
+	       int8_t *key)
 {
   data_pair_t *pair = this->members;
   data_pair_t *prev = NULL;
@@ -275,7 +275,7 @@ dict_destroy (dict_t *this)
   .
 */
 
-int32_t
+int32_t 
 dict_serialized_length (dict_t *dict)
 {
   int32_t len = 9; /* count + \n */
@@ -291,8 +291,8 @@ dict_serialized_length (dict_t *dict)
   return len;
 }
 
-int32_t
-dict_serialize (dict_t *dict, char *buf)
+int32_t 
+dict_serialize (dict_t *dict, int8_t *buf)
 {
   GF_ERROR_IF_NULL (dict);
   GF_ERROR_IF_NULL (buf);
@@ -321,7 +321,7 @@ dict_serialize (dict_t *dict, char *buf)
 }
 
 dict_t *
-dict_unserialize (char *buf, int32_t size, dict_t **fill)
+dict_unserialize (int8_t *buf, int32_t size, dict_t **fill)
 {
   int32_t ret = 0;
   int32_t cnt = 0;
@@ -346,7 +346,7 @@ dict_unserialize (char *buf, int32_t size, dict_t **fill)
   for (cnt = 0; cnt < (*fill)->count; cnt++) {
     data_pair_t *pair = NULL; //get_new_data_pair ();
     data_t *value = NULL; // = get_new_data ();
-    char *key = NULL;
+    int8_t *key = NULL;
     uint64_t key_len, value_len;
     
     ret = sscanf (buf, "%"SCNx64":%"SCNx64"\n", &key_len, &value_len);
@@ -392,21 +392,21 @@ dict_unserialize (char *buf, int32_t size, dict_t **fill)
   Encapsulate a dict in a block and write it to the fd
 */
 
-int32_t
+int32_t 
 dict_dump (int32_t fd, dict_t *dict, gf_block *blk, int32_t type)
 {
   GF_ERROR_IF_NULL (dict);
   GF_ERROR_IF_NULL (blk);
   
   int32_t dict_len = dict_serialized_length (dict);
-  char *dict_buf = malloc (dict_len);
+  int8_t *dict_buf = malloc (dict_len);
   dict_serialize (dict, dict_buf);
 
   blk->data = dict_buf;
   blk->type = type;
   blk->size = dict_len;
   int32_t blk_len = gf_block_serialized_length (blk);
-  char *blk_buf = malloc (blk_len);
+  int8_t *blk_buf = malloc (blk_len);
   gf_block_serialize (blk, blk_buf);
   
   int32_t ret = full_write (fd, blk_buf, blk_len);
@@ -433,7 +433,7 @@ dict_load (FILE *fp)
   for (cnt = 0; cnt < newdict->count; cnt++) {
     data_pair_t *pair = get_new_data_pair ();
     data_t *value = get_new_data ();
-    char *key = NULL;
+    int8_t *key = NULL;
     int32_t key_len = 0;
 
     ret = fscanf (fp, "\n%x:%x:", &key_len, &value->len);
@@ -485,7 +485,7 @@ int_to_data (int64_t value)
 }
 
 data_t *
-str_to_data (char *value)
+str_to_data (int8_t *value)
 {
   data_t *data = get_new_data ();
   /*  if (data == NULL) {
@@ -536,7 +536,7 @@ data_to_int (data_t *data)
   return atoll (data->data);
 }
 
-char *
+int8_t *
 data_to_str (data_t *data)
 {
   /*  return strdup (data->data); */
@@ -568,7 +568,7 @@ data_to_bin (data_t *data)
 
 void
 dict_foreach (dict_t *dict,
-	      void (*fn)(dict_t *this, char *key, data_t *value))
+	      void (*fn)(dict_t *this, int8_t *key, data_t *value))
 {
   data_pair_t *pairs = dict->members;
 

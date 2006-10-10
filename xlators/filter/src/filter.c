@@ -30,9 +30,9 @@
   (filtering certain file types, for example)
 */
 
-static int
+int32_t 
 filter_getattr (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct stat *stbuf)
 {
   struct filter_private *priv = xl->private;
@@ -48,10 +48,10 @@ filter_getattr (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_readlink (struct xlator *xl,
-		 const char *path,
-		 char *dest,
+		 const int8_t *path,
+		 int8_t *dest,
 		 size_t size)
 {
   int32_t ret = 0;
@@ -66,9 +66,9 @@ filter_readlink (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_mknod (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode,
 	      dev_t dev,
 	      uid_t uid,
@@ -78,9 +78,9 @@ filter_mknod (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_mkdir (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode,
 	      uid_t uid,
 	      gid_t gid)
@@ -90,27 +90,27 @@ filter_mkdir (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_unlink (struct xlator *xl,
-	       const char *path)
+	       const int8_t *path)
 {
   errno = EROFS;
   return -1;
 }
 
 
-static int
+int32_t 
 filter_rmdir (struct xlator *xl,
-	      const char *path)
+	      const int8_t *path)
 {
   errno = EROFS;
   return -1;
 }
 
-static int
+int32_t 
 filter_symlink (struct xlator *xl,
-		const char *oldpath,
-		const char *newpath,
+		const int8_t *oldpath,
+		const int8_t *newpath,
 		uid_t uid,
 		gid_t gid)
 {
@@ -118,10 +118,10 @@ filter_symlink (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_rename (struct xlator *xl,
-	       const char *oldpath,
-	       const char *newpath,
+	       const int8_t *oldpath,
+	       const int8_t *newpath,
 	       uid_t uid,
 	       gid_t gid)
 {
@@ -129,10 +129,10 @@ filter_rename (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_link (struct xlator *xl,
-	     const char *oldpath,
-	     const char *newpath,
+	     const int8_t *oldpath,
+	     const int8_t *newpath,
 	     uid_t uid,
 	     gid_t gid)
 {
@@ -141,9 +141,9 @@ filter_link (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_chmod (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      mode_t mode)
 {
   errno = EROFS;
@@ -151,9 +151,9 @@ filter_chmod (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_chown (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      uid_t uid,
 	      gid_t gid)
 {
@@ -162,9 +162,9 @@ filter_chown (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_truncate (struct xlator *xl,
-		 const char *path,
+		 const int8_t *path,
 		 off_t offset)
 {
   errno = EROFS;
@@ -172,9 +172,9 @@ filter_truncate (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_utime (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      struct utimbuf *buf)
 {
   errno = EROFS;
@@ -182,9 +182,9 @@ filter_utime (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_open (struct xlator *xl,
-	     const char *path,
+	     const int8_t *path,
 	     int32_t flags,
 	     mode_t mode,
 	     struct file_context *ctx)
@@ -209,10 +209,10 @@ filter_open (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_read (struct xlator *xl,
-	     const char *path,
-	     char *buf,
+	     const int8_t *path,
+	     int8_t *buf,
 	     size_t size,
 	     off_t offset,
 	     struct file_context *ctx)
@@ -234,10 +234,10 @@ filter_read (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_write (struct xlator *xl,
-	      const char *path,
-	      const char *buf,
+	      const int8_t *path,
+	      const int8_t *buf,
 	      size_t size,
 	      off_t offset,
 	      struct file_context *ctx)
@@ -246,9 +246,9 @@ filter_write (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_statfs (struct xlator *xl,
-	       const char *path,
+	       const int8_t *path,
 	       struct statvfs *buf)
 {
   int32_t ret = 0;
@@ -262,9 +262,9 @@ filter_statfs (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_flush (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -284,9 +284,9 @@ filter_flush (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_release (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -309,9 +309,9 @@ filter_release (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_fsync (struct xlator *xl,
-	      const char *path,
+	      const int8_t *path,
 	      int32_t datasync,
 	      struct file_context *ctx)
 {
@@ -319,11 +319,11 @@ filter_fsync (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_setxattr (struct xlator *xl,
-		 const char *path,
-		 const char *name,
-		 const char *value,
+		 const int8_t *path,
+		 const int8_t *name,
+		 const int8_t *value,
 		 size_t size,
 		 int32_t flags)
 {
@@ -331,11 +331,11 @@ filter_setxattr (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_getxattr (struct xlator *xl,
-		 const char *path,
-		 const char *name,
-		 char *value,
+		 const int8_t *path,
+		 const int8_t *name,
+		 int8_t *value,
 		 size_t size)
 {
   int32_t ret = 0;
@@ -349,10 +349,10 @@ filter_getxattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_listxattr (struct xlator *xl,
-		  const char *path,
-		  char *list,
+		  const int8_t *path,
+		  int8_t *list,
 		  size_t size)
 {
   int32_t ret = 0;
@@ -366,18 +366,18 @@ filter_listxattr (struct xlator *xl,
   return ret;
 }
 		     
-static int
+int32_t 
 filter_removexattr (struct xlator *xl,
-		    const char *path,
-		    const char *name)
+		    const int8_t *path,
+		    const int8_t *name)
 {
   errno = EROFS;
   return -1;
 }
 
-static int
+int32_t 
 filter_opendir (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -391,12 +391,12 @@ filter_opendir (struct xlator *xl,
   return ret;
 }
 
-static char *
+static int8_t *
 filter_readdir (struct xlator *xl,
-		const char *path,
+		const int8_t *path,
 		off_t offset)
 {
-  char *ret = NULL;
+  int8_t *ret = NULL;
   struct filter_private *priv = xl->private;
   if (priv->is_debug) {
     FUNCTION_CALLED;
@@ -406,9 +406,9 @@ filter_readdir (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_releasedir (struct xlator *xl,
-		   const char *path,
+		   const int8_t *path,
 		   struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -421,9 +421,9 @@ filter_releasedir (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_fsyncdir (struct xlator *xl,
-		 const char *path,
+		 const int8_t *path,
 		 int32_t datasync,
 		 struct file_context *ctx)
 {
@@ -432,9 +432,9 @@ filter_fsyncdir (struct xlator *xl,
 }
 
 
-static int
+int32_t 
 filter_access (struct xlator *xl,
-	       const char *path,
+	       const int8_t *path,
 	       mode_t mode)
 {
   int32_t ret = 0;
@@ -453,9 +453,9 @@ filter_access (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_ftruncate (struct xlator *xl,
-		  const char *path,
+		  const int8_t *path,
 		  off_t offset,
 		  struct file_context *ctx)
 {
@@ -463,9 +463,9 @@ filter_ftruncate (struct xlator *xl,
   return -1;
 }
 
-static int
+int32_t 
 filter_fgetattr (struct xlator *xl,
-		 const char *path,
+		 const int8_t *path,
 		 struct stat *buf,
 		 struct file_context *ctx)
 {
@@ -480,22 +480,22 @@ filter_fgetattr (struct xlator *xl,
   return ret;
 }
 
-static int
+int32_t 
 filter_bulk_getattr (struct xlator *xl,
-		     const char *path,
+		     const int8_t *path,
 		     struct bulk_stat *bstatbuf)
 {
   return 0;
 }
 
-static int
+int32_t 
 filter_stats (struct xlator *xl,
 	      struct xlator_stats *stats)
 {
   return 0;
 }
 
-int
+int32_t 
 init (struct xlator *xl)
 {
   struct filter_private *_private = calloc (1, sizeof (*_private));

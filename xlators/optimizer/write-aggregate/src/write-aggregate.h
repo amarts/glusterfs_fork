@@ -24,7 +24,7 @@ typedef struct _write_buf_t {
   int32_t offset;
   int32_t size;
   int32_t flushed;
-  char *buf;
+  int8_t *buf;
 } write_buf_t;
 
 #endif /* __WRITE-AGGREGATE_H__ */

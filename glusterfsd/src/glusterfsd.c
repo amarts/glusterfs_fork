@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include <argp.h>
+#include <stdint.h>
 
 #include "sdp_inet.h"
 #include "lock.h"
@@ -33,7 +34,7 @@
 
 
 static struct {
-  char *f[2];
+  int8_t *f[2];
 } f;
 
 /* useful for argp for command line parsing */
@@ -49,21 +50,23 @@ static struct argp_option options[] = {
 
 const char *argp_program_version = PACKAGE_NAME " " PACKAGE_VERSION;
 const char *argp_program_bug_address = PACKAGE_BUGREPORT;
+static char argp_doc[] = " ";
+static char doc[] = "glusterfsd is glusterfs server";
+
+static error_t parse_opts (int32_t key, char *arg, struct argp_state *_state);
+
+static struct argp argp = { options, parse_opts, argp_doc, doc };
 
 static int32_t gf_cmd_def_daemon_mode = GF_YES;
-static error_t parse_opts (int32_t key, char *arg, struct argp_state *_state);
 extern struct confd * file_to_confd (FILE *fp);
 
-int64_t glusterfsd_stats_nr_clients = 0;
-static char *configfile = NULL;
-static char *specfile = NULL;
-static char doc[] = "glusterfsd is glusterfs server";
-static char argp_doc[] = " ";
-static struct argp argp = { options, parse_opts, argp_doc, doc };
+int32_t glusterfsd_stats_nr_clients = 0;
+static int8_t *configfile = NULL;
+static int8_t *specfile = NULL;
 static struct xlator *xlator_tree_node = NULL;
 struct confd *confd;
 static int32_t cmd_def_log_level = GF_LOG_MAX;
-static char *cmd_def_log_file = DEFAULT_LOG_FILE;
+static int8_t *cmd_def_log_file = DEFAULT_LOG_FILE;
 
 static void
 set_xlator_tree_node (FILE *fp)
@@ -85,7 +88,7 @@ gf_get_xlator_tree_node ()
   return xlator_tree_node;
 }
 
-static int
+static int32_t
 server_init ()
 {
   int32_t sock;
@@ -132,7 +135,7 @@ server_init ()
   return sock;
 }
 
-static int
+static int32_t
 register_new_sock (int32_t s) 
 {
   int32_t client_sock;
@@ -196,7 +199,7 @@ unregister_sock (struct sock_private *sock_priv,
 
 #endif /* hechchuvari */
 
-static int
+static int32_t
 server_loop (int32_t main_sock)
 {
   int32_t s;
@@ -426,7 +429,7 @@ server_loop (int32_t main_sock)
   return 0;
 }
 
-static int
+static int32_t
 glusterfsd_print_version (void)
 {
   printf ("%s\n", argp_program_version);
@@ -482,7 +485,7 @@ args_init (int32_t argc, char **argv)
 }
 
 
-int
+int32_t 
 main (int32_t argc, char *argv[])
 {
   int32_t main_sock;

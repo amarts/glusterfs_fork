@@ -40,7 +40,7 @@
         } while (0)
 
 #define CHECK_ENDFOPS() do {\
-          char readbuf[80] = {0,}; \
+          int8_t readbuf[80] = {0,}; \
 	  fgets (readbuf, 80, fp); \
 	  if (strcasecmp (readbuf, "EndFops\n") != 0) { \
 	    fprintf (stderr, "Protocol Error: 'EndFops' not found\n");\
@@ -54,12 +54,12 @@
 struct file_ctx_list {
   struct file_ctx_list *next;
   struct file_context *ctx;
-  char *path;
+  int8_t *path;
 };
 
 struct held_locks {
   struct held_locks *next;
-  char *path;
+  int8_t *path;
 };
 
 struct sock_private {
@@ -75,12 +75,12 @@ struct gfsd_fns {
 };
 
 struct confd {
-  char *chroot_dir;
-  char *scratch_dir;
-  char *inet_prot;
+  int8_t *chroot_dir;
+  int8_t *scratch_dir;
+  int8_t *inet_prot;
   int32_t key_len;
   int32_t port;
-  char *bind_ip_address;
+  int8_t *bind_ip_address;
   // add few more things if needed
 };
 

@@ -45,13 +45,13 @@
 typedef struct {
   int32_t type;
   int32_t op;
-  char name[32];
+  int8_t name[32];
   int32_t size;
-  char *data;
+  int8_t *data;
 } gf_block;
 
 gf_block *gf_block_new (void);
-int32_t gf_block_serialize (gf_block *b, char *buf);
+int32_t gf_block_serialize (gf_block *b, int8_t *buf);
 int32_t gf_block_serialized_length (gf_block *b);
 
 gf_block *gf_block_unserialize (int32_t fd);

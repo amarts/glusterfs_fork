@@ -17,11 +17,13 @@
   Boston, MA 02110-1301 USA
 */ 
 
+#include <stdint.h>
 
 #include "glusterfs.h"
 #include "logging.h"
 #include "xlator.h"
 #include "glusterfs-fops.h"
+
 const char *specfile;
 struct xlator *specfile_tree;
 const char *mount_options;
@@ -41,7 +43,7 @@ do                                               \
       }                                          \
   } while (0)
 
-static int
+int 
 glusterfs_getattr (const char *path,
 		   struct stat *stbuf)
 {
@@ -61,7 +63,7 @@ glusterfs_getattr (const char *path,
   return ret;
 }
 
-static int
+int32_t
 glusterfs_readlink (const char *path,
 		    char *dest,
 		    size_t size)
@@ -84,7 +86,7 @@ glusterfs_readlink (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_mknod (const char *path,
 		 mode_t mode,
 		 dev_t dev)
@@ -106,7 +108,7 @@ glusterfs_mknod (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_mkdir (const char *path,
 		 mode_t mode)
 {
@@ -127,7 +129,7 @@ glusterfs_mkdir (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_unlink (const char *path)
 {
   struct xlator *xlator = NULL;
@@ -145,7 +147,7 @@ glusterfs_unlink (const char *path)
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_rmdir (const char *path)
 {
   struct xlator *xlator = NULL;
@@ -163,7 +165,7 @@ glusterfs_rmdir (const char *path)
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_symlink (const char *oldpath,
 		   const char *newpath)
 {
@@ -184,7 +186,7 @@ glusterfs_symlink (const char *oldpath,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_rename (const char *oldpath,
 		  const char *newpath)
 {
@@ -205,7 +207,7 @@ glusterfs_rename (const char *oldpath,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_link (const char *oldpath,
 		const char *newpath)
 {
@@ -226,7 +228,7 @@ glusterfs_link (const char *oldpath,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_chmod (const char *path,
 		 mode_t mode)
 {
@@ -245,7 +247,7 @@ glusterfs_chmod (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_chown (const char *path,
 		 uid_t uid,
 		 gid_t gid)
@@ -265,7 +267,7 @@ glusterfs_chown (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_truncate (const char *path,
 		    off_t offset)
 {
@@ -284,7 +286,7 @@ glusterfs_truncate (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_utime (const char *path,
 		 struct utimbuf *buf)
 {
@@ -303,7 +305,7 @@ glusterfs_utime (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_open (const char *path,
 		struct fuse_file_info *info)
 {
@@ -333,7 +335,7 @@ glusterfs_open (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_read (const char *path,
 		char *buf,
 		size_t size,
@@ -355,7 +357,7 @@ glusterfs_read (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_write (const char *path,
 		 const char *buf,
 		 size_t size,
@@ -377,7 +379,7 @@ glusterfs_write (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_statfs (const char *path,
 		  struct statvfs *buf)
 {
@@ -396,7 +398,7 @@ glusterfs_statfs (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_flush (const char *path,
 		 struct fuse_file_info *info)
 {
@@ -415,7 +417,7 @@ glusterfs_flush (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_release (const char *path,
 		   struct fuse_file_info *info)
 {
@@ -436,7 +438,7 @@ glusterfs_release (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_fsync (const char *path,
 		 int32_t datasync,
 		 struct fuse_file_info *info)
@@ -456,7 +458,7 @@ glusterfs_fsync (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_setxattr (const char *path,
 		    const char *name,
 		    const char *value,
@@ -478,7 +480,7 @@ glusterfs_setxattr (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_getxattr (const char *path,
 		    const char *name,
 		    char *value,
@@ -499,7 +501,7 @@ glusterfs_getxattr (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_listxattr (const char *path,
 		     char *list,
 		     size_t size)
@@ -520,7 +522,7 @@ glusterfs_listxattr (const char *path,
 }
 
 		     
-static int
+int32_t 
 glusterfs_removexattr (const char *path,
 		       const char *name)
 {
@@ -539,7 +541,7 @@ glusterfs_removexattr (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_opendir (const char *path,
 		   struct fuse_file_info *info)
 {
@@ -558,7 +560,7 @@ glusterfs_opendir (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_releasedir (const char *path,
 		      struct fuse_file_info *info)
 {
@@ -577,7 +579,7 @@ glusterfs_releasedir (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_fsyncdir (const char *path,
 		    int32_t datasync,
 		    struct fuse_file_info *info)
@@ -597,7 +599,7 @@ glusterfs_fsyncdir (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_access (const char *path,
 		  int32_t mode)
 {
@@ -618,7 +620,7 @@ glusterfs_access (const char *path,
 
 #if 0 /* hechchuvari */
 
-static int
+int32_t 
 glusterfs_create (const char *path,
 		  mode_t mode,
 		  struct fuse_file_info *info)
@@ -648,7 +650,7 @@ glusterfs_create (const char *path,
 }
 #endif /* hechchuvari */
 
-static int
+int32_t 
 glusterfs_ftruncate (const char *path,
 		     off_t offset,
 		     struct fuse_file_info *info)
@@ -668,7 +670,7 @@ glusterfs_ftruncate (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_fgetattr (const char *path,
 		    struct stat *buf,
 		    struct fuse_file_info *info)
@@ -688,7 +690,7 @@ glusterfs_fgetattr (const char *path,
   return ret;
 }
 
-static int
+int32_t 
 glusterfs_readdir (const char *path,
 		   void *buf,
 		   fuse_fill_dir_t fill,
@@ -781,7 +783,7 @@ static struct fuse_operations glusterfs_fops = {
   .fgetattr    = glusterfs_fgetattr
 };
 
-int
+int32_t 
 glusterfs_mount (struct spec_location *spec, char *mount_point, char *mount_fs_options)
 {
   int32_t index = 0;

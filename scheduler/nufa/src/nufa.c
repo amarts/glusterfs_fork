@@ -20,7 +20,7 @@
 
 #include "nufa.h"
 
-static int
+static int32_t
 nufa_init (struct xlator *xl)
 {
   struct nufa_struct *nufa_buf = calloc (1, sizeof (struct nufa_struct));
