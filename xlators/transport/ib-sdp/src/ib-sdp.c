@@ -54,11 +54,7 @@ generic_xfer (struct brick_private *priv,
   {
     pthread_mutex_lock (&priv->io_mutex);
     int32_t dict_len = dict_serialized_length (request);
-<<<<<<< HEAD
-    char *dict_buf = malloc (dict_len);
-=======
     int8_t *dict_buf = malloc (dict_len);
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
     dict_serialize (request, dict_buf);
 
     gf_block *blk = gf_block_new ();
@@ -68,11 +64,7 @@ generic_xfer (struct brick_private *priv,
     blk->data = dict_buf;
 
     int32_t blk_len = gf_block_serialized_length (blk);
-<<<<<<< HEAD
-    char *blk_buf = malloc (blk_len);
-=======
     int8_t *blk_buf = malloc (blk_len);
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
     gf_block_serialize (blk, blk_buf);
     
     int32_t ret = full_write (priv->sock, blk_buf, blk_len);
@@ -270,11 +262,7 @@ brick_getattr (struct xlator *xl,
   dict_t reply = STATIC_DICT;
   int32_t ret;
   int32_t remote_errno;
-<<<<<<< HEAD
-  char *buf = NULL;
-=======
   int8_t *buf = NULL;
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -858,11 +846,7 @@ brick_utime (struct xlator *xl,
 
 int32_t 
 brick_open (struct xlator *xl,
-<<<<<<< HEAD
-	    const char *path,
-=======
 	    const int8_t *path,
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 	    int32_t flags,
 	    mode_t mode,
 	    struct file_context *ctx)
@@ -1206,11 +1190,7 @@ brick_release (struct xlator *xl,
 
 int32_t 
 brick_fsync (struct xlator *xl,
-<<<<<<< HEAD
-	     const char *path,
-=======
 	     const int8_t *path,
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 	     int32_t datasync,
 	     struct file_context *ctx)
 {
@@ -1529,11 +1509,7 @@ brick_releasedir (struct xlator *xl,
 		  struct file_context *ctx)
 {
   int32_t ret = 0;
-<<<<<<< HEAD
-  /*int32_t remote_errno = 0;
-=======
   /*int remote_errno = 0;
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
   struct brick_private *priv = xl->private;
   dict_t request = STATIC_DICT;
   dict_t reply = STATIC_DICT;
@@ -1567,13 +1543,8 @@ brick_releasedir (struct xlator *xl,
 
 int32_t 
 brick_fsyncdir (struct xlator *xl,
-<<<<<<< HEAD
-		const char *path,
-		int32_t datasync,
-=======
 		const int8_t *path,
 		int datasync,
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 		struct file_context *ctx)
 {
   int32_t ret = 0;
@@ -1814,15 +1785,9 @@ brick_bulk_getattr (struct xlator *xl,
   dict_t reply = STATIC_DICT;
   int32_t ret;
   int32_t remote_errno;
-<<<<<<< HEAD
-  char *buf = NULL;
-  uint32_t nr_entries = 0;
-  char pathname[PATH_MAX] = {0,};
-=======
   int8_t *buf = NULL;
   uint32_t nr_entries = 0;
   int8_t pathname[PATH_MAX] = {0,};
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 
   /* play it safe */
   bstbuf->stbuf = NULL;
@@ -1855,22 +1820,14 @@ brick_bulk_getattr (struct xlator *xl,
   buffer_ptr = buf;
   while (nr_entries) {
     int32_t bread = 0;
-<<<<<<< HEAD
-    char tmp_buf[512] = {0,};
-=======
     int8_t tmp_buf[512] = {0,};
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
     curr = calloc (sizeof (struct bulk_stat), 1);
     curr->stbuf = calloc (sizeof (struct stat), 1);
     
     stbuf = curr->stbuf;
     nr_entries--;
     /*    sscanf (buffer_ptr, "%s", pathname);*/
-<<<<<<< HEAD
-    char *ender = strchr (buffer_ptr, '/');
-=======
     int8_t *ender = strchr (buffer_ptr, '/');
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
     int32_t count = ender - buffer_ptr;
     strncpy (pathname, buffer_ptr, count);
     bread = count + 1;
@@ -1982,13 +1939,8 @@ brick_stats (struct xlator *xl, struct xlator_stats *stats)
   }
 
   {
-<<<<<<< HEAD
-    char *buf = data_to_bin (dict_get (&reply, "BUF"));
-    sscanf (buf, GF_MGMT_STATS_SCAN_FMT_STR,
-=======
     int8_t *buf = data_to_bin (dict_get (&reply, "BUF"));
-    sscanf (buf, F_L64"x,"F_L64"x,"F_L64"x,"F_L64"x,"F_L64"x,"F_L64"x,"F_L64"x\n",
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
+    sscanf (buf, "%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64"\n",
 	    &stats->nr_files,
 	    &stats->disk_usage,
 	    &stats->free_disk,
