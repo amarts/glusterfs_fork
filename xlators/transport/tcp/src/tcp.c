@@ -159,8 +159,8 @@ do_handshake (struct xlator *xl)
 {
 
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   int32_t ret;
   int32_t remote_errno;
 
@@ -168,19 +168,17 @@ do_handshake (struct xlator *xl)
     FUNCTION_CALLED;
   }
   
-  dict_set (&request, 
+  dict_set (request, 
 	    "remote-subvolume",
 	    dict_get (xl->options, "remote-subvolume"));
 
-  ret = mgmt_xfer (priv, OP_SETVOLUME, &request, &reply);
+  ret = mgmt_xfer (priv, OP_SETVOLUME, request, reply);
   
-  dict_destroy (&request);
-
   if (ret != 0) 
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -188,7 +186,8 @@ do_handshake (struct xlator *xl)
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (request);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -256,8 +255,8 @@ brick_getattr (struct xlator *xl,
 	       struct stat *stbuf)
 {
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   int32_t ret;
   int32_t remote_errno;
   int8_t *buf = NULL;
@@ -265,23 +264,22 @@ brick_getattr (struct xlator *xl,
     FUNCTION_CALLED;
   }
   
-  dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+  dict_set (request, "PATH", str_to_data ((int8_t *)path));
 
-  ret = fops_xfer (priv, OP_GETATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_GETATTR, request, reply);
 
   if (ret != 0) 
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
 
   if (ret < 0) {
     errno = remote_errno;
     goto ret;
   }
 
-  buf = data_to_bin (dict_get (&reply, "BUF"));
+  buf = data_to_bin (dict_get (reply, "BUF"));
 
   uint64_t dev;
   uint64_t ino;
@@ -336,7 +334,8 @@ brick_getattr (struct xlator *xl,
   stbuf->st_ctim.tv_nsec = ctime_nsec;
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (request);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -349,41 +348,42 @@ brick_readlink (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
     //    data_t *prefilled = bin_to_data (dest, size);
-    //    dict_set (&reply, "PATH", prefilled);
+    //    dict_set (reply, "PATH", prefilled);
 
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "LEN", int_to_data (size));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "LEN", int_to_data (size));
   }
 
-  ret = fops_xfer (priv, OP_READLINK, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_READLINK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0){
     errno = remote_errno;
     goto ret;
   }
-  memcpy (dest, data_to_bin (dict_get (&reply, "PATH")), ret);
+  memcpy (dest, data_to_bin (dict_get (reply, "PATH")), ret);
   
   if (ret < 0) {
     errno = remote_errno;
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
+
   return ret;
 }
 
@@ -398,29 +398,29 @@ brick_mknod (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "MODE", int_to_data (mode));
-    dict_set (&request, "DEV", int_to_data (dev));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "MODE", int_to_data (mode));
+    dict_set (request, "DEV", int_to_data (dev));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_MKNOD, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_MKNOD, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -428,7 +428,7 @@ brick_mknod (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -442,28 +442,28 @@ brick_mkdir (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "MODE", int_to_data (mode));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "MODE", int_to_data (mode));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_MKDIR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_MKDIR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -471,7 +471,7 @@ brick_mkdir (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -483,25 +483,25 @@ brick_unlink (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
   }
 
-  ret = fops_xfer (priv, OP_UNLINK, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_UNLINK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -509,7 +509,7 @@ brick_unlink (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -521,24 +521,24 @@ brick_rmdir (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
   }
 
-  ret = fops_xfer (priv, OP_RMDIR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_RMDIR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -546,7 +546,7 @@ brick_rmdir (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -562,28 +562,28 @@ brick_symlink (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)oldpath));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)newpath));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)oldpath));
+    dict_set (request, "BUF", str_to_data ((int8_t *)newpath));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_SYMLINK, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_SYMLINK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -591,7 +591,7 @@ brick_symlink (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
   return ret;
 }
 
@@ -605,28 +605,28 @@ brick_rename (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)oldpath));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)newpath));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)oldpath));
+    dict_set (request, "BUF", str_to_data ((int8_t *)newpath));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_RENAME, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_RENAME, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -634,7 +634,7 @@ brick_rename (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -648,27 +648,27 @@ brick_link (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)oldpath));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)newpath));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)oldpath));
+    dict_set (request, "BUF", str_to_data ((int8_t *)newpath));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_LINK, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_LINK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -676,7 +676,7 @@ brick_link (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -689,25 +689,25 @@ brick_chmod (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "MODE", int_to_data (mode));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "MODE", int_to_data (mode));
   }
 
-  ret = fops_xfer (priv, OP_CHMOD, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_CHMOD, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -715,7 +715,7 @@ brick_chmod (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -729,26 +729,26 @@ brick_chown (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "UID", int_to_data (uid));
-    dict_set (&request, "GID", int_to_data (gid));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "UID", int_to_data (uid));
+    dict_set (request, "GID", int_to_data (gid));
   }
 
-  ret = fops_xfer (priv, OP_CHOWN, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_CHOWN, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -756,7 +756,7 @@ brick_chown (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -769,25 +769,25 @@ brick_truncate (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "OFFSET", int_to_data (offset));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "OFFSET", int_to_data (offset));
   }
 
-  ret = fops_xfer (priv, OP_TRUNCATE, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_TRUNCATE, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -795,7 +795,7 @@ brick_truncate (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -808,27 +808,27 @@ brick_utime (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "ACTIME", int_to_data (buf->actime));
-    dict_set (&request, "MODTIME", int_to_data (buf->modtime));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "ACTIME", int_to_data (buf->actime));
+    dict_set (request, "MODTIME", int_to_data (buf->modtime));
   }
 
-  ret = fops_xfer (priv, OP_UTIME, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_UTIME, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -836,7 +836,7 @@ brick_utime (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -851,27 +851,27 @@ brick_open (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FLAGS", int_to_data (flags));
-    dict_set (&request, "MODE", int_to_data (mode));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FLAGS", int_to_data (flags));
+    dict_set (request, "MODE", int_to_data (mode));
   }
 
-  ret = fops_xfer (priv, OP_OPEN, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_OPEN, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -886,7 +886,7 @@ brick_open (struct xlator *xl,
     brick_ctx->next = NULL;
 
     tmp = &(brick_ctx->context);
-    *(long *)tmp = data_to_int (dict_get (&reply, "FD"));
+    *(long *)tmp = data_to_int (dict_get (reply, "FD"));
     
     while (trav->next)
       trav = trav->next;
@@ -895,7 +895,7 @@ brick_open (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -910,9 +910,9 @@ brick_read (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -926,30 +926,30 @@ brick_read (struct xlator *xl,
 
   {
     //    data_t *prefilled = bin_to_data (buf, size);
-    //    dict_set (&reply, "BUF", prefilled);
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data (fd));
-    dict_set (&request, "OFFSET", int_to_data (offset));
-    dict_set (&request, "LEN", int_to_data (size));
+    //    dict_set (reply, "BUF", prefilled);
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data (fd));
+    dict_set (request, "OFFSET", int_to_data (offset));
+    dict_set (request, "LEN", int_to_data (size));
   }
 
-  ret = fops_xfer (priv, OP_READ, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_READ, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
     goto ret;
   }
-  memcpy (buf, data_to_bin (dict_get (&reply, "BUF")), ret);
+  memcpy (buf, data_to_bin (dict_get (reply, "BUF")), ret);
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -964,9 +964,9 @@ brick_write (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -979,20 +979,20 @@ brick_write (struct xlator *xl,
   fd = (long)tmp->context;
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "OFFSET", int_to_data (offset));
-    dict_set (&request, "FD", int_to_data (fd));
-    dict_set (&request, "BUF", bin_to_data ((void *)buf, size));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "OFFSET", int_to_data (offset));
+    dict_set (request, "FD", int_to_data (fd));
+    dict_set (request, "BUF", bin_to_data ((void *)buf, size));
   }
 
-  ret = fops_xfer (priv, OP_WRITE, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_WRITE, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1000,7 +1000,7 @@ brick_write (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1012,24 +1012,24 @@ brick_statfs (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
   }
 
-  ret = fops_xfer (priv, OP_STATFS, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_STATFS, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1037,7 +1037,7 @@ brick_statfs (struct xlator *xl,
   }
 
   {
-    int8_t *buf = data_to_bin (dict_get (&reply, "BUF"));
+    int8_t *buf = data_to_bin (dict_get (reply, "BUF"));
 
     uint32_t bsize;
     uint32_t frsize;
@@ -1078,7 +1078,7 @@ brick_statfs (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1090,9 +1090,9 @@ brick_flush (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -1105,18 +1105,18 @@ brick_flush (struct xlator *xl,
   fd = (long)tmp->context;
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data (fd));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data (fd));
   }
 
-  ret = fops_xfer (priv, OP_FLUSH, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_FLUSH, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1124,7 +1124,7 @@ brick_flush (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1136,9 +1136,9 @@ brick_release (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -1151,18 +1151,18 @@ brick_release (struct xlator *xl,
   fd = (long)tmp->context;
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data (fd));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data (fd));
   }
 
-  ret = fops_xfer (priv, OP_RELEASE, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_RELEASE, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1182,7 +1182,7 @@ brick_release (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1195,9 +1195,9 @@ brick_fsync (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -1210,19 +1210,19 @@ brick_fsync (struct xlator *xl,
   fd = (long)tmp->context;
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FLAGS", int_to_data (datasync));
-    dict_set (&request, "FD", int_to_data (fd));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FLAGS", int_to_data (datasync));
+    dict_set (request, "FD", int_to_data (fd));
   }
 
-  ret = fops_xfer (priv, OP_FSYNC, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_FSYNC, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1230,7 +1230,7 @@ brick_fsync (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1245,28 +1245,28 @@ brick_setxattr (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FLAGS", int_to_data (flags));
-    dict_set (&request, "COUNT", int_to_data (size));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)name));
-    dict_set (&request, "FD", str_to_data ((int8_t *)value));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FLAGS", int_to_data (flags));
+    dict_set (request, "COUNT", int_to_data (size));
+    dict_set (request, "BUF", str_to_data ((int8_t *)name));
+    dict_set (request, "FD", str_to_data ((int8_t *)value));
   }
 
-  ret = fops_xfer (priv, OP_SETXATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_SETXATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1274,7 +1274,7 @@ brick_setxattr (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1288,26 +1288,26 @@ brick_getxattr (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)name));
-    dict_set (&request, "COUNT", int_to_data (size));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "BUF", str_to_data ((int8_t *)name));
+    dict_set (request, "COUNT", int_to_data (size));
   }
 
-  ret = fops_xfer (priv, OP_GETXATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_GETXATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1315,11 +1315,11 @@ brick_getxattr (struct xlator *xl,
   }
   
   {
-    strcpy (value, data_to_str (dict_get (&reply, "BUF")));
+    strcpy (value, data_to_str (dict_get (reply, "BUF")));
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1332,26 +1332,26 @@ brick_listxattr (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "COUNT", int_to_data (size));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "COUNT", int_to_data (size));
   }
 
-  ret = fops_xfer (priv, OP_LISTXATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_LISTXATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1359,11 +1359,11 @@ brick_listxattr (struct xlator *xl,
   }
 
   {
-    memcpy (list, data_to_str (dict_get (&reply, "BUF")), ret);
+    memcpy (list, data_to_str (dict_get (reply, "BUF")), ret);
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 		     
@@ -1375,25 +1375,25 @@ brick_removexattr (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "BUF", str_to_data ((int8_t *)name));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "BUF", str_to_data ((int8_t *)name));
   }
 
-  ret = fops_xfer (priv, OP_REMOVEXATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_REMOVEXATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1401,7 +1401,7 @@ brick_removexattr (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1413,8 +1413,8 @@ brick_opendir (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -1429,18 +1429,18 @@ brick_opendir (struct xlator *xl,
   } 
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data ((long)tmp->context));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data ((long)tmp->context));
   }
 
-  ret = fops_xfer (priv, OP_OPENDIR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_OPENDIR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1448,7 +1448,7 @@ brick_opendir (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1460,26 +1460,26 @@ brick_readdir (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   data_t *datat = NULL;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "OFFSET", int_to_data (offset));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "OFFSET", int_to_data (offset));
   }
 
-  ret = fops_xfer (priv, OP_READDIR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_READDIR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1489,12 +1489,12 @@ brick_readdir (struct xlator *xl,
 
   {
     /* Here I get a data in ASCII, with '/' as the IFS, now I need to process them */
-    datat = dict_get (&reply, "BUF");
+    datat = dict_get (reply, "BUF");
     datat->is_static = 1;
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   if (datat && ret == 0)
     return (int8_t *)datat->data;
   else 
@@ -1509,25 +1509,25 @@ brick_releasedir (struct xlator *xl,
   int32_t ret = 0;
   /*int remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
   }
 
-  ret = fops_xfer (priv, OP_RELEASE, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_RELEASE, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1535,7 +1535,7 @@ brick_releasedir (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);*/
+dict_destroy (reply);*/
   return ret;
 }
 
@@ -1548,26 +1548,26 @@ brick_fsyncdir (struct xlator *xl,
   int32_t ret = 0;
   /*  int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FLAGS", int_to_data (datasync));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FLAGS", int_to_data (datasync));
   }
 
-  ret = fops_xfer (priv, OP_FSYNCDIR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_FSYNCDIR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1575,7 +1575,7 @@ brick_fsyncdir (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply); */
+dict_destroy (reply); */
   return ret;
 }
 
@@ -1588,26 +1588,26 @@ brick_access (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "MODE", int_to_data (mode));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "MODE", int_to_data (mode));
   }
 
-  ret = fops_xfer (priv, OP_ACCESS, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_ACCESS, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1615,7 +1615,7 @@ brick_access (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1628,9 +1628,9 @@ brick_ftruncate (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
-  int64_t fd;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
+  long fd;
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
@@ -1643,19 +1643,19 @@ brick_ftruncate (struct xlator *xl,
   fd = (long)tmp->context;
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data (fd));
-    dict_set (&request, "OFFSET", int_to_data (offset));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data (fd));
+    dict_set (request, "OFFSET", int_to_data (offset));
   }
 
-  ret = fops_xfer (priv, OP_FTRUNCATE, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_FTRUNCATE, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1663,7 +1663,7 @@ brick_ftruncate (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1676,8 +1676,8 @@ brick_fgetattr (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
@@ -1690,18 +1690,18 @@ brick_fgetattr (struct xlator *xl,
   } 
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "FD", int_to_data ((long)tmp->context));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "FD", int_to_data ((long)tmp->context));
   }
 
-  ret = fops_xfer (priv, OP_FGETATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_FGETATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1709,7 +1709,7 @@ brick_fgetattr (struct xlator *xl,
   }
 
   {
-    int8_t *buf = data_to_bin (dict_get (&reply, "BUF"));
+    int8_t *buf = data_to_bin (dict_get (reply, "BUF"));
 
     uint64_t dev;
     uint64_t ino;
@@ -1765,7 +1765,7 @@ brick_fgetattr (struct xlator *xl,
   }
 
   ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1779,8 +1779,8 @@ brick_bulk_getattr (struct xlator *xl,
   struct stat *stbuf = NULL;
   int8_t *buffer_ptr = NULL;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   int32_t ret;
   int32_t remote_errno;
   int8_t *buf = NULL;
@@ -1795,16 +1795,16 @@ brick_bulk_getattr (struct xlator *xl,
     FUNCTION_CALLED;
   }
   
-  dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+  dict_set (request, "PATH", str_to_data ((int8_t *)path));
 
-  ret = fops_xfer (priv, OP_BULKGETATTR, &request, &reply);
-  dict_destroy (&request);
+  ret = fops_xfer (priv, OP_BULKGETATTR, request, reply);
+  dict_destroy (request);
 
   if (ret != 0) 
     goto fail;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     gf_log ("tcp", GF_LOG_ERROR, "tcp.c->bulk_getattr: remote bulk_getattr returned \"%d\"\n", remote_errno);
@@ -1812,8 +1812,8 @@ brick_bulk_getattr (struct xlator *xl,
     goto fail;
   }
   
-  nr_entries = data_to_int (dict_get (&reply, "NR_ENTRIES"));
-  buf = data_to_bin (dict_get (&reply, "BUF"));
+  nr_entries = data_to_int (dict_get (reply, "NR_ENTRIES"));
+  buf = data_to_bin (dict_get (reply, "BUF"));
 
   buffer_ptr = buf;
   while (nr_entries) {
@@ -1901,7 +1901,8 @@ brick_bulk_getattr (struct xlator *xl,
   }
 
  fail:
-  dict_destroy (&reply);
+  dict_destroy (request);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1915,21 +1916,21 @@ brick_stats (struct xlator *xl, struct xlator_stats *stats)
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
-  dict_set (&request, "LEN", int_to_data (0)); // without this dummy key the server crashes
-  ret = mgmt_xfer (priv, OP_STATS, &request, &reply);
-  dict_destroy (&request);
+  dict_set (request, "LEN", int_to_data (0)); // without this dummy key the server crashes
+  ret = mgmt_xfer (priv, OP_STATS, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1937,7 +1938,7 @@ brick_stats (struct xlator *xl, struct xlator_stats *stats)
   }
 
   {
-    int8_t *buf = data_to_bin (dict_get (&reply, "BUF"));
+    int8_t *buf = data_to_bin (dict_get (reply, "BUF"));
     sscanf (buf, "%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64",%"SCNx64"\n",
 	    &stats->nr_files,
 	    &stats->disk_usage,
@@ -1949,7 +1950,7 @@ brick_stats (struct xlator *xl, struct xlator_stats *stats)
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1960,25 +1961,25 @@ brick_lock (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)name));
+    dict_set (request, "PATH", str_to_data ((int8_t *)name));
   }
 
-  ret = mgmt_xfer (priv, OP_LOCK, &request, &reply);
-  dict_destroy (&request);
+  ret = mgmt_xfer (priv, OP_LOCK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -1986,7 +1987,7 @@ brick_lock (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -1997,25 +1998,25 @@ brick_unlock (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
   }
 
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)name));
+    dict_set (request, "PATH", str_to_data ((int8_t *)name));
   }
 
-  ret = mgmt_xfer (priv, OP_UNLOCK, &request, &reply);
-  dict_destroy (&request);
+  ret = mgmt_xfer (priv, OP_UNLOCK, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -2023,7 +2024,7 @@ brick_unlock (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -2033,8 +2034,8 @@ brick_listlocks (struct xlator *xl)
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
@@ -2044,19 +2045,19 @@ brick_listlocks (struct xlator *xl)
     printf ("tcp listlocks called");
   }
   
-  dict_set (&request, "OP", int_to_data (0xcafebabe));
-  ret = mgmt_xfer (priv, OP_LISTLOCKS, &request, &reply);
-  dict_destroy (&request);
+  dict_set (request, "OP", int_to_data (0xcafebabe));
+  ret = mgmt_xfer (priv, OP_LISTLOCKS, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  int32_t junk = data_to_int (dict_get (&reply, "RET_OP"));
+  int32_t junk = data_to_int (dict_get (reply, "RET_OP"));
  
   printf ("returned junk is %x\n", junk);
  
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
   
   if (ret < 0) {
     errno = remote_errno;
@@ -2069,7 +2070,7 @@ brick_listlocks (struct xlator *xl)
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -2082,8 +2083,8 @@ brick_nslookup (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
   int8_t *ns_str;
 
   if (priv->is_debug) {
@@ -2091,18 +2092,18 @@ brick_nslookup (struct xlator *xl,
   }
   
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
   }
 
-  ret = mgmt_xfer (priv, OP_NSLOOKUP, &request, &reply);
-  dict_destroy (&request);
+  ret = mgmt_xfer (priv, OP_NSLOOKUP, request, reply);
+  dict_destroy (request);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
-  ns_str = data_to_str (dict_get (&reply, "NS"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
+  ns_str = data_to_str (dict_get (reply, "NS"));
 
   if (ns_str && strlen (ns_str) > 0)
     dict_unserialize (ns_str, strlen (ns_str), &ns);
@@ -2113,7 +2114,7 @@ brick_nslookup (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+dict_destroy (reply);
   return ret;
 }
 
@@ -2126,8 +2127,8 @@ brick_nsupdate (struct xlator *xl,
   int32_t ret = 0;
   int32_t remote_errno = 0;
   struct brick_private *priv = xl->private;
-  dict_t request = STATIC_DICT;
-  dict_t reply = STATIC_DICT;
+  dict_t *request = get_new_dict ();
+  dict_t *reply = get_new_dict ();
 
   if (priv->is_debug) {
     FUNCTION_CALLED;
@@ -2136,19 +2137,19 @@ brick_nsupdate (struct xlator *xl,
   int8_t *ns_str = calloc (1, dict_serialized_length (ns));
   dict_serialize (ns, ns_str);
   {
-    dict_set (&request, "PATH", str_to_data ((int8_t *)path));
-    dict_set (&request, "NS", str_to_data (ns_str));
+    dict_set (request, "PATH", str_to_data ((int8_t *)path));
+    dict_set (request, "NS", str_to_data (ns_str));
   }
 
-  ret = mgmt_xfer (priv, OP_NSUPDATE, &request, &reply);
-  dict_destroy (&request);
+  ret = mgmt_xfer (priv, OP_NSUPDATE, request, reply);
+  dict_destroy (request);
   free (ns_str);
 
   if (ret != 0)
     goto ret;
 
-  ret = data_to_int (dict_get (&reply, "RET"));
-  remote_errno = data_to_int (dict_get (&reply, "ERRNO"));
+  ret = data_to_int (dict_get (reply, "RET"));
+  remote_errno = data_to_int (dict_get (reply, "ERRNO"));
 
   if (ret < 0) {
     errno = remote_errno;
@@ -2156,7 +2157,7 @@ brick_nsupdate (struct xlator *xl,
   }
 
  ret:
-  dict_destroy (&reply);
+  dict_destroy (reply);
   return ret;
 }
 
