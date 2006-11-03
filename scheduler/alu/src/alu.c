@@ -22,51 +22,31 @@
 #include "stack.h"
 #include "alu.h"
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_disk_usage (struct xlator_stats *this)
 {
   return this->disk_usage;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_write_usage (struct xlator_stats *this)
 {
   return this->write_usage;
 }
 
-<<<<<<< HEAD
 static int64_t
-=======
-static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_read_usage (struct xlator_stats *this)
 {
   return this->read_usage;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_disk_speed (struct xlator_stats *this)
 {
   return this->disk_speed;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_file_usage (struct xlator_stats *this)
 {
   (void) &get_stats_file_usage;    /* Avoid warning "defined but not used" */
@@ -74,107 +54,65 @@ get_stats_file_usage (struct xlator_stats *this)
   return this->nr_files;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
-static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_num_client (struct xlator_stats *this)
 {
   (void) &get_stats_num_client;    /* Avoid warning "defined but not used" */
   return this->nr_clients;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_stats_free_disk (struct xlator_stats *this)
 {
   (void) &get_stats_free_disk;    /* Avoid warning "defined but not used" */
   return this->free_disk;
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_write_usage (struct xlator_stats *max, struct xlator_stats *min)
 {
   return (max->write_usage - min->write_usage);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_read_usage (struct xlator_stats *max, struct xlator_stats *min)
 {
   return (max->read_usage - min->read_usage);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_disk_usage (struct xlator_stats *max, struct xlator_stats *min)
 {
   return (max->disk_usage - min->disk_usage);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_disk_speed (struct xlator_stats *max, struct xlator_stats *min)
 {
   return (max->disk_speed - min->disk_speed);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_file_usage (struct xlator_stats *max, struct xlator_stats *min)
 {
   return (max->nr_files - min->nr_files);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_num_client (struct xlator_stats *max, struct xlator_stats *min)
 {
   (void) &get_max_diff_num_client;    /* Avoid warning "defined but not used" */
   return (max->nr_clients - min->nr_clients);
 }
 
-<<<<<<< HEAD
-static int64_t
-=======
 static int64_t 
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
 get_max_diff_free_disk (struct xlator_stats *max, struct xlator_stats *min)
 {
   (void) &get_max_diff_free_disk;    /* Avoid warning "defined but not used" */        
   return (max->free_disk - min->free_disk);
 }
 
-<<<<<<< HEAD
-static int64_t
-str_to_long_int64_t (const char *number)
-=======
 static int64_t 
-str_to_long_long (const int8_t *number)
->>>>>>> a11cde2... on 32bit stdint conversion is done. works fine.
+str_to_long_long (const char *number)
 {
   int64_t unit = 1;
   int64_t ret = 0;
@@ -229,7 +167,7 @@ alu_init (struct xlator *xl)
     data_t *entry_fn = NULL;
     data_t *exit_fn = NULL;
     char *tmp_str;
-    int8_t *order_str = strtok_r (order->data, ":", &tmp_str);
+    char *order_str = strtok_r (order->data, ":", &tmp_str);
     while (order_str) {
       gf_log ("alu", GF_LOG_ERROR, "alu.c->alu_init: order string: %s", order_str);
       if (strcmp (order_str, "disk-usage") == 0) {
