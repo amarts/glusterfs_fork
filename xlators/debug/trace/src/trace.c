@@ -800,7 +800,9 @@ trace_symlink (call_frame_t *frame,
 	       const char *oldpath,
 	       const char *newpath)
 {
-  ERR_EINVAL_NORETURN (!this || !oldpath || *newpath);
+  int32_t ret = 0;
+  
+  ERR_EINVAL_NORETURN (!this || !oldpath || !newpath);
   
   gf_log ("trace", GF_LOG_DEBUG, "trace_symlink (*this=%p, oldpath=%s, newpath=%s)",
 	  this, oldpath, newpath);
@@ -815,13 +817,16 @@ trace_symlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
-trace_rename (call_frame_t *frame,
-	      xlator_t *this,
-	      const char *oldpath,
-	      const char *newpath)
-{  
-  ERR_EINVAL_NORETURN (!this || !oldpath || *newpath);
+int32_t 
+trace_rename (struct xlator *this,
+	       const int8_t *oldpath,
+	       const int8_t *newpath,
+	       uid_t uid,
+	       gid_t gid)
+{
+  int32_t ret = 0;
+  
+  ERR_EINVAL_NORETURN (!this || !oldpath || !newpath);
   
   gf_log ("trace", GF_LOG_DEBUG, "trace_rename (*this=%p, oldpath=%s, newpath=%s)",
 	  this, oldpath, newpath);
@@ -843,7 +848,7 @@ trace_link (call_frame_t *frame,
 	    const char *newpath)
 {
   
-  ERR_EINVAL_NORETURN (!this || !oldpath || *newpath);
+  ERR_EINVAL_NORETURN (!this || !oldpath || !newpath);
   
   gf_log ("trace", GF_LOG_DEBUG, "trace_link (*this=%p, oldpath=%s, newpath=%s)",
 	  this, oldpath, newpath);
