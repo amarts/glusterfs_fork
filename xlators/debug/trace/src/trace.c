@@ -702,8 +702,8 @@ trace_getattr (call_frame_t *frame,
 	  this, path);
   STACK_WIND (frame, 
 	      trace_getattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->getattr, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->getattr, 
 	      path);
   
   return 0;
@@ -722,8 +722,8 @@ trace_readlink (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_readlink_cbk,
-	      this->first_child, 
-	      this->first_child->fops->readlink, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->readlink, 
 	      path, 
 	      size);
   
@@ -746,8 +746,8 @@ trace_mknod (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_mknod_cbk,
-	      this->first_child, 
-	      this->first_child->fops->mknod, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->mknod, 
 	      path, 
 	      mode, 
 	      dev);
@@ -769,8 +769,8 @@ trace_mkdir (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_mkdir_cbk,
-	      this->first_child, 
-	      this->first_child->fops->mkdir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->mkdir, 
 	      path, 
 	      mode);
   return 0;
@@ -789,8 +789,8 @@ trace_unlink (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_unlink_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->unlink, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->unlink, 
 	      path);
   return 0;
 }
@@ -807,8 +807,8 @@ trace_rmdir (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_rmdir_cbk,
-	      this->first_child, 
-	      this->first_child->fops->rmdir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->rmdir, 
 	      path);
   
   return 0;
@@ -829,8 +829,8 @@ trace_symlink (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_symlink_cbk,
-	      this->first_child, 
-	      this->first_child->fops->symlink, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->symlink, 
 	      oldpath,
 	      newpath);
   
@@ -853,8 +853,8 @@ trace_rename (struct xlator *this,
   
   STACK_WIND (frame, 
 	      trace_rename_cbk,
-	      this->first_child, 
-	      this->first_child->fops->rename, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->rename, 
 	      oldpath,
 	      newpath);
   
@@ -875,8 +875,8 @@ trace_link (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_link_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->link, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->link, 
 	      oldpath,
 	      newpath);
   return 0;
@@ -895,8 +895,8 @@ trace_chmod (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_chmod_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->chmod, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->chmod, 
 	      path,
 	      mode);
   
@@ -917,8 +917,8 @@ trace_chown (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_chown_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->chown, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->chown, 
 	      path,
 	      uid,
 	      gid);
@@ -939,8 +939,8 @@ trace_truncate (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_truncate_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->truncate, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->truncate, 
 	      path,
 	      offset);
   
@@ -966,8 +966,8 @@ trace_utimes (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_utimes_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->utimes, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->utimes, 
 	      path,
 	      buf);
 
@@ -988,8 +988,8 @@ trace_open (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_open_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->open, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->open, 
 	      path,
 	      flags,
 	      mode);
@@ -1010,8 +1010,8 @@ trace_create (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_create_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->create, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->create, 
 	      path,
 	      mode);
   return 0;
@@ -1031,8 +1031,8 @@ trace_read (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_read_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->read, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->read, 
 	      ctx,
 	      size,
 	      offset);
@@ -1054,8 +1054,8 @@ trace_writev (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_writev_cbk,
-	      this->first_child,
-	      this->first_child->fops->writev, 
+	      FIRST_CHILD(this),
+	      FIRST_CHILD(this)->fops->writev, 
 	      ctx,
 	      vector,
 	      count,
@@ -1075,8 +1075,8 @@ trace_statfs (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_statfs_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->statfs, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->statfs, 
 	      path);
   return 0; 
 }
@@ -1092,8 +1092,8 @@ trace_flush (call_frame_t *frame,
 	  this, ctx);
   STACK_WIND (frame, 
 	      trace_flush_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->flush, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->flush, 
 	      ctx);
   return 0;
 }
@@ -1110,8 +1110,8 @@ trace_release (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_release_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->release, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->release, 
 	      ctx);
   return 0;
 }
@@ -1129,8 +1129,8 @@ trace_fsync (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_fsync_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->fsync, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->fsync, 
 	      ctx,
 	      flags);
   return 0;
@@ -1152,8 +1152,8 @@ trace_setxattr (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_setxattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->setxattr, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->setxattr, 
 	      path,
 	      name,
 	      value,
@@ -1176,8 +1176,8 @@ trace_getxattr (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_getxattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->getxattr,
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->getxattr,
 	      path,
 	      name,
 	      size);
@@ -1197,8 +1197,8 @@ trace_listxattr (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_listxattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->listxattr, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->listxattr, 
 	      path,
 	      size);
 
@@ -1218,8 +1218,8 @@ trace_removexattr (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_removexattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->removexattr, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->removexattr, 
 	      path,
 	      name);
 
@@ -1238,8 +1238,8 @@ trace_opendir (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_opendir_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->opendir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->opendir, 
 	      path);
   return 0;
 }
@@ -1262,8 +1262,8 @@ trace_readdir (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_readdir_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->readdir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->readdir, 
 	      path);
   return 0;
 }
@@ -1280,8 +1280,8 @@ trace_releasedir (call_frame_t *frame,
   
   STACK_WIND (frame, 
 	      trace_releasedir_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->releasedir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->releasedir, 
 	      ctx);
   return 0;
 }
@@ -1299,8 +1299,8 @@ trace_fsyncdir (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_fsyncdir_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->fsyncdir, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->fsyncdir, 
 	      ctx,
 	      datasync);
   return 0;
@@ -1319,8 +1319,8 @@ trace_access (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_access_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->access, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->access, 
 	      path,
 	      mode);
   return 0;
@@ -1339,8 +1339,8 @@ trace_ftruncate (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_ftruncate_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->ftruncate, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->ftruncate, 
 	      ctx,
 	      offset);
   return 0;
@@ -1357,8 +1357,8 @@ trace_fgetattr (call_frame_t *frame,
 	  this, ctx);
   STACK_WIND (frame, 
 	      trace_fgetattr_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->fgetattr, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->fgetattr, 
 	      ctx);
   return 0;
 }
@@ -1378,8 +1378,8 @@ trace_lk (call_frame_t *frame,
 
   STACK_WIND (frame, 
 	      trace_lk_cbk, 
-	      this->first_child, 
-	      this->first_child->fops->lk, 
+	      FIRST_CHILD(this), 
+	      FIRST_CHILD(this)->fops->lk, 
 	      ctx,
 	      cmd,
 	      lock);
@@ -1396,13 +1396,13 @@ init (xlator_t *this)
     return -1;
 
 
-  if (!this->first_child)
+  if (!this->children)
     {
       gf_log ("trace", GF_LOG_ERROR, "trace translator requires one subvolume");
       exit (-1);
     }
     
-  if (this->first_child->next_sibling)
+  if (this->children->next)
     {
       gf_log ("trace", GF_LOG_ERROR, "trace translator does not support more than one sub-volume");
       exit (-1);
@@ -1429,8 +1429,8 @@ init (xlator_t *this)
     dict_serialize (this->options, buf);
     
     gf_log ("trace", GF_LOG_DEBUG, 
-	    "init (xlator_t *this=%p {name=%s, *next=%p, *parent=%p, *first_child=%p, *next_sibling=%p, *fops=%p {*open=%p, getattr=%p, *readlink=%p, *mknod=%p, *mkdir=%p, *unlink=%p, *rmdir=%p, *symlink=%p, *rename=%p, *link=%p, *chmod=%p, *chown=%p, *truncate=%p, *utimes=%p, *read=%p, *write=%p, *statfs=%p, *flush=%p, *release=%p, *fsync=%p, *setxattr=%p, *getxattr=%p, *listxattr=%p, *removexattr=%p, *opendir=%p, *readdir=%p, *releasedir=%p, *fsyncdir=%p, *access=%p, *ftruncate=%p, *fgetattr=%p}, *mops=%p {*stats=%p, *fsck=%p, *lock=%p, *unlock=%p}, *fini()=%p, *init()=%p, *options=%p {%s}, *private=%p)", 
-	    this, this->name, this->next, this->parent, this->first_child, this->next_sibling, this->fops, this->fops->open, this->fops->getattr, this->fops->readlink, this->fops->mknod, this->fops->mkdir, this->fops->unlink, this->fops->rmdir, this->fops->symlink, this->fops->rename, this->fops->link, this->fops->chmod, this->fops->chown, this->fops->truncate, this->fops->utimes, this->fops->read, this->fops->writev, this->fops->statfs, this->fops->flush, this->fops->release, this->fops->fsync, this->fops->setxattr, this->fops->getxattr, this->fops->listxattr, this->fops->removexattr, this->fops->opendir, this->fops->readdir, this->fops->releasedir, this->fops->fsyncdir, this->fops->access, this->fops->ftruncate, this->fops->fgetattr, this->mops, this->mops->stats,  this->mops->fsck, this->mops->lock, this->mops->unlock, this->fini, this->init, this->options, buf, this->private);
+	    "init (xlator_t *this=%p {name=%s, *next=%p, *parent=%p, *children=%p {xlator=%p, next=%p}, *fops=%p {*open=%p, getattr=%p, *readlink=%p, *mknod=%p, *mkdir=%p, *unlink=%p, *rmdir=%p, *symlink=%p, *rename=%p, *link=%p, *chmod=%p, *chown=%p, *truncate=%p, *utimes=%p, *read=%p, *write=%p, *statfs=%p, *flush=%p, *release=%p, *fsync=%p, *setxattr=%p, *getxattr=%p, *listxattr=%p, *removexattr=%p, *opendir=%p, *readdir=%p, *releasedir=%p, *fsyncdir=%p, *access=%p, *ftruncate=%p, *fgetattr=%p}, *mops=%p {*stats=%p, *fsck=%p, *lock=%p, *unlock=%p}, *fini()=%p, *init()=%p, *options=%p {%s}, *private=%p)", 
+	    this, this->name, this->next, this->parent, this->children, this->children->xlator, this->children->next, this->fops, this->fops->open, this->fops->getattr, this->fops->readlink, this->fops->mknod, this->fops->mkdir, this->fops->unlink, this->fops->rmdir, this->fops->symlink, this->fops->rename, this->fops->link, this->fops->chmod, this->fops->chown, this->fops->truncate, this->fops->utimes, this->fops->read, this->fops->writev, this->fops->statfs, this->fops->flush, this->fops->release, this->fops->fsync, this->fops->setxattr, this->fops->getxattr, this->fops->listxattr, this->fops->removexattr, this->fops->opendir, this->fops->readdir, this->fops->releasedir, this->fops->fsyncdir, this->fops->access, this->fops->ftruncate, this->fops->fgetattr, this->mops, this->mops->stats,  this->mops->fsck, this->mops->lock, this->mops->unlock, this->fini, this->init, this->options, buf, this->private);
   }
   
   //xlator_foreach (this, gf_log_xlator);
@@ -1448,7 +1448,7 @@ fini (xlator_t *this)
   gf_log ("trace", GF_LOG_DEBUG, "fini (xlator_t *this=%p)", this);
 
   /* Free up the dictionary options */
-  dict_destroy (this->first_child->options);
+  dict_destroy (FIRST_CHILD(this)->options);
 
   gf_log ("trace", GF_LOG_DEBUG, "trace translator unloaded");
   return;
@@ -1512,8 +1512,8 @@ trace_stats (call_frame_t *frame,
 
     STACK_WIND (frame, 
 		trace_stats_cbk, 
-		this->first_child, 
-		this->first_child->mops->stats, 
+		FIRST_CHILD(this), 
+		FIRST_CHILD(this)->mops->stats, 
 		flags);
   }
   return 0;
