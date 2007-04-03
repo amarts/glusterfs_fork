@@ -1440,8 +1440,6 @@ fini (xlator_t *this)
   return;
 }
 
-
-
 struct xlator_fops fops = {
   .getattr     = trace_getattr,
   .readlink    = trace_readlink,
