@@ -22,6 +22,7 @@
 #include "logging.h"
 #include "posix.h"
 #include "xlator.h"
+#include "lock.h"
 
 #include <sys/time.h>
 
@@ -1043,8 +1044,6 @@ posix_lk (call_frame_t *frame,
 	  struct flock *lock)
 {
   int32_t fd;
-  int32_t op_ret = -1;
-  int32_t op_errno = EINVAL;
 
   GF_ERROR_IF_NULL (this);
   GF_ERROR_IF_NULL (ctx);
@@ -1178,7 +1177,9 @@ fini (struct xlator *xl)
 }
 
 struct xlator_mops mops = {
-  .stats = posix_stats
+  .stats = posix_stats,
+  .lock  = mop_lock_impl,
+  .unlock = mop_unlock_impl
 };
 
 struct xlator_fops fops = {
