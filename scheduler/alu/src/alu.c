@@ -443,7 +443,7 @@ alu_fini (struct xlator *xl)
 
 static int32_t 
 update_stat_array_cbk (call_frame_t *frame,
-		       void *cooky,
+		       void *cookie,
 		       xlator_t *xl,
 		       int32_t op_ret,
 		       int32_t op_errno,
@@ -455,7 +455,7 @@ update_stat_array_cbk (call_frame_t *frame,
   
   // LOCK
   for (idx = 0; idx < alu_sched->child_count; idx++) {
-    if (strcmp (alu_sched->array[idx].xl->name, (char *)cooky) == 0)
+    if (strcmp (alu_sched->array[idx].xl->name, (char *)cookie) == 0)
       break;
   }
   // UNLOCK
@@ -552,7 +552,7 @@ update_stat_array (xlator_t *xl)
     
     _STACK_WIND ((&cctx->frames), 
 		 update_stat_array_cbk, 
-		 alu_sched->array[idx].xl->name, //cooky
+		 alu_sched->array[idx].xl->name, //cookie
 		 alu_sched->array[idx].xl, 
 		 (alu_sched->array[idx].xl)->mops->stats,
 		 0); //flag
