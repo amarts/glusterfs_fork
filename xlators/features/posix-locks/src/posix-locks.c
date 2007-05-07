@@ -551,7 +551,7 @@ struct _truncate_ops {
 };
 
 static int32_t
-posix_locks_truncate_cbk (call_frame_t *frame, call_frame_t *prev_frame,
+posix_locks_truncate_cbk (call_frame_t *frame, void *cookie,
 			   xlator_t *this, int32_t op_ret, int32_t op_errno,
 			   struct stat *buf)
 {
@@ -776,8 +776,7 @@ struct _flags {
 };
 
 static int32_t 
-posix_locks_open_cbk (call_frame_t *frame, 
-		      void *cookie,
+posix_locks_open_cbk (call_frame_t *frame, void *cookie,
                       xlator_t *this,
                       int32_t op_ret,
                       int32_t op_errno,
