@@ -455,10 +455,12 @@ stripe_readv (call_frame_t *frame,
 {
   stripe_local_t *local = calloc (1, sizeof (stripe_local_t));
   stripe_private_t *priv = xl->private;
-  off_t stripe_size = data_to_int64 (dict_get (file_ctx,
+
+  off_t stripe_size = data_to_int (dict_get (file_ctx,
 					     frame->this->name));
   if (!stripe_size)
-    stripe_size = (offset + size);
+    stripe_size = (offset+size);
+
   off_t rounded_start = floor (offset, stripe_size);
   off_t rounded_end = roof (offset+size, stripe_size);
   int32_t num_stripe = (rounded_end - rounded_start) / stripe_size;
