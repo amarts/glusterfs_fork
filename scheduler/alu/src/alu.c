@@ -69,7 +69,7 @@ static int64_t
 get_stats_free_disk (struct xlator_stats *this)
 {
   (void) &get_stats_free_disk;    /* Avoid warning "defined but not used" */
-  return this->free_disk;
+  return (this->free_disk * 100) / this->total_disk_size;
 }
 
 static int64_t 
@@ -340,6 +340,7 @@ which is constant");
 		"alu_init: limit.min-disk-free = %lld", 
 		_limit_fn->cur_value (&(alu_sched->spec_limit)));
     }
+
     limits = dict_get (xl->options, "alu.limits.max-open-files");
     if (limits) {
 	// Update alu_sched->priority properly
@@ -406,6 +407,7 @@ which is constant");
 
     alu_sched->min_limit.free_disk = 0xFFFFFFFF;
     alu_sched->min_limit.disk_usage = 0xFFFFFFFF;
+    alu_sched->min_limit.total_disk_size = 0xFFFFFFFF;
     alu_sched->min_limit.disk_speed = 0xFFFFFFFF;
     alu_sched->min_limit.write_usage = 0xFFFFFFFF;
     alu_sched->min_limit.read_usage = 0xFFFFFFFF;
@@ -583,7 +585,6 @@ alu_scheduler (xlator_t *xl, int32_t size)
   int32_t sched_index_orig = 0;
   int32_t idx = 0;
 
-  //TODO: Do I need to do this here?
   alu_update (xl);
 
   /* Now check each threshold one by one if some nodes are classified */
