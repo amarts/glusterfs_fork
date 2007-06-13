@@ -164,9 +164,12 @@ stripe_stack_unwind_cbk (call_frame_t *frame,
   int32_t callcnt = 0;
   stripe_local_t *local = frame->local;
 
-  LOCK (&frame->mutex);
-  {
-    callcnt = --local->call_count;
+  if (op_ret == -1 && op_errno != ENOENT) {
+    local->op_ret = -1;
+    local->op_errno = op_errno;
+  }
+  if (op_ret == 0)
+    local->op_ret = 0;
 
     if (op_ret == -1) {
       if (op_errno == ENOTCONN) {
@@ -191,24 +194,46 @@ stripe_stack_unwind_cbk (call_frame_t *frame,
   return 0;
 }
 
-/**
- * stripe_stack_unwind_buf_cbk -  This function is used for all the _cbk with 
- *    'struct stat *buf' as extra argument (other than minimum)
- * This is called from functions like, chmod,fchmod,chown,fchown,truncate,ftruncate,
- *   utimens etc.
- *
- * @cookie - this argument should be always 'xlator_t *' of child node 
- */
-static int32_t 
-stripe_stack_unwind_buf_cbk (call_frame_t *frame,
-			     void *cookie,
-			     xlator_t *this,
-			     int32_t op_ret,
-			     int32_t op_errno,
-			     struct stat *buf)
+static int32_t
+stripe_setxattr (call_frame_t *frame,
+		 xlator_t *xl,
+		 const char *path,
+		 const char *name,
+		 const char *value,
+		 size_t size,
+		 int32_t flags)
 {
-  int32_t callcnt = 0;
-  stripe_local_t *local = frame->local;
+  stripe_local_t *local = (void *) calloc (1, sizeof (stripe_local_t));
+  xlator_list_t *trav = xl->children;
+  frame->local = local;
+  local->op_ret = -1;
+  LOCK_INIT (&frame->mutex);
+  while (trav) {
+    STACK_WIND(frame,
+	       stripe_setxattr_cbk,
+	       trav->xlator,
+	       trav->xlator->fops->setxattr,
+	       path,
+	       name,
+	       value,
+	       size,
+	       flags);
+    trav = trav->next;
+  }
+  return 0;
+}
+
+static int32_t
+stripe_getxattr_cbk (call_frame_t *frame,
+		     call_frame_t *prev_frame,
+		     xlator_t *xl,
+		     int32_t op_ret,
+		     int32_t op_errno,
+		     void *value)
+{
+  STACK_UNWIND (frame, op_ret, op_errno, value);
+  return 0;
+}
 
   LOCK (&frame->mutex);
   {
@@ -320,10 +345,7 @@ stripe_stack_unwind_inode_cbk (call_frame_t *frame,
     }
   }
   UNLOCK (&frame->mutex);
-
-  if (!callcnt) {
-    inode_t *loc_inode = NULL;
-
+ 
     if (local->failed) {
       local->op_ret = -1;
       local->op_errno = EIO; /* TODO: Or should it be ENOENT? */
@@ -359,7 +381,7 @@ stripe_lookup (call_frame_t *frame,
   local->op_ret = -1;
   frame->local = local;
 
-  if (op_ret == -1 ) {
+  if (op_ret == -1 && op_errno != ENOENT) {
     local->op_ret = -1;
     local->op_errno = op_errno;
     local->failed = 1;
@@ -427,6 +449,7 @@ stripe_open (call_frame_t *frame,
   stripe_local_t *local = (stripe_local_t *) calloc (1, sizeof (stripe_local_t));
   xlator_list_t *trav = xl->children;
   frame->local = local;
+  local->op_ret = -1;
 
   local->ctx = get_new_dict ();
   local->stripe_size = stripe_get_matching_bs (path, priv->pattern);
@@ -831,6 +854,11 @@ stripe_truncate (call_frame_t *frame,
 		 &tmp_loc,
 		 offset,
      tv);
+
+  if ((callcnt == ((stripe_private_t *)xl->private)->child_count) ||
+      (!local->stripe_size)) {
+    LOCK_DESTROY(&frame->mutex);
+    STACK_UNWIND (frame, local->op_ret, local->op_errno, stbuf);
   }
 
   return 0;
@@ -872,7 +900,8 @@ stripe_utimens (call_frame_t *frame,
 		 ino_list->xl->fops->utimens,
 		 &tmp_loc,
 		 tv);
-  }
+  local->stripe_size = data_to_int (dict_get (file_ctx,
+					      frame->this->name));
   return 0;
 }
 
@@ -942,6 +971,12 @@ stripe_rename (call_frame_t *frame,
 		     &tmp_newloc);
       }
     }
+    UNLOCK (&frame->mutex);
+  }
+  if ((callcnt == ((stripe_private_t *)xl->private)->child_count) ||
+      (!local->stripe_size)) {
+    LOCK_DESTROY(&frame->mutex);
+    STACK_UNWIND (frame, local->op_ret, local->op_errno, &local->stbuf);
   }
   return 0;
 }
@@ -2769,7 +2804,6 @@ stripe_writev_cbk (call_frame_t *frame,
   return 0;
 }
 
-
 /**
  * stripe_single_writev_cbk - 
  */
@@ -2881,9 +2915,6 @@ stripe_writev (call_frame_t *frame,
   return 0;
 }
 
-
-
-/* Management operations */
 
 /**
  * stripe_stats_cbk - Add all the fields received from different clients. 
