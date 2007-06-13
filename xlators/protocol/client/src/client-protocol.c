@@ -271,16 +271,19 @@ call_bail (void *trans)
   transport_bail (trans);
 }
 
-#define BAIL(frame, sec) do {                                     \
-    struct timeval tv;                                            \
-    tv.tv_sec = sec;                                              \
-    tv.tv_usec = 0;                                               \
-    client_local_t *_bail_local = frame->local;                   \
-    _bail_local->timer = gf_timer_call_after (frame->this->ctx,   \
-					tv,		          \
-					call_bail,	          \
-					frame->this->private);    \
+//#if 0
+#define BAIL(frame, sec) do {                                  \
+    struct timeval tv;                                         \
+    tv.tv_sec = sec;                                           \
+    tv.tv_usec = 0;                                            \
+    frame->local = gf_timer_call_after (frame->this->ctx,      \
+					tv,		       \
+					call_bail,	       \
+					frame->this->private); \
 } while (0)
+//#endif
+
+//#define BAIL(frame, sec)
 
 /**
  * client_create - create function for client protocol
