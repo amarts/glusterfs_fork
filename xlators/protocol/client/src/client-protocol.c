@@ -881,10 +881,10 @@ client_truncate (call_frame_t *frame,
     dict_set (request, "MODTIME_SEC", data_from_int64 (tv[1].tv_sec));
     dict_set (request, "MODTIME_NSEC", data_from_int64 (tv[1].tv_nsec));
   } else {
-    dict_set (request, "ACTIME_SEC", data_from_int64 (0));
-    dict_set (request, "ACTIME_NSEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_SEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_NSEC", data_from_int64 (0));
+    dict_set (request, "ACTIME_SEC", 0);
+    dict_set (request, "ACTIME_NSEC", 0);
+    dict_set (request, "MODTIME_SEC", 0);
+    dict_set (request, "MODTIME_NSEC", 0);
   }
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
@@ -1049,10 +1049,10 @@ client_writev (call_frame_t *frame,
     dict_set (request, "MODTIME_NSEC", data_from_int64 (tv[1].tv_nsec));
   }
   else {
-    dict_set (request, "ACTIME_SEC", data_from_int64 (0));
-    dict_set (request, "ACTIME_NSEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_SEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_NSEC", data_from_int64 (0));
+    dict_set (request, "ACTIME_SEC", 0);
+    dict_set (request, "ACTIME_NSEC", 0);
+    dict_set (request, "MODTIME_SEC", 0);
+    dict_set (request, "MODTIME_NSEC", 0);
   }
  
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
@@ -1738,10 +1738,10 @@ client_ftruncate (call_frame_t *frame,
     dict_set (request, "MODTIME_NSEC", data_from_int64 (tv[1].tv_nsec));
   }
   else {
-    dict_set (request, "ACTIME_SEC", data_from_int64 (0));
-    dict_set (request, "ACTIME_NSEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_SEC", data_from_int64 (0));
-    dict_set (request, "MODTIME_NSEC", data_from_int64 (0));
+    dict_set (request, "ACTIME_SEC", 0);
+    dict_set (request, "ACTIME_NSEC", 0);
+    dict_set (request, "MODTIME_SEC", 0);
+    dict_set (request, "MODTIME_NSEC", 0);
   }
 
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
