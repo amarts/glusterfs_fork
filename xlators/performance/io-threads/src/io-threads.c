@@ -497,8 +497,7 @@ iot_writev_wrapper (call_frame_t *frame,
                     fd_t *fd,
                     struct iovec *vector,
                     int32_t count,
-                    off_t offset,
-                    struct timespec tv[2])
+                    off_t offset)
 {
   STACK_WIND (frame,
               iot_writev_cbk,
@@ -507,8 +506,7 @@ iot_writev_wrapper (call_frame_t *frame,
               fd,
               vector,
               count,
-              offset,
-              tv);
+              offset);
   return 0;
 }
 
@@ -518,8 +516,7 @@ iot_writev (call_frame_t *frame,
             fd_t *fd,
             struct iovec *vector,
             int32_t count,
-            off_t offset,
-            struct timespec tv[2])
+            off_t offset)
 {
   call_stub_t *stub;
   iot_local_t *local = NULL;
@@ -539,8 +536,7 @@ iot_writev (call_frame_t *frame,
                           fd,
                           iov_dup (vector, count),
                           count,
-                          offset,
-                          tv);
+                          offset);
 
   if (!stub) {
     gf_log ("io-threads",
@@ -836,16 +832,14 @@ static int32_t
 iot_truncate_wrapper (call_frame_t *frame,
                       xlator_t *this,
                       loc_t *loc,
-                      off_t offset,
-                      struct timespec tv[2])
+                      off_t offset)
 {
   STACK_WIND (frame,
               iot_truncate_cbk,
               FIRST_CHILD(this),
               FIRST_CHILD(this)->fops->truncate,
               loc,
-              offset,
-              tv);
+              offset);
   return 0;
 }
 
@@ -853,8 +847,7 @@ static int32_t
 iot_truncate (call_frame_t *frame,
               xlator_t *this,
               loc_t *loc,
-              off_t offset,
-              struct timespec tv[2])
+              off_t offset)
 {
   call_stub_t *stub;
   iot_local_t *local = NULL;
@@ -872,8 +865,7 @@ iot_truncate (call_frame_t *frame,
                FIRST_CHILD(this),
                FIRST_CHILD(this)->fops->truncate,
                loc,
-               offset,
-               tv);
+               offset);
     return 0;
   } 
 
@@ -883,8 +875,7 @@ iot_truncate (call_frame_t *frame,
   stub = fop_truncate_stub (frame,
                             iot_truncate_wrapper,
                             loc,
-                            offset,
-                            tv);
+                            offset);
   if (!stub) {
     gf_log ("io-threads",
       GF_LOG_ERROR,
@@ -930,16 +921,14 @@ static int32_t
 iot_ftruncate_wrapper (call_frame_t *frame,
                        xlator_t *this,
                        fd_t *fd,
-                       off_t offset,
-                       struct timespec tv[2])
+                       off_t offset)
 {
   STACK_WIND (frame,
               iot_ftruncate_cbk,
               FIRST_CHILD(this),
               FIRST_CHILD(this)->fops->ftruncate,
               fd,
-              offset,
-              tv);
+              offset);
   return 0;
 }
 
@@ -947,8 +936,7 @@ static int32_t
 iot_ftruncate (call_frame_t *frame,
                xlator_t *this,
                fd_t *fd,
-               off_t offset,
-               struct timespec tv[2])
+               off_t offset)
 {
   call_stub_t *stub;
   iot_local_t *local = NULL;
@@ -963,8 +951,7 @@ iot_ftruncate (call_frame_t *frame,
   stub = fop_ftruncate_stub (frame,
                              iot_ftruncate_wrapper,
                              fd,
-                             offset,
-                             tv);
+                             offset);
   if (!stub) {
     gf_log ("io-threads",
       GF_LOG_ERROR,
