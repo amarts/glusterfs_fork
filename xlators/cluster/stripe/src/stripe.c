@@ -95,6 +95,7 @@ struct stripe_local {
   struct readv_replies *replies;
   struct statvfs statvfs_buf;
   dir_entry_t *entry;
+  dir_entry_t *last;
   struct xlator_stats stats;
   inode_t *inode;
 
@@ -1608,31 +1609,63 @@ stripe_opendir_cbk (call_frame_t *frame,
   if (op_ret == -1 && op_errno != ENOTCONN && op_errno != ENOENT) {
     local->op_errno = op_errno;
   } 
-  if (op_ret == 0) {
+  if (op_ret >= 0) {
     LOCK (&frame->mutex);
     local->op_ret = op_ret;
+    trav = entry->next;
+    prev = entry;
     if (!local->entry) {
-      dir_entry_t *trav = entry->next;
       local->entry = calloc (1, sizeof (dir_entry_t));
       entry->next = NULL;
       local->entry->next = trav;
+      while (trav->next)
+	trav = trav->next;
+      /* Keep the last entry at 'last', in next _cbk use it to append new entries */
+      local->last = trav;
       local->count = count;
     } else {
       /* update stat of all the entries */
-      dir_entry_t *trav = entry->next;
-      dir_entry_t *trav_local = local->entry->next;
-      while (trav_local) {
-	while (trav) {
-	  if (strcmp (trav->name, trav_local->name) == 0) {
-	    trav_local->buf.st_size += trav->buf.st_size;
-	    trav_local->buf.st_blocks += trav->buf.st_blocks;
-	    trav_local->buf.st_blksize += trav->buf.st_blksize;
+      int32_t tmp_count = count;
+      dir_entry_t *tmp = NULL;
+      while (trav) {
+	int32_t flag = 0;
+	dir_entry_t *sh_trav = local->entry->next;
+	tmp = trav;
+	while (sh_trav) {
+	  if (strcmp (sh_trav->name, tmp->name) == 0) {
+	    /* Found the directory name in earlier entries. */
+	    flag = 1;
+	    if (sh_trav->buf.st_size < tmp->buf.st_size)
+	      sh_trav->buf.st_size = tmp->buf.st_size;
+	    sh_trav->buf.st_blocks += tmp->buf.st_blocks;
+	    if (sh_trav->buf.st_blksize != tmp->buf.st_blksize) {
+	    }
 	    break;
 	  }
-	  trav = trav->next;
+	  sh_trav = sh_trav->next;
 	}
-	trav_local = trav_local->next;
+	if (flag) {
+	  /* if its set, it means entry is already present, so remove entries
+	   * from current list.   
+	   */
+	  prev->next = tmp->next;
+	  trav = tmp->next;
+	  free (tmp->name);
+	  free (tmp);
+	  tmp_count--;
+	  continue;
+	}
+	
+	prev = trav;
+	trav = trav->next;
       }
+      /* Append the 'entries' from this call at the end of the previously
+       * stored entry
+       */
+      local->last->next = entry->next;
+      local->count += tmp_count;
+      while (local->last->next)
+	local->last = local->last->next;
     }
     
     if (op_ret >= 0) {
@@ -1980,6 +2013,7 @@ stripe_lk (call_frame_t *frame,
       trav = trav->next;
     }
   }
+  UNLOCK (&frame->mutex);
 
   trav = this->children;
   while (trav) {
@@ -2480,9 +2514,6 @@ stripe_closedir (call_frame_t *frame,
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
-=======
-  local->op_errno = ENOENT;
->>>>>>> 3b0dbfe... 
   LOCK_INIT (&frame->mutex);
   local->op_ret = -1;
   frame->local = local;
@@ -2766,22 +2797,6 @@ stripe_readv (call_frame_t *frame,
       /* Error */
       STACK_UNWIND (frame, -1, EBADFD, NULL, 0);
     }
-=======
-  stripe_local_t *local = (stripe_local_t *) calloc (1, sizeof (stripe_local_t));
-  xlator_list_t *trav = xl->children;
-  frame->local = local;
-  local->op_ret = -1;
-  local->op_errno = ENOENT;
-  LOCK_INIT (&frame->mutex);
-  while (trav) {
-    STACK_WIND (frame,
-		stripe_rename_cbk,
-		trav->xlator,
-		trav->xlator->fops->rename,
-		oldpath,
-		newpath);
-    trav = trav->next;
->>>>>>> 3b0dbfe... 
   }
 
   return 0;
