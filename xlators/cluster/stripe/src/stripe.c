@@ -35,8 +35,8 @@
 
 #include "xlator.h"
 #include "logging.h"
+#include "defaults.h"
 #include <fnmatch.h>
-
 
 #define LOCK_INIT(x)    pthread_mutex_init (x, NULL)
 #define LOCK(x)         pthread_mutex_lock (x)
@@ -64,6 +64,9 @@ struct stripe_options {
  */
 struct stripe_private {
   struct stripe_options *pattern;
+  pthread_mutex_t mutex;
+  int32_t nodes_down;
+  int32_t first_child_down;
   int32_t child_count;
 };
 
@@ -598,32 +601,15 @@ stripe_chmod (call_frame_t *frame,
 	      loc_t *loc,
 	      mode_t mode)
 {
-  stripe_local_t *local = calloc (1, sizeof (stripe_local_t));
-  stripe_private_t *priv = xl->private;
+  stripe_local_t *local = NULL;
+  stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
+  struct list_head *list = loc->inode->private;
 
-  off_t stripe_size = data_to_int (dict_get (file_ctx,
-					     frame->this->name));
-  if (!stripe_size) {
-    /* Send the readv request to only first node. */
-    data_t *ctx_data = dict_get (file_ctx, xl->children->xlator->name);
-    dict_t *ctx = (void *)((long)data_to_int(ctx_data));
-    STACK_WIND (frame,
-		stripe_single_readv_cbk,
-		xl->children->xlator,
-		xl->children->xlator->fops->readv,
-		ctx,
-		size,
-		offset);
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
     return 0;
   }
-
-  off_t rounded_start = floor (offset, stripe_size);
-  off_t rounded_end = roof (offset+size, stripe_size);
-  int32_t num_stripe = (rounded_end - rounded_start) / stripe_size;
-  xlator_list_t *trav = xl->children;
-  int32_t index = 0;
-  off_t frame_offset = offset;
-  size_t frame_size;
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -664,7 +650,13 @@ stripe_chown (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -833,7 +825,13 @@ stripe_truncate (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -874,7 +872,13 @@ stripe_utimens (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -913,11 +917,17 @@ stripe_rename (call_frame_t *frame,
 	       loc_t *oldloc,
 	       loc_t *newloc)
 {
+  stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list1 = NULL;
   stripe_inode_list_t *ino_list2 = NULL;
   struct list_head *list1 = NULL;
   struct list_head *list2 = NULL;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1047,7 +1057,13 @@ stripe_readlink (call_frame_t *frame,
 		 size_t size)
 {
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   list_for_each_entry (ino_list, list, list_head) {
     if (FIRST_CHILD (this) == ino_list->xl) {
@@ -1079,7 +1095,13 @@ stripe_unlink (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1117,7 +1139,13 @@ stripe_rmdir (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1157,7 +1185,13 @@ stripe_setxattr (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1197,14 +1231,20 @@ stripe_mknod (call_frame_t *frame,
 	      mode_t mode,
 	      dev_t rdev)
 {
+  stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   xlator_list_t *trav = NULL;
+  
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
   LOCK_INIT (&frame->mutex);
   local->op_ret = -1;
-  local->call_count = ((stripe_private_t *)this->private)->child_count;
+  local->call_count = priv->child_count;
   frame->local = local;
   local->create_inode = 1;
 
@@ -1235,14 +1275,20 @@ stripe_mkdir (call_frame_t *frame,
 	      const char *name,
 	      mode_t mode)
 {
-  stripe_local_t *local = (stripe_local_t *) calloc (1, sizeof (stripe_local_t));
-  xlator_list_t *trav = xl->children;
-  frame->local = local;
-  local->op_ret = -1;
-  local->op_errno = ENOENT;
+  stripe_private_t *priv = this->private;
+  stripe_local_t *local = NULL;
+  xlator_list_t *trav = NULL;
+  
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL, NULL);
+    return 0;
+  }
+
+  /* Initialization */
+  local = calloc (1, sizeof (stripe_local_t));
   LOCK_INIT (&frame->mutex);
   local->op_ret = -1;
-  local->call_count = ((stripe_private_t *)this->private)->child_count;
+  local->call_count = priv->child_count;
   frame->local = local;
   local->create_inode = 1;
 
@@ -1272,8 +1318,14 @@ stripe_symlink (call_frame_t *frame,
 		const char *linkpath,
 		const char *name)
 {
+  stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   xlator_list_t *trav = NULL;
+  
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1306,9 +1358,15 @@ stripe_link (call_frame_t *frame,
 	     loc_t *loc,
 	     const char *newname)
 {
+  stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
   struct list_head *list = loc->inode->private;
+  
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1447,15 +1505,24 @@ stripe_create (call_frame_t *frame,
 	       int32_t flags,
 	       mode_t mode)
 {
-  stripe_local_t *local = (stripe_local_t *) calloc (1, sizeof (stripe_local_t));
-  xlator_list_t *trav = xl->children;
-  frame->local = local;
-  local->op_ret = -1;
-  local->op_errno = ENOENT;
+  stripe_private_t *priv = this->private;
+  stripe_local_t *local = NULL;
+  xlator_list_t *trav = NULL;
+  off_t stripe_size = 0;
+
+  stripe_size = stripe_get_matching_bs (name, priv->pattern);
+  
+  if (priv->first_child_down || (stripe_size && priv->nodes_down)) {
+    STACK_UNWIND (frame, -1, EIO, NULL, NULL, NULL);
+    return 0;
+  }
+
+  /* Initialization */
+  local = calloc (1, sizeof (stripe_local_t));
   LOCK_INIT (&frame->mutex);
   local->op_ret = -1;
   frame->local = local;
-  local->stripe_size = stripe_get_matching_bs (name, priv->pattern);
+  local->stripe_size = stripe_size;
 
   if (local->stripe_size) {
     /* Everytime in stripe lookup, all child nodes should be looked up */
@@ -1558,11 +1625,18 @@ stripe_open (call_frame_t *frame,
 	     loc_t *loc,
 	     int32_t flags)
 {
-  stripe_local_t *local = (stripe_local_t *) calloc (1, sizeof (stripe_local_t));
-  xlator_list_t *trav = xl->children;
-  frame->local = local;
-  local->op_ret = -1;
-  local->op_errno = ENOENT;
+  stripe_local_t *local = NULL;
+  stripe_private_t *priv = this->private;
+  stripe_inode_list_t *ino_list = NULL;
+  struct list_head *list = loc->inode->private;
+  
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
+
+  /* Initialization */
+  local = calloc (1, sizeof (stripe_local_t));
   LOCK_INIT (&frame->mutex);
   local->inode = loc->inode;
   local->stripe_size = stripe_get_matching_bs (loc->path, priv->pattern);
@@ -1703,7 +1777,13 @@ stripe_opendir (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -1821,7 +1901,13 @@ stripe_removexattr (call_frame_t *frame,
 {
   stripe_local_t *local = NULL;
   stripe_inode_list_t *ino_list = NULL;
+  stripe_private_t *priv = this->private;
   struct list_head *list = loc->inode->private;
+
+  if (priv->first_child_down) {
+    STACK_UNWIND (frame, -1, EIO, NULL);
+    return 0;
+  }
 
   /* Initialization */
   local = calloc (1, sizeof (stripe_local_t));
@@ -2207,8 +2293,8 @@ stripe_readdir_cbk (call_frame_t *frame,
 	}
 
 	/* update stat of all the stripe'd files. */
-	temp_trav = trav;
 	while (trav) {
+	  temp_trav = trav;
 	  if (!S_ISDIR (trav->buf.st_mode)) {
 	    dir_entry_t *sh_trav = local->entry->next;
 	    while (sh_trav) {
@@ -2926,7 +3012,6 @@ stripe_chmod (call_frame_t *frame,
   }
   return 0;
 }
->>>>>>> 3b0dbfe... 
 
 /**
  * stripe_stats_cbk - Add all the fields received from different clients. 
@@ -3056,6 +3141,50 @@ stripe_fsck (call_frame_t *frame,
 }
 
 /**
+ * notify
+ */
+int32_t
+notify (xlator_t *this,
+        int32_t event,
+        void *data,
+        ...)
+{
+  stripe_private_t *priv = this->private;
+
+  switch (event) 
+    {
+    case GF_EVENT_CHILD_UP:
+      {
+	LOCK (&priv->mutex);
+	{
+	  --priv->nodes_down;
+	  if (data == FIRST_CHILD (this))
+	    priv->first_child_down = 0;
+	}
+	UNLOCK (&priv->mutex);
+      }
+      break;
+    case GF_EVENT_CHILD_DOWN:
+      {
+	LOCK (&priv->mutex);
+	{
+	  ++priv->nodes_down;
+	  if (data == FIRST_CHILD (this))
+	    priv->first_child_down = 1;
+	}
+	UNLOCK (&priv->mutex);
+      }
+      break;
+    default:
+      {
+	/* */
+      }
+      break;
+    }
+  default_notify (this, event, data);
+  return 0;
+}
+/**
  * init - This function is called when xlator-graph gets initialized. 
  *     The option given in spec files are parsed here.
  * @this - 
@@ -3151,6 +3280,10 @@ init (xlator_t *this)
     this->itable->root->private = (void *)list;
   }
 
+  /* notify related */
+  LOCK_INIT (&priv->mutex);
+  priv->nodes_down = priv->child_count;
+  priv->first_child_down = 1;
   this->private = priv;
   
   return 0;
@@ -3163,14 +3296,16 @@ init (xlator_t *this)
 void 
 fini (xlator_t *this)
 {
+  stripe_private_t *priv = this->private;
   struct stripe_options *prev = NULL;
-  struct stripe_options *trav = ((stripe_private_t *)this->private)->pattern;
+  struct stripe_options *trav = priv->pattern;
   while (trav) {
     prev = trav;
     trav = trav->next;
     free (prev);
   }
-  free (this->private);
+  LOCK_DESTROY (&priv->mutex);
+  free (priv);
   return;
 }
 
