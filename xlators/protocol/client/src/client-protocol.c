@@ -1252,9 +1252,7 @@ client_fsync (call_frame_t *frame,
  * @frame: call frame
  * @this: this translator structure
  * @loc: location
- * @name:
- * @value:
- * @size:
+ * @dict: dictionary which contains key:value to be set.
  * @flags:
  *
  * external reference through client_protocol_xlator->fops->setxattr
@@ -1264,13 +1262,11 @@ static int32_t
 client_setxattr (call_frame_t *frame,
 		 xlator_t *this,
 		 loc_t *loc,
-		 const char *name,
-		 const char *value,
-		 size_t size,
+		 dict_t *dict,
 		 int32_t flags)
 {
-  dict_t *request = get_new_dict ();
   int32_t ret = -1;  
+  dict_t *request = get_new_dict ();
   const char *path = loc->path;
   inode_t *inode = loc->inode;
   ino_t ino = inode->ino;
@@ -1280,9 +1276,14 @@ client_setxattr (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "FLAGS", data_from_int64 (flags));
-  dict_set (request, "COUNT", data_from_int64 (size));
-  dict_set (request, "NAME", str_to_data ((char *)name));
-  dict_set (request, "VALUE", str_to_data ((char *)value));
+
+  {
+    /* Serialize the dictionary and set it as a parameter in 'request' dict */
+    int32_t len = dict_serialized_length (dict);
+    char *dict_buf = alloca (len);
+    dict_serialize (dict, dict_buf);
+    dict_set (request, "DICT", str_to_data (dict_buf));
+  }
 
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
@@ -1293,6 +1294,7 @@ client_setxattr (call_frame_t *frame,
 			      request);
 
   dict_destroy (request);
+
   return ret;
 }
 
@@ -1302,8 +1304,6 @@ client_setxattr (call_frame_t *frame,
  * @frame: call frame
  * @this: this translator structure
  * @loc: location structure
- * @name:
- * @size:
  *
  * external reference through client_protocol_xlator->fops->getxattr
  */
@@ -1311,12 +1311,11 @@ client_setxattr (call_frame_t *frame,
 static int32_t 
 client_getxattr (call_frame_t *frame,
 		 xlator_t *this,
-		 loc_t *loc,
-		 const char *name,
-		 size_t size)
+		 loc_t *loc)
 {
-  dict_t *request = get_new_dict ();
   int32_t ret = -1;  
+
+  dict_t *request = get_new_dict ();
   const char *path = loc->path;
   inode_t *inode = loc->inode;
   ino_t ino = inode->ino;
@@ -1325,8 +1324,6 @@ client_getxattr (call_frame_t *frame,
 
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
-  dict_set (request, "NAME", str_to_data ((char *)name));
-  dict_set (request, "COUNT", data_from_int64 (size));
 
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
@@ -1337,49 +1334,9 @@ client_getxattr (call_frame_t *frame,
 			      request);
 
   dict_destroy (request);
+
   return ret;
 }
-
-
-/**
- * client_listxattr - listxattr function for client protocol
- * @frame: call frame
- * @this: this translator structure
- * @loc: location
- * @size:
- *
- * external reference through client_protocol_xlator->fops->listxattr
- */
-
-static int32_t 
-client_listxattr (call_frame_t *frame,
-		  xlator_t *this,
-		  loc_t *loc,
-		  size_t size)
-{
-  dict_t *request = get_new_dict ();
-  int32_t ret;
-  const char *path = loc->path;
-  client_local_t *local = calloc (1, sizeof (client_local_t));
-  frame->local = local;
-
-  dict_set (request, "PATH", str_to_data ((char *)path));
-  dict_set (request, "COUNT", data_from_int64 (size));
-  dict_set (request, "INODE", data_from_uint64 (loc->ino));
-
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
-
-  ret = client_protocol_xfer (frame,
-			      this,
-			      GF_OP_TYPE_FOP_REQUEST,
-			      GF_FOP_LISTXATTR,
-			      request);
-
-  dict_destroy (request);
-  return ret;
-}
-
-	
 
 /**
  * client_removexattr - removexattr function for client protocol
@@ -3521,38 +3478,6 @@ client_setxattr_cbk (call_frame_t *frame,
 }
 
 /*
- * client_listxattr_cbk - listxattr callback for client protocol
- * @frame: call frame
- * @args: argument dictionary
- *
- * not for external reference
- */
-static int32_t 
-client_listxattr_cbk (call_frame_t *frame,
-		      dict_t *args)
-{
-  data_t *buf_data = dict_get (args, "VALUE");
-  data_t *ret_data = dict_get (args, "RET");
-  data_t *err_data = dict_get (args, "ERRNO");
-  int32_t op_ret = -1;
-  int32_t op_errno = EINVAL;
-  char *buf = NULL;
-  
-  if (!buf_data || !ret_data || !err_data) {
-    STACK_UNWIND (frame, -1, EINVAL, NULL);
-    return 0;
-  }
-  
-  op_ret = data_to_int32 (ret_data);
-  op_errno = data_to_int32 (err_data);  
-  buf = data_to_str (buf_data);
-  
-  STACK_UNWIND (frame, op_ret, op_errno, buf);
-
-  return 0;
-}
-
-/*
  * client_getxattr_cbk - getxattr callback for client protocol
  * @frame: call frame
  * @args: argument dictionary
@@ -3563,13 +3488,13 @@ static int32_t
 client_getxattr_cbk (call_frame_t *frame,
 		     dict_t *args)
 {
-  data_t *buf_data = dict_get (args, "VALUE");
+  data_t *buf_data = dict_get (args, "DICT");
   data_t *ret_data = dict_get (args, "RET");
   data_t *err_data = dict_get (args, "ERRNO");
   int32_t op_ret = -1;
   int32_t op_errno = EINVAL;
-  char *buf = NULL;
-  
+  dict_t *dict = NULL;
+
   if (!buf_data || !ret_data || !err_data) {
     STACK_UNWIND (frame, -1, EINVAL, NULL);
     return 0;
@@ -3577,9 +3502,15 @@ client_getxattr_cbk (call_frame_t *frame,
   
   op_ret = data_to_int32 (ret_data);
   op_errno = data_to_int32 (err_data);  
-  buf = data_to_str (buf_data);
-  
-  STACK_UNWIND (frame, op_ret, op_errno, buf);
+  {
+    /* Unserialize the dictionary recieved */
+    char *buf = data_to_str (buf_data);
+    dict = get_new_dict ();
+    dict_unserialize (buf, buf_data->len, &dict);
+  }
+
+  STACK_UNWIND (frame, op_ret, op_errno, dict);
+  dict_destroy (dict);
   return 0;
 }
 
@@ -4160,7 +4091,6 @@ static gf_op_t gf_fops[] = {
   client_fsync_cbk,
   client_setxattr_cbk,
   client_getxattr_cbk,
-  client_listxattr_cbk,
   client_removexattr_cbk,
   client_opendir_cbk,
   client_readdir_cbk,
@@ -4434,7 +4364,6 @@ struct xlator_fops fops = {
   .fsync       = client_fsync,
   .setxattr    = client_setxattr,
   .getxattr    = client_getxattr,
-  .listxattr   = client_listxattr,
   .removexattr = client_removexattr,
   .opendir     = client_opendir,
   .readdir     = client_readdir,
