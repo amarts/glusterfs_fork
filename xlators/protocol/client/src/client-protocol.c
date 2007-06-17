@@ -30,6 +30,7 @@
 
 #include <inttypes.h>
 
+
 #if __WORDSIZE == 64
 # define F_L64 "%l"
 #else
@@ -154,6 +155,52 @@ str_to_stat (char *buf)
   return stbuf;
 }
 
+static void
+call_bail (void *trans)
+{
+  client_proto_priv_t *priv = NULL;
+  struct timeval current;
+  int32_t bail_out = 0;
+
+  priv = ((transport_t *)trans)->xl_private;
+
+  gettimeofday (&current, NULL);
+  pthread_mutex_lock (&priv->lock);
+  {
+    /* Chaining to get call-always functionality from call-once timer */
+    if (priv->timer) {
+      struct timeval timeout;
+      timeout.tv_sec = priv->transport_timeout;
+      timeout.tv_usec = 0;
+      gf_timer_cbk_t timer_cbk = priv->timer->cbk;
+      gf_timer_call_cancel (((transport_t *) trans)->xl->ctx, priv->timer);
+      priv->timer = gf_timer_call_after (((transport_t *) trans)->xl->ctx,
+					 timeout,
+					 timer_cbk,
+					 trans);
+      if (!priv->timer) {
+	gf_log ("protocol/client",
+		GF_LOG_DEBUG,
+		"Cannot create timer");
+      }
+    }
+
+    if (priv->saved_frames->count > 0 
+	&& (((unsigned long long)priv->last_recieved.tv_sec + priv->transport_timeout) < current.tv_sec)
+	&& (((unsigned long long)priv->last_sent.tv_sec + priv->transport_timeout ) < current.tv_sec)) {
+      bail_out = 1;
+    }
+  }
+  pthread_mutex_unlock (&priv->lock);
+
+  if (bail_out) {
+    gf_log ("client/protocol",
+	  GF_LOG_CRITICAL,
+	  "bailing transport");
+    transport_bail (trans);
+  }
+}
+
 /* 
  * client_protocol_xfer - client protocol transfer routine. called to send 
  *                        request packet to server
@@ -223,10 +270,11 @@ client_protocol_xfer (call_frame_t *frame,
 	      buf,
 	      bin_to_data (frame, sizeof (frame)));
     connected = proto_priv->connected;
-    if (!connected)
+    if (!connected) {
       /* tricky code - taking chances:
 	 cause pipelining of handshake packet and this frame */
       connected = (transport_connect (trans) == 0);
+    }
     pthread_mutex_unlock (&proto_priv->lock);
 
     blk = gf_block_new (callid);
@@ -248,8 +296,15 @@ client_protocol_xfer (call_frame_t *frame,
 
     ret = -1;
 
-    if (connected)
+    if (connected) {
+      client_proto_priv_t *priv = ((transport_t *)this->private)->xl_private;
+
       ret = trans->ops->writev (trans, vector, count);
+
+      pthread_mutex_lock (&(priv->lock));
+      gettimeofday (&(priv->last_sent), NULL);
+      pthread_mutex_unlock (&(priv->lock));
+    }
 
     free (blk);
 
@@ -270,28 +325,6 @@ client_protocol_xfer (call_frame_t *frame,
   return ret;
 }
 
-static void
-call_bail (void *trans)
-{
-  gf_log ("client/protocol",
-	  GF_LOG_CRITICAL,
-	  "bailing transport");
-  transport_bail (trans);
-}
-
-//#if 0
-#define BAIL(frame, sec) do {                                  \
-    struct timeval tv;                                         \
-    tv.tv_sec = sec;                                           \
-    tv.tv_usec = 0;                                            \
-    frame->local = gf_timer_call_after (frame->this->ctx,      \
-					tv,		       \
-					call_bail,	       \
-					frame->this->private); \
-} while (0)
-//#endif
-
-//#define BAIL(frame, sec)
 
 /**
  * client_create - create function for client protocol
@@ -321,7 +354,6 @@ client_create (call_frame_t *frame,
   dict_set (request, "FLAGS", data_from_int64 (flags));
   dict_set (request, "MODE", data_from_int64 (mode));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -362,7 +394,6 @@ client_open (call_frame_t *frame,
   local->inode = loc->inode;
   frame->local = local;
   
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -403,7 +434,6 @@ client_stat (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
   
   ret = client_protocol_xfer (frame,
 			      this,
@@ -448,7 +478,6 @@ client_readlink (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "LEN", data_from_int64 (size));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -491,7 +520,6 @@ client_mknod (call_frame_t *frame,
   dict_set (request, "CALLER_UID", data_from_uint64 (frame->root->uid));
   dict_set (request, "CALLER_GID", data_from_uint64 (frame->root->gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -531,7 +559,6 @@ client_mkdir (call_frame_t *frame,
   dict_set (request, "CALLER_UID", data_from_uint64 (frame->root->uid));
   dict_set (request, "CALLER_GID", data_from_uint64 (frame->root->gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -579,7 +606,6 @@ client_unlink (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -624,7 +650,6 @@ client_rmdir (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -665,7 +690,6 @@ client_symlink (call_frame_t *frame,
   dict_set (request, "CALLER_UID", data_from_uint64 (frame->root->uid));
   dict_set (request, "CALLER_GID", data_from_uint64 (frame->root->gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -707,7 +731,6 @@ client_rename (call_frame_t *frame,
   dict_set (request, "CALLER_UID", data_from_uint64 (frame->root->uid));
   dict_set (request, "CALLER_GID", data_from_uint64 (frame->root->gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -753,7 +776,6 @@ client_link (call_frame_t *frame,
   dict_set (request, "CALLER_UID", data_from_uint64 (frame->root->uid));
   dict_set (request, "CALLER_GID", data_from_uint64 (frame->root->gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -796,7 +818,6 @@ client_chmod (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "MODE", data_from_int64 (mode));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -843,7 +864,6 @@ client_chown (call_frame_t *frame,
   dict_set (request, "UID", data_from_uint64 (uid));
   dict_set (request, "GID", data_from_uint64 (gid));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -883,7 +903,6 @@ client_truncate (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "OFFSET", data_from_int64 (offset));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -929,7 +948,6 @@ client_utimens (call_frame_t *frame,
   dict_set (request, "MODTIME_SEC", data_from_int64 (tvp[1].tv_sec));
   dict_set (request, "MODTIME_NSEC", data_from_int64 (tvp[1].tv_nsec));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -981,7 +999,10 @@ client_readv (call_frame_t *frame,
   dict_set (request, "OFFSET", data_from_int64 (offset));
   dict_set (request, "LEN", data_from_int64 (size));
 
+<<<<<<< HEAD
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
+=======
+>>>>>>> af72c1d... Fine tuning of client Bailing out logic
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1038,7 +1059,6 @@ client_writev (call_frame_t *frame,
   dict_set (request, "OFFSET", data_from_int64 (offset));
   dict_set (request, "BUF", data_from_iovec (vector, count));
   dict_set (request, "LEN", data_from_int64 (size));
-  //    BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1078,7 +1098,6 @@ client_statfs (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
 
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1121,7 +1140,6 @@ client_flush (call_frame_t *frame,
   fd_str = strdup (data_to_str (ctx_data));
   dict_set (request, "FD", str_to_data (fd_str));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1169,7 +1187,6 @@ client_close (call_frame_t *frame,
   fd_str = strdup (data_to_str (ctx_data));
   dict_set (request, "FD", str_to_data (fd_str));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   trans = frame->this->private;
 
@@ -1241,7 +1258,6 @@ client_fsync (call_frame_t *frame,
   fd_str = strdup (data_to_str (ctx_data));
   dict_set (request, "FD", str_to_data (fd_str));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1293,7 +1309,6 @@ client_setxattr (call_frame_t *frame,
     dict_set (request, "DICT", bin_to_data (dict_buf, len));
   }
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1333,7 +1348,6 @@ client_getxattr (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1374,7 +1388,6 @@ client_removexattr (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "NAME", str_to_data ((char *)name));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1414,7 +1427,6 @@ client_opendir (call_frame_t *frame,
   dict_set (request, "PATH", str_to_data ((char *)path));
   dict_set (request, "INODE", data_from_uint64 (ino));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1454,7 +1466,6 @@ client_readdir (call_frame_t *frame,
   dict_set (request, "OFFSET", data_from_uint64 (offset));
   dict_set (request, "SIZE", data_from_uint64 (size));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1502,7 +1513,6 @@ client_closedir (call_frame_t *frame,
   fd_str = strdup (data_to_str (fd_data));
   dict_set (request, "FD", str_to_data (fd_str));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   trans = frame->this->private;
 
@@ -1623,7 +1633,6 @@ client_access (call_frame_t *frame,
   dict_set (request, "INODE", data_from_uint64 (ino));
   dict_set (request, "MASK", data_from_int64 (mask));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1671,7 +1680,6 @@ client_ftruncate (call_frame_t *frame,
   dict_set (request, "FD", str_to_data (fd_str));
   dict_set (request, "OFFSET", data_from_int64 (offset));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1714,7 +1722,6 @@ client_fstat (call_frame_t *frame,
   fd_str = strdup (data_to_str (fd_data));
   dict_set (request, "FD", str_to_data (fd_str));
 
-  BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -1769,7 +1776,10 @@ client_lk (call_frame_t *frame,
   dict_set (request, "PID", data_from_uint64 (lock->l_pid));
   dict_set (request, "CLIENT_PID", data_from_uint64 (getpid ()));
 
+<<<<<<< HEAD
   BAIL (frame, ((client_proto_priv_t *)(((transport_t *)this->private)->xl_private))->transport_timeout);
+=======
+>>>>>>> af72c1d... Fine tuning of client Bailing out logic
 
   ret = client_protocol_xfer (frame,
 			      this,
@@ -4032,22 +4042,35 @@ client_protocol_cleanup (transport_t *trans)
 	  trans);
 
   pthread_mutex_lock (&priv->lock);
-  saved_frames = priv->saved_frames;
-  priv->saved_frames = get_new_dict ();
-
   {
-    data_pair_t *trav = (priv->saved_fds)->members_list;
-    xlator_t *this = trans->xl;
-
-    while (trav) {
-      fd_t *tmp = (fd_t *)(long) strtoul (trav->key, NULL, 0);
-      if (tmp->ctx)
-	dict_del (tmp->ctx, this->name);
-      trav = trav->next;
+    saved_frames = priv->saved_frames;
+    priv->saved_frames = get_new_dict ();
+    
+    {
+      data_pair_t *trav = (priv->saved_fds)->members_list;
+      xlator_t *this = trans->xl;
+      
+      while (trav) {
+	fd_t *tmp = (fd_t *)(long) strtoul (trav->key, NULL, 0);
+	if (tmp->ctx)
+	  dict_del (tmp->ctx, this->name);
+	trav = trav->next;
+      }
+      
+      dict_destroy (priv->saved_fds);
+      priv->saved_fds = get_new_dict ();
     }
-
-    dict_destroy (priv->saved_fds);
-    priv->saved_fds = get_new_dict ();
+    memset (&(priv->last_sent), 0, sizeof (priv->last_sent));
+    memset (&(priv->last_recieved), 0, sizeof (priv->last_recieved));
+    if (!priv->timer) {
+      gf_log ("protocol/client",
+	      GF_LOG_DEBUG,
+	      "priv->timer is NULL!!!!");
+    }
+    else {
+      gf_timer_call_cancel (trans->xl->ctx, priv->timer);
+      priv->timer = NULL;
+    }
   }
   pthread_mutex_unlock (&priv->lock);
 
@@ -4057,11 +4080,6 @@ client_protocol_cleanup (transport_t *trans)
       /* TODO: reply functions are different for different fops. */
       call_frame_t *tmp = (call_frame_t *) (trav->value->data);
       client_local_t *local = tmp->local;
-
-      if (local->timer) {
-	gf_timer_call_cancel (ctx, local->timer);
-	local->timer = NULL;
-      }
 
       STACK_UNWIND (tmp, -1, ENOTCONN, 0, 0);
       trav = trav->next;
@@ -4156,11 +4174,6 @@ client_protocol_interpret (transport_t *trans,
   dict_set (args, NULL, trans->buf);
 
   /* TODO: each fop needs to allocate client_local_t and set frame->local to point to it */
-
-  if (local && local->timer) {
-    gf_timer_call_cancel (trans->xl->ctx, local->timer);
-    local->timer = NULL;
-  }
 
   switch (blk->type) {
   case GF_OP_TYPE_FOP_REPLY:
@@ -4272,6 +4285,8 @@ init (xlator_t *this)
   this->itable = inode_table_new (lru_limit, this->name);
   priv->table = this->itable;
   priv->callid = 1;
+  memset (&(priv->last_sent), 0, sizeof (priv->last_sent));
+  memset (&(priv->last_recieved), 0, sizeof (priv->last_recieved));
   priv->transport_timeout = transport_timeout;
   pthread_mutex_init (&priv->lock, NULL);
   trans->xl_private = priv;
@@ -4349,9 +4364,14 @@ client_protocol_handshake_reply (transport_t *trans,
   if (reply)
     dict_destroy (reply);
 
-  if (!ret)
-    priv->connected = 1;
-
+    if (!ret) {
+      pthread_mutex_lock (&(priv->lock));
+      {
+	priv->connected = 1;
+      }
+      pthread_mutex_unlock (&(priv->lock));
+    }
+	
   trans->xl->parent->notify (trans->xl->parent, GF_EVENT_CHILD_UP, trans->xl);
   return ret;
 }
@@ -4374,6 +4394,26 @@ client_protocol_handshake (xlator_t *this,
 
   remote_subvolume = data_to_str (dict_get (options,
                                             "remote-subvolume"));
+  {
+    struct timeval timeout;
+    timeout.tv_sec = priv->transport_timeout;
+    timeout.tv_usec = 0;
+    if (!priv->timer)
+      priv->timer = gf_timer_call_after (trans->xl->ctx,
+					 timeout,
+					 call_bail,
+					 (void *)trans);
+    else
+      gf_log ("protocol/client",
+	      GF_LOG_DEBUG,
+	      "timer is already registered!!!!");
+    
+    if (!priv->timer) {
+      gf_log ("protocol/client", 
+	      GF_LOG_DEBUG,
+	      "timer creation failed");
+    }
+  }
   dict_set (request,
             "remote-subvolume",
             data_from_dynstr (strdup (remote_subvolume)));
@@ -4432,6 +4472,7 @@ notify (xlator_t *this,
 	transport_t *trans = data;
 	client_proto_priv_t *priv = trans->xl_private;
 	gf_block_t *blk;
+	int32_t connected = 0;
 
 	blk = gf_block_unserialize_transport (trans);
 	if (!blk) {
@@ -4439,7 +4480,16 @@ notify (xlator_t *this,
 	}
 
 	if (!ret) {
-	  if (priv->connected)
+	  /* FIXME: No need for lock? */
+	  pthread_mutex_lock (&(priv->lock));
+	  {
+	    connected = priv->connected;
+	    if (connected)
+	      gettimeofday (&(priv->last_recieved), NULL);
+	  }
+	  pthread_mutex_unlock (&(priv->lock));
+
+	  if (connected) 
 	    ret = client_protocol_interpret (trans, blk);
 	  else
 	    ret = client_protocol_handshake_reply (trans, blk);
