@@ -264,15 +264,7 @@ iot_readv_cbk (call_frame_t *frame,
   iot_local_t *local = frame->local;
   iot_worker_t *reply = &conf->reply;
 
-<<<<<<< HEAD
-  local->frame_size = iov_length (vector, count);
-=======
-  local->op_ret = op_ret;
-  local->op_errno = op_errno;
-  local->vector = iov_dup (vector, count);
-  local->count = count;
-  local->frame_size = 0;//iov_length (vector, count);
->>>>>>> 0e141c2... io-threads reply queue has no limits
+  local->frame_size = 0; //iov_length (vector, count);
 
   stub = fop_readv_cbk_stub (frame,
                              NULL,
