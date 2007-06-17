@@ -1214,6 +1214,7 @@ client_close (call_frame_t *frame,
   dict_destroy (ctx);
   dict_destroy (request);
 
+  list_del (&fd->inode_list);
   if (fd->inode) {
     inode_unref (fd->inode);
     gf_log ("protocol/client",
@@ -1537,6 +1538,8 @@ client_closedir (call_frame_t *frame,
   free (key);
   free (fd_str);
   dict_destroy (fd->ctx);
+
+  list_del (&fd->inode_list);
   if (fd->inode){
     inode_unref (fd->inode);
     gf_log ("protocol/client",
@@ -1544,6 +1547,7 @@ client_closedir (call_frame_t *frame,
 	    "inode->ref is %d", fd->inode->ref);
   }
 
+  free (fd);
   dict_destroy (request);
 
   return ret;
@@ -2304,6 +2308,7 @@ client_create_cbk (call_frame_t *frame,
 
     fd->ctx = get_new_dict ();
     fd->inode = inode;
+    list_add (&fd->inode_list, &fd->inode->fds);
 
     dict_set (fd->ctx,
 	      (frame->this)->name,
@@ -2377,6 +2382,7 @@ client_open_cbk (call_frame_t *frame,
   
     fd->ctx = get_new_dict ();
     fd->inode = inode;
+    list_add (&fd->inode_list, &fd->inode->fds);
     file_ctx = fd->ctx;
 
     dict_set (fd->ctx,
@@ -2819,6 +2825,7 @@ client_readv_cbk (call_frame_t *frame,
   vec.iov_len = op_ret;
   STACK_UNWIND (frame, op_ret, op_errno, &vec, 1, stbuf);
 
+  free (stbuf);
   return 0;
 }
 
@@ -2854,6 +2861,7 @@ client_write_cbk (call_frame_t *frame,
   stat_str = data_to_str (stat_data);
   stbuf = str_to_stat (stat_str);
   STACK_UNWIND (frame, op_ret, op_errno, stbuf);
+  free (stbuf);
   return 0;
 }
 
@@ -3260,11 +3268,11 @@ client_opendir_cbk (call_frame_t *frame,
       inode_ref (local->inode);
 
     fd->inode = local->inode;
-    
+    list_add (&fd->inode_list, &fd->inode->fds);    
     
     dict_set (fd->ctx,
 	      (frame->this)->name,
-	      str_to_data (remote_fd_str));
+	      data_from_dynstr (remote_fd_str));
     
     asprintf (&key, "%p", fd);
 
@@ -3843,9 +3851,6 @@ client_lookup_cbk (call_frame_t *frame,
   if (inode){
     /* TODO: inode->ref == 0, which should not happend unless fuse sends forget*/
     inode_unref (inode);
-    gf_log ("protocol/client",
-	    GF_LOG_DEBUG,
-	    "inode->ref is %d", inode->ref);
   } else {
     gf_log ("protocol/client", GF_LOG_DEBUG, "lookup_cbk not successful");
   }
