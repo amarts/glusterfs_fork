@@ -1396,7 +1396,6 @@ client_readdir (call_frame_t *frame,
   dict_set (request, "OFFSET", data_from_uint64 (offset));
   dict_set (request, "SIZE", data_from_uint64 (size));
 
-
   ret = client_protocol_xfer (frame,
 			      this,
 			      GF_OP_TYPE_FOP_REQUEST,
