@@ -1603,18 +1603,21 @@ call_resume_wind (call_stub_t *stub)
       break;
     }
   case GF_FOP_CREATE:
-    stub->args.create.fn (stub->frame,
-			  stub->frame->this,
-			  stub->args.create.path,
-			  stub->args.create.flags,
-			  stub->args.create.mode);
-    break;
+    {
+      stub->args.create.fn (stub->frame,
+			    stub->frame->this,
+			    stub->args.create.path,
+			    stub->args.create.flags,
+			    stub->args.create.mode);
+      free ((char *)stub->args.create.path);
+      break;
+    }
   case GF_FOP_STAT:
     {
       stub->args.stat.fn (stub->frame,
 			  stub->frame->this,
 			  &stub->args.stat.loc);
-      
+      loc_wipe (&stub->args.stat.loc);
       break;
     }
   case GF_FOP_READLINK:
@@ -1631,7 +1634,7 @@ call_resume_wind (call_stub_t *stub)
       stub->args.unlink.fn (stub->frame,
 			    stub->frame->this,
 			    &stub->args.unlink.loc);
-      
+      loc_wipe (&stub->args.unlink.loc);
       break;
     }
   
@@ -1653,16 +1656,20 @@ call_resume_wind (call_stub_t *stub)
 			    stub->frame->this,
 			    &stub->args.rename.old,
 			    &stub->args.rename.new);
-      
+
+      loc_wipe (&stub->args.rename.old);
+      loc_wipe (&stub->args.rename.new);
       break;
     }
+
   case GF_FOP_LINK:
     {
       stub->args.link.fn (stub->frame,
 			  stub->frame->this,
 			  &stub->args.link.oldloc,
 			  stub->args.link.newpath);
-
+      loc_wipe (&stub->args.link.oldloc);
+      free ((char *)stub->args.link.newpath);
     }
     break;
   
@@ -1757,7 +1764,7 @@ call_resume_wind (call_stub_t *stub)
 			      &stub->args.setxattr.loc,
 			      stub->args.setxattr.dict,
 			      stub->args.setxattr.flags);
-      
+      loc_wipe (&stub->args.setxattr.loc);
       break;
     }
   
@@ -1766,6 +1773,7 @@ call_resume_wind (call_stub_t *stub)
       stub->args.getxattr.fn (stub->frame,
 			      stub->frame->this,
 			      &stub->args.getxattr.loc);
+      loc_wipe (&stub->args.getxattr.loc);
       break;
     }
 
@@ -1775,6 +1783,8 @@ call_resume_wind (call_stub_t *stub)
 				 stub->frame->this,
 				 &stub->args.removexattr.loc,
 				 stub->args.removexattr.name);
+      loc_wipe (&stub->args.removexattr.loc);
+      free ((char *)stub->args.removexattr.name);
       break;
     }
   
@@ -1920,20 +1930,22 @@ call_resume_unwind (call_stub_t *stub)
     break;
 
   case GF_FOP_READLINK:
-    if (!stub->args.readlink_cbk.fn)
-      STACK_UNWIND (stub->frame,
-		    stub->args.readlink_cbk.op_ret,
-		    stub->args.readlink_cbk.op_errno,
-		    stub->args.readlink_cbk.buf);
-    else
-      stub->args.readlink_cbk.fn (stub->frame,
-				  stub->frame->cookie,
-				  stub->frame->this,
-				  stub->args.readlink_cbk.op_ret,
-				  stub->args.readlink_cbk.op_errno,
-				  stub->args.readlink_cbk.buf);
-
-    break;
+    {
+      if (!stub->args.readlink_cbk.fn)
+	STACK_UNWIND (stub->frame,
+		      stub->args.readlink_cbk.op_ret,
+		      stub->args.readlink_cbk.op_errno,
+		      stub->args.readlink_cbk.buf);
+      else
+	stub->args.readlink_cbk.fn (stub->frame,
+				    stub->frame->cookie,
+				    stub->frame->this,
+				    stub->args.readlink_cbk.op_ret,
+				    stub->args.readlink_cbk.op_errno,
+				    stub->args.readlink_cbk.buf);
+      free ((char *)stub->args.readlink_cbk.buf);
+      break;
+    }
   
   case GF_FOP_MKNOD:
     if (!stub->args.mknod_cbk.fn)
