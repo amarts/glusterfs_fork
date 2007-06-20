@@ -186,7 +186,7 @@ call_bail (void *trans)
 					 timer_cbk,
 					 trans);
       if (!priv->timer) {
-	gf_log ("protocol/client",
+	gf_log (((transport_t *)trans)->xl->name,
 		GF_LOG_DEBUG,
 		"Cannot create timer");
       }
@@ -229,12 +229,6 @@ client_protocol_xfer (call_frame_t *frame,
   int32_t ret;
   transport_t *trans;
   client_proto_priv_t *proto_priv;
-
-  if (!this) {
-    gf_log ("protocol/client", GF_LOG_ERROR,
-	    "'this' is NULL");
-    return -1;
-  }
 
   if (!request) {
     gf_log (this->name, GF_LOG_ERROR,
@@ -3734,7 +3728,7 @@ client_lookup_cbk (call_frame_t *frame,
   int32_t op_errno = EINVAL;
 
   if (!ret_data || !err_data || !stat_data) {
-    gf_log ("protocol/client",
+    gf_log (frame->this->name,
 	    GF_LOG_ERROR,
 	    "client lookup failed");
     STACK_UNWIND (frame, -1, EINVAL, NULL, NULL);
@@ -3991,7 +3985,7 @@ client_protocol_cleanup (transport_t *trans)
   //  glusterfs_ctx_t *ctx = trans->xl->ctx;
   dict_t *saved_frames = NULL;
 
-  gf_log ("protocol/client",
+  gf_log (trans->xl->name,
 	  GF_LOG_DEBUG,
 	  "cleaning up state in transport object %p",
 	  trans);
@@ -4021,7 +4015,7 @@ client_protocol_cleanup (transport_t *trans)
     memset (&(priv->last_recieved), 0, sizeof (priv->last_recieved));
 
     if (!priv->timer) {
-      gf_log ("protocol/client",
+      gf_log (trans->xl->name,
 	      GF_LOG_DEBUG,
 	      "priv->timer is NULL!!!!");
     }
@@ -4119,7 +4113,7 @@ client_protocol_interpret (transport_t *trans,
 
   frame = lookup_frame (trans, blk->callid);
   if (!frame) {
-    gf_log ("protocol/client",
+    gf_log (trans->xl->name,
 	    GF_LOG_DEBUG,
 	    "frame not found for blk with callid: %d",
 	    blk->callid);
@@ -4132,7 +4126,7 @@ client_protocol_interpret (transport_t *trans,
   case GF_OP_TYPE_FOP_REPLY:
     {
       if (blk->op > GF_FOP_MAXVALUE || blk->op < 0) {
-	gf_log ("protocol/client",
+	gf_log (trans->xl->name,
 		GF_LOG_DEBUG,
 		"invalid opcode '%d'",
 		blk->op);
@@ -4154,7 +4148,7 @@ client_protocol_interpret (transport_t *trans,
       break;
     }
   default:
-    gf_log ("protocol/client",
+    gf_log (trans->xl->name,
 	    GF_LOG_DEBUG,
 	    "invalid packet type: %d",
 	    blk->type);
@@ -4357,12 +4351,12 @@ client_protocol_handshake (xlator_t *this,
 					 call_bail,
 					 (void *)trans);
     else
-      gf_log ("protocol/client",
+      gf_log (this->name,
 	      GF_LOG_DEBUG,
 	      "timer is already registered!!!!");
     
     if (!priv->timer) {
-      gf_log ("protocol/client", 
+      gf_log (this->name,
 	      GF_LOG_DEBUG,
 	      "timer creation failed");
     }
