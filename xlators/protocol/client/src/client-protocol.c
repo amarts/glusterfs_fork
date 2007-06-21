@@ -1151,11 +1151,11 @@ client_close (call_frame_t *frame,
   //  free (data_to_str (ctx_data)); caused double free ?
 
   dict_destroy (fd->ctx);
-  list_del (&fd->inode_list);
+  //  list_del (&fd->inode_list);
 
   if (fd->inode) {
     inode_unref (fd->inode);
-    fd->inode = NULL;
+    fd->inode = 0xf4578411;
   }
 
   free (fd);
@@ -1450,7 +1450,7 @@ client_closedir (call_frame_t *frame,
   //  free (data_to_str (ctx_data)); caused double free ?
 
   dict_destroy (fd->ctx);
-  list_del (&fd->inode_list);
+  //  list_del (&fd->inode_list);
 
   if (fd->inode) {
     inode_unref (fd->inode);
@@ -2201,7 +2201,7 @@ client_create_cbk (call_frame_t *frame,
     if (inode)
       fd->inode = inode_ref (inode);
 
-    list_add (&fd->inode_list, &fd->inode->fds);
+    //    list_add (&fd->inode_list, &fd->inode->fds);
 
     dict_set (fd->ctx,
 	      (frame->this)->name,
@@ -2275,7 +2275,7 @@ client_open_cbk (call_frame_t *frame,
   
     fd->ctx = get_new_dict ();
 
-    list_add (&fd->inode_list, &fd->inode->fds);
+    //    list_add (&fd->inode_list, &fd->inode->fds);
 
     dict_set (fd->ctx,
 	      (frame->this)->name,
@@ -3157,7 +3157,7 @@ client_opendir_cbk (call_frame_t *frame,
     if (inode)
       fd->inode = inode_ref (inode);
 
-    list_add (&fd->inode_list, &fd->inode->fds);    
+    //    list_add (&fd->inode_list, &fd->inode->fds);    
     
     dict_set (fd->ctx,
 	      (frame->this)->name,

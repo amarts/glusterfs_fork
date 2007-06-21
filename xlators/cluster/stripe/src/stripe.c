@@ -1572,7 +1572,7 @@ stripe_create_cbk (call_frame_t *frame,
 	local->inode = inode_update (this->itable, NULL, NULL, buf);
 	local->stbuf.st_ino = buf->st_ino;
 	local->fd->inode = inode_ref (local->inode);
-	list_add (&local->fd->inode_list, &local->inode->fds);
+	//	list_add (&local->fd->inode_list, &local->inode->fds);
       }
       
       if (local->stbuf.st_size < buf->st_size)
@@ -1765,7 +1765,7 @@ stripe_open_cbk (call_frame_t *frame,
 	local->fd = calloc (1, sizeof (fd_t));
 	local->fd->ctx = get_new_dict ();
 	local->fd->inode = inode_ref (local->inode);
-	list_add (&local->fd->inode_list, &local->inode->fds); 
+	//	list_add (&local->fd->inode_list, &local->inode->fds); 
       }
       dict_set (local->fd->ctx, (char *)cookie, data_from_static_ptr (fd));
     }
@@ -2021,7 +2021,7 @@ stripe_opendir_cbk (call_frame_t *frame,
 	local->fd = calloc (1, sizeof (fd_t));
 	local->fd->ctx = get_new_dict ();
 	local->fd->inode = inode_ref (local->inode);
-	list_add (&local->fd->inode_list, &local->inode->fds); 
+	//	list_add (&local->fd->inode_list, &local->inode->fds); 
       }
       dict_set (local->fd->ctx, (char *)cookie, data_from_static_ptr (fd));
     }
@@ -2034,7 +2034,7 @@ stripe_opendir_cbk (call_frame_t *frame,
       local->op_errno = EIO; /* TODO: Or should it be ENOENT? */
       if (local->fd) {
 	dict_destroy (local->fd->ctx);
-	list_del (&local->fd->inode_list);
+	//	list_del (&local->fd->inode_list);
 	free (local->fd);
       }
     }
@@ -2406,7 +2406,7 @@ stripe_close (call_frame_t *frame,
 
   inode_unref (fd->inode);
   dict_destroy (fd->ctx);
-  list_del (&fd->inode_list);
+  //  list_del (&fd->inode_list);
   free (fd);
 
   return 0;
@@ -2865,7 +2865,7 @@ stripe_closedir (call_frame_t *frame,
 
   inode_unref (fd->inode);
   dict_destroy (fd->ctx);
-  list_del (&fd->inode_list);
+  //  list_del (&fd->inode_list);
   free (fd);
 
   return 0;
