@@ -168,10 +168,19 @@ unify_bg_inode_cbk (call_frame_t *frame,
     }
     UNLOCK (&frame->mutex);
   }
-  
-  if (!callcnt) {
-    loc_inode = local->inode;
-    unify_local_wipe (local);
+
+  if (op_ret >= 0) {
+    char *tmp_value = calloc (1, (op_ret));
+    memcpy (tmp_value, value, op_ret);
+    if (local->buf)
+      /* if file existed in two places by corruption */
+      free (local->buf);
+    local->buf = tmp_value;
+    local->op_ret = op_ret;
+  }
+
+  if (callcnt == ((struct cement_private *)xl->private)->child_count) {
+    frame->local = NULL;
     LOCK_DESTROY (&frame->mutex);
     STACK_DESTROY (frame->root);
     if (loc_inode)
@@ -320,25 +329,18 @@ unify_lookup_cbk (call_frame_t *frame,
     UNLOCK (&frame->mutex);
   }
 
-  if (!callcnt) {
-    inode_t *loc_inode = local->inode;
-    
-    if (local->inode) {
-      if (!loc_inode->private)
-	loc_inode->private = local->list;
-      if (local->inode->isdir) {
-	if (local->failed)
-	  local->inode->generation = 0; /* means, self-heal required for inode */
-	gf_unify_self_heal (frame, this, local->path, local->inode);
-      } else {
-	local->stbuf.st_size = local->st_size;
-	local->stbuf.st_blocks = local->st_blocks;
-      }
-      local->stbuf.st_nlink = local->st_nlink;
-    } else {
-      local->op_ret = -1;
-    }
-    unify_local_wipe (local);
+  if (op_ret >= 0) {
+    char *tmp_value = calloc (1, (op_ret));
+    if (value)
+      memcpy (tmp_value, value, op_ret);
+    if (local->buf)
+      free (local->buf);
+    local->buf = tmp_value;    
+    local->op_ret = op_ret;
+  }
+
+  if (callcnt == ((struct cement_private *)xl->private)->child_count) {
+    frame->local = NULL;
     LOCK_DESTROY (&frame->mutex);
     STACK_UNWIND (frame, local->op_ret, local->op_errno, loc_inode, &local->stbuf);
     if (loc_inode)
