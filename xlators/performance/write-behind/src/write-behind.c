@@ -782,13 +782,13 @@ init (xlator_t *this)
 
   if (dict_get (options, "flush-behind")) {
     if ((!strcasecmp (data_to_str (dict_get (options, "flush-behind")),
-          "on")) ||
-  (!strcasecmp (data_to_str (dict_get (options, "flush-behind")),
-          "yes"))) {
+		      "yes")) ||
+	(!strcasecmp (data_to_str (dict_get (options, "flush-behind")),
+		      "on"))) {
       gf_log ("write-behind",
-        GF_LOG_DEBUG,
-        "%s: enabling flush-behind",
-        this->name);
+	      GF_LOG_DEBUG,
+	      "%s: enabling flush-behind",
+	      this->name);
       conf->flush_behind = 1;
     }
   }
