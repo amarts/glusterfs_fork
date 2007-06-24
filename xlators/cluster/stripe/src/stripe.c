@@ -626,7 +626,7 @@ stripe_readv_cbk (call_frame_t *frame,
   } else {
     STACK_UNWIND (frame, 0, 0);
   }
-  inode->private = NULL;
+  inode->private = 0xdeadbeaf; //debug
   inode_forget (inode, 0);
   return 0;
 }
