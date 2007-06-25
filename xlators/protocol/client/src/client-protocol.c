@@ -1149,17 +1149,7 @@ client_close (call_frame_t *frame,
   
   free (key);
   //  free (data_to_str (ctx_data)); caused double free ?
-
-  dict_destroy (fd->ctx);
-  //  list_del (&fd->inode_list);
-
-  if (fd->inode) {
-    inode_unref (fd->inode);
-    fd->inode = 0xf4578411;
-  }
-
-  free (fd);
-
+  fd_destroy (fd);
   return ret;
 }
 
@@ -1453,16 +1443,7 @@ client_closedir (call_frame_t *frame,
   
   free (key);
   //  free (data_to_str (ctx_data)); caused double free ?
-
-  dict_destroy (fd->ctx);
-  //  list_del (&fd->inode_list);
-
-  if (fd->inode) {
-    inode_unref (fd->inode);
-    fd->inode = NULL;
-  }
-
-  free (fd);
+  fd_destroy (fd);
 
   return ret;
 }
@@ -2196,17 +2177,11 @@ client_create_cbk (call_frame_t *frame,
 
     buf = data_to_str (buf_data);
     stbuf = str_to_stat (buf);
-    fd = calloc (1, sizeof (fd_t));
 
     /* add newly created file's inode to client protocol inode table */
     inode = inode_update (priv->table, NULL, NULL, stbuf);
 
-    fd->ctx = get_new_dict ();
-
-    if (inode)
-      fd->inode = inode_ref (inode);
-
-    //    list_add (&fd->inode_list, &fd->inode->fds);
+    fd = fd_create (inode);
 
     dict_set (fd->ctx,
 	      (frame->this)->name,
@@ -2270,17 +2245,9 @@ client_open_cbk (call_frame_t *frame,
     char *remote_fd = strdup (data_to_str (fd_data));
     char *key = NULL;
 
-    fd = calloc (1, sizeof (fd_t));
+    fd = fd_create (inode);
     trans = frame->this->private;
     priv = trans->xl_private;
-
-    /* add opened file's inode to client protocol inode table */
-    if (inode) 
-      fd->inode = inode_ref (inode);
-  
-    fd->ctx = get_new_dict ();
-
-    //    list_add (&fd->inode_list, &fd->inode->fds);
 
     dict_set (fd->ctx,
 	      (frame->this)->name,
@@ -3136,6 +3103,7 @@ client_opendir_cbk (call_frame_t *frame,
   inode_t *inode = NULL;
   
   if (!ret_data || !err_data || !fd_data) {
+    inode = (inode_t *)frame->local;
     frame->local = NULL;
     if (inode)
       inode_unref (inode);
@@ -3153,16 +3121,10 @@ client_opendir_cbk (call_frame_t *frame,
     char *remote_fd_str = strdup (data_to_str (fd_data));
 
     inode = (inode_t *) frame->local;
-    fd = calloc (1, sizeof (fd_t));
     trans = frame->this->private;
     priv = trans->xl_private;
     
-    fd->ctx = get_new_dict ();
-    
-    if (inode)
-      fd->inode = inode_ref (inode);
-
-    //    list_add (&fd->inode_list, &fd->inode->fds);    
+    fd = fd_create (inode);
     
     dict_set (fd->ctx,
 	      (frame->this)->name,
