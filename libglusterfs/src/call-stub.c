@@ -2040,12 +2040,20 @@ call_resume_wind (call_stub_t *stub)
 
   case GF_FOP_WRITEDIR:
     {
+      dir_entry_t *entry, *next;
       stub->args.writedir.fn (stub->frame,
 			      stub->frame->this,
 			      stub->args.writedir.fd,
 			      stub->args.writedir.flags,
 			      &stub->args.writedir.entries,
 			      stub->args.writedir.count);
+      entry = stub->args.writedir.entries.next;
+      while (entry) {
+	next = entry->next;
+	free (entry->name);
+	free (entry);
+	entry = next;
+      }
       break;
     }
 
@@ -2508,6 +2516,7 @@ call_resume_unwind (call_stub_t *stub)
   
   case GF_FOP_READDIR:
     {
+      dir_entry_t *entry, *next;
       if (!stub->args.readdir_cbk.fn)
 	STACK_UNWIND (stub->frame,
 		      stub->args.readdir_cbk.op_ret,
@@ -2522,6 +2531,13 @@ call_resume_unwind (call_stub_t *stub)
 				   stub->args.readdir_cbk.op_errno,
 				   &stub->args.readdir_cbk.entries,
 				   stub->args.readdir_cbk.count);
+      entry = stub->args.readdir_cbk.entries.next;
+      while (entry) {
+	next = entry->next;
+	free (entry->name);
+	free (entry);
+	entry = next;
+      }
       break;
     }
   
