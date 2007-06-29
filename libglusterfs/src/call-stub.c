@@ -2034,10 +2034,6 @@ call_resume_wind (call_stub_t *stub)
       
       if (stub->args.forget.inode)
 	inode_unref (stub->args.forget.inode);
-
-      
-      
-      
     }
     break;
 
