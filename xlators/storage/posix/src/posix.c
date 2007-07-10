@@ -1440,7 +1440,7 @@ posix_lk (call_frame_t *frame,
 	  struct flock *lock)
 {
   struct flock nullock = {0, };
-  STACK_UNWIND (frame, -1, -ENOSYS, &nullock);
+  STACK_UNWIND (frame, -1, ENOSYS, &nullock);
   return 0;
 }
 
