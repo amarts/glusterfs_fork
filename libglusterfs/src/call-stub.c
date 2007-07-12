@@ -22,7 +22,7 @@
 static void
 loc_wipe (loc_t *loc)
 {
-  free ((char *)loc->path);
+  freee (loc->path);
   if (loc->inode)
     inode_unref (loc->inode);
 }
@@ -1648,7 +1648,7 @@ call_resume_wind (call_stub_t *stub)
 			    stub->args.create.path,
 			    stub->args.create.flags,
 			    stub->args.create.mode);
-      free (stub->args.create.path);
+      freee (stub->args.create.path);
       break;
     }
   case GF_FOP_STAT:
@@ -1676,7 +1676,7 @@ call_resume_wind (call_stub_t *stub)
 			   stub->args.mknod.path,
 			   stub->args.mknod.mode,
 			   stub->args.mknod.rdev);
-      free ((char *)stub->args.mknod.path);
+      freee (stub->args.mknod.path);
     }
     break;
   
@@ -1686,7 +1686,7 @@ call_resume_wind (call_stub_t *stub)
 			   stub->frame->this,
 			   stub->args.mkdir.path,
 			   stub->args.mkdir.mode);
-      free ((char *)stub->args.mkdir.path);
+      freee (stub->args.mkdir.path);
     }
     break;
   
@@ -1714,8 +1714,8 @@ call_resume_wind (call_stub_t *stub)
 			     stub->frame->this,
 			     stub->args.symlink.linkname,
 			     stub->args.symlink.newpath);
-      free ((char *)stub->args.symlink.linkname);
-      free ((char *)stub->args.symlink.newpath);
+      freee (stub->args.symlink.linkname);
+      freee (stub->args.symlink.newpath);
     }
     break;
   
@@ -1739,7 +1739,7 @@ call_resume_wind (call_stub_t *stub)
 			  &stub->args.link.oldloc,
 			  stub->args.link.newpath);
       loc_wipe (&stub->args.link.oldloc);
-      free (stub->args.link.newpath);
+      freee (stub->args.link.newpath);
     }
     break;
   
@@ -1794,7 +1794,7 @@ call_resume_wind (call_stub_t *stub)
 			    stub->args.writev.vector,
 			    stub->args.writev.count,
 			    stub->args.writev.off);
-      free ((char *)stub->args.writev.vector);
+      freee (stub->args.writev.vector);
       if (stub->args.writev.count)
 	dict_unref (refs);
       break;
@@ -1865,8 +1865,7 @@ call_resume_wind (call_stub_t *stub)
 				 &stub->args.removexattr.loc,
 				 stub->args.removexattr.name);
       loc_wipe (&stub->args.removexattr.loc);
-      free (stub->args.removexattr.name);
-
+      freee (stub->args.removexattr.name);
       break;
     }
   
@@ -2100,7 +2099,7 @@ call_resume_unwind (call_stub_t *stub)
 				    stub->args.readlink_cbk.op_errno,
 				    stub->args.readlink_cbk.buf);
 
-      free ((char *)stub->args.readlink_cbk.buf);
+      freee (stub->args.readlink_cbk.buf);
       break;
     }
   
@@ -2714,5 +2713,5 @@ call_resume (call_stub_t *stub)
   else
     call_resume_unwind (stub);
 
-  free (stub);
+  freee (stub);
 }

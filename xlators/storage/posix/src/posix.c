@@ -26,6 +26,7 @@
 #include "defaults.h"
 #include <errno.h>
 #include <sys/time.h>
+#include "common-utils.h"
 
 #ifdef HAVE_SET_FSID
 
@@ -235,7 +236,7 @@ posix_readdir (call_frame_t *frame,
     SET_TO_OLD_FS_UID_GID ();
 
     STACK_UNWIND (frame, -1, errno, &entries, 0);
-    free (entry_path);
+    freee (entry_path);
     return 0;
   } else {
     op_ret = 0;
@@ -258,7 +259,7 @@ posix_readdir (call_frame_t *frame,
     tmp->next = entries.next;
     entries.next = tmp;
   }
-  free (entry_path);
+  freee (entry_path);
   closedir (dir);
 
   SET_TO_OLD_FS_UID_GID ();
@@ -267,8 +268,8 @@ posix_readdir (call_frame_t *frame,
   while (entries.next) {
     tmp = entries.next;
     entries.next = entries.next->next;
-    free (tmp->name);
-    free (tmp);
+    freee (tmp->name);
+    freee (tmp);
   }
   return 0;
 }
@@ -1430,7 +1431,7 @@ posix_writedir (call_frame_t *frame,
   STACK_UNWIND (frame, 0, 0);
   free (entry_path);
   
-  free (entry_path);
+  freee (entry_path);
   return 0;
 }
 
@@ -1631,7 +1632,7 @@ void
 fini (xlator_t *this)
 {
   struct posix_private *priv = this->private;
-  free (priv);
+  freee (priv);
   return;
 }
 
