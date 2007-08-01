@@ -420,7 +420,7 @@ stripe_lookup (call_frame_t *frame,
   stripe_local_t *local = NULL;
   xlator_list_t *trav = NULL;
   stripe_private_t *priv = this->private;
-
+  
   if (!(loc && loc->inode && loc->inode->ctx)) {
     gf_log (this->name, GF_LOG_ERROR, "wrong argument");
     STACK_UNWIND (frame, -1, EINVAL, NULL, NULL);
@@ -458,12 +458,17 @@ stripe_lookup (call_frame_t *frame,
 
     trav = this->children;
     while (trav) {
+      /* what is local->hint??? 
+       * local->hint++ is done in stripe_stack_unwind_inode_cbk().
+       *           --benki
+       */
+      int32_t hint = local->hint;
       STACK_WIND (frame,
 		  stripe_stack_unwind_inode_cbk,
 		  trav->xlator,
 		  trav->xlator->fops->lookup,
 		  loc);
-      if (local->hint == 1)
+      if (hint == 1)
 	break;
       trav = trav->next;
     }
@@ -1483,6 +1488,9 @@ stripe_create (call_frame_t *frame,
 
   stripe_size = stripe_get_matching_bs (loc->path, priv->pattern);
   
+  /* files created in O_APPEND mode does not allow lseek() on fd */
+  flags &= ~O_APPEND;
+
   if (priv->first_child_down || (stripe_size && priv->nodes_down)) {
     STACK_UNWIND (frame, -1, EIO, fd, loc->inode, NULL);
     return 0;
@@ -1681,6 +1689,9 @@ stripe_open (call_frame_t *frame,
   int8_t hint = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
+  
+  /* files opened in O_APPEND mode does not allow lseek() on fd */
+  flags &= ~O_APPEND;
 
   if (priv->first_child_down) {
     STACK_UNWIND (frame, -1, ENOTCONN, NULL);
@@ -2668,7 +2679,7 @@ stripe_writev (call_frame_t *frame,
       total_size += tmp_vec[idx].iov_len;
     }
     remaining_size = total_size;
-    
+
     local = calloc (1, sizeof (stripe_local_t));
     frame->local = local;
     local->stripe_size = stripe_size;
@@ -2697,6 +2708,7 @@ stripe_writev (call_frame_t *frame,
       local->wind_count++;
       if (remaining_size == 0)
 	local->unwind = 1;
+
       STACK_WIND(frame,
 		 stripe_writev_cbk,
 		 trav->xlator,
