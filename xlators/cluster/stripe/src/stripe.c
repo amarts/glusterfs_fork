@@ -100,7 +100,7 @@ struct stripe_local {
   int8_t revalidate;
   int8_t failed;
   int8_t unwind;
-  int8_t hint;
+  int8_t striped;
 
   int8_t call_count;
   int8_t wind_count; // used instead of child_cound in case of read and write */
@@ -366,12 +366,12 @@ stripe_stack_unwind_inode_cbk (call_frame_t *frame,
       }
       if (FIRST_CHILD(this) == ((call_frame_t *)cookie)->this) {
 	local->stbuf.st_ino = buf->st_ino;
-	/* Increment hint's value, as if we set it to some value, it may
+	/* Increment striped's value, as if we set it to some value, it may
 	 * overwrite earlier value
 	 */
-	local->hint++;
+	local->striped++;
       } else {
-	local->hint = 2;
+	local->striped = 2;
       }
       if (local->stbuf.st_size < buf->st_size)
 	local->stbuf.st_size = buf->st_size;
@@ -390,7 +390,7 @@ stripe_stack_unwind_inode_cbk (call_frame_t *frame,
     }
     if (local->op_ret == 0) {
       if (!local->revalidate) {
-	if (local->hint == 1) {
+	if (local->striped == 1 && !S_ISDIR(local->stbuf.st_mode)) {
 	  dict_set (local->inode->ctx, 
 		    this->name, 
 		    data_from_int8 (1)); // not stripped
@@ -424,7 +424,7 @@ stripe_lookup (call_frame_t *frame,
   stripe_local_t *local = NULL;
   xlator_list_t *trav = NULL;
   stripe_private_t *priv = this->private;
-  int32_t hint = 0;
+  int32_t striped = 0;
 
   if (!(loc && loc->inode && loc->inode->ctx)) {
     gf_log (this->name, GF_LOG_ERROR, "wrong argument");
@@ -438,9 +438,9 @@ stripe_lookup (call_frame_t *frame,
   frame->local = local;
   
   if (dict_get (loc->inode->ctx, this->name))
-    hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+    striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
   
-  if (!hint) {
+  if (!striped) {
     /* Everytime in stripe lookup, all child nodes should be looked up */
     local->call_count = priv->child_count;
     trav = this->children;
@@ -456,7 +456,7 @@ stripe_lookup (call_frame_t *frame,
     local->revalidate = 1;
     local->inode = loc->inode;
 
-    if (hint == 1) 
+    if (striped == 1) 
       local->call_count = 1;
     else 
       local->call_count = ((stripe_private_t *)this->private)->child_count;
@@ -468,7 +468,7 @@ stripe_lookup (call_frame_t *frame,
 		  trav->xlator,
 		  trav->xlator->fops->lookup,
 		  loc);
-      if (hint == 1)
+      if (striped == 1)
 	break;
       trav = trav->next;
     }
@@ -555,12 +555,12 @@ stripe_stat (call_frame_t *frame,
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
   stripe_local_t *local = NULL;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -600,7 +600,7 @@ stripe_chmod (call_frame_t *frame,
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
   stripe_local_t *local = NULL;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -609,8 +609,8 @@ stripe_chmod (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -652,7 +652,7 @@ stripe_chown (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -661,8 +661,8 @@ stripe_chown (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -813,7 +813,7 @@ stripe_truncate (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -822,8 +822,8 @@ stripe_truncate (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -865,7 +865,7 @@ stripe_utimens (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -874,8 +874,8 @@ stripe_utimens (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -916,7 +916,7 @@ stripe_rename (call_frame_t *frame,
   stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (oldloc);
 
@@ -925,8 +925,8 @@ stripe_rename (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (oldloc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (oldloc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -1036,7 +1036,7 @@ stripe_unlink (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -1045,8 +1045,8 @@ stripe_unlink (call_frame_t *frame,
     return 0;
   }
  
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_cbk,
 		trav->xlator,
@@ -1084,7 +1084,7 @@ stripe_rmdir (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -1093,8 +1093,8 @@ stripe_rmdir (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_cbk,
 		trav->xlator,
@@ -1262,7 +1262,7 @@ stripe_link (call_frame_t *frame,
   stripe_private_t *priv = this->private;
   stripe_local_t *local = NULL;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
   
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -1271,8 +1271,8 @@ stripe_link (call_frame_t *frame,
     return 0;
   }
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,
 		stripe_common_inode_cbk,
 		trav->xlator,
@@ -1676,7 +1676,7 @@ stripe_open_cbk (call_frame_t *frame,
   UNLOCK (&frame->lock);
   
   if (!callcnt) {
-    if (local->failed && (local->hint != 1)) {
+    if (local->failed && (local->striped != 1)) {
       stripe_private_t *priv = this->private;
       xlator_list_t *trav = this->children;
 
@@ -1800,7 +1800,7 @@ stripe_open (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
   
@@ -1819,10 +1819,10 @@ stripe_open (call_frame_t *frame,
   frame->local = local;
   local->path = strdup (loc->path);
 
-  hint = data_to_int8 (dict_get (loc->inode->ctx, this->name));
-  local->hint = hint;
+  striped = data_to_int8 (dict_get (loc->inode->ctx, this->name));
+  local->striped = striped;
 
-  if (hint == 1) {
+  if (striped == 1) {
     local->call_count = 1;
 
     /* File is present only in one node, no xattr's present */
@@ -2092,7 +2092,7 @@ stripe_lk (call_frame_t *frame,
   stripe_local_t *local = NULL;
   xlator_list_t *trav = this->children;
   stripe_private_t *priv = this->private;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
   /* Initialization */
@@ -2100,8 +2100,8 @@ stripe_lk (call_frame_t *frame,
   local->op_ret = -1;
   frame->local = local;
   
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     local->call_count = 1;
     STACK_WIND (frame,	      
 		stripe_lk_cbk,
@@ -2178,12 +2178,12 @@ stripe_flush (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_cbk,
 		trav->xlator,
@@ -2220,12 +2220,12 @@ stripe_close (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_cbk,
 		trav->xlator,
@@ -2264,12 +2264,12 @@ stripe_fsync (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_cbk,
 		trav->xlator,
@@ -2309,12 +2309,12 @@ stripe_fstat (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -2354,12 +2354,12 @@ stripe_fchmod (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -2402,12 +2402,12 @@ stripe_fchown (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_buf_cbk,
 		trav->xlator,
@@ -2451,12 +2451,12 @@ stripe_ftruncate (call_frame_t *frame,
   stripe_local_t *local = NULL;
   stripe_private_t *priv = this->private;
   xlator_list_t *trav = this->children;
-  int8_t hint = 0;
+  int8_t striped = 0;
 
   STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (fd);
 
-  hint = data_to_int8 (dict_get (fd->inode->ctx, this->name));
-  if (hint == 1) {
+  striped = data_to_int8 (dict_get (fd->inode->ctx, this->name));
+  if (striped == 1) {
     STACK_WIND (frame,	      
 		stripe_common_buf_cbk,
 		trav->xlator,
