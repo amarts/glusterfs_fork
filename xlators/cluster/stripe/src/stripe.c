@@ -412,6 +412,20 @@ stripe_stack_unwind_inode_cbk (call_frame_t *frame,
   return 0;
 }
 
+STATIC int32_t 
+stripe_stack_unwind_inode_lookup_cbk (call_frame_t *frame,
+				      void *cookie,
+				      xlator_t *this,
+				      int32_t op_ret,
+				      int32_t op_errno,
+				      inode_t *inode,
+				      struct stat *buf,
+				      dict_t *dict)
+{
+  stripe_stack_unwind_inode_cbk (frame, cookie, this, op_ret, op_errno, inode, buf);
+  return 0;
+}
+
 
 /**
  * stripe_lookup -
@@ -446,7 +460,7 @@ stripe_lookup (call_frame_t *frame,
     trav = this->children;
     while (trav) {
       STACK_WIND (frame,
-		  stripe_stack_unwind_inode_cbk,
+		  stripe_stack_unwind_inode_lookup_cbk,
 		  trav->xlator,
 		  trav->xlator->fops->lookup,
 		  loc);
@@ -464,7 +478,7 @@ stripe_lookup (call_frame_t *frame,
     trav = this->children;
     while (trav) {
       STACK_WIND (frame,
-		  stripe_stack_unwind_inode_cbk,
+		  stripe_stack_unwind_inode_lookup_cbk,
 		  trav->xlator,
 		  trav->xlator->fops->lookup,
 		  loc);
