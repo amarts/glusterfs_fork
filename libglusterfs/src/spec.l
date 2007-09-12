@@ -20,6 +20,7 @@
 %x STRING
 %{
 
+#define YYSTYPE char *
 #include "xlator.h"
 #include "y.tab.h"
 #include <string.h>
