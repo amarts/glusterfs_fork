@@ -418,8 +418,7 @@ trash_rename_lookup_cbk (call_frame_t *frame,
 			 int32_t op_ret,
 			 int32_t op_errno,
 			 inode_t *inode,
-			 struct stat *buf,
-			 dict_t *dict)
+			 struct stat *buf)
 {
   trash_local_t *local = frame->local;
 
