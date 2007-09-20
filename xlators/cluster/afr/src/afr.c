@@ -1,7 +1,6 @@
 /*
    Copyright (c) 2007 Z RESEARCH, Inc. <http://www.zresearch.com>
    This file is part of GlusterFS.
-
    GlusterFS is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
    by the Free Software Foundation; either version 3 of the License,
@@ -2446,17 +2445,15 @@ afr_readv (call_frame_t *frame,
     if (afrfdp->fdstate[i] && pvt->state[i])
       break;
   }
-  if (i == child_count) {
-    STACK_UNWIND (frame, -1, ENOTCONN, NULL, 0, NULL);
-  } else {
-    STACK_WIND (frame,
-		afr_readv_cbk,
-		children[i],
-		children[i]->fops->readv,
-		fd,
-		size,
-		offset);
-  }
+
+  STACK_WIND (frame,
+	      afr_readv_cbk,
+	      children[i],
+	      children[i]->fops->readv,
+	      fd,
+	      size,
+	      offset);
+
   return 0;
 }
 
