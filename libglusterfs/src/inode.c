@@ -135,7 +135,6 @@ inode_unhash_name (inode_table_t *table, inode_t *inode)
   }
 }
 
-
 /**
  * __unhash_inode - unassociate an inode from its inode number  hash. 
  * @inode: the inode to unhash
