@@ -2951,8 +2951,7 @@ stripe_writev (call_frame_t *frame,
 			      offset_offset + fill_size, tmp_vec);
 
       local->wind_count++;
-      if (remaining_size == 0) {
-
+      if (remaining_size == 0)
 	local->unwind = 1;
 
       STACK_WIND(frame,
