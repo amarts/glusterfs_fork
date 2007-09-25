@@ -99,10 +99,10 @@ struct stripe_local {
 
   int8_t revalidate;
   int8_t failed;
-  int8_t unwind;
   int8_t striped;
 
   int32_t node_index;
+  int32_t unwind;
   int32_t call_count;
   int32_t wind_count; // used instead of child_cound in case of read and write */
   int32_t op_ret;
