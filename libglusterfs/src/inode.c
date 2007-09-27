@@ -531,10 +531,7 @@ __create_inode (inode_table_t *table,
       __hash_name (new);
     }
 
-  if (ino)
-    new->ino = ino;
-  else
-    new->ino = (unsigned long) new;
+  new->ino = ino;
 
   INIT_LIST_HEAD (&new->fds);
   INIT_LIST_HEAD (&new->list);
