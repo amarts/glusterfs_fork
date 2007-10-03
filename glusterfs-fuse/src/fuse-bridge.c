@@ -1233,7 +1233,6 @@ fuse_readv_cbk (call_frame_t *frame,
 
     fuse_reply_vec (req, vector, count);
   } else {
-    trap ();
     fuse_reply_err (req, op_errno);
   }
 
