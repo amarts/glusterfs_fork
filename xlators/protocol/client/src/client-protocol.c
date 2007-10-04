@@ -4521,6 +4521,7 @@ init (xlator_t *this)
   data_t *timeout = NULL;
   int32_t transport_timeout = 0;
   data_t *lru_data = NULL;
+  data_t *max_block_size_data = NULL;
 
   if (this->children) {
     gf_log (this->name, 
@@ -4566,7 +4567,7 @@ init (xlator_t *this)
 	    "defaulting transport-timeout to 108");
     transport_timeout = 108;
   }
-
+  
   trans = transport_load (this->options, 
 			  this,
 			  this->notify);
@@ -4583,6 +4584,18 @@ init (xlator_t *this)
   memset (&(priv->last_recieved), 0, sizeof (priv->last_recieved));
   priv->transport_timeout = transport_timeout;
   pthread_mutex_init (&priv->lock, NULL);
+
+  max_block_size_data = dict_get (this->options, "limits.transaction-size");
+
+  if (max_block_size_data) {
+    priv->max_block_size = gf_str_to_long_long (max_block_size_data->data);
+  } else {
+    gf_log (this->name, GF_LOG_DEBUG,
+	    "defaulting limits.transaction-size to %d", DEFAULT_BLOCK_SIZE);
+    priv->max_block_size = DEFAULT_BLOCK_SIZE;
+  }
+    
+
   trans->xl_private = priv;
 
   return 0;
@@ -4800,7 +4813,7 @@ notify (xlator_t *this,
 	gf_block_t *blk;
 	int32_t connected = 0;
 
-	blk = gf_block_unserialize_transport (trans);
+	blk = gf_block_unserialize_transport (trans, priv->max_block_size);
 	if (!blk) {
 	  ret = -1;
 	}
