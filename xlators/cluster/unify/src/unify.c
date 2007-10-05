@@ -1420,13 +1420,11 @@ unify_opendir (call_frame_t *frame,
   return 0;
 }
 
-/*
- * unify_normalize_stats -
- */
+/**/
 STATIC void
-unify_normalize_stats (struct statvfs *buf,
-		       unsigned long bsize,
-		       unsigned long frsize)
+unify_normalize_statvfs (struct statvfs *buf,
+			 unsigned long bsize,
+			 unsigned long frsize)
 {
   double factor;
 
@@ -1436,7 +1434,6 @@ unify_normalize_stats (struct statvfs *buf,
     buf->f_bfree  = (fsblkcnt_t) (factor * buf->f_bfree);
     buf->f_bavail = (fsblkcnt_t) (factor * buf->f_bavail);
   }
-  
   if (buf->f_frsize != frsize) {
     factor = ((double) buf->f_frsize) / frsize;
     buf->f_frsize = frsize;
@@ -1457,8 +1454,8 @@ unify_statfs_cbk (call_frame_t *frame,
 {
   int32_t callcnt = 0;
   struct statvfs *dict_buf = NULL;
-  unsigned long bsize;
-  unsigned long frsize;
+  unsigned long bsize = 0;
+  unsigned long frsize = 0;
   unify_local_t *local = (unify_local_t *)frame->local;
 
   LOCK (&frame->lock);
@@ -1474,15 +1471,15 @@ unify_statfs_cbk (call_frame_t *frame,
       dict_buf = &local->statvfs_buf;
 
       if (dict_buf->f_bsize != 0) {
-	bsize  = max (dict_buf->f_bsize, stbuf->f_bsize);
-	frsize = max (dict_buf->f_frsize, stbuf->f_frsize);
-	unify_normalize_stats(dict_buf, bsize, frsize);
-	unify_normalize_stats(stbuf, bsize, frsize);
+        bsize  = max (dict_buf->f_bsize, stbuf->f_bsize);
+        frsize = max (dict_buf->f_frsize, stbuf->f_frsize);
+        unify_normalize_statvfs(dict_buf, bsize, frsize);
+        unify_normalize_statvfs(stbuf, bsize, frsize);
       } else {
-	dict_buf->f_bsize   = stbuf->f_bsize;
-	dict_buf->f_frsize  = stbuf->f_frsize;
+        dict_buf->f_bsize   = stbuf->f_bsize;
+        dict_buf->f_frsize  = stbuf->f_frsize;
       }
-      
+
       dict_buf->f_blocks += stbuf->f_blocks;
       dict_buf->f_bfree  += stbuf->f_bfree;
       dict_buf->f_bavail += stbuf->f_bavail;
