@@ -3819,6 +3819,7 @@ notify (xlator_t *this,
 	  ++priv->inode_generation;
 	}
 	UNLOCK (&priv->lock);
+	default_notify (this, event, data);
       }
       break;
     case GF_EVENT_CHILD_DOWN:
