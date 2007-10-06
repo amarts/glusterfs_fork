@@ -3818,6 +3818,7 @@ notify (xlator_t *this,
 	  /* Increment the inode's generation, which is used for self_heal */
 	  ++priv->inode_generation;
 	}
+	default_notify (this, event, data);
 	UNLOCK (&priv->lock);
 	default_notify (this, event, data);
       }
