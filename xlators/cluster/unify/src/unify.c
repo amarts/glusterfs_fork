@@ -3820,7 +3820,10 @@ notify (xlator_t *this,
 	}
 	default_notify (this, event, data);
 	UNLOCK (&priv->lock);
-	default_notify (this, event, data);
+	if (!priv->is_up) {
+	  default_notify (this, event, data);
+	  priv->is_up = 1;
+	}
       }
       break;
     case GF_EVENT_CHILD_DOWN:
