@@ -43,7 +43,7 @@
 #define AFR_DEBUG_FMT(xl, format, args...) if(((afr_private_t*)(xl)->private)->debug) gf_log ((xl)->name, GF_LOG_DEBUG, "AFRDEBUG:" format, ##args);
 #define AFR_DEBUG(xl) if(((afr_private_t*)xl->private)->debug) gf_log (xl->name, GF_LOG_DEBUG, "AFRDEBUG:");
 
-static int32_t
+int32_t
 afr_get_num_copies (const char *path, xlator_t *this)
 {
   pattern_info_t *tmp = ((afr_private_t *)this->private)->pattern_info_list;
@@ -60,7 +60,7 @@ afr_get_num_copies (const char *path, xlator_t *this)
   return 1;
 }
 
-static loc_t*
+loc_t*
 afr_loc_dup(loc_t *loc)
 {
   loc_t *loctmp;
@@ -71,7 +71,7 @@ afr_loc_dup(loc_t *loc)
   return loctmp;
 }
 
-static void
+void
 afr_loc_free(loc_t *loc)
 {
   GF_BUG_ON (!loc);
@@ -79,7 +79,7 @@ afr_loc_free(loc_t *loc)
   freee(loc);
 }
 
-static int32_t
+int32_t
 afr_lookup_mkdir_chown_cbk (call_frame_t *frame,
 			    void *cookie,
 			    xlator_t *this,
@@ -137,7 +137,7 @@ afr_lookup_mkdir_chown_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_mkdir_cbk (call_frame_t *frame,
 		      void *cookie,
 		      xlator_t *this,
@@ -180,7 +180,7 @@ afr_lookup_mkdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_sync_ownership_permission_cbk(call_frame_t *frame,
 				  void *cookie,
 				  xlator_t *this,
@@ -264,7 +264,7 @@ afr_sync_ownership_permission_cbk(call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_sync_ownership_permission (call_frame_t *frame)
 {
   afr_local_t *local = frame->local;
@@ -390,7 +390,7 @@ afr_sync_ownership_permission (call_frame_t *frame)
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_unlock_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -418,7 +418,7 @@ afr_lookup_unlock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_setxattr_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -443,7 +443,7 @@ afr_lookup_setxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_rmelem_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -505,7 +505,7 @@ afr_lookup_rmelem_cbk (call_frame_t *frame,
 
 #define BUF_SIZE 512
 
-static int32_t
+int32_t
 afr_lookup_closedir_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -582,7 +582,7 @@ afr_lookup_closedir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_readdir_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -664,7 +664,7 @@ afr_lookup_readdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_opendir_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -703,7 +703,7 @@ afr_lookup_opendir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup_lock_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -754,7 +754,7 @@ afr_lookup_lock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static void
+void
 afr_check_ctime_version (call_frame_t *frame)
 {
   /*
@@ -835,7 +835,7 @@ afr_check_ctime_version (call_frame_t *frame)
   return;
 }
 
-static int32_t
+int32_t
 afr_lookup_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -942,7 +942,7 @@ afr_lookup_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lookup (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc,
@@ -1100,7 +1100,7 @@ afr_incver (call_frame_t *frame,
 
 /* no need to do anything in forget, as the mem will be just free'd in dict_destroy(inode->ctx) */
 
-static int32_t
+int32_t
 afr_forget (call_frame_t *frame,
 	    xlator_t *this,
 	    inode_t *inode)
@@ -1108,7 +1108,7 @@ afr_forget (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_setxattr_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1144,7 +1144,7 @@ child_errno = alloca(child_count);\
 memcpy (child_errno, afr_errno, child_count);\
 } while(0);
 
-static int32_t
+int32_t
 afr_setxattr (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc,
@@ -1190,7 +1190,7 @@ afr_setxattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_getxattr_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1210,7 +1210,7 @@ afr_getxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_getxattr (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc)
@@ -1241,7 +1241,7 @@ afr_getxattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_removexattr_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1273,7 +1273,7 @@ afr_removexattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_removexattr (call_frame_t *frame,
 		 xlator_t *this,
 		 loc_t *loc,
@@ -1317,7 +1317,7 @@ afr_removexattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_open_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -1381,7 +1381,7 @@ afr_open_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_unlock_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -1422,7 +1422,7 @@ afr_selfheal_unlock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_nosync_close_cbk (call_frame_t *frame,
 			       void *cookie,
 			       xlator_t *this,
@@ -1431,7 +1431,7 @@ afr_selfheal_nosync_close_cbk (call_frame_t *frame,
 
 /* we call afr_error_during_sync if there was any error during read/write during syncing. */
 
-static int32_t
+int32_t
 afr_error_during_sync (call_frame_t *frame)
 {
   afr_local_t *local = frame->local;
@@ -1472,7 +1472,7 @@ afr_error_during_sync (call_frame_t *frame)
 }
 
 
-static int32_t
+int32_t
 afr_selfheal_setxattr_cbk (call_frame_t *frame,
 			   void *cookie,
 			   xlator_t *this,
@@ -1504,7 +1504,7 @@ afr_selfheal_setxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_utimens_cbk (call_frame_t *frame,
 			  void *cookie,
 			  xlator_t *this,
@@ -1538,7 +1538,7 @@ afr_selfheal_utimens_cbk (call_frame_t *frame,
 
 /* FIXME handle the situation when one of the close fails */
 
-static int32_t
+int32_t
 afr_selfheal_close_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -1605,11 +1605,11 @@ afr_selfheal_close_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_sync_file (call_frame_t *frame,
 			xlator_t *this);
 
-static int32_t
+int32_t
 afr_selfheal_sync_file_writev_cbk (call_frame_t *frame,
 				   void *cookie,
 				   xlator_t *this,
@@ -1649,7 +1649,7 @@ afr_selfheal_sync_file_writev_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_sync_file_readv_cbk (call_frame_t *frame,
 				  void *cookie,
 				  xlator_t *this,
@@ -1717,7 +1717,7 @@ afr_selfheal_sync_file_readv_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_sync_file (call_frame_t *frame,
 			xlator_t *this)
 {
@@ -1736,7 +1736,7 @@ afr_selfheal_sync_file (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_chown_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -1756,7 +1756,7 @@ afr_selfheal_chown_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_chown_file (call_frame_t *frame,
 			 xlator_t *this)
 {
@@ -1789,7 +1789,7 @@ afr_selfheal_chown_file (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_nosync_close_cbk (call_frame_t *frame,
 			       void *cookie,
 			       xlator_t *this,
@@ -1815,7 +1815,7 @@ afr_selfheal_nosync_close_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_create_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -1886,7 +1886,7 @@ afr_selfheal_create_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_open_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -1940,7 +1940,7 @@ afr_selfheal_open_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_stat_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -2013,7 +2013,7 @@ afr_selfheal_stat_cbk (call_frame_t *frame,
 
 /* TODO: crappy code, clean this function */
 
-static int32_t
+int32_t
 afr_selfheal_getxattr_cbk (call_frame_t *frame,
 			   void *cookie,
 			   xlator_t *this,
@@ -2219,7 +2219,7 @@ afr_selfheal_getxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_selfheal_lock_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -2281,7 +2281,7 @@ afr_selfheal_lock_cbk (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 afr_selfheal (call_frame_t *frame,
 	      xlator_t *this,
 	      call_stub_t *stub,
@@ -2340,7 +2340,7 @@ afr_selfheal (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_open (call_frame_t *frame,
 	  xlator_t *this,
 	  loc_t *loc,
@@ -2405,7 +2405,7 @@ afr_open (call_frame_t *frame,
 
 /* FIXME if one read fails, we need to fail over */
 
-static int32_t
+int32_t
 afr_readv_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -2452,7 +2452,7 @@ afr_readv_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readv (call_frame_t *frame,
 	   xlator_t *this,
 	   fd_t *fd,
@@ -2496,7 +2496,7 @@ afr_readv (call_frame_t *frame,
 
 /* FIXME if one write fails, we should not increment version on it */
 
-static int32_t
+int32_t
 afr_writev_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -2537,7 +2537,7 @@ afr_writev_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_writev (call_frame_t *frame,
 	    xlator_t *this,
 	    fd_t *fd,
@@ -2595,7 +2595,7 @@ afr_writev (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_ftruncate_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -2630,7 +2630,7 @@ afr_ftruncate_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_ftruncate (call_frame_t *frame,
 	       xlator_t *this,
 	       fd_t *fd,
@@ -2683,7 +2683,7 @@ afr_ftruncate (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fstat_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -2702,7 +2702,7 @@ afr_fstat_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fstat (call_frame_t *frame,
 	   xlator_t *this,
 	   fd_t *fd)
@@ -2742,7 +2742,7 @@ afr_fstat (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_flush_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -2772,7 +2772,7 @@ afr_flush_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_flush (call_frame_t *frame,
 	   xlator_t *this,
 	   fd_t *fd)
@@ -2820,7 +2820,7 @@ afr_flush (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -2860,7 +2860,7 @@ afr_close_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close_unlock_cbk (call_frame_t *frame,
 		      void *cookie,
 		      xlator_t *this,
@@ -2900,7 +2900,7 @@ afr_close_unlock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close_setxattr_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -2929,7 +2929,7 @@ afr_close_setxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close_getxattr_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -3016,7 +3016,7 @@ afr_close_getxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close_lock_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -3057,7 +3057,7 @@ afr_close_lock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_close (call_frame_t *frame,
 	   xlator_t *this,
 	   fd_t *fd)
@@ -3126,7 +3126,7 @@ afr_close (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fsync_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -3158,7 +3158,7 @@ afr_fsync_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fsync (call_frame_t *frame,
 	   xlator_t *this,
 	   fd_t *fd,
@@ -3209,7 +3209,7 @@ afr_fsync (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lk_cbk (call_frame_t *frame,
 	    void *cookie,
 	    xlator_t *this,
@@ -3242,7 +3242,7 @@ afr_lk_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lk (call_frame_t *frame,
 	xlator_t *this,
 	fd_t *fd,
@@ -3294,7 +3294,7 @@ afr_lk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_stat_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -3337,7 +3337,7 @@ afr_stat_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_stat (call_frame_t *frame,
 	  xlator_t *this,
 	  loc_t *loc)
@@ -3377,7 +3377,7 @@ afr_stat (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_statfs_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -3414,7 +3414,7 @@ afr_statfs_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_statfs (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc)
@@ -3442,7 +3442,7 @@ afr_statfs (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 afr_truncate_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -3484,7 +3484,7 @@ afr_truncate_cbk (call_frame_t *frame,
 
 /* FIXME increase the version count */
 
-static int32_t
+int32_t
 afr_truncate (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc,
@@ -3526,7 +3526,7 @@ afr_truncate (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_utimens_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -3607,7 +3607,7 @@ afr_utimens (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_opendir_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -3659,7 +3659,7 @@ afr_opendir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_opendir (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc,
@@ -3703,7 +3703,7 @@ afr_opendir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readlink_symlink_cbk (call_frame_t *frame,
 			  void *cookie,
 			  xlator_t *this,
@@ -3732,7 +3732,7 @@ afr_readlink_symlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readlink_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -3773,7 +3773,7 @@ afr_readlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readlink (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc,
@@ -3809,7 +3809,7 @@ afr_readlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readdir_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -3930,7 +3930,7 @@ afr_readdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_readdir (call_frame_t *frame,
 	     xlator_t *this,
 	     size_t size,
@@ -3976,7 +3976,7 @@ afr_readdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_writedir_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -4001,7 +4001,7 @@ afr_writedir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_writedir (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
@@ -4053,7 +4053,7 @@ afr_writedir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_bg_setxattr_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -4074,7 +4074,7 @@ afr_bg_setxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_bg_setxattr (call_frame_t *frame, loc_t *loc, dict_t *dict)
 {
   call_frame_t *setxattr_frame;
@@ -4111,7 +4111,7 @@ afr_bg_setxattr (call_frame_t *frame, loc_t *loc, dict_t *dict)
   return 0;
 }
 
-static int32_t
+int32_t
 afr_mkdir_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -4192,7 +4192,7 @@ afr_mkdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_mkdir (call_frame_t *frame,
 	   xlator_t *this,
 	   loc_t *loc,
@@ -4220,7 +4220,7 @@ afr_mkdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_unlink_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -4249,7 +4249,7 @@ afr_unlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_unlink (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc)
@@ -4281,7 +4281,7 @@ afr_unlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_rmdir_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -4309,7 +4309,7 @@ afr_rmdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_rmdir (call_frame_t *frame,
 	   xlator_t *this,
 	   loc_t *loc)
@@ -4341,7 +4341,7 @@ afr_rmdir (call_frame_t *frame,
   return 0;
 }
 #if 0
-static int32_t
+int32_t
 afr_create_setxattr_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -4370,7 +4370,7 @@ afr_create_setxattr_cbk (call_frame_t *frame,
 }
 #endif
 
-static int32_t
+int32_t
 afr_create_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -4502,7 +4502,7 @@ afr_create_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_create (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc,
@@ -4551,7 +4551,7 @@ afr_create (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_mknod_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -4617,7 +4617,7 @@ afr_mknod_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_mknod (call_frame_t *frame,
 	   xlator_t *this,
 	   loc_t *loc,
@@ -4648,7 +4648,7 @@ afr_mknod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_symlink_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -4715,7 +4715,7 @@ afr_symlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_symlink (call_frame_t *frame,
 	     xlator_t *this,
 	     const char *linkname,
@@ -4744,7 +4744,7 @@ afr_symlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_rename_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -4796,7 +4796,7 @@ afr_rename_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_rename (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *oldloc,
@@ -4834,7 +4834,7 @@ afr_rename (call_frame_t *frame,
 }
 
 /* FIXME: see if the implementation is correct */
-static int32_t
+int32_t
 afr_link_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -4886,7 +4886,7 @@ afr_link_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_link (call_frame_t *frame,
 	  xlator_t *this,
 	  loc_t *oldloc,
@@ -4923,7 +4923,7 @@ afr_link (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_chmod_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -4971,7 +4971,7 @@ afr_chmod_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_chmod (call_frame_t *frame,
 	   xlator_t *this,
 	   loc_t *loc,
@@ -5007,7 +5007,7 @@ afr_chmod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_chown_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -5055,7 +5055,7 @@ afr_chown_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_chown (call_frame_t *frame,
 	   xlator_t *this,
 	   loc_t *loc,
@@ -5093,7 +5093,7 @@ afr_chown (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_closedir_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -5120,7 +5120,7 @@ afr_closedir_cbk (call_frame_t *frame,
 }
 
 /* releasedir */
-static int32_t
+int32_t
 afr_closedir (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd)
@@ -5164,7 +5164,7 @@ afr_closedir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fchmod (call_frame_t *frame,
 	    xlator_t *this,
 	    fd_t *fd,
@@ -5175,7 +5175,7 @@ afr_fchmod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_fchown (call_frame_t *frame,
 	    xlator_t *this,
 	    fd_t *fd,
@@ -5188,7 +5188,7 @@ afr_fchown (call_frame_t *frame,
 }
 
 /* fsyncdir */
-static int32_t
+int32_t
 afr_fsyncdir (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
@@ -5200,7 +5200,7 @@ afr_fsyncdir (call_frame_t *frame,
 }
 
 /* access */
-static int32_t
+int32_t
 afr_access (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc,
@@ -5211,7 +5211,7 @@ afr_access (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lock_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -5223,7 +5223,7 @@ afr_lock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_lock (call_frame_t *frame,
 	  xlator_t *this,
 	  const char *path)
@@ -5246,7 +5246,7 @@ afr_lock (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_unlock_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -5258,7 +5258,7 @@ afr_unlock_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_unlock (call_frame_t *frame,
 	    xlator_t *this,
 	    const char *path)
@@ -5280,7 +5280,7 @@ afr_unlock (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_stats_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -5305,7 +5305,7 @@ afr_stats_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 afr_stats (call_frame_t *frame,
 	   xlator_t *this,
 	   int32_t flags)
@@ -5412,9 +5412,9 @@ afr_parse_replicate (char *data, xlator_t *xl)
 
 #if 0
 #include <malloc.h> /* This does not work on FreeBSD */
-static void (*old_free_hook)(void *, const void *);
+void (*old_free_hook)(void *, const void *);
 
-static void
+void
 afr_free_hook (void *ptr, const void *caller)
 {
   __free_hook = old_free_hook;
@@ -5424,7 +5424,7 @@ afr_free_hook (void *ptr, const void *caller)
   
 }
 
-static void
+void
 afr_init_hook (void)
 {
   old_free_hook = __free_hook;
