@@ -1369,11 +1369,14 @@ unify_opendir_cbk (call_frame_t *frame,
 	local->call_count++;
       
       for (index = 0; list[index] != -1; index++) {
+	char need_break = (list[index] == -1);
 	STACK_WIND (frame,
 		    unify_opendir_fail_cbk,
 		    priv->xl_array[list[index]],
 		    priv->xl_array[list[index]]->fops->closedir,
 		    local->fd);
+	if (need_break)
+	  break;
       }
       return 0;
     }
@@ -3581,7 +3584,7 @@ unify_ns_rename_cbk (call_frame_t *frame,
       };
       _STACK_WIND (frame,
 		   unify_rename_lookup_cbk,
-		   (void *)index,
+		   (void *)(long)index,
 		   priv->xl_array[index],
 		   priv->xl_array[index]->fops->lookup,
 		   &tmp_loc,
@@ -3817,6 +3820,8 @@ notify (xlator_t *this,
 	{
 	  /* Increment the inode's generation, which is used for self_heal */
 	  ++priv->inode_generation;
+
+	  ++priv->num_child_up;
 	}
 	if (!priv->is_up) {
 	  default_notify (this, event, data);
@@ -3835,6 +3840,16 @@ notify (xlator_t *this,
 	 * for scheduling
 	 */
 	sched->notify (this, event, data);
+	LOCK (&priv->lock);
+	{
+	  --priv->num_child_up;
+	}
+	UNLOCK (&priv->lock);
+	if (priv->num_child_up == 0) {
+	  /* Send CHILD_DOWN to upper layer */
+	  default_notify (this, event, data);
+	  priv->is_up = 0;
+	}
       }
       break;
     default:
