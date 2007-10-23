@@ -2839,7 +2839,6 @@ client_link_cbk (call_frame_t *frame,
     /* handle inode */
     buf = data_to_str (buf_data);
     stbuf = str_to_stat (buf);
-    dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
   }
   
   STACK_UNWIND (frame, op_ret, op_errno, inode, stbuf);
@@ -4079,15 +4078,17 @@ client_lookup_cbk (call_frame_t *frame,
   op_errno = data_to_int32 (err_data);
 
   if (op_ret >= 0) {
+    data_t *old_ino_data = dict_get (inode->ctx, frame->this->name);
+
     stat_data = dict_get (args, "STAT");
     stat_buf = data_to_str (stat_data);
     stbuf = str_to_stat (stat_buf);
-    dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
-    xattr_data = dict_get (args, "DICT");
-    if (xattr_data) {
-      char *buf = memdup (xattr_data->data, xattr_data->len);
-      dict_unserialize (buf, xattr_data->len, &xattr);
-      xattr->extra_free = buf;
+
+    if (!old_ino_data) {
+      dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
+    } else {
+      if (data_to_uint64 (old_ino_data) != stbuf->st_ino)
+	dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
     }
   }
 
