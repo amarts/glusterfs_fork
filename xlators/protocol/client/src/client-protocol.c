@@ -4083,12 +4083,18 @@ client_lookup_cbk (call_frame_t *frame,
     stat_data = dict_get (args, "STAT");
     stat_buf = data_to_str (stat_data);
     stbuf = str_to_stat (stat_buf);
-
     if (!old_ino_data) {
       dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
     } else {
       if (data_to_uint64 (old_ino_data) != stbuf->st_ino)
 	dict_set (inode->ctx, (frame->this)->name, data_from_uint64 (stbuf->st_ino));
+    }
+      
+    xattr_data = dict_get (args, "DICT");
+    if (xattr_data) {
+      char *buf = memdup (xattr_data->data, xattr_data->len);
+      dict_unserialize (buf, xattr_data->len, &xattr);
+      xattr->extra_free = buf;
     }
   }
 
@@ -4475,10 +4481,8 @@ client_protocol_interpret (transport_t *trans,
   case GF_OP_TYPE_FOP_REPLY:
     {
       if (blk->op > GF_FOP_MAXVALUE || blk->op < 0) {
-	gf_log (trans->xl->name,
-		GF_LOG_DEBUG,
-		"invalid opcode '%d'",
-		blk->op);
+	gf_log (trans->xl->name, GF_LOG_DEBUG,
+		"invalid opcode '%d'", blk->op);
 	ret = -1;
 	break;
       }

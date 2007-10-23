@@ -187,6 +187,7 @@ dict_set (dict_t *this,
   int hashval;
   data_pair_t *pair;
   char key_free = 0;
+  int tmp = 0;
 
   if (!this || !value) {
     gf_log ("libglusterfs/dict", GF_LOG_CRITICAL,
@@ -199,7 +200,8 @@ dict_set (dict_t *this,
     key_free = 1;
   }
 
-  hashval = SuperFastHash (key, strlen (key)) % this->hash_size;
+  tmp = SuperFastHash (key, strlen (key));
+  hashval = (tmp % this->hash_size);
   pair = _dict_lookup (this, key);
 
   if (pair) {
