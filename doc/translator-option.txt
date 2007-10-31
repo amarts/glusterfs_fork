@@ -121,6 +121,9 @@
      option force-revalidate-timeout <n> (1)
      option priority <pattern> (*:0)
 
+# performance/booster
+  NO OPTION
+
 # performance/stat-prefetch:
      option cache-seconds <n> (1000000)
 
