@@ -19,11 +19,45 @@
 
 %x STRING
 %{
-
 #define YYSTYPE char *
 #include "xlator.h"
 #include "y.tab.h"
 #include <string.h>
+#define START_STRSIZE	16
+
+static char *text;
+static int text_asize;
+static int text_size;
+
+void new_string(void)
+{
+	text = malloc(START_STRSIZE);
+	text_asize = START_STRSIZE;
+	text_size = 0;
+	*text = 0;
+}
+
+void append_string(const char *str, int size)
+{
+	int new_size = text_size + size + 1;
+	if (new_size > text_asize) {
+		new_size += START_STRSIZE - 1;
+		new_size &= -START_STRSIZE;
+		text = realloc(text, new_size);
+		text_asize = new_size;
+	}
+	memcpy(text + text_size, str, size);
+	text_size += size;
+	text[text_size] = 0;
+}
+
+void alloc_string(const char *str, int size)
+{
+	text = malloc(size + 1);
+	memcpy(text, str, size);
+	text[size] = 0;
+}
+
 #define START_STRSIZE	16
 
 static char *text;
@@ -66,6 +100,7 @@ END    [e][n][d]
 SUB    [s][u][b]
 OPTION [o][p][t][i][o][n]
 TYPE   [t][y][p][e]
+ 
 %%
 \#.*                   ;
 {VOLUME}               return SECTION_BEGIN;
@@ -83,6 +118,7 @@ TYPE   [t][y][p][e]
                        return STRING_TOK;
        }
 }
+. Code committed in patch-5 was somehow deleted!! Added the same code present in patch-5
 [^ \t\n\"\\]+   { yylval = strdup (yytext) ; return ID; }
 [ \t\n]+               ;
 %%
