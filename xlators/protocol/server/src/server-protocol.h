@@ -29,6 +29,7 @@
 #include "authenticate.h"
 #include "fd.h"
 #include <pthread.h>
+#include "authenticate.h"
 
 #define DEFAULT_LOG_FILE       DATADIR"/log/glusterfs/glusterfsd.log"
 #define DEFAULT_BLOCK_SIZE     4194304   /* 4MB */
@@ -83,11 +84,6 @@ struct _server_state {
   xlator_t *bound_xl;
   inode_t *inode, *inode2;
 };
-
-typedef struct {
-  server_reply_queue_t *queue;
-  int32_t max_block_size;
-} server_conf_t;
 
 typedef struct {
   dict_t *auth_modules;

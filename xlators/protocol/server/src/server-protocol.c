@@ -13,7 +13,7 @@
    General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see
+5B5B   along with this program.  If not, see
    <http://www.gnu.org/licenses/>.
 */
 
@@ -268,7 +268,6 @@ server_reply (call_frame_t *frame,
 {
   server_reply_t *entry = NULL;
   transport_t *trans = ((server_private_t *)frame->this->private)->trans;
-  server_conf_t *conf = NULL;
 
   entry = calloc (1, sizeof (*entry));
   entry->frame = frame;
@@ -5318,12 +5317,12 @@ mop_setvolume (call_frame_t *frame,
   int32_t remote_errno = 0;
   dict_t *dict = get_new_dict ();
   server_proto_priv_t *priv;
-  server_private_t *server_priv;
+  server_private_t *server_priv = NULL;
   data_t *name_data;
   char *name;
   xlator_t *xl;
-  dict_t *config_params = dict_copy (frame->this->options, NULL);
   struct sockaddr_in *_sock = NULL;
+  dict_t *config_params = dict_copy (frame->this->options, NULL);
 
   priv = SERVER_PRIV (frame);
 
@@ -5346,7 +5345,38 @@ mop_setvolume (call_frame_t *frame,
     dict_set (dict, "ERROR", data_from_dynstr (msg));
     remote_errno = ENOENT;
     goto fail;
+  } 
+  _sock = &(TRANSPORT_OF (frame))->peerinfo.sockaddr;
+  dict_set (params, "peer", str_to_data(inet_ntoa (_sock->sin_addr)));
+
+  if (!server_priv->auth_modules) {
+    gf_log (TRANSPORT_OF (frame)->xl->name, 
+	    GF_LOG_ERROR,
+	    "Authentication module not initialized");
   }
+
+  if (gf_authenticate (params, config_params, server_priv->auth_modules) == AUTH_ACCEPT) {
+    gf_log (TRANSPORT_OF (frame)->xl->name,  GF_LOG_DEBUG,
+	    "accepted client from %s:%d",
+	    inet_ntoa (_sock->sin_addr), ntohs (_sock->sin_port));
+    ret = 0;
+    priv->bound_xl = xl;
+    dict_set (dict, "ERROR", str_to_data ("Success"));
+  } else {
+    gf_log (TRANSPORT_OF (frame)->xl->name, GF_LOG_DEBUG,
+	    "Cannot authenticate client from %s:%d",
+	    inet_ntoa (_sock->sin_addr), ntohs (_sock->sin_port));
+    dict_set (dict, "ERROR", str_to_data ("Authentication failed"));
+    goto fail;
+  }
+
+  if (!priv->bound_xl) {
+    dict_set (dict, "ERROR", 
+	      str_to_data ("Check volume spec file and handshake options"));
+    ret = -1;
+    remote_errno = EACCES;
+    goto fail;
+  } 
   
   _sock = &(TRANSPORT_OF (frame))->peerinfo.sockaddr;
   dict_set (params, "peer", str_to_data(inet_ntoa (_sock->sin_addr)));
@@ -6002,10 +6032,9 @@ get_auth_types (dict_t *this,
 int32_t
 init (xlator_t *this)
 {
-  transport_t *trans = NULL;
-  server_conf_t *conf = NULL;
-  server_reply_queue_t *queue = NULL;
+  transport_t *trans;
   server_private_t *server_priv = NULL;
+  server_reply_queue_t *queue;
   int32_t error = 0;
 
   gf_log (this->name, GF_LOG_DEBUG, "protocol/server xlator loaded");
@@ -6025,12 +6054,6 @@ init (xlator_t *this)
 	    "cannot load transport");
     return -1;
   }
-
-  /* this->private points to the listening transport object.
-   * for this give trans, trans->xl_private is server config structure.
-   * but for transport objects corresponding to connected clients, trans->xl_private
-   * points to serv_proto_priv_t
-   */
   server_priv = calloc (1, sizeof (*server_priv));
   server_priv->trans = trans;
 
