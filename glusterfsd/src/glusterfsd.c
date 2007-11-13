@@ -336,6 +336,5 @@ main (int32_t argc, char *argv[])
 
   if (pidfile)
     close (pidfd);
-
   return 0;
 }
