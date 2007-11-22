@@ -363,6 +363,7 @@ unify_lookup (call_frame_t *frame,
       local->call_count++;
     
     for (index = 0; list[index] != -1; index++) {
+      char need_break = list[index+1] == -1;
       _STACK_WIND (frame,
 		   unify_lookup_cbk,
 		   (void *)(long)list [index], //cookie
@@ -370,6 +371,8 @@ unify_lookup (call_frame_t *frame,
 		   priv->xl_array [list [index]]->fops->lookup,
 		   loc,
 		   need_xattr);
+      if (need_break)
+	break;
     }
   } else {
     /* This is first call, there is no list */
