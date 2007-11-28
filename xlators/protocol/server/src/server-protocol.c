@@ -5870,6 +5870,12 @@ server_nop_cbk (call_frame_t *frame,
 		int32_t op_errno)
 {
   /* TODO: cleanup frame->root->state */
+  fd_t *fd = frame->local;
+
+  if (fd) {
+    fd_destroy (fd);
+    frame->local = NULL;
+  }
 
   STACK_DESTROY (frame->root);
   return 0;
@@ -5996,6 +6002,8 @@ server_protocol_cleanup (transport_t *trans)
 	    mode_t st_mode = priv->fdtable->fds[i]->inode->st_mode ;
 	    fd_t *fd = priv->fdtable->fds[i];
 	    call_frame_t *close_frame = copy_frame (frame);
+
+	    close_frame->local = fd;
 
 	    if (S_ISDIR (st_mode)) {
 	      STACK_WIND (close_frame,
