@@ -358,6 +358,9 @@ server_fchmod (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !mode_data) {
@@ -432,6 +435,9 @@ server_fchown (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !uid_data || !gid_data) {
@@ -2898,6 +2904,9 @@ server_readv (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !len_data || !off_data) {
@@ -2954,6 +2963,9 @@ server_writev (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !len_data || !off_data || !buf_data) {
@@ -3004,6 +3016,9 @@ server_close (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   frame->local = fd;
@@ -3050,6 +3065,9 @@ server_fsync (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !flag_data) {
@@ -3095,6 +3113,9 @@ server_flush (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd) {
@@ -3139,6 +3160,9 @@ server_ftruncate (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !off_data) {
@@ -3184,10 +3208,14 @@ server_fstat (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd) {
     struct stat buf = {0, };
+
     server_fstat_cbk (frame,
 		      NULL,
 		      frame->this,
@@ -4056,6 +4084,9 @@ server_closedir (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   frame->local = fd;
@@ -4104,10 +4135,14 @@ server_readdir (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !offset_data || !size_data) {
     dir_entry_t tmp = {0,};
+
     server_readdir_cbk (frame,
 			NULL,
 			frame->this,
@@ -4152,6 +4187,9 @@ server_fsyncdir (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !flag_data) {
@@ -4760,6 +4798,9 @@ server_lk (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd ||
@@ -4824,6 +4865,9 @@ server_writedir (call_frame_t *frame,
   if (fd_data) {
     fd_no = data_to_int32 (fd_data);
     fd = gf_fd_fdptr_get (priv->fdtable, fd_no);
+    if (!fd)
+      gf_log (frame->this->name, GF_LOG_ERROR,
+	      "unresolved fd %d", fd_no);
   }
 
   if (!fd || !flag_data || !buf_data || !count_data) {
