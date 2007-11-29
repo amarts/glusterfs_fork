@@ -325,6 +325,12 @@ gf_block_unserialize_transport (struct transport *trans,
     goto err;
   }
 
+  if (max_block_size && (blk->size > max_block_size)) {
+    /* block size exceeds the maximum block size permitted by the protocol controlling 
+     * this transport */
+    goto herr;
+  }
+
   /* TODO: do this check with lock */
   if (trans->buf) {
     int ref;
