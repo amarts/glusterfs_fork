@@ -277,6 +277,7 @@ fi
 
 AC_CANONICAL_HOST
 GF_HOST_OS=""
+GF_HOST_OS_FLAGS="-rdynamic"
 GF_SOLARIS_GLUSTERFSD_LDFLAGS=""
 case $host_os in
      linux*)
@@ -285,6 +286,7 @@ case $host_os in
 	;;
      solaris*)
 dnl	GF_SOLARIS_HOST_OS=1
+	GF_HOST_OS_FLAGS=""
         GF_HOST_OS="GF_SOLARIS_HOST_OS"
 	GF_SOLARIS_GLUSTERFSD_LDFLAGS="-lnsl -lresolv -lsocket"
 	;;
@@ -296,6 +298,7 @@ esac
 
 AC_SUBST(GF_HOST_OS)
 AC_SUBST(GF_SOLARIS_GLUSTERFSD_LDFLAGS)
+AC_SUBST(GF_HOST_OS_FLAGS)
 
 AC_CHECK_HEADERS([sys/epoll.h])
 AC_CHECK_HEADERS([sys/xattr.h])
