@@ -118,7 +118,6 @@ TYPE   [t][y][p][e]
                        return STRING_TOK;
        }
 }
-. Code committed in patch-5 was somehow deleted!! Added the same code present in patch-5
-[^ \t\n\"\\]+   { yylval = strdup (yytext) ; return ID; }
-[ \t\n]+               ;
+[^ \t\r\n\"\\]+   { yylval = strdup (yytext) ; return ID; }
+[ \t\r\n]+               ;
 %%
