@@ -6152,6 +6152,9 @@ notify (xlator_t *this,
   afr_private_t *pvt = this->private;
   int32_t upclients = 0, i = 0;
 
+  if (!pvt)
+    return 0;
+
   AFR_DEBUG_FMT (this, "EVENT %d", event);
 
   switch (event) {
