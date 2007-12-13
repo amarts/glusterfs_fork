@@ -1850,7 +1850,7 @@ posix_getdents (call_frame_t *frame,
   if (pfd_data == NULL) {
     gf_log (this->name, GF_LOG_ERROR,
 	    "pfd_data is NULL from fd=%p", fd);
-    STACK_UNWIND (frame, -1, EBADF);
+    STACK_UNWIND (frame, -1, EBADF, NULL);
     return 0;
   }
 
@@ -1859,7 +1859,7 @@ posix_getdents (call_frame_t *frame,
   if (!pfd) {
     gf_log (this->name, GF_LOG_ERROR,
 	    "pfd is NULL for fd=%p", fd);
-    STACK_UNWIND (frame, -1, EBADF);
+    STACK_UNWIND (frame, -1, EBADF,NULL);
     return 0;
   }
 

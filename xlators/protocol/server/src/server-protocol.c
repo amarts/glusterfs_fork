@@ -752,7 +752,7 @@ server_inode_prune (xlator_t *bound_xl)
     return 0;
 
   INIT_LIST_HEAD (&inode_list);
-  
+
   inode_table_prune (bound_xl->itable, &inode_list);
   
   if (!list_empty (&inode_list)) {
@@ -864,7 +864,7 @@ server_mknod_cbk (call_frame_t *frame,
       server_inode->st_mode = stbuf->st_mode;
 
       inode->ctx = NULL;
-      
+      inode_unref (inode);
       inode_unref (server_inode);
     }
 
@@ -1393,7 +1393,7 @@ server_symlink_cbk (call_frame_t *frame,
       inode_lookup (server_inode);
       server_inode->ctx = inode->ctx;
       inode->ctx = NULL;
-      
+      inode_unref (inode);
       inode_unref (server_inode);
     }
 
@@ -3807,7 +3807,8 @@ server_getxattr_resume (call_frame_t *frame,
 {
   server_state_t *state = STATE (frame);
 
-  state->inode = inode_ref (loc->inode);
+  //  state->inode = inode_ref (loc->inode);
+  state->inode = loc->inode;
 
   STACK_WIND (frame,
 	      server_getxattr_cbk,
@@ -3850,8 +3851,8 @@ server_getxattr (call_frame_t *frame,
   loc.ino = data_to_uint64 (inode_data);
   loc.inode = inode_search (bound_xl->itable, loc.ino, NULL);
   getxattr_stub = fop_getxattr_stub (frame, 
-						  server_getxattr_resume,
-						  &loc);
+				     server_getxattr_resume,
+				     &loc);
   
   if (!loc.inode) {
     frame->local = getxattr_stub;
@@ -4389,7 +4390,7 @@ server_rmdir_resume (call_frame_t *frame,
   server_state_t *state = STATE (frame);
 
   state->inode = inode_ref (loc->inode);
-
+  
   STACK_WIND (frame,
 	      server_rmdir_cbk,
 	      BOUND_XL (frame),
