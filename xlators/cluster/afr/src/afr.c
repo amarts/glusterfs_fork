@@ -805,6 +805,8 @@ afr_lookup_lock_cbk (call_frame_t *frame,
   xlator_t **children = pvt->children;
 
   local->call_count = child_count;
+  local->op_ret = -1;
+  local->op_errno = ENOTCONN;
 
   for (i = 0; i < child_count; i++) {
     STACK_WIND (frame,
@@ -1091,7 +1093,7 @@ afr_lookup (call_frame_t *frame,
 
   frame->local = local;
   local->op_ret = -1;
-  local->op_errno = ENOENT;
+  local->op_errno = ENOTCONN;
   local->loc = afr_loc_dup (loc);
 
   /* statptr[] array is used for selfheal */
