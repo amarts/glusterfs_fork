@@ -2438,7 +2438,7 @@ stripe_lk (call_frame_t *frame,
  * stripe_writedir - 
  */
 int32_t
-stripe_writedir (call_frame_t *frame,
+stripe_setdents (call_frame_t *frame,
 		 xlator_t *this,
 		 fd_t *fd,
 		 int32_t flags,
@@ -2461,7 +2461,7 @@ stripe_writedir (call_frame_t *frame,
     STACK_WIND (frame,	      
 		stripe_stack_unwind_cbk,
 		trav->xlator,
-		trav->xlator->fops->writedir,
+		trav->xlator->fops->setdents,
 		fd,
 		flags,
 		entries,
@@ -3526,7 +3526,7 @@ struct xlator_fops fops = {
   .fchown      = stripe_fchown,
   .lookup      = stripe_lookup,
   .forget      = stripe_forget,
-  .writedir    = stripe_writedir,
+  .setdents    = stripe_setdents,
   .mknod       = stripe_mknod,
 };
 

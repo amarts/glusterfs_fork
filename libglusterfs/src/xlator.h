@@ -402,7 +402,7 @@ typedef int32_t (*fop_opendir_cbk_t) (call_frame_t *frame,
 				      int32_t op_errno,
 				      fd_t *fd);
 
-typedef int32_t (*fop_readdir_cbk_t) (call_frame_t *frame,
+typedef int32_t (*fop_getdents_cbk_t) (call_frame_t *frame,
 				      void *cookie,
 				      xlator_t *this,
 				      int32_t op_ret,
@@ -461,13 +461,13 @@ typedef int32_t (*fop_lk_cbk_t) (call_frame_t *frame,
 				 int32_t op_errno,
 				 struct flock *flock);
 
-typedef int32_t (*fop_writedir_cbk_t) (call_frame_t *frame,
+typedef int32_t (*fop_setdents_cbk_t) (call_frame_t *frame,
 				       void *cookie,
 				       xlator_t *this,
 				       int32_t op_ret,
 				       int32_t op_errno);
 
-typedef int32_t (*fop_getdents_cbk_t) (call_frame_t *frame,
+typedef int32_t (*fop_readdir_cbk_t) (call_frame_t *frame,
 				       void *cookie,
 				       xlator_t *this,
 				       int32_t op_ret,
@@ -621,7 +621,7 @@ typedef int32_t (*fop_opendir_t) (call_frame_t *frame,
 				  loc_t *loc,
 				  fd_t *fd);
 
-typedef int32_t (*fop_readdir_t) (call_frame_t *frame,
+typedef int32_t (*fop_getdents_t) (call_frame_t *frame,
 				  xlator_t *this,
 				  size_t size,
 				  off_t offset,
@@ -665,17 +665,17 @@ typedef int32_t (*fop_lk_t) (call_frame_t *frame,
 			     int32_t cmd,
 			     struct flock *flock);
 
-typedef int32_t (*fop_writedir_t) (call_frame_t *frame,
+typedef int32_t (*fop_setdents_t) (call_frame_t *frame,
 				   xlator_t *this,
 				   fd_t *fd,
 				   int32_t flags,
 				   dir_entry_t *entries,
 				   int32_t count);
-typedef int32_t (*fop_getdents_t) (call_frame_t *frame,
-				   xlator_t *this,
-				   fd_t *fd,
-				   size_t size,
-				   off_t offset);
+typedef int32_t (*fop_readdir_t) (call_frame_t *frame,
+				  xlator_t *this,
+				  fd_t *fd,
+				  size_t size,
+				  off_t offset);
 
 struct xlator_fops {
   fop_lookup_t         lookup;
@@ -716,7 +716,7 @@ struct xlator_fops {
   fop_getxattr_t       getxattr;
   fop_removexattr_t    removexattr;
   fop_lk_t             lk;
-  fop_writedir_t       writedir;
+  fop_setdents_t       setdents;
   fop_getdents_t       getdents;
 
   /* these entries are used for a typechecking hack in STACK_WIND _only_ */
@@ -758,7 +758,7 @@ struct xlator_fops {
   fop_getxattr_cbk_t       getxattr_cbk;
   fop_removexattr_cbk_t    removexattr_cbk;
   fop_lk_cbk_t             lk_cbk;
-  fop_writedir_cbk_t       writedir_cbk;
+  fop_setdents_cbk_t       setdents_cbk;
   fop_getdents_cbk_t       getdents_cbk;
 };
 

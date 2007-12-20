@@ -650,7 +650,7 @@ afr_lookup_closedir_cbk (call_frame_t *frame,
 }
 
 STATIC int32_t
-afr_lookup_readdir_cbk (call_frame_t *frame,
+afr_lookup_getdents_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
 			int32_t op_ret,
@@ -767,11 +767,11 @@ afr_lookup_opendir_cbk (call_frame_t *frame,
 	local->call_count++;
     for (i = 0; i < child_count; i++) {
       if (ashptr[i].repair || i == local->latest) {
-	AFR_DEBUG_FMT (this, "readdir on %s", children[i]->name);
+	AFR_DEBUG_FMT (this, "getdents on %s", children[i]->name);
 	STACK_WIND (frame,
-		    afr_lookup_readdir_cbk,
+		    afr_lookup_getdents_cbk,
 		    children[i],
-		    children[i]->fops->readdir,
+		    children[i]->fops->getdents,
 		    0,
 		    0,
 		    local->fd);
@@ -4391,13 +4391,13 @@ afr_readlink (call_frame_t *frame,
 }
 
 STATIC int32_t
-afr_readdir_cbk (call_frame_t *frame,
-		 void *cookie,
-		 xlator_t *this,
-		 int32_t op_ret,
-		 int32_t op_errno,
-		 dir_entry_t *entry,
-		 int32_t count)
+afr_getdents_cbk (call_frame_t *frame,
+		  void *cookie,
+		  xlator_t *this,
+		  int32_t op_ret,
+		  int32_t op_errno,
+		  dir_entry_t *entry,
+		  int32_t count)
 {
   afrfd_t *afrfdp = NULL;
   int32_t tmp_count, i;
@@ -4482,9 +4482,9 @@ afr_readdir_cbk (call_frame_t *frame,
     if (afrfdp->fdstate[i]) {
       local->call_count = i + 1;
       STACK_WIND (frame, 
-		  afr_readdir_cbk,
+		  afr_getdents_cbk,
 		  children[i],
-		  children[i]->fops->readdir,
+		  children[i]->fops->getdents,
 		  local->size,
 		  local->offset,
 		  local->fd);
@@ -4518,7 +4518,7 @@ afr_readdir_cbk (call_frame_t *frame,
 
 
 STATIC int32_t
-afr_readdir (call_frame_t *frame,
+afr_getdents (call_frame_t *frame,
 	     xlator_t *this,
 	     size_t size,
 	     off_t offset,
@@ -4551,9 +4551,9 @@ afr_readdir (call_frame_t *frame,
     if (afrfdp->fdstate[i]) {
       local->call_count = i + 1;
       STACK_WIND (frame, 
-		  afr_readdir_cbk,
+		  afr_getdents_cbk,
 		  children[i],
-		  children[i]->fops->readdir,
+		  children[i]->fops->getdents,
 		  size,
 		  offset,
 		  fd);
@@ -4568,12 +4568,12 @@ afr_readdir (call_frame_t *frame,
 
 
 STATIC int32_t
-afr_getdents_cbk (call_frame_t *frame,
-		  void *cookie,
-		  xlator_t *this,
-		  int32_t op_ret,
-		  int32_t op_errno,
-		  gf_dirent_t *buf)
+afr_readdir_cbk (call_frame_t *frame,
+		 void *cookie,
+		 xlator_t *this,
+		 int32_t op_ret,
+		 int32_t op_errno,
+		 gf_dirent_t *buf)
 {
   afr_local_t *local = (afr_local_t *)frame->local;
 
@@ -4600,9 +4600,9 @@ afr_getdents_cbk (call_frame_t *frame,
       GF_DEBUG (this, "reading from child %d", i);
       if (i < pvt->child_count) {
       	STACK_WIND (frame,
-		    afr_getdents_cbk,
+		    afr_readdir_cbk,
 		    children[i],
-		    children[i]->fops->getdents,
+		    children[i]->fops->readdir,
 		    local->fd,
 		    local->size,
 		    local->offset);
@@ -4620,11 +4620,11 @@ afr_getdents_cbk (call_frame_t *frame,
 
 
 STATIC int32_t
-afr_getdents (call_frame_t *frame,
-	      xlator_t *this,
-	      fd_t *fd,
-	      size_t size,
-	      off_t offset)
+afr_readdir (call_frame_t *frame,
+	     xlator_t *this,
+	     fd_t *fd,
+	     size_t size,
+	     off_t offset)
 {
   int32_t i = 0;
   afrfd_t *afrfdp = NULL;
@@ -4661,9 +4661,9 @@ afr_getdents (call_frame_t *frame,
     STACK_UNWIND (frame, -1, ENOTCONN, NULL, 0, NULL);
   } else {
     STACK_WIND (frame,
-		afr_getdents_cbk,
+		afr_readdir_cbk,
 		children[i],
-		children[i]->fops->getdents,
+		children[i]->fops->readdir,
 		fd,
 		size,
 		offset);
@@ -4674,7 +4674,7 @@ afr_getdents (call_frame_t *frame,
 
 
 STATIC int32_t
-afr_writedir_cbk (call_frame_t *frame,
+afr_setdents_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
 		  int32_t op_ret,
@@ -4706,7 +4706,7 @@ afr_writedir_cbk (call_frame_t *frame,
 
 
 STATIC int32_t
-afr_writedir (call_frame_t *frame,
+afr_setdents (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
 	      int32_t flags,
@@ -4743,9 +4743,9 @@ afr_writedir (call_frame_t *frame,
   for (i = 0; i < child_count; i++) {
     if (afrfdp->fdstate[i]) {
       STACK_WIND (frame,
-		  afr_writedir_cbk,
+		  afr_setdents_cbk,
 		  children[i],
-		  children[i]->fops->writedir,
+		  children[i]->fops->setdents,
 		  fd,
 		  flags,
 		  entries,
@@ -6545,7 +6545,7 @@ struct xlator_fops fops = {
   .lk          = afr_lk,
   .fchmod      = afr_fchmod,
   .fchown      = afr_fchown,
-  .writedir    = afr_writedir,
+  .setdents    = afr_setdents,
   .lookup_cbk  = afr_lookup_cbk
 };
 
