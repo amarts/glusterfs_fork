@@ -2683,9 +2683,10 @@ unify_getdents_cbk (call_frame_t *frame,
 int32_t
 unify_getdents (call_frame_t *frame,
 		xlator_t *this,
+		fd_t *fd,
 		size_t size,
 		off_t offset,
-		fd_t *fd)
+		int32_t flag)
 {
   UNIFY_CHECK_FD_AND_UNWIND_ON_ERR (fd);
 
@@ -2693,9 +2694,10 @@ unify_getdents (call_frame_t *frame,
 	      unify_getdents_cbk,
 	      NS(this),
 	      NS(this)->fops->getdents,
+	      fd,
 	      size,
 	      offset,
-	      fd);
+	      flag);
 
   return 0;
 }
@@ -4267,6 +4269,7 @@ struct xlator_fops fops = {
   .incver      = unify_incver,
   .rmelem      = unify_rmelem,
   .getdents    = unify_getdents,
+  //  .setdents    = unify_setdents,
 };
 
 struct xlator_mops mops = {

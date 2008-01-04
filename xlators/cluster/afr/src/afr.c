@@ -772,9 +772,10 @@ afr_lookup_opendir_cbk (call_frame_t *frame,
 		    afr_lookup_getdents_cbk,
 		    children[i],
 		    children[i]->fops->getdents,
+		    local->fd,
 		    0,
 		    0,
-		    local->fd);
+		    0);
       }
     }
   }
@@ -4485,9 +4486,10 @@ afr_getdents_cbk (call_frame_t *frame,
 		  afr_getdents_cbk,
 		  children[i],
 		  children[i]->fops->getdents,
+		  local->fd,
 		  local->size,
 		  local->offset,
-		  local->fd);
+		  local->flags);
       return 0;
     }
   }
@@ -4519,10 +4521,11 @@ afr_getdents_cbk (call_frame_t *frame,
 
 STATIC int32_t
 afr_getdents (call_frame_t *frame,
-	     xlator_t *this,
-	     size_t size,
-	     off_t offset,
-	     fd_t *fd)
+	      xlator_t *this,
+	      fd_t *fd,
+	      size_t size,
+	      off_t offset,
+	      int32_t flag)
 {
   afrfd_t *afrfdp = NULL;
   afr_local_t *local = calloc (1, sizeof (afr_local_t));
@@ -4546,6 +4549,7 @@ afr_getdents (call_frame_t *frame,
   local->fd = fd;
   local->size = size;
   local->offset = offset;
+  local->flags = flag;
 
   for (i = 0; i < child_count; i++) {
     if (afrfdp->fdstate[i]) {
@@ -4554,9 +4558,10 @@ afr_getdents (call_frame_t *frame,
 		  afr_getdents_cbk,
 		  children[i],
 		  children[i]->fops->getdents,
+		  fd,
 		  size,
 		  offset,
-		  fd);
+		  flag);
       return 0;
     }
   }
