@@ -1,3 +1,4 @@
+
 /*
    Copyright (c) 2007 Z RESEARCH, Inc. <http://www.zresearch.com>
    This file is part of GlusterFS.
@@ -191,7 +192,9 @@ afr_lookup_mkdir_cbk (call_frame_t *frame,
       if (children[i] == prev_frame->this)
 	break;
     }
-    child_errno[i] = 0;
+    if (inode && list_empty (&inode->fds)) {
+      child_errno[i] = 0;
+    }
     statptr[i] = *buf;
     STACK_WIND (frame,
 		afr_lookup_mkdir_chown_cbk,
@@ -1006,7 +1009,10 @@ afr_lookup_cbk (call_frame_t *frame,
   if (op_ret == 0) {
     data_t *ctime_data, *version_data;
     local->op_ret = 0;
-    child_errno[i] = 0;
+    if (inode && list_empty (&inode->fds)) {
+      child_errno[i] = 0;
+    }
+
     GF_BUG_ON (!inode);
     GF_BUG_ON (!buf);
     statptr[i] = *buf;
@@ -1023,7 +1029,7 @@ afr_lookup_cbk (call_frame_t *frame,
       AFR_DEBUG_FMT (this, "child %s ctime %d version %d", 
 		     prev_frame->this->name, ashptr[i].ctime, ashptr[i].version);
     }
-  } else {
+  } else if (inode && list_empty (&inode->fds)) {
     child_errno[i] = op_errno;
   }
 
@@ -2143,7 +2149,10 @@ afr_selfheal_create_cbk (call_frame_t *frame,
       if (children[i] == prev_frame->this)
 	break;
     }
-    child_errno[i] = 0;
+    if (inode && list_empty (&inode->fds)) {
+      child_errno[i] = 0;
+    }
+
     afrfdp->fdstate[i] = 1;
     list = local->list;
     list_for_each_entry (ash, list, clist) {
@@ -4869,10 +4878,12 @@ afr_mkdir_cbk (call_frame_t *frame,
       break;
     }
   }
-  if (op_ret == 0)
-    child_errno[i] = 0;
-  else
-    child_errno[i] = op_errno;
+  if (inode && list_empty (&inode->fds)) {
+    if (op_ret == 0)
+      child_errno[i] = 0;
+    else 
+      child_errno[i] = op_errno;
+  }
 
   local->child++;
 
@@ -5162,10 +5173,12 @@ afr_create_cbk (call_frame_t *frame,
     }
   }
 
-  if (op_ret != -1)
-    child_errno[i] = 0;
-  else
-    child_errno[i] = op_errno;
+  if (inode && list_empty (&inode->fds)) {
+    if (op_ret != -1)
+      child_errno[i] = 0;
+    else
+      child_errno[i] = op_errno;
+  }
 
   local->child++;
 
@@ -5316,10 +5329,12 @@ afr_mknod_cbk (call_frame_t *frame,
     }
   }
 
-  if (op_ret == 0)
-    child_errno[i] = 0;
-  else
-    child_errno[i] = op_errno;
+  if (inode && list_empty (&inode->fds)) {
+    if (op_ret == 0)
+      child_errno[i] = 0;
+    else
+      child_errno[i] = op_errno;
+  }
 
   local->child++;
   if ((local->child == child_count) || (op_ret == -1 && op_errno != ENOTCONN && local->op_ret == -1)) {
@@ -5418,10 +5433,12 @@ afr_symlink_cbk (call_frame_t *frame,
     }
   }
 
-  if (op_ret == 0)
-    child_errno[i] = 0;
-  else
-    child_errno[i] = op_errno;
+  if (inode && list_empty (&inode->fds)) {
+    if (op_ret == 0)
+      child_errno[i] = 0;
+    else
+      child_errno[i] = op_errno;
+  }
 
   local->child++;
 

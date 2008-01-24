@@ -115,8 +115,9 @@ unify_bg_buf_cbk (call_frame_t *frame,
   UNLOCK (&frame->lock);
 
   if (!callcnt) {
+    STACK_UNWIND (frame, local->op_ret, local->op_errno, &local->stbuf);
     unify_local_wipe (local);
-    STACK_DESTROY (frame->root);
+    /*    STACK_DESTROY (frame->root); */
   }
   return 0;
 }
@@ -1548,14 +1549,22 @@ unify_ns_chmod_cbk (call_frame_t *frame,
     /* If directory, get a copy of the current frame, and set 
      * the current local to bg_frame's local 
      */
+    /*
     bg_frame = copy_frame (frame);
     frame->local = NULL;
     bg_frame->local = local;
     LOCK_INIT (&bg_frame->lock);
-
+    */
     /* Unwind this frame, and continue with bg_frame */
+    /*
     STACK_UNWIND (frame, op_ret, op_errno, buf);
-    
+    */
+
+    local->op_ret = op_ret;
+    local->op_errno = op_errno;
+    memset (&local->stbuf, 0, sizeof (local->stbuf));
+    local->stbuf = *buf;
+
     /* Send chmod request to all the nodes now */
     for (index = 0; list[index] != -1; index++)
       local->call_count++;
@@ -1568,7 +1577,7 @@ unify_ns_chmod_cbk (call_frame_t *frame,
 	    .inode = local->inode,
 	    .path = local->path,
 	  };
-	  STACK_WIND (bg_frame,
+	  STACK_WIND (frame,
 		      unify_bg_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->chmod,
@@ -1679,13 +1688,20 @@ unify_ns_chown_cbk (call_frame_t *frame,
     /* If directory, get a copy of the current frame, and set 
      * the current local to bg_frame's local 
      */
+    /*
     bg_frame = copy_frame (frame);
     frame->local = NULL;
     bg_frame->local = local;
     LOCK_INIT (&bg_frame->lock);
-    
+    */
+
     /* Unwind this frame, and continue with bg_frame */
-    STACK_UNWIND (frame, op_ret, op_errno, buf);
+    /*    STACK_UNWIND (frame, op_ret, op_errno, buf); */
+
+    local->op_ret = op_ret;
+    local->op_errno = op_errno;
+    memset (&local->stbuf, 0, sizeof (local->stbuf));
+    local->stbuf = *buf;
 
     local->call_count = 0;
     for (index = 0; list[index] != -1; index++)
@@ -1700,7 +1716,7 @@ unify_ns_chown_cbk (call_frame_t *frame,
 	    .inode = local->inode,
 	    .path = local->path,
 	  };
-	  STACK_WIND (bg_frame,
+	  STACK_WIND (frame,
 		      unify_bg_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->chown,
@@ -1818,13 +1834,18 @@ unify_ns_truncate_cbk (call_frame_t *frame,
    * the current local to bg_frame's local 
    */
   if (S_ISDIR (buf->st_mode)) {
+    /*
     bg_frame = copy_frame (frame);
     frame->local = NULL;
     bg_frame->local = local;
     LOCK_INIT (&bg_frame->lock);
-    
+    */
     /* Unwind this frame, and continue with bg_frame */
-    STACK_UNWIND (frame, op_ret, op_errno, buf);
+    /*    STACK_UNWIND (frame, op_ret, op_errno, buf); */
+    local->op_ret = op_ret;
+    local->op_errno = op_errno;
+    memset (&local->stbuf, 0, sizeof (local->stbuf));
+    local->stbuf = *buf;
     
     /* Send chmod request to all the nodes now */
     local->call_count = 0;
@@ -1839,7 +1860,7 @@ unify_ns_truncate_cbk (call_frame_t *frame,
 	    .inode = local->inode,
 	    .path = local->path,
 	  };
-	  STACK_WIND (bg_frame,
+	  STACK_WIND (frame,
 		      unify_bg_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->truncate,
@@ -1955,17 +1976,25 @@ unify_ns_utimens_cbk (call_frame_t *frame,
    * the current local to bg_frame's local 
    */
   if (S_ISDIR (buf->st_mode)) {
+    /*
     bg_frame = copy_frame (frame);
     frame->local = NULL;
     bg_frame->local = local;
     LOCK_INIT (&bg_frame->lock);
-    
+    */
+
     /* Unwind this frame, and continue with bg_frame */
+    /*
     STACK_UNWIND (frame,
 		  op_ret,
 		  op_errno,
 		  buf);
-    
+    */
+    local->op_ret = op_ret;
+    local->op_errno = op_errno;
+    memset (&local->stbuf, 0, sizeof (local->stbuf));
+    local->stbuf = *buf;
+
     /* Send chmod request to all the nodes now */
     local->call_count = 0;
     for (index = 0; list[index] != -1; index++)
@@ -1979,7 +2008,7 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 	    .inode = local->inode,
 	    .path = local->path,
 	  };
-	  STACK_WIND (bg_frame,
+	  STACK_WIND (frame,
 		      unify_bg_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->utimens,
@@ -4208,6 +4237,7 @@ init (xlator_t *this)
     }
 
     ret = 0;
+
     if (!ns_xl->ready)
       ret = xlator_tree_init (ns_xl);
     if (!ret) {
