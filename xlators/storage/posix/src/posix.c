@@ -2098,8 +2098,9 @@ notify (xlator_t *this,
 int32_t 
 init (xlator_t *this)
 {
+  int32_t ret;
+  struct stat buf;
   struct posix_private *_private = calloc (1, sizeof (*_private));
-
   data_t *directory = dict_get (this->options, "directory");
 
   if (this->children) {
@@ -2118,28 +2119,12 @@ init (xlator_t *this)
   }
   umask (000); // umask `masking' is done at the client side
 
-#if 0 /* This may lead to problems. */
-  if (mkdir (directory->data, 0777) == 0) {
-    gf_log (this->name, GF_LOG_WARNING,
-	    "directory specified not exists, created");
-  }
-#endif /* if 0 */
-  /* Check for the export directory */
-  {
-    int32_t ret = 0;
-    struct stat buf;
-
-    ret = lstat (directory->data, &buf);
-    if (ret == -1) {
-      gf_log (this->name, GF_LOG_CRITICAL,
-	      "Export directory does not exists, exiting");
-      free (_private);
-      return -1;
-    }
-    if ((buf.st_mode & 0777) != 0777) {
-      gf_log (this->name, GF_LOG_WARNING,
-	      "Export directory's permissions are not global");
-    }
+  /* Check whether the specified directory exists, if not create it. */
+  ret = stat (directory->data, &buf);
+  if (ret != 0 && !S_ISDIR (buf.st_mode)) {
+    gf_log (this->name, GF_LOG_ERROR, 
+	    "Specified directory doesn't exists, Exiting");
+    return -1;
   }
   _private->base_path = strdup (directory->data);
   _private->base_path_length = strlen (_private->base_path);
