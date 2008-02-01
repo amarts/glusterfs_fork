@@ -108,18 +108,17 @@ trace_create_cbk (call_frame_t *frame,
   ERR_EINVAL_NORETURN (!this);
 
   if (fop_names[GF_FOP_CREATE].enabled) {
-  if (op_ret >= 0) {
-    strftime (atime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_atime));
-    strftime (mtime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_mtime));
-    strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
+    if (op_ret >= 0) {
+      strftime (atime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_atime));
+      strftime (mtime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_mtime));
+      strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
 
-    gf_log (this->name, 
-	    GF_LOG_DEBUG, 
-	    "(*this=%p, op_ret=%d, op_errno=%d, fd=%p, *inode=%p), *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
-	    this, op_ret, op_errno, fd, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
+      gf_log (this->name, GF_LOG_NORMAL, 
+	    "(*this=%s, op_ret=%d, op_errno=%d, fd=%p, inode=%p), *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
+	    this->name, op_ret, op_errno, fd, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -141,7 +140,7 @@ trace_open_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_OPEN].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, *fd=%p)",
 	  this, op_ret, op_errno, fd);
   }
@@ -169,12 +168,12 @@ trace_stat_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
 
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -205,12 +204,12 @@ trace_readv_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
 
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -238,12 +237,12 @@ trace_writev_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
 
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -266,7 +265,7 @@ trace_getdents_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_GETDENTS].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, count=%d)",
 	  this, op_ret, op_errno, count);
   }
@@ -287,7 +286,7 @@ trace_readdir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_READDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(op_ret=%d, op_errno=%d)",
 	  op_ret, op_errno);
   }
@@ -308,7 +307,7 @@ trace_fsync_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FSYNC].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -335,12 +334,12 @@ trace_chown_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -368,12 +367,12 @@ trace_chmod_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -401,12 +400,12 @@ trace_fchmod_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -434,12 +433,12 @@ trace_fchown_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -460,7 +459,7 @@ trace_unlink_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_UNLINK].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -481,7 +480,7 @@ trace_rename_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_RENAME].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, buf=%p)",
 	  this, op_ret, op_errno, buf);
   }
@@ -502,7 +501,7 @@ trace_readlink_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_READLINK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, buf=%s)",
 	  this, op_ret, op_errno, buf);
   }
@@ -526,12 +525,12 @@ trace_lookup_cbk (call_frame_t *frame,
   if (fop_names[GF_FOP_LOOKUP].enabled) {
   if (op_ret >= 0) {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "callid: %lld (*this=%p, op_ret=%d, op_errno=%d, inode=%p, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld})",
 	    (long long) frame->root->unique, this, op_ret, op_errno, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -552,7 +551,7 @@ trace_forget_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FORGET].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -580,12 +579,12 @@ trace_symlink_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, inode=%p, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -614,12 +613,12 @@ trace_mknod_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, inode=%p, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -643,7 +642,7 @@ trace_mkdir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_MKDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, inode=%p",
 	  this, op_ret, op_errno, inode);
   }
@@ -671,12 +670,12 @@ trace_link_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, inode=%p, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, inode, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -697,7 +696,7 @@ trace_flush_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FLUSH].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -717,7 +716,7 @@ trace_close_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CLOSE].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -738,7 +737,7 @@ trace_opendir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_OPENDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, fd=%p)",
 	  this, op_ret, op_errno, fd);
   }
@@ -758,7 +757,7 @@ trace_rmdir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_RMDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -785,12 +784,12 @@ trace_truncate_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -818,12 +817,12 @@ trace_utimens_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -846,12 +845,12 @@ trace_statfs_cbk (call_frame_t *frame,
   if (fop_names[GF_FOP_STATFS].enabled) {
   if (op_ret >= 0) {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, *buf=%p {f_bsize=%u, f_frsize=%u, f_blocks=%lu, f_bfree=%lu, f_bavail=%lu, f_files=%lu, f_ffree=%lu, f_favail=%lu, f_fsid=%u, f_flag=%u, f_namemax=%u}) => ret=%d, errno=%d",
 	    this, buf, buf->f_bsize, buf->f_frsize, buf->f_blocks, buf->f_bfree, buf->f_bavail, buf->f_files, buf->f_ffree, buf->f_favail, buf->f_fsid, buf->f_flag, buf->f_namemax, op_ret, op_errno);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -872,7 +871,7 @@ trace_setxattr_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_SETXATTR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -893,7 +892,7 @@ trace_getxattr_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_GETXATTR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d, dict=%p)",
 	  this, op_ret, op_errno, dict);
   }
@@ -913,7 +912,7 @@ trace_removexattr_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_REMOVEXATTR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -933,7 +932,7 @@ trace_closedir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CLOSEDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -953,7 +952,7 @@ trace_fsyncdir_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FSYNCDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -973,7 +972,7 @@ trace_access_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_ACCESS].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, op_ret=%d, op_errno=%d)",
 	  this, op_ret, op_errno);
   }
@@ -1000,12 +999,12 @@ trace_ftruncate_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -1033,12 +1032,12 @@ trace_fstat_cbk (call_frame_t *frame,
     strftime (ctime_buf, 256, "[%b %d %H:%M:%S]", localtime (&buf->st_ctime));
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d, *buf=%p {st_dev=%lld, st_ino=%lld, st_mode=%d, st_nlink=%d, st_uid=%d, st_gid=%d, st_rdev=%llx, st_size=%lld, st_blksize=%ld, st_blocks=%lld, st_atime=%s, st_mtime=%s, st_ctime=%s})",
 	    this, op_ret, op_errno, buf, buf->st_dev, buf->st_ino, buf->st_mode, buf->st_nlink, buf->st_uid, buf->st_gid, buf->st_rdev, buf->st_size, buf->st_blksize, buf->st_blocks, atime_buf, mtime_buf, ctime_buf);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -1061,13 +1060,13 @@ trace_lk_cbk (call_frame_t *frame,
   if (fop_names[GF_FOP_LK].enabled) {
   if (op_ret >= 0) {
     gf_log (this->name,
-	    GF_LOG_DEBUG,
+	    GF_LOG_NORMAL,
 	    "(*this=%p, op_ret=%d, op_errno=%d, *lock=%p {l_type=%d, l_whence=%d, l_start=%lld, l_len=%lld, l_pid=%ld})",
 	    this, op_ret, op_errno, lock, 
 	    lock->l_type, lock->l_whence, lock->l_start, lock->l_len, lock->l_pid);
   } else {
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "(*this=%p, op_ret=%d, op_errno=%d)",
 	    this, op_ret, op_errno);
   }    
@@ -1089,7 +1088,7 @@ trace_setdents_cbk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_SETDENTS].enabled) {  
   gf_log (this->name,
-	  GF_LOG_DEBUG,
+	  GF_LOG_NORMAL,
 	  "*this=%p, op_ret=%d, op_errno=%d",
 	  this, op_ret, op_errno);
   }
@@ -1107,8 +1106,7 @@ trace_lookup (call_frame_t *frame,
   ERR_EINVAL_NORETURN (!this || !loc);
 
   if (fop_names[GF_FOP_LOOKUP].enabled) {  
-  gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+  gf_log (this->name, GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, loc=%p {path=%s, inode=%p} )",
 	  (long long) frame->root->unique, this, loc, loc->path, loc->inode);
   }
@@ -1132,7 +1130,7 @@ trace_forget (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FORGET].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, inode=%p})",
 	  (long long) frame->root->unique, this, inode);
   }
@@ -1171,7 +1169,7 @@ trace_stat (call_frame_t *frame,
 
   if (fop_names[GF_FOP_STAT].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, loc=%p {path=%s, inode=%p})\n",
 	  (long long) frame->root->unique, this, loc, loc->path, loc->inode);
   }
@@ -1194,7 +1192,7 @@ trace_readlink (call_frame_t *frame,
   ERR_EINVAL_NORETURN (!this || !loc || (size < 1));
   if (fop_names[GF_FOP_READLINK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, size=%d)",
 	  this, loc, loc->path, loc->inode, size);
   }
@@ -1220,7 +1218,7 @@ trace_mknod (call_frame_t *frame,
 
   if (fop_names[GF_FOP_MKNOD].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, mode=%d, dev=%lld)",
 	  this, loc, loc->path, loc->inode, mode, dev);
   }
@@ -1246,7 +1244,7 @@ trace_mkdir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_MKDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, path=%s, loc=%p {path=%s, inode=%p}, mode=%d)",
 	  this, loc->path, loc, loc->inode, mode);
   }
@@ -1269,7 +1267,7 @@ trace_unlink (call_frame_t *frame,
 
   if (fop_names[GF_FOP_UNLINK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p{path=%s, inode=%p})",
 	  this, loc, loc->path, loc->inode);
   }
@@ -1291,7 +1289,7 @@ trace_rmdir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_RMDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p})",
 	  this, loc, loc->path, loc->inode);
   }
@@ -1315,7 +1313,7 @@ trace_symlink (call_frame_t *frame,
 
   if (fop_names[GF_FOP_SYMLINK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, linkpath=%s, loc=%p {path=%s, inode=%p})",
 	  this, linkpath, loc, loc->path, loc->inode);
   }
@@ -1340,7 +1338,7 @@ trace_rename (call_frame_t *frame,
 
   if (fop_names[GF_FOP_RENAME].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(oldloc=%p{path=%s, inode=%p, ino=%lld}, newloc=%p{path=%s, inode=%p, ino=%lld})",
 	  oldloc, oldloc->path, oldloc->inode, oldloc->ino, newloc, newloc->path, newloc->inode, newloc->ino);
   }
@@ -1365,7 +1363,7 @@ trace_link (call_frame_t *frame,
 
   if (fop_names[GF_FOP_LINK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, newpath=%s)",
 	  this, loc, loc->path, loc->inode, newpath);
   }
@@ -1389,7 +1387,7 @@ trace_chmod (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CHMOD].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, mode=%o)",
 	  this, loc, loc->path, loc->inode, mode);
   }
@@ -1415,7 +1413,7 @@ trace_chown (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CHOWN].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, uid=%d, gid=%d)",
 	  this, loc, loc->path, loc->inode, uid, gid);
   }
@@ -1441,7 +1439,7 @@ trace_truncate (call_frame_t *frame,
 
   if (fop_names[GF_FOP_TRUNCATE].enabled) { 
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, offset=%lld)",
 	  this, loc, loc->path, loc->inode, offset);
   }
@@ -1472,7 +1470,7 @@ trace_utimens (call_frame_t *frame,
   strftime (modtime_str, 256, "[%b %d %H:%M:%S]", localtime (&tv[1].tv_sec));
 
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, *tv=%p {actime=%s, modtime=%s})",
 	  this, loc, loc->path, loc->inode, tv, actime_str, modtime_str);
   }
@@ -1498,7 +1496,7 @@ trace_open (call_frame_t *frame,
 
   if (fop_names[GF_FOP_OPEN].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, flags=%d, fd=%p)",
 	  this, loc, loc->path, loc->inode, flags, fd);
   }
@@ -1525,7 +1523,7 @@ trace_create (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CREATE].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, flags=0%o mode=0%o)",
 	  this, loc, loc->path, loc->inode, flags, mode);
   }
@@ -1552,7 +1550,7 @@ trace_readv (call_frame_t *frame,
 
   if (fop_names[GF_FOP_READ].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p, size=%d, offset=%lld)",
 	  this, fd, size, offset);
   }
@@ -1579,7 +1577,7 @@ trace_writev (call_frame_t *frame,
 
   if (fop_names[GF_FOP_WRITE].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p, *vector=%p, count=%d, offset=%lld)",
 	  this, fd, vector, count, offset);
   }
@@ -1604,7 +1602,7 @@ trace_statfs (call_frame_t *frame,
 
   if (fop_names[GF_FOP_STATFS].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p})",
 	  this, loc, loc->path, loc->inode);
   }
@@ -1625,7 +1623,7 @@ trace_flush (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FLUSH].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p)",
 	  this, fd);
   }
@@ -1647,7 +1645,7 @@ trace_close (call_frame_t *frame,
   
   if (fop_names[GF_FOP_CLOSE].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p)",
 	  this, fd);
   }
@@ -1670,7 +1668,7 @@ trace_fsync (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FSYNC].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, flags=%d, *fd=%p)",
 	  this, flags, fd);
   }
@@ -1695,7 +1693,7 @@ trace_setxattr (call_frame_t *frame,
 
   if (fop_names[GF_FOP_SETXATTR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, dict=%p, flags=%d)",
 	  this, loc, loc->path, loc->inode, dict, flags);
   }
@@ -1719,7 +1717,7 @@ trace_getxattr (call_frame_t *frame,
 
   if (fop_names[GF_FOP_GETXATTR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p})",
 	  this, loc, loc->path, loc->inode);
   }
@@ -1742,7 +1740,7 @@ trace_removexattr (call_frame_t *frame,
 
   if (fop_names[GF_FOP_REMOVEXATTR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, loc=%p {path=%s, inode=%p}, name=%s)",
 	  this, loc, loc->path, loc->inode, name);
   }
@@ -1767,7 +1765,7 @@ trace_opendir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_OPENDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, loc=%p {path=%s, inode=%p}, fd=%p)",
 	  (long long) frame->root->unique, this, loc, loc->path, loc->inode, fd);
   }
@@ -1793,7 +1791,7 @@ trace_getdents (call_frame_t *frame,
 
   if (fop_names[GF_FOP_GETDENTS].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, fd=%p, size=%d, offset=%lld, flag=0x%x)",
 	  (long long) frame->root->unique, this, fd, size, offset, flag);
   }
@@ -1821,7 +1819,7 @@ trace_readdir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_READDIR].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (fd=%p, size=%d, offset=%lld)",
 	  (long long) frame->root->unique, fd, size, offset);
   }
@@ -1846,7 +1844,7 @@ trace_closedir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_CLOSEDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "callid: %lld (*this=%p, *fd=%p)",
 	  (long long) frame->root->unique, this, fd);
   }
@@ -1869,7 +1867,7 @@ trace_fsyncdir (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FSYNCDIR].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, datasync=%d, *fd=%p)",
 	  this, datasync, fd);
   }
@@ -1893,7 +1891,7 @@ trace_access (call_frame_t *frame,
 
   if (fop_names[GF_FOP_ACCESS].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *loc=%p {path=%s, inode=%p}, mask=%d)",
 	  this, loc, loc->path, loc->inode, mask);
   }
@@ -1917,7 +1915,7 @@ trace_ftruncate (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FTRUNCATE].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, offset=%lld, *fd=%p)",
 	  this, offset, fd);
   }
@@ -1943,7 +1941,7 @@ trace_fchown (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FCHOWN].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p, uid=%d, gid=%d)",
 	  this, fd, uid, gid);
   }
@@ -1968,7 +1966,7 @@ trace_fchmod (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FCHMOD].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, mode=%o, *fd=%p)",
 	  this, mode, fd);
   }
@@ -1991,7 +1989,7 @@ trace_fstat (call_frame_t *frame,
 
   if (fop_names[GF_FOP_FSTAT].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p)",
 	  this, fd);
   }
@@ -2015,7 +2013,7 @@ trace_lk (call_frame_t *frame,
 
   if (fop_names[GF_FOP_LK].enabled) {  
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p, cmd=%d, lock=%p {l_type=%d, l_whence=%d, l_start=%lld, l_len=%lld, l_pid=%ld})",
 	  this, fd, cmd, lock,
 	  lock->l_type, lock->l_whence, lock->l_start, lock->l_len, lock->l_pid);
@@ -2041,7 +2039,7 @@ trace_setdents (call_frame_t *frame,
 {
   if (fop_names[GF_FOP_SETDENTS].enabled) {
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "(*this=%p, *fd=%p, flags=%d, entries=%p count=%d",
 	  this, fd, flags, entries, count);
   }
@@ -2132,7 +2130,7 @@ init (xlator_t *this)
     process_call_list (excludes, 0);
 #endif /* GF_SOLARIS_HOST_OS */
 
-  gf_log_set_loglevel (GF_LOG_DEBUG);
+  gf_log_set_loglevel (GF_LOG_NORMAL);
   
   void gf_log_xlator (xlator_t *this) {
     int32_t len;
@@ -2146,7 +2144,7 @@ init (xlator_t *this)
     dict_serialize (this->options, buf);
     
     gf_log (this->name, 
-	    GF_LOG_DEBUG, 
+	    GF_LOG_NORMAL, 
 	    "init (xlator_t *this=%p {name=%s, *next=%p, *parent=%p, *children=%p {xlator=%p, next=%p}, *fops=%p {*open=%p, stat=%p, *readlink=%p, *mknod=%p, *mkdir=%p, *unlink=%p, *rmdir=%p, *symlink=%p, *rename=%p, *link=%p, *chmod=%p, *chown=%p, *truncate=%p, *utimens=%p, *read=%p, *write=%p, *statfs=%p, *flush=%p, *close=%p, *fsync=%p, *setxattr=%p, *getxattr=%p, *removexattr=%p, *opendir=%p, *readdir=%p, *closedir=%p, *fsyncdir=%p, *access=%p, *ftruncate=%p, *fstat=%p}, *mops=%p {*stats=%p, *fsck=%p, *lock=%p, *unlock=%p}, *fini()=%p, *init()=%p, *options=%p {%s}, *private=%p)", 
 	    this, this->name, this->next, this->parent, this->children, this->children->xlator, this->children->next, this->fops, this->fops->open, this->fops->stat, this->fops->readlink, this->fops->mknod, this->fops->mkdir, this->fops->unlink, this->fops->rmdir, this->fops->symlink, this->fops->rename, this->fops->link, this->fops->chmod, this->fops->chown, this->fops->truncate, this->fops->utimens, this->fops->readv, this->fops->writev, this->fops->statfs, this->fops->flush, this->fops->close, this->fops->fsync, this->fops->setxattr, this->fops->getxattr, this->fops->removexattr, this->fops->opendir, this->fops->readdir, this->fops->closedir, this->fops->fsyncdir, this->fops->access, this->fops->ftruncate, this->fops->fstat, this->mops, this->mops->stats,  this->mops->fsck, this->mops->lock, this->mops->unlock, this->fini, this->init, this->options, buf, this->private);
   }
@@ -2166,14 +2164,14 @@ fini (xlator_t *this)
     return;
 
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "fini (xlator_t *this=%p)", this);
 
   /* Free up the dictionary options */
   dict_destroy (FIRST_CHILD(this)->options);
 
   gf_log (this->name, 
-	  GF_LOG_DEBUG, 
+	  GF_LOG_NORMAL, 
 	  "trace translator unloaded");
   return;
 }
@@ -2239,7 +2237,7 @@ trace_stats (call_frame_t *frame,
   ERR_EINVAL_NORETURN (!this);
   
   {
-    gf_log (this->name, GF_LOG_DEBUG, "trace_stats (*this=%p, flags=%d\n", this, flags);
+    gf_log (this->name, GF_LOG_NORMAL, "trace_stats (*this=%p, flags=%d\n", this, flags);
 
     STACK_WIND (frame, 
 		trace_stats_cbk, 
