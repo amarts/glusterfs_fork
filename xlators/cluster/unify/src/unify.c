@@ -94,35 +94,6 @@ unify_local_wipe (unify_local_t *local)
 }
 
 /**
- * unify_bg_buf_cbk - Used as _cbk in background frame, which returns buf.
- *
- */
-STATIC int32_t
-unify_bg_buf_cbk (call_frame_t *frame,
-		  void *cookie,
-		  xlator_t *this,
-		  int32_t op_ret,
-		  int32_t op_errno,
-		  struct stat *buf)
-{
-  int32_t callcnt = 0;
-  unify_local_t *local = frame->local;
-
-  LOCK (&frame->lock);
-  {
-    callcnt = --local->call_count;
-  }
-  UNLOCK (&frame->lock);
-
-  if (!callcnt) {
-    STACK_UNWIND (frame, local->op_ret, local->op_errno, &local->stbuf);
-    unify_local_wipe (local);
-    /*    STACK_DESTROY (frame->root); */
-  }
-  return 0;
-}
-
-/**
  * unify_buf_cbk - 
  */
 STATIC int32_t
@@ -1546,20 +1517,6 @@ unify_ns_chmod_cbk (call_frame_t *frame,
   
   if (S_ISDIR (buf->st_mode)) {
     
-    /* If directory, get a copy of the current frame, and set 
-     * the current local to bg_frame's local 
-     */
-    /*
-    bg_frame = copy_frame (frame);
-    frame->local = NULL;
-    bg_frame->local = local;
-    LOCK_INIT (&bg_frame->lock);
-    */
-    /* Unwind this frame, and continue with bg_frame */
-    /*
-    STACK_UNWIND (frame, op_ret, op_errno, buf);
-    */
-
     local->op_ret = op_ret;
     local->op_errno = op_errno;
     memset (&local->stbuf, 0, sizeof (local->stbuf));
@@ -1578,16 +1535,16 @@ unify_ns_chmod_cbk (call_frame_t *frame,
 	    .path = local->path,
 	  };
 	  STACK_WIND (frame,
-		      unify_bg_buf_cbk,
+		      unify_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->chmod,
 		      &tmp_loc,
 		      local->mode);
 	}
       }
-    } else {
+    } else { 
       unify_local_wipe (local);
-      /*      STACK_DESTROY (bg_frame->root); */
+      STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   } else {
     /* Its not a directory, so copy will be present only on one storage node */
@@ -1611,6 +1568,7 @@ unify_ns_chmod_cbk (call_frame_t *frame,
 	}
       }
     } else {
+      unify_local_wipe (local);
       STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   }
@@ -1682,21 +1640,8 @@ unify_ns_chown_cbk (call_frame_t *frame,
   
   local->op_ret = op_ret;
   local->st_ino = buf->st_ino;
-  //local->stbuf = *buf;
 
   if (S_ISDIR (buf->st_mode)) {
-    /* If directory, get a copy of the current frame, and set 
-     * the current local to bg_frame's local 
-     */
-    /*
-    bg_frame = copy_frame (frame);
-    frame->local = NULL;
-    bg_frame->local = local;
-    LOCK_INIT (&bg_frame->lock);
-    */
-
-    /* Unwind this frame, and continue with bg_frame */
-    /*    STACK_UNWIND (frame, op_ret, op_errno, buf); */
 
     local->op_ret = op_ret;
     local->op_errno = op_errno;
@@ -1717,7 +1662,7 @@ unify_ns_chown_cbk (call_frame_t *frame,
 	    .path = local->path,
 	  };
 	  STACK_WIND (frame,
-		      unify_bg_buf_cbk,
+		      unify_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->chown,
 		      &tmp_loc,
@@ -1727,7 +1672,7 @@ unify_ns_chown_cbk (call_frame_t *frame,
       }
     } else {
       unify_local_wipe (local);
-      /*      STACK_DESTROY (bg_frame->root); */
+      STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   } else {
     /* Its not a directory, so copy will be present only on one storage node */
@@ -1752,6 +1697,7 @@ unify_ns_chown_cbk (call_frame_t *frame,
 	}
       }
     } else {
+      unify_local_wipe (local);
       STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   }
@@ -1826,22 +1772,11 @@ unify_ns_truncate_cbk (call_frame_t *frame,
   
   local->op_ret = op_ret;
   local->st_ino = buf->st_ino;
-  //local->stbuf = *buf;
 
   list = local->list;
 
-  /* If directory, get a copy of the current frame, and set 
-   * the current local to bg_frame's local 
-   */
   if (S_ISDIR (buf->st_mode)) {
-    /*
-    bg_frame = copy_frame (frame);
-    frame->local = NULL;
-    bg_frame->local = local;
-    LOCK_INIT (&bg_frame->lock);
-    */
-    /* Unwind this frame, and continue with bg_frame */
-    /*    STACK_UNWIND (frame, op_ret, op_errno, buf); */
+
     local->op_ret = op_ret;
     local->op_errno = op_errno;
     memset (&local->stbuf, 0, sizeof (local->stbuf));
@@ -1861,7 +1796,7 @@ unify_ns_truncate_cbk (call_frame_t *frame,
 	    .path = local->path,
 	  };
 	  STACK_WIND (frame,
-		      unify_bg_buf_cbk,
+		      unify_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->truncate,
 		      &tmp_loc,
@@ -1870,7 +1805,7 @@ unify_ns_truncate_cbk (call_frame_t *frame,
       }
     } else {
       unify_local_wipe (local);
-      /*      STACK_DESTROY (bg_frame->root); */
+      STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   } else {
     /* Its not a directory, so copy will be present only on one storage node */
@@ -1894,6 +1829,7 @@ unify_ns_truncate_cbk (call_frame_t *frame,
 	}
       }
     } else {
+      unify_local_wipe (local);
       STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   }
@@ -1966,35 +1902,18 @@ unify_ns_utimens_cbk (call_frame_t *frame,
   }
   
   local->op_ret = 0;
-  //local->stbuf = *buf;
   local->st_ino = buf->st_ino;
 
   list = local->list;
 
-  /* If directory, get a copy of the current frame, and set 
-   * the current local to bg_frame's local 
-   */
   if (S_ISDIR (buf->st_mode)) {
-    /*
-    bg_frame = copy_frame (frame);
-    frame->local = NULL;
-    bg_frame->local = local;
-    LOCK_INIT (&bg_frame->lock);
-    */
 
-    /* Unwind this frame, and continue with bg_frame */
-    /*
-    STACK_UNWIND (frame,
-		  op_ret,
-		  op_errno,
-		  buf);
-    */
     local->op_ret = op_ret;
     local->op_errno = op_errno;
     memset (&local->stbuf, 0, sizeof (local->stbuf));
     local->stbuf = *buf;
 
-    /* Send chmod request to all the nodes now */
+    /* Send utimes request to all the nodes now */
     local->call_count = 0;
     for (index = 0; list[index] != -1; index++)
       local->call_count++;
@@ -2008,7 +1927,7 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 	    .path = local->path,
 	  };
 	  STACK_WIND (frame,
-		      unify_bg_buf_cbk,
+		      unify_buf_cbk,
 		      priv->xl_array[list[index]],
 		      priv->xl_array[list[index]]->fops->utimens,
 		      &tmp_loc,
@@ -2017,7 +1936,7 @@ unify_ns_utimens_cbk (call_frame_t *frame,
       }
     } else {
       unify_local_wipe (local);
-      /*      STACK_DESTROY (bg_frame->root); */
+      STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   } else {
     /* Its not a directory */
@@ -2041,6 +1960,7 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 	}
       }
     } else {
+      unify_local_wipe (local);
       STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   }
