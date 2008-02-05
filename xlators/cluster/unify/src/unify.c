@@ -655,6 +655,7 @@ unify_ns_rmdir_cbk (call_frame_t *frame,
   int16_t index = 0;
   unify_private_t *priv = this->private;
   unify_local_t *local = frame->local;
+  int32_t call_count = 0;
   
   if (op_ret == -1) {
      /* No need to send rmdir request to other servers, 
@@ -664,10 +665,14 @@ unify_ns_rmdir_cbk (call_frame_t *frame,
     STACK_UNWIND (frame, op_ret, op_errno);
     return 0;
   }
-  
-  for (index = 0; local->list[index] != -1; index++)
-    local->call_count++;
-  local->call_count--; // for namespace
+
+  for (index = 0; local->list[index] != -1; index++) {
+    if (NS(this) != priv->xl_array[local->list[index]]) {
+      local->call_count++;
+      call_count++;
+    }
+  }
+
 
   if (local->call_count) {
     for (index = 0; local->list[index] != -1; index++) {
@@ -681,6 +686,8 @@ unify_ns_rmdir_cbk (call_frame_t *frame,
 		    priv->xl_array[local->list[index]],
 		    priv->xl_array[local->list[index]]->fops->rmdir,
 		    &tmp_loc);
+	if (!--call_count)
+	  break;
       }
     }
   } else {
@@ -1501,6 +1508,7 @@ unify_ns_chmod_cbk (call_frame_t *frame,
   unify_private_t *priv = this->private;
   int16_t *list = local->list;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   if (op_ret == -1) {
     /* No need to send chmod request to other servers, 
@@ -1515,6 +1523,13 @@ unify_ns_chmod_cbk (call_frame_t *frame,
   local->st_ino = buf->st_ino;
   //local->stbuf = *buf;
   
+  for (index = 0; local->list[index] != -1; index++) {
+    if (NS(this) != priv->xl_array[local->list[index]]) {
+      local->call_count++;
+      call_count++;
+    }
+  }
+
   if (S_ISDIR (buf->st_mode)) {
     
     local->op_ret = op_ret;
@@ -1523,10 +1538,7 @@ unify_ns_chmod_cbk (call_frame_t *frame,
     local->stbuf = *buf;
 
     /* Send chmod request to all the nodes now */
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; /* Reduce 1 for namespace entry */
-    
+  
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
 	if (priv->xl_array[list[index]] != NS(this)) {
@@ -1540,6 +1552,8 @@ unify_ns_chmod_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->chmod,
 		      &tmp_loc,
 		      local->mode);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else { 
@@ -1547,11 +1561,9 @@ unify_ns_chmod_cbk (call_frame_t *frame,
       STACK_UNWIND (frame, 0, 0, &local->stbuf);
     }
   } else {
-    /* Its not a directory, so copy will be present only on one storage node */
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; //for namespace
 
+    /* Its not a directory, so copy will be present only on one storage node */
+  
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
 	if (priv->xl_array[list[index]] != NS(this)) {
@@ -1565,6 +1577,8 @@ unify_ns_chmod_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->chmod,
 		      &tmp_loc,
 		      local->mode);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1628,6 +1642,7 @@ unify_ns_chown_cbk (call_frame_t *frame,
   unify_private_t *priv = this->private;
   int16_t *list = local->list;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   if (op_ret == -1) {
     /* No need to send chown request to other servers, as namespace action 
@@ -1649,9 +1664,12 @@ unify_ns_chown_cbk (call_frame_t *frame,
     local->stbuf = *buf;
 
     local->call_count = 0;
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; /* Reduce 1 for namespace entry */
+    for (index = 0; list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
 
     if (local->call_count) {
       /* Send chown request to all the nodes now */
@@ -1668,6 +1686,8 @@ unify_ns_chown_cbk (call_frame_t *frame,
 		      &tmp_loc,
 		      local->uid,
 		      local->gid);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1676,9 +1696,12 @@ unify_ns_chown_cbk (call_frame_t *frame,
     }
   } else {
     /* Its not a directory, so copy will be present only on one storage node */
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; //for namespace
+    for (index = 0; list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
 
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -1694,6 +1717,8 @@ unify_ns_chown_cbk (call_frame_t *frame,
 		      &tmp_loc,
 		      local->uid,
 		      local->gid);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1760,6 +1785,7 @@ unify_ns_truncate_cbk (call_frame_t *frame,
   unify_private_t *priv = this->private;
   int16_t *list = NULL;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   if (op_ret == -1) {
     /* No need to send truncate request to other servers, 
@@ -1784,9 +1810,12 @@ unify_ns_truncate_cbk (call_frame_t *frame,
     
     /* Send chmod request to all the nodes now */
     local->call_count = 0;
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; /* Reduce 1 for namespace entry */
+    for (index = 0; list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
     
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -1801,6 +1830,8 @@ unify_ns_truncate_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->truncate,
 		      &tmp_loc,
 		      local->offset);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1809,9 +1840,12 @@ unify_ns_truncate_cbk (call_frame_t *frame,
     }
   } else {
     /* Its not a directory, so copy will be present only on one storage node */
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; //for namespace
+    for (index = 0; list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
 
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -1826,6 +1860,8 @@ unify_ns_truncate_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->truncate,
 		      &tmp_loc,
 		      local->offset);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1888,6 +1924,7 @@ unify_ns_utimens_cbk (call_frame_t *frame,
   unify_private_t *priv = this->private;
   int16_t *list = NULL;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   if (op_ret == -1) {
     /* No need to send chmod request to other servers, 
@@ -1915,9 +1952,12 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 
     /* Send utimes request to all the nodes now */
     local->call_count = 0;
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; /* Reduce 1 for namespace entry */
+    for (index = 0; local->list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[local->list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
 
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -1932,6 +1972,8 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->utimens,
 		      &tmp_loc,
 		      local->tv);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -1940,9 +1982,12 @@ unify_ns_utimens_cbk (call_frame_t *frame,
     }
   } else {
     /* Its not a directory */
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--;
+    for (index = 0; list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
 
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -1957,6 +2002,8 @@ unify_ns_utimens_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->utimens,
 		      &tmp_loc,
 		      local->tv);
+	  if (!--call_count)
+	    break;
 	}
       }
     } else {
@@ -2909,6 +2956,7 @@ unify_setxattr (call_frame_t *frame,
   unify_local_t *local = NULL;
   int16_t *list = NULL;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   UNIFY_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -2917,10 +2965,13 @@ unify_setxattr (call_frame_t *frame,
 
   list = data_to_ptr (dict_get (loc->inode->ctx, this->name));
 
-  for (index = 0; list[index] != -1; index++)
-    local->call_count++;
-  local->call_count--; //don't do it on namespace
- 
+  for (index = 0; list[index] != -1; index++) {
+    if (NS(this) != priv->xl_array[list[index]]) {
+      local->call_count++;
+      call_count++;
+    }
+  }
+   
   if (local->call_count) {
     for (index = 0; list[index] != -1; index++) {
       if (priv->xl_array[list[index]] != NS(this)) {
@@ -2931,6 +2982,8 @@ unify_setxattr (call_frame_t *frame,
 		    loc,
 		    dict,
 		    flags);
+	if (!--call_count)
+	  break;
       }
     }
   } else {
@@ -3044,6 +3097,7 @@ unify_removexattr (call_frame_t *frame,
   unify_local_t *local = NULL;
   int16_t *list = NULL;
   int16_t index = 0;
+  int32_t call_count = 0;
 
   UNIFY_CHECK_INODE_CTX_AND_UNWIND_ON_ERR (loc);
 
@@ -3052,9 +3106,12 @@ unify_removexattr (call_frame_t *frame,
 
   list = data_to_ptr (dict_get (loc->inode->ctx, this->name));
 
-  for (index = 0; list[index] != -1; index++)
-    local->call_count++;
-  local->call_count--; /* on NS its not done */
+  for (index = 0; list[index] != -1; index++) {
+    if (NS(this) != priv->xl_array[list[index]]) {
+      local->call_count++;
+      call_count++;
+    }
+  }
 
   if (local->call_count) {
     for (index = 0; list[index] != -1; index++) {
@@ -3065,6 +3122,8 @@ unify_removexattr (call_frame_t *frame,
 		    priv->xl_array[list[index]]->fops->removexattr,
 		    loc,
 		    name);
+	if (!--call_count)
+	  break;
       }
     }
   } else {
@@ -3383,12 +3442,16 @@ unify_rename_lookup_cbk (call_frame_t *frame,
   }
 
   if (!callcnt) {
+    int32_t call_count = 0;
     list = local->list;
     local->call_count = 0;
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; // minus one entry for namespace deletion which just happend
-    
+    for (index = 0; local->list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[local->list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
+
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
 	if (NS(this) != priv->xl_array[list[index]]) {
@@ -3406,6 +3469,8 @@ unify_rename_lookup_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->rename,
 		      &tmp_loc,
 		      &tmp_newloc);
+	  if (!--call_count)
+	    break;
 	}
       }
     }
@@ -3435,14 +3500,18 @@ unify_rename_unlink_cbk (call_frame_t *frame,
   UNLOCK (&frame->lock);
 
   if (!callcnt) {
+    int32_t call_count = 0;
     /* Send 'fops->rename' request to all the nodes where 'oldloc->path' exists. 
      * The case of 'newloc' being existing is handled already.
      */
     list = local->list;
     local->call_count = 0;
-    for (index = 0; list[index] != -1; index++)
-      local->call_count++;
-    local->call_count--; // minus one entry for namespace deletion which just happend
+    for (index = 0; local->list[index] != -1; index++) {
+      if (NS(this) != priv->xl_array[local->list[index]]) {
+	local->call_count++;
+	call_count++;
+      }
+    }
     
     if (local->call_count) {
       for (index = 0; list[index] != -1; index++) {
@@ -3461,6 +3530,8 @@ unify_rename_unlink_cbk (call_frame_t *frame,
 		      priv->xl_array[list[index]]->fops->rename,
 		      &tmp_loc,
 		      &tmp_newloc);
+	  if (!--call_count)
+	    break;
 	}
       }
       return 0;
@@ -3513,6 +3584,7 @@ unify_ns_rename_cbk (call_frame_t *frame,
   unify_private_t *priv = this->private;
   unify_local_t *local = frame->local;
   int16_t *list = local->list;
+  int32_t call_count = 0;
 
   if (op_ret == -1) {
     /* No need to send rename request to other servers, 
@@ -3540,9 +3612,12 @@ unify_ns_rename_cbk (call_frame_t *frame,
        */
       local->call_count = 0;
       list = data_to_ptr (dict_get (local->new_inode->ctx, this->name));
-      for (index = 0; list[index] != -1; index++)
-	local->call_count++;
-      local->call_count--; /* for namespace */
+      for (index = 0; list[index] != -1; index++) {
+	if (NS(this) != priv->xl_array[list[index]]) {
+	  local->call_count++;
+	  call_count++;
+	}
+      }
       
       if (local->call_count) {
 	for (index = 0; list[index] != -1; index++) {
@@ -3556,6 +3631,8 @@ unify_ns_rename_cbk (call_frame_t *frame,
 			priv->xl_array[list[index]],
 			priv->xl_array[list[index]]->fops->unlink,
 			&tmp_loc);
+	    if (!--call_count)
+	      break;
 	  }
 	}
 	return 0;
@@ -3591,10 +3668,13 @@ unify_ns_rename_cbk (call_frame_t *frame,
    */
   list = local->list;
   local->call_count = 0;
-  for (index = 0; list[index] != -1; index++)
-    local->call_count++;
-  local->call_count--; // minus one entry for namespace deletion which just happend
-
+  for (index = 0; local->list[index] != -1; index++) {
+    if (NS(this) != priv->xl_array[local->list[index]]) {
+      local->call_count++;
+      call_count++;
+    }
+  }
+  
   if (local->call_count) {
     for (index = 0; list[index] != -1; index++) {
       if (NS(this) != priv->xl_array[list[index]]) {
@@ -3612,6 +3692,9 @@ unify_ns_rename_cbk (call_frame_t *frame,
 		    priv->xl_array[list[index]]->fops->rename,
 		    &tmp_loc,
 		    &tmp_newloc);
+
+	if (!--call_count)
+	  break;
       }
     }
   } else {
