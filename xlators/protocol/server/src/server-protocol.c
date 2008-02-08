@@ -315,7 +315,7 @@ server_reply (call_frame_t *frame,
 /*
  * server_fchmod_cbk
  */
-static int32_t
+int32_t
 server_fchmod_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -343,7 +343,7 @@ server_fchmod_cbk (call_frame_t *frame,
  * server_fchmod
  *
  */
-static int32_t
+int32_t
 server_fchmod (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -391,7 +391,7 @@ server_fchmod (call_frame_t *frame,
 /*
  * server_fchown_cbk 
  */
-static int32_t
+int32_t
 server_fchown_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -418,7 +418,7 @@ server_fchown_cbk (call_frame_t *frame,
  * server_fchown
  *
  */
-static int32_t
+int32_t
 server_fchown (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -477,7 +477,7 @@ server_fchown (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_setdents_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -506,7 +506,7 @@ server_setdents_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_lk_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -543,7 +543,7 @@ server_lk_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_access_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -572,7 +572,7 @@ server_access_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_utimens_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -608,7 +608,7 @@ server_utimens_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_chmod_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -644,7 +644,7 @@ server_chmod_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_chown_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -679,7 +679,7 @@ server_chown_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_rmdir_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -700,7 +700,7 @@ server_rmdir_cbk (call_frame_t *frame,
 /*
  * server_rmelem_cbk - remove a directory entry (file, dir, link, symlink...)
  */
-static int32_t
+int32_t
 server_rmelem_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -720,7 +720,7 @@ server_rmelem_cbk (call_frame_t *frame,
  * server_incver_cbk - increment version of the directory trusted.afr.version
  */
 
-static int32_t
+int32_t
 server_incver_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -742,7 +742,7 @@ server_incver_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_inode_prune (xlator_t *bound_xl)
 {
   struct list_head inode_list;
@@ -784,7 +784,7 @@ server_inode_prune (xlator_t *bound_xl)
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_mkdir_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -836,7 +836,7 @@ server_mkdir_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_mknod_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -889,7 +889,7 @@ server_mknod_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_fsyncdir_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -920,7 +920,7 @@ server_fsyncdir_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_getdents_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -985,7 +985,7 @@ server_getdents_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_readdir_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1019,7 +1019,7 @@ server_readdir_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_closedir_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1089,7 +1089,7 @@ server_fdfailure_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_opendir_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -1147,7 +1147,7 @@ server_opendir_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_statfs_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1207,7 +1207,7 @@ server_statfs_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_removexattr_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -1236,7 +1236,7 @@ server_removexattr_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_getxattr_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1276,7 +1276,7 @@ server_getxattr_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_setxattr_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1305,7 +1305,7 @@ server_setxattr_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_rename_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1340,7 +1340,7 @@ server_rename_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_unlink_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1368,7 +1368,7 @@ server_unlink_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_symlink_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -1418,7 +1418,7 @@ server_symlink_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_link_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -1458,7 +1458,7 @@ server_link_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_truncate_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1494,7 +1494,7 @@ server_truncate_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_fstat_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1530,7 +1530,7 @@ server_fstat_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_ftruncate_cbk (call_frame_t *frame,
 		      void *cookie,
 		      xlator_t *this,
@@ -1566,7 +1566,7 @@ server_ftruncate_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_flush_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1594,7 +1594,7 @@ server_flush_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_fsync_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1622,7 +1622,7 @@ server_fsync_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_close_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1657,7 +1657,7 @@ server_close_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_writev_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1695,7 +1695,7 @@ server_writev_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_readv_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -1737,7 +1737,7 @@ server_readv_cbk (call_frame_t *frame,
  *
  * not for external reference
  */ 
-static int32_t
+int32_t
 server_open_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -1796,7 +1796,7 @@ server_open_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_create_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1868,7 +1868,7 @@ server_create_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_readlink_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1900,7 +1900,7 @@ server_readlink_cbk (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_stat_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -1935,7 +1935,7 @@ server_stat_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_forget_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1965,7 +1965,7 @@ server_forget_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_lookup_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -2040,7 +2040,7 @@ server_lookup_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_stub_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -2510,7 +2510,7 @@ server_stub_cbk (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_lookup (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -2568,7 +2568,7 @@ server_lookup (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_forget (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -2601,7 +2601,7 @@ server_forget (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_stat_resume (call_frame_t *frame,
 		    xlator_t *this,
 		    loc_t *loc)
@@ -2627,7 +2627,7 @@ server_stat_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_stat (call_frame_t *frame,
 	     xlator_t *bound_xl,
 	     dict_t *params)
@@ -2683,7 +2683,7 @@ server_stat (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_readlink_resume (call_frame_t *frame,
 			xlator_t *this,
 			loc_t *loc,
@@ -2711,7 +2711,7 @@ server_readlink_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_readlink (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -2775,7 +2775,7 @@ server_readlink (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_create (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -2827,7 +2827,7 @@ server_create (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_open_resume (call_frame_t *frame,
 		    xlator_t *this,
 		    loc_t *loc,
@@ -2860,7 +2860,7 @@ server_open_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_open (call_frame_t *frame,
 	     xlator_t *bound_xl,
 	     dict_t *params)
@@ -2927,7 +2927,7 @@ server_open (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_readv (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -2984,7 +2984,7 @@ server_readv (call_frame_t *frame,
  *
  * not for external reference 
  */
-static int32_t
+int32_t
 server_writev (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -3041,7 +3041,7 @@ server_writev (call_frame_t *frame,
  *
  * not for external reference 
  */
-static int32_t
+int32_t
 server_close (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -3089,7 +3089,7 @@ server_close (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_fsync (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -3137,7 +3137,7 @@ server_fsync (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_flush (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -3184,7 +3184,7 @@ server_flush (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_ftruncate (call_frame_t *frame,
 		  xlator_t *bound_xl,
 		  dict_t *params)
@@ -3233,7 +3233,7 @@ server_ftruncate (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_fstat (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -3274,7 +3274,7 @@ server_fstat (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_truncate_resume (call_frame_t *frame,
 			xlator_t *this,
 			loc_t *loc,
@@ -3302,7 +3302,7 @@ server_truncate_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_truncate (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -3363,7 +3363,7 @@ server_truncate (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_link_resume (call_frame_t *frame,
 		    xlator_t *this,
 		    loc_t *oldloc,
@@ -3390,7 +3390,7 @@ server_link_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_link (call_frame_t *frame,
 	     xlator_t *bound_xl,
 	     dict_t *params)
@@ -3460,7 +3460,7 @@ server_link (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_symlink (call_frame_t *frame,
 		xlator_t *bound_xl,
 		dict_t *params)
@@ -3497,7 +3497,7 @@ server_symlink (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_unlink_resume (call_frame_t *frame,
 		      xlator_t *this,
 		      loc_t *loc)
@@ -3523,7 +3523,7 @@ server_unlink_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_unlink (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -3577,7 +3577,7 @@ server_unlink (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_rename_resume (call_frame_t *frame,
 		      xlator_t *this,
 		      loc_t *oldloc,
@@ -3608,7 +3608,7 @@ server_rename_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_rename (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -3706,7 +3706,7 @@ server_rename (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_setxattr_resume (call_frame_t *frame,
 			xlator_t *this,
 			loc_t *loc,
@@ -3736,7 +3736,7 @@ server_setxattr_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_setxattr (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -3804,7 +3804,7 @@ server_setxattr (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_getxattr_resume (call_frame_t *frame,
 			xlator_t *this,
 			loc_t *loc)
@@ -3830,7 +3830,7 @@ server_getxattr_resume (call_frame_t *frame,
  * not for external reference
  */
 
-static int32_t
+int32_t
 server_getxattr (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -3882,7 +3882,7 @@ server_getxattr (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_removexattr_resume (call_frame_t *frame,
 			   xlator_t *this,
 			   loc_t *loc,
@@ -3909,7 +3909,7 @@ server_removexattr_resume (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_removexattr (call_frame_t *frame,
 		    xlator_t *bound_xl,
 		    dict_t *params)
@@ -3974,7 +3974,7 @@ server_removexattr (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_statfs (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -4020,7 +4020,7 @@ server_statfs (call_frame_t *frame,
 
 
 
-static int32_t
+int32_t
 server_opendir_resume (call_frame_t *frame,
 		       xlator_t *this,
 		       loc_t *loc,
@@ -4050,7 +4050,7 @@ server_opendir_resume (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_opendir (call_frame_t *frame,
 		xlator_t *bound_xl,
 		dict_t *params)
@@ -4113,7 +4113,7 @@ server_opendir (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_closedir (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -4162,7 +4162,7 @@ server_closedir (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_getdents (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -4217,7 +4217,7 @@ server_getdents (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_readdir (call_frame_t *frame,
 		xlator_t *bound_xl,
 		dict_t *params)
@@ -4265,7 +4265,7 @@ server_readdir (call_frame_t *frame,
  * 
  * not for external reference
  */
-static int32_t
+int32_t
 server_fsyncdir (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -4312,7 +4312,7 @@ server_fsyncdir (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_mknod (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -4357,7 +4357,7 @@ server_mknod (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_mkdir (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -4391,7 +4391,7 @@ server_mkdir (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_rmdir_resume (call_frame_t *frame,
 		     xlator_t *this,
 		     loc_t *loc)
@@ -4416,7 +4416,7 @@ server_rmdir_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_rmdir (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -4470,7 +4470,7 @@ server_rmdir (call_frame_t *frame,
  * server_rmelem - remove directory entry - file, dir, links etc
  */
 
-static int32_t
+int32_t
 server_rmelem (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -4489,7 +4489,7 @@ server_rmelem (call_frame_t *frame,
  * server_incver - increment version of the directory - trusted.afr.version ext attr
  */
 
-static int32_t
+int32_t
 server_incver (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -4504,7 +4504,7 @@ server_incver (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 server_chown_resume (call_frame_t *frame,
 		     xlator_t *this,
 		     loc_t *loc,
@@ -4531,7 +4531,7 @@ server_chown_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_chown (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -4594,7 +4594,7 @@ server_chown (call_frame_t *frame,
 }
 
 
-static int32_t 
+int32_t 
 server_chmod_resume (call_frame_t *frame,
 		     xlator_t *this,
 		     loc_t *loc,
@@ -4622,7 +4622,7 @@ server_chmod_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_chmod (call_frame_t *frame,
 	      xlator_t *bound_xl,
 	      dict_t *params)
@@ -4681,7 +4681,7 @@ server_chmod (call_frame_t *frame,
 }
 
 
-static int32_t 
+int32_t 
 server_utimens_resume (call_frame_t *frame,
 		       xlator_t *this,
 		       loc_t *loc,
@@ -4708,7 +4708,7 @@ server_utimens_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_utimens (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -4779,7 +4779,7 @@ server_utimens (call_frame_t *frame,
 }
 
 
-static int32_t
+int32_t
 server_access_resume (call_frame_t *frame,
 		      xlator_t *this,
 		      loc_t *loc,
@@ -4805,7 +4805,7 @@ server_access_resume (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_access (call_frame_t *frame,
 	       xlator_t *bound_xl,
 	       dict_t *params)
@@ -4869,7 +4869,7 @@ server_access (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_lk (call_frame_t *frame,
 	   xlator_t *bound_xl,
 	   dict_t *params)
@@ -5160,7 +5160,7 @@ mop_getspec (call_frame_t *frame,
   return ret;
 }
 
-static int32_t
+int32_t
 server_checksum_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -5183,7 +5183,7 @@ server_checksum_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t
+int32_t
 server_checksum (call_frame_t *frame,
 		 xlator_t *bound_xl,
 		 dict_t *params)
@@ -5297,7 +5297,7 @@ mop_setspec (call_frame_t *frame,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_mop_lock_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -6030,7 +6030,7 @@ server_protocol_interpret (transport_t *trans,
  *
  * not for external reference
  */
-static int32_t
+int32_t
 server_nop_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,

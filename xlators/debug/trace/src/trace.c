@@ -94,7 +94,7 @@ struct {
 		 {"incver", 1},
 		 {"readdir", 1},};
 
-static int32_t 
+int32_t 
 trace_create_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -128,7 +128,7 @@ trace_create_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_open_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -149,7 +149,7 @@ trace_open_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_stat_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -183,7 +183,7 @@ trace_stat_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_readv_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -219,7 +219,7 @@ trace_readv_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_writev_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -252,7 +252,7 @@ trace_writev_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_getdents_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -274,7 +274,7 @@ trace_getdents_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_readdir_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -296,7 +296,7 @@ trace_readdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fsync_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -316,7 +316,7 @@ trace_fsync_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_chown_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -349,7 +349,7 @@ trace_chown_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_chmod_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -382,7 +382,7 @@ trace_chmod_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fchmod_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -415,7 +415,7 @@ trace_fchmod_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fchown_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -448,7 +448,7 @@ trace_fchown_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_unlink_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -468,7 +468,7 @@ trace_unlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_rename_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -489,7 +489,7 @@ trace_rename_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_readlink_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -560,7 +560,7 @@ trace_forget_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_symlink_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -594,7 +594,7 @@ trace_symlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_mknod_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -629,7 +629,7 @@ trace_mknod_cbk (call_frame_t *frame,
 }
   
 
-static int32_t 
+int32_t 
 trace_mkdir_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -651,7 +651,7 @@ trace_mkdir_cbk (call_frame_t *frame,
   return 0;
 }
   
-static int32_t 
+int32_t 
 trace_link_cbk (call_frame_t *frame,
 		void *cookie,
 		xlator_t *this,
@@ -685,7 +685,7 @@ trace_link_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_flush_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -705,7 +705,7 @@ trace_flush_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_close_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -725,7 +725,7 @@ trace_close_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_opendir_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -746,7 +746,7 @@ trace_opendir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_rmdir_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -766,7 +766,7 @@ trace_rmdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_truncate_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -799,7 +799,7 @@ trace_truncate_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_utimens_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -832,7 +832,7 @@ trace_utimens_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_statfs_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -860,7 +860,7 @@ trace_statfs_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_setxattr_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -880,7 +880,7 @@ trace_setxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_getxattr_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -901,7 +901,7 @@ trace_getxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_removexattr_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -921,7 +921,7 @@ trace_removexattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_closedir_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -941,7 +941,7 @@ trace_closedir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fsyncdir_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -961,7 +961,7 @@ trace_fsyncdir_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_access_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -981,7 +981,7 @@ trace_access_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_ftruncate_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1014,7 +1014,7 @@ trace_ftruncate_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fstat_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -1047,7 +1047,7 @@ trace_fstat_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_lk_cbk (call_frame_t *frame,
 	      void *cookie,
 	      xlator_t *this,
@@ -1077,7 +1077,7 @@ trace_lk_cbk (call_frame_t *frame,
 }
 
 
-static int32_t 
+int32_t 
 trace_setdents_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -1121,7 +1121,7 @@ trace_lookup (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_forget (call_frame_t *frame,
 	      xlator_t *this,
 	      inode_t *inode)
@@ -1144,7 +1144,7 @@ trace_forget (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_stat (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc)
@@ -1183,7 +1183,7 @@ trace_stat (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_readlink (call_frame_t *frame,
 		xlator_t *this,
 		loc_t *loc,
@@ -1207,7 +1207,7 @@ trace_readlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_mknod (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc,
@@ -1234,7 +1234,7 @@ trace_mknod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_mkdir (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc,
@@ -1258,7 +1258,7 @@ trace_mkdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_unlink (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc)
@@ -1280,7 +1280,7 @@ trace_unlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_rmdir (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc)
@@ -1303,7 +1303,7 @@ trace_rmdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_symlink (call_frame_t *frame,
 	       xlator_t *this,
 	       const char *linkpath,
@@ -1328,7 +1328,7 @@ trace_symlink (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_rename (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *oldloc,
@@ -1353,7 +1353,7 @@ trace_rename (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_link (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc,
@@ -1377,7 +1377,7 @@ trace_link (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_chmod (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc,
@@ -1402,7 +1402,7 @@ trace_chmod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_chown (call_frame_t *frame,
 	     xlator_t *this,
 	     loc_t *loc,
@@ -1429,7 +1429,7 @@ trace_chown (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_truncate (call_frame_t *frame,
 		xlator_t *this,
 		loc_t *loc,
@@ -1454,7 +1454,7 @@ trace_truncate (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_utimens (call_frame_t *frame,
 	       xlator_t *this,
 	       loc_t *loc,
@@ -1485,7 +1485,7 @@ trace_utimens (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_open (call_frame_t *frame,
 	    xlator_t *this,
 	    loc_t *loc,
@@ -1511,7 +1511,7 @@ trace_open (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_create (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc,
@@ -1539,7 +1539,7 @@ trace_create (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_readv (call_frame_t *frame,
 	     xlator_t *this,
 	     fd_t *fd,
@@ -1565,7 +1565,7 @@ trace_readv (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_writev (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
@@ -1593,7 +1593,7 @@ trace_writev (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_statfs (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc)
@@ -1614,7 +1614,7 @@ trace_statfs (call_frame_t *frame,
   return 0; 
 }
 
-static int32_t 
+int32_t 
 trace_flush (call_frame_t *frame,
 	     xlator_t *this,
 	     fd_t *fd)
@@ -1636,7 +1636,7 @@ trace_flush (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_close (call_frame_t *frame,
 	     xlator_t *this,
 	     fd_t *fd)
@@ -1658,7 +1658,7 @@ trace_close (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fsync (call_frame_t *frame,
 	     xlator_t *this,
 	     fd_t *fd,
@@ -1682,7 +1682,7 @@ trace_fsync (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_setxattr (call_frame_t *frame,
 		xlator_t *this,
 		loc_t *loc,
@@ -1708,7 +1708,7 @@ trace_setxattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_getxattr (call_frame_t *frame,
 		xlator_t *this,
 		loc_t *loc)
@@ -1730,7 +1730,7 @@ trace_getxattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_removexattr (call_frame_t *frame,
 		   xlator_t *this,
 		   loc_t *loc,
@@ -1755,7 +1755,7 @@ trace_removexattr (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_opendir (call_frame_t *frame,
 	       xlator_t *this,
 	       loc_t *loc,
@@ -1779,7 +1779,7 @@ trace_opendir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_getdents (call_frame_t *frame,
 		xlator_t *this,
 		fd_t *fd,
@@ -1808,7 +1808,7 @@ trace_getdents (call_frame_t *frame,
 }
 
 
-static int32_t 
+int32_t 
 trace_readdir (call_frame_t *frame,
 	       xlator_t *this,
 	       fd_t *fd,
@@ -1835,7 +1835,7 @@ trace_readdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_closedir (call_frame_t *frame,
 		xlator_t *this,
 		fd_t *fd)
@@ -1857,7 +1857,7 @@ trace_closedir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fsyncdir (call_frame_t *frame,
 		xlator_t *this,
 		fd_t *fd,
@@ -1881,7 +1881,7 @@ trace_fsyncdir (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_access (call_frame_t *frame,
 	      xlator_t *this,
 	      loc_t *loc,
@@ -1905,7 +1905,7 @@ trace_access (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_ftruncate (call_frame_t *frame,
 		 xlator_t *this,
 		 fd_t *fd,
@@ -1930,7 +1930,7 @@ trace_ftruncate (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fchown (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
@@ -1956,7 +1956,7 @@ trace_fchown (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fchmod (call_frame_t *frame,
 	      xlator_t *this,
 	      fd_t *fd,
@@ -1980,7 +1980,7 @@ trace_fchmod (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_fstat (call_frame_t *frame,
 	     xlator_t *this,
 	     fd_t *fd)
@@ -2002,7 +2002,7 @@ trace_fstat (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_lk (call_frame_t *frame,
 	  xlator_t *this,
 	  fd_t *fd,
@@ -2056,7 +2056,7 @@ trace_setdents (call_frame_t *frame,
 }
 
 #ifndef GF_SOLARIS_HOST_OS
-static void
+void
 enable_all_calls (int enabled)
 {
   int i;
@@ -2064,7 +2064,7 @@ enable_all_calls (int enabled)
     fop_names[i].enabled = enabled;
 }
 
-static void 
+void 
 enable_call (const char *name, int enabled)
 {
   int i;
@@ -2078,7 +2078,7 @@ enable_call (const char *name, int enabled)
    include = 1 for "include"
            = 0 for "exclude" 
 */
-static void
+void
 process_call_list (const char *list, int include)
 {
   enable_all_calls (include ? 0 : 1);
@@ -2217,7 +2217,7 @@ struct xlator_fops fops = {
   .getdents    = trace_getdents,
 };
 
-static int32_t 
+int32_t 
 trace_stats_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -2229,7 +2229,7 @@ trace_stats_cbk (call_frame_t *frame,
   return 0;
 }
 
-static int32_t 
+int32_t 
 trace_stats (call_frame_t *frame,
 	     xlator_t *this, 
 	     int32_t flags)

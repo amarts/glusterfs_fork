@@ -40,11 +40,6 @@
 
 #define STRIPE_DEFAULT_BLOCK_SIZE 1048576
 
-#ifdef STATIC
-#undef STATIC
-#endif
-#define STATIC /* static */
-
 #define STRIPE_CHECK_INODE_CTX_AND_UNWIND_ON_ERR(_loc) do { \
   if (!(_loc && _loc->inode && _loc->inode->ctx &&          \
 	dict_get (_loc->inode->ctx, this->name))) {         \
@@ -139,7 +134,7 @@ typedef struct stripe_private stripe_private_t;
 /**
  * stripe_get_matching_bs - Get the matching block size for the given path.
  */
-STATIC int32_t 
+int32_t 
 stripe_get_matching_bs (const char *path, struct stripe_options *opts) 
 {
   struct stripe_options *trav = opts;
@@ -161,7 +156,7 @@ stripe_get_matching_bs (const char *path, struct stripe_options *opts)
 /*
  * stripe_common_cbk -
  */
-STATIC int32_t
+int32_t
 stripe_common_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -178,7 +173,7 @@ stripe_common_cbk (call_frame_t *frame,
  * This is called from functions like forget,fsync,unlink,rmdir,close,closedir etc.
  *
  */
-STATIC int32_t 
+int32_t 
 stripe_stack_unwind_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -212,7 +207,7 @@ stripe_stack_unwind_cbk (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_common_buf_cbk (call_frame_t *frame,
 		       void *cookie,
 		       xlator_t *this,
@@ -232,7 +227,7 @@ stripe_common_buf_cbk (call_frame_t *frame,
  *
  * @cookie - this argument should be always 'xlator_t *' of child node 
  */
-STATIC int32_t 
+int32_t 
 stripe_stack_unwind_buf_cbk (call_frame_t *frame,
 			     void *cookie,
 			     xlator_t *this,
@@ -313,7 +308,7 @@ stripe_getxattr_cbk (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_common_inode_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -335,7 +330,7 @@ stripe_common_inode_cbk (call_frame_t *frame,
  *           forwarding any fops to child nodes.
  *
  */
-STATIC int32_t 
+int32_t 
 stripe_stack_unwind_inode_cbk (call_frame_t *frame,
 			       void *cookie,
 			       xlator_t *this,
@@ -412,7 +407,7 @@ stripe_stack_unwind_inode_cbk (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_stack_unwind_inode_lookup_cbk (call_frame_t *frame,
 				      void *cookie,
 				      xlator_t *this,
@@ -779,7 +774,7 @@ stripe_chown (call_frame_t *frame,
 /**
  * stripe_statfs_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_statfs_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1064,7 +1059,7 @@ stripe_access (call_frame_t *frame,
 /**
  * stripe_readlink_cbk - 
  */
-STATIC int32_t 
+int32_t 
 stripe_readlink_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -1234,7 +1229,7 @@ stripe_setxattr (call_frame_t *frame,
 }
 
 
-STATIC int32_t 
+int32_t 
 stripe_mknod_ifreg_fail_unlink_cbk (call_frame_t *frame,
 				    void *cookie,
 				    xlator_t *this,
@@ -1265,7 +1260,7 @@ stripe_mknod_ifreg_fail_unlink_cbk (call_frame_t *frame,
 
 /**
  */
-STATIC int32_t
+int32_t
 stripe_mknod_ifreg_setxattr_cbk (call_frame_t *frame,
 				 void *cookie,
 				 xlator_t *this,
@@ -1319,7 +1314,7 @@ stripe_mknod_ifreg_setxattr_cbk (call_frame_t *frame,
 
 /**
  */
-STATIC int32_t
+int32_t
 stripe_mknod_ifreg_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -1621,7 +1616,7 @@ stripe_link (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_create_fail_unlink_cbk (call_frame_t *frame,
 			       void *cookie,
 			       xlator_t *this,
@@ -1650,7 +1645,7 @@ stripe_create_fail_unlink_cbk (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_create_fail_cbk (call_frame_t *frame,
 			void *cookie,
 			xlator_t *this,
@@ -1689,7 +1684,7 @@ stripe_create_fail_cbk (call_frame_t *frame,
 /**
  * stripe_create_setxattr_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_create_setxattr_cbk (call_frame_t *frame,
 			    void *cookie,
 			    xlator_t *this,
@@ -1741,7 +1736,7 @@ stripe_create_setxattr_cbk (call_frame_t *frame,
 /**
  * stripe_create_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_create_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -1936,7 +1931,7 @@ stripe_create (call_frame_t *frame,
 /**
  * stripe_open_fail_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_open_fail_cbk (call_frame_t *frame,
 		      void *cookie,
 		      xlator_t *this,
@@ -1962,7 +1957,7 @@ stripe_open_fail_cbk (call_frame_t *frame,
 /**
  * stripe_open_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_open_cbk (call_frame_t *frame,
 		 void *cookie,
 		 xlator_t *this,
@@ -2022,7 +2017,7 @@ stripe_open_cbk (call_frame_t *frame,
 /**
  * stripe_getxattr_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_open_getxattr_cbk (call_frame_t *frame,
 			  void *cookie,
 			  xlator_t *this,
@@ -2167,7 +2162,7 @@ stripe_open (call_frame_t *frame,
 /**
  * stripe_opendir_fail_cbk- 
  */
-STATIC int32_t
+int32_t
 stripe_opendir_fail_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -2193,7 +2188,7 @@ stripe_opendir_fail_cbk (call_frame_t *frame,
 /**
  * stripe_opendir_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_opendir_cbk (call_frame_t *frame,
 		    void *cookie,
 		    xlator_t *this,
@@ -2289,7 +2284,7 @@ stripe_opendir (call_frame_t *frame,
 /**
  * stripe_getxattr_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_getxattr_cbk (call_frame_t *frame,
 		     void *cookie,
 		     xlator_t *this,
@@ -2353,7 +2348,7 @@ stripe_removexattr (call_frame_t *frame,
 /**
  * stripe_lk_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_lk_cbk (call_frame_t *frame,
 	       void *cookie,
 	       xlator_t *this,
@@ -2519,7 +2514,7 @@ stripe_flush (call_frame_t *frame,
   return 0;
 }
 
-STATIC int32_t 
+int32_t 
 stripe_close_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -2911,7 +2906,7 @@ stripe_fsyncdir (call_frame_t *frame,
  * stripe_single_readv_cbk - This function is used as return fn, when the 
  *     file name doesn't match the pattern specified for striping.
  */
-STATIC int32_t
+int32_t
 stripe_single_readv_cbk (call_frame_t *frame,
 			 void *cookie,
 			 xlator_t *this,
@@ -2929,7 +2924,7 @@ stripe_single_readv_cbk (call_frame_t *frame,
  * stripe_readv_cbk - get all the striped reads, and order it properly, send it
  *        to above layer after putting it in a single vector.
  */
-STATIC int32_t
+int32_t
 stripe_readv_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
@@ -3110,7 +3105,7 @@ stripe_readv (call_frame_t *frame,
 /**
  * stripe_writev_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_writev_cbk (call_frame_t *frame,
 		   void *cookie,
 		   xlator_t *this,
@@ -3144,7 +3139,7 @@ stripe_writev_cbk (call_frame_t *frame,
 /**
  * stripe_single_writev_cbk - 
  */
-STATIC int32_t
+int32_t
 stripe_single_writev_cbk (call_frame_t *frame,
 			  void *cookie,
 			  xlator_t *this,
@@ -3276,7 +3271,7 @@ stripe_chmod (call_frame_t *frame,
  *    Once all the clients return, send stats to above layer.
  * 
  */
-STATIC int32_t
+int32_t
 stripe_stats_cbk (call_frame_t *frame,
 		  void *cookie,
 		  xlator_t *this,
