@@ -115,7 +115,8 @@ solaris_setxattr(const char *path,
 	    "Couldn't set extended attribute for %s", path);
     return -1;
   }
-  return ret;
+
+  return 0;
 }
 
 
