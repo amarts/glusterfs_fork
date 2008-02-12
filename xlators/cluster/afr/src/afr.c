@@ -1,6 +1,6 @@
 
 /*
-   Copyright (c) 2007 Z RESEARCH, Inc. <http://www.zresearch.com>
+   Copyright (c) 2007, 2008 Z RESEARCH, Inc. <http://www.zresearch.com>
    This file is part of GlusterFS.
    GlusterFS is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
@@ -28,6 +28,11 @@
 #include <fnmatch.h>
 #include <sys/time.h>
 #include <stdlib.h>
+
+#ifndef _CONFIG_H
+#define _CONFIG_H
+#include "config.h"
+#endif
 
 #include "glusterfs.h"
 #include "afr.h"
