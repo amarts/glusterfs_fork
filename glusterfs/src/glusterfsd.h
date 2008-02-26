@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2006 Z RESEARCH, Inc. <http://www.zresearch.com>
+   Copyright (c) 2006, 2007, 2008 Z RESEARCH, Inc. <http://www.zresearch.com>
    This file is part of GlusterFS.
 
    GlusterFS is free software; you can redistribute it and/or modify
@@ -17,12 +17,30 @@
    <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _PRIMITIVES_H_
-#define _PRIMITIVES_H_
+#ifndef __GLUSTERFSD_H__
+#define __GLUSTERFSD_H__
 
-#include <guile/gh.h>
+#ifndef _CONFIG_H
+#define _CONFIG_H
+#include "config.h"
+#endif /* _CONFIG_H */
 
-SCM gf_hello (SCM scm_string);
-SCM gf_demo (SCM scm_string);
-SCM gf_listlocks (SCM scm_volume);
-#endif /* _PRIMITIVES_H_ */
+#define DEFAULT_LOG_FILE   DATADIR"/log/glusterfs/glusterfs.log"
+#define DEFAULT_GLUSTERFS_CLIENT_VOL CONFDIR "/glusterfs-client.vol"
+
+#define SPEC_LOCAL_FILE      1
+#define SPEC_REMOTE_FILE     2
+
+struct gf_spec_location {
+  int32_t where;
+  union {
+    char *file;
+    struct {
+      char *ip;
+      char *port;
+      char *transport;
+    }server;
+  }spec;
+};
+
+#endif /* __GLUSTERFSD_H__ */
