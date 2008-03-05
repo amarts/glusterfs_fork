@@ -1876,7 +1876,8 @@ fuse_statfs_cbk (call_frame_t *frame,
    */
 
   if (op_ret == 0) {
-
+#ifndef GF_DARWIN_HOST_OS
+    /* MacFUSE doesn't respect anyof these tweaks */
     buf->f_blocks *= buf->f_frsize;
     buf->f_blocks /= BIG_FUSE_CHANNEL_SIZE;
 
@@ -1887,7 +1888,7 @@ fuse_statfs_cbk (call_frame_t *frame,
     buf->f_bfree /= BIG_FUSE_CHANNEL_SIZE;
 
     buf->f_frsize = buf->f_bsize = BIG_FUSE_CHANNEL_SIZE;
-
+#endif /* GF_DARWIN_HOST_OS */
     fuse_reply_statfs (req, buf);
 
   } else {
@@ -2456,6 +2457,8 @@ init (xlator_t *this)
     goto err;
   }
 
+  (this->children->xlator)->notify (this->children->xlator, 
+				    GF_EVENT_PARENT_UP, this);
   return 0;
 
  err: 
