@@ -1389,12 +1389,10 @@ unify_opendir (call_frame_t *frame,
 
   for (index = 0; list[index] != -1; index++) {
     char need_break = list[index+1] == -1;
-    STACK_WIND (frame,
-		unify_opendir_cbk,
+    STACK_WIND (frame, unify_opendir_cbk,
 		priv->xl_array[list[index]],
 		priv->xl_array[list[index]]->fops->opendir,
-		loc,
-		fd);
+		loc, fd);
     if (need_break)
       break;
   }
