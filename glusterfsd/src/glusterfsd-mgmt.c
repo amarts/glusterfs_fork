@@ -138,6 +138,7 @@ mgmt_submit_request (void *req, call_frame_t *frame,
         if (req && sfunc) {
                 ret = sfunc (iov, req);
                 if (ret == -1) {
+                        gf_log ("", GF_LOG_WARNING, "failed to create XDR payload");
                         goto out;
                 }
                 iov.iov_len = ret;
@@ -330,7 +331,7 @@ mgmt_getspec_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         ret = xdr_to_getspec_rsp (*iov, &rsp);
         if (ret < 0) {
-                gf_log (frame->this->name, GF_LOG_ERROR, "error");
+                gf_log (frame->this->name, GF_LOG_ERROR, "XDR decoding error");
                 ret   = -1;
                 goto out;
         }
@@ -508,23 +509,34 @@ glusterfs_mgmt_init (glusterfs_ctx_t *ctx)
         rpc_cfg.remote_port = port;
 
         ret = dict_set_int32 (options, "remote-port", port);
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to set remote-port with %d",
+                        port);
                 goto out;
+        }
 
         ret = dict_set_str (options, "remote-host", host);
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to set remote-host with %s",
+                        host);
                 goto out;
+        }
 
         ret = dict_set_str (options, "transport.address-family", "inet");
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to set addr-family with inet");
                 goto out;
+        }
 
         ret = dict_set_str (options, "transport-type", "socket");
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to set trans-type with socket");
                 goto out;
+        }
 
         rpc = rpc_clnt_new (&rpc_cfg, options, THIS->ctx, THIS->name);
         if (!rpc) {
+                gf_log ("", GF_LOG_WARNING, "failed to create rpc clnt");
                 ret = -1;
                 goto out;
         }
@@ -532,12 +544,16 @@ glusterfs_mgmt_init (glusterfs_ctx_t *ctx)
         ctx->mgmt = rpc;
 
         ret = rpc_clnt_register_notify (rpc, mgmt_rpc_notify, THIS);
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to register notify function");
                 goto out;
+        }
 
         ret = rpcclnt_cbk_program_register (rpc, &mgmt_cbk_prog);
-        if (ret)
+        if (ret) {
+                gf_log ("", GF_LOG_WARNING, "failed to register callback function");
                 goto out;
+        }
 
         rpc_clnt_start (rpc);
 out:
@@ -563,7 +579,7 @@ mgmt_pmap_signin_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         ret = xdr_to_pmap_signin_rsp (*iov, &rsp);
         if (ret < 0) {
-                gf_log (frame->this->name, GF_LOG_ERROR, "error");
+                gf_log (frame->this->name, GF_LOG_ERROR, "XDR decode error");
                 rsp.op_ret   = -1;
                 rsp.op_errno = EINVAL;
                 goto out;
@@ -629,7 +645,7 @@ mgmt_pmap_signout_cbk (struct rpc_req *req, struct iovec *iov, int count,
         ctx = glusterfs_ctx_get ();
         ret = xdr_to_pmap_signout_rsp (*iov, &rsp);
         if (ret < 0) {
-                gf_log ("", GF_LOG_ERROR, "error");
+                gf_log ("", GF_LOG_ERROR, "XDR decoding failed");
                 rsp.op_ret   = -1;
                 rsp.op_errno = EINVAL;
                 goto out;
