@@ -124,7 +124,7 @@
                                       &priv->incoming.pending_count,    \
                                       &bytes_read);                     \
                 if (ret == -1) {                                        \
-                        gf_log (this->name, GF_LOG_TRACE,               \
+                        gf_log (this->name, GF_LOG_WARNING,             \
                                 "reading from socket failed. Error (%s), " \
                                 "peer (%s)", strerror (errno),          \
                                 this->peerinfo.identifier);             \
@@ -155,8 +155,8 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
         int               opcount = 0;
         int               moved = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
         sock = priv->sock;
@@ -189,7 +189,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
                 if (ret == 0) {
                         /* Mostly due to 'umount' in client */
 
-                        gf_log (this->name, GF_LOG_TRACE,
+                        gf_log (this->name, GF_LOG_INFO,
                                 "EOF from peer %s", this->peerinfo.identifier);
                         opcount = -1;
                         errno = ENOTCONN;
@@ -199,7 +199,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
                         if (errno == EINTR)
                                 continue;
 
-                        gf_log (this->name, GF_LOG_TRACE,
+                        gf_log (this->name, GF_LOG_WARNING,
                                 "%s failed (%s)", write ? "writev" : "readv",
                                 strerror (errno));
                         opcount = -1;
@@ -273,16 +273,15 @@ __socket_disconnect (rpc_transport_t *this)
         socket_private_t *priv = NULL;
         int               ret = -1;
 
-        if (!this || !this->private)
-                goto out;
-
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
         if (priv->sock != -1) {
                 ret = shutdown (priv->sock, SHUT_RDWR);
                 priv->connected = -1;
-                gf_log (this->name, GF_LOG_TRACE,
+                gf_log (this->name, GF_LOG_INFO,
                         "shutdown() returned %d. set connection state to -1",
                         ret);
         }
@@ -299,8 +298,8 @@ __socket_server_bind (rpc_transport_t *this)
         int               ret = -1;
         int               opt = 1;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -369,8 +368,11 @@ __socket_keepalive (int fd, int keepalive_intvl, int keepalive_idle)
         int     ret = -1;
 
         ret = setsockopt (fd, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof (on));
-        if (ret == -1)
+        if (ret == -1) {
+                gf_log ("socket", GF_LOG_WARNING,
+                        "failed to set keep alive option on socket %d", fd);
                 goto err;
+        }
 
         if (keepalive_intvl == GF_USE_DEFAULT_KEEPALIVE)
                 goto done;
@@ -383,18 +385,26 @@ __socket_keepalive (int fd, int keepalive_intvl, int keepalive_idle)
         ret = setsockopt (fd, IPPROTO_TCP, TCP_KEEPALIVE, &keepalive_intvl,
                           sizeof (keepalive_intvl));
 #endif
-        if (ret == -1)
+        if (ret == -1) {
+                gf_log ("socket", GF_LOG_WARNING,
+                        "failed to set keep alive interval on socket %d", fd);
                 goto err;
+        }
 #else
         ret = setsockopt (fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepalive_idle,
                           sizeof (keepalive_intvl));
-        if (ret == -1)
+        if (ret == -1) {
+                gf_log ("socket", GF_LOG_WARNING,
+                        "failed to set keep idle on socket %d", fd);
                 goto err;
-
+        }
         ret = setsockopt (fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepalive_intvl,
                           sizeof (keepalive_intvl));
-        if (ret == -1)
+        if (ret == -1) {
+                gf_log ("socket", GF_LOG_WARNING,
+                        "failed to set keep alive interval on socket %d", fd);
                 goto err;
+        }
 #endif
 
 done:
@@ -429,8 +439,8 @@ __socket_reset (rpc_transport_t *this)
 {
         socket_private_t *priv = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -491,8 +501,7 @@ __socket_ioq_new (rpc_transport_t *this, rpc_transport_msg_t *msg)
         int               count = 0;
         uint32_t          size  = 0;
 
-        if (!this)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
 
         /* TODO: use mem-pool */
         entry = GF_CALLOC (1, sizeof (*entry), gf_common_mt_ioq);
@@ -555,8 +564,7 @@ out:
 void
 __socket_ioq_entry_free (struct ioq *entry)
 {
-        if (!entry)
-                return;
+        GF_VALIDATE_OR_GOTO ("socket", entry, out);
 
         list_del_init (&entry->list);
         if (entry->iobref)
@@ -564,6 +572,9 @@ __socket_ioq_entry_free (struct ioq *entry)
 
         /* TODO: use mem-pool */
         GF_FREE (entry);
+
+out:
+        return;
 }
 
 
@@ -573,8 +584,8 @@ __socket_ioq_flush (rpc_transport_t *this)
         socket_private_t *priv = NULL;
         struct ioq       *entry = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -615,8 +626,8 @@ __socket_ioq_churn (rpc_transport_t *this)
         int               ret = 0;
         struct ioq       *entry = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -647,8 +658,8 @@ socket_event_poll_err (rpc_transport_t *this)
         socket_private_t *priv = NULL;
         int               ret = -1;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -672,8 +683,8 @@ socket_event_poll_out (rpc_transport_t *this)
         socket_private_t *priv = NULL;
         int               ret = -1;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -704,8 +715,8 @@ __socket_read_simple_msg (rpc_transport_t *this)
         uint32_t          remaining_size = 0;
         size_t            bytes_read     = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -737,7 +748,7 @@ __socket_read_simple_msg (rpc_transport_t *this)
                 }
 
                 if (ret == -1) {
-                        gf_log (this->name, GF_LOG_TRACE,
+                        gf_log (this->name, GF_LOG_WARNING,
                                 "reading from socket failed. Error (%s), "
                                 "peer (%s)", strerror (errno),
                                 this->peerinfo.identifier);
@@ -788,8 +799,8 @@ __socket_read_vectored_request (rpc_transport_t *this)
         uint32_t          gluster_write_proc_len = 0;
         gfs3_write_req    write_req              = {{0,},};
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -827,7 +838,7 @@ __socket_read_vectored_request (rpc_transport_t *this)
                                                      &write_req);
 
                 if (gluster_write_proc_len == 0) {
-                        gf_log (this->name, GF_LOG_DEBUG,
+                        gf_log (this->name, GF_LOG_ERROR,
                                 "xdr_sizeof on gfs3_write_req failed");
                         ret = -1;
                         goto out;
@@ -855,10 +866,6 @@ __socket_read_vectored_request (rpc_transport_t *this)
                 if (priv->incoming.payload_vector.iov_base == NULL) {
                         iobuf = iobuf_get (this->ctx->iobuf_pool);
                         if (!iobuf) {
-                                gf_log (this->name, GF_LOG_ERROR,
-                                        "unable to allocate IO buffer "
-                                        "for peer %s",
-                                        this->peerinfo.identifier);
                                 ret = -1;
                                 break;
                         }
@@ -866,8 +873,6 @@ __socket_read_vectored_request (rpc_transport_t *this)
                         if (priv->incoming.iobref == NULL) {
                                 priv->incoming.iobref = iobref_new ();
                                 if (priv->incoming.iobref == NULL) {
-                                        gf_log (this->name, GF_LOG_ERROR,
-                                                "out of memory");
                                         ret = -1;
                                         iobuf_unref (iobuf);
                                         break;
@@ -933,8 +938,8 @@ __socket_read_request (rpc_transport_t *this)
         int               ret                = -1;
         char             *buf                = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -999,8 +1004,8 @@ __socket_read_accepted_successful_reply (rpc_transport_t *this)
         uint32_t          gluster_read_rsp_hdr_len = 0;
         gfs3_read_rsp     read_rsp                 = {0, };
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1011,7 +1016,7 @@ __socket_read_accepted_successful_reply (rpc_transport_t *this)
                                                        &read_rsp);
 
                 if (gluster_read_rsp_hdr_len == 0) {
-                        gf_log (this->name, GF_LOG_DEBUG,
+                        gf_log (this->name, GF_LOG_ERROR,
                                 "xdr_sizeof on gfs3_read_rsp failed");
                         ret = -1;
                         goto out;
@@ -1086,8 +1091,8 @@ __socket_read_accepted_reply (rpc_transport_t *this)
         uint32_t          verflen        = 0, len = 0;
         uint32_t          remaining_size = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1187,8 +1192,8 @@ __socket_read_vectored_reply (rpc_transport_t *this)
         char             *buf            = NULL;
         uint32_t          remaining_size = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1262,8 +1267,8 @@ __socket_read_reply (rpc_transport_t *this)
         rpc_request_info_t *request_info = NULL;
         char                map_xid      = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1274,7 +1279,6 @@ __socket_read_reply (rpc_transport_t *this)
                                                          sizeof (*request_info),
                                                          gf_common_mt_rpc_trans_reqinfo_t);
                 if (priv->incoming.request_info == NULL) {
-                        gf_log (this->name, GF_LOG_ERROR, "out of memory");
                         goto out;
                 }
 
@@ -1298,6 +1302,8 @@ __socket_read_reply (rpc_transport_t *this)
                 pthread_mutex_lock (&priv->lock);
 
                 if (ret == -1) {
+                        gf_log ("", GF_LOG_WARNING,
+                                "notify for event MAP_XID failed");
                         goto out;
                 }
         }
@@ -1329,8 +1335,8 @@ __socket_read_frag (rpc_transport_t *this)
         char             *buf            = NULL;
         uint32_t          remaining_size = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1421,8 +1427,8 @@ __socket_proto_state_machine (rpc_transport_t *this,
         struct iobref    *iobref = NULL;
         struct iovec      vector[2];
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
         while (priv->incoming.record_state != SP_STATE_COMPLETE) {
@@ -1431,10 +1437,6 @@ __socket_proto_state_machine (rpc_transport_t *this,
                 case SP_STATE_NADA:
                         iobuf = iobuf_get (this->ctx->iobuf_pool);
                         if (!iobuf) {
-                                gf_log (this->name, GF_LOG_ERROR,
-                                        "unable to allocate IO buffer "
-                                        "for peer %s",
-                                        this->peerinfo.identifier);
                                 ret = -ENOMEM;
                                 goto out;
                         }
@@ -1463,7 +1465,7 @@ __socket_proto_state_machine (rpc_transport_t *this,
                                               &priv->incoming.pending_count,
                                               NULL);
                         if (ret == -1) {
-                                gf_log (this->name, GF_LOG_TRACE,
+                                gf_log (this->name, GF_LOG_WARNING,
                                         "reading from socket failed. Error (%s), "
                                         "peer (%s)", strerror (errno),
                                         this->peerinfo.identifier);
@@ -1521,9 +1523,6 @@ __socket_proto_state_machine (rpc_transport_t *this,
                                 if (priv->incoming.iobref == NULL) {
                                         priv->incoming.iobref = iobref_new ();
                                         if (priv->incoming.iobref == NULL) {
-                                                gf_log (this->name,
-                                                        GF_LOG_ERROR,
-                                                        "out of memory");
                                                 ret = -1;
                                                 goto out;
                                         }
@@ -1555,6 +1554,8 @@ __socket_proto_state_machine (rpc_transport_t *this,
                                 priv->incoming.iobuf = NULL;
 
                                 if (*pollin == NULL) {
+                                        gf_log ("", GF_LOG_WARNING,
+                                                "transport pollin allocation failed");
                                         ret = -1;
                                         goto out;
                                 }
@@ -1568,7 +1569,7 @@ __socket_proto_state_machine (rpc_transport_t *this,
 
                 case SP_STATE_COMPLETE:
                         /* control should not reach here */
-                        gf_log (this->name, GF_LOG_DEBUG, "control reached to "
+                        gf_log (this->name, GF_LOG_WARNING, "control reached to "
                                 "SP_STATE_COMPLETE, which should not have "
                                 "happened");
                         break;
@@ -1595,8 +1596,8 @@ socket_proto_state_machine (rpc_transport_t *this,
         socket_private_t *priv = NULL;
         int               ret = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1638,8 +1639,8 @@ socket_connect_finish (rpc_transport_t *this)
         rpc_transport_event_t event      = 0;
         char                  notify_rpc = 0;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1677,7 +1678,7 @@ socket_connect_finish (rpc_transport_t *this)
                                            SA (&this->myinfo.sockaddr),
                                            &this->myinfo.sockaddr_len);
                         if (ret == -1) {
-                                gf_log (this->name, GF_LOG_DEBUG,
+                                gf_log (this->name, GF_LOG_WARNING,
                                         "getsockname on (%d) failed (%s)",
                                         priv->sock, strerror (errno));
                                 __socket_disconnect (this);
@@ -1712,8 +1713,9 @@ socket_event_handler (int fd, int idx, void *data,
         int               ret = 0;
 
         this = data;
-        if (!this || !this->private || !this->xl)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->xl, out);
 
         THIS = this->xl;
         priv = this->private;
@@ -1738,7 +1740,7 @@ socket_event_handler (int fd, int idx, void *data,
         }
 
         if ((ret < 0) || poll_err) {
-                gf_log ("transport", GF_LOG_TRACE, "disconnecting now");
+                gf_log ("transport", GF_LOG_INFO, "disconnecting now");
                 socket_event_poll_err (this);
                 rpc_transport_unref (this);
         }
@@ -1763,8 +1765,9 @@ socket_server_event_handler (int fd, int idx, void *data,
         glusterfs_ctx_t         *ctx = NULL;
 
         this = data;
-        if (!this || !this->private || !this->xl)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->xl, out);
 
         THIS = this->xl;
         priv = this->private;
@@ -1778,14 +1781,18 @@ socket_server_event_handler (int fd, int idx, void *data,
                         new_sock = accept (priv->sock, SA (&new_sockaddr),
                                            &addrlen);
 
-                        if (new_sock == -1)
+                        if (new_sock == -1) {
+                                gf_log (this->name, GF_LOG_WARNING,
+                                        "accept on %d failed (%s)",
+                                        priv->sock, strerror (errno));
                                 goto unlock;
+                        }
 
                         if (!priv->bio) {
                                 ret = __socket_nonblock (new_sock);
 
                                 if (ret == -1) {
-                                        gf_log (this->name, GF_LOG_DEBUG,
+                                        gf_log (this->name, GF_LOG_WARNING,
                                                 "NBIO on %d failed (%s)",
                                                 new_sock, strerror (errno));
 
@@ -1797,7 +1804,7 @@ socket_server_event_handler (int fd, int idx, void *data,
                         if (priv->nodelay) {
                                 ret = __socket_nodelay (new_sock);
                                 if (ret == -1) {
-                                        gf_log (this->name, GF_LOG_ERROR,
+                                        gf_log (this->name, GF_LOG_WARNING,
                                                 "setsockopt() failed for "
                                                 "NODELAY (%s)",
                                                 strerror (errno));
@@ -1809,7 +1816,7 @@ socket_server_event_handler (int fd, int idx, void *data,
                                                           priv->keepaliveintvl,
                                                           priv->keepaliveidle);
                                 if (ret == -1)
-                                        gf_log (this->name, GF_LOG_ERROR,
+                                        gf_log (this->name, GF_LOG_WARNING,
                                                 "Failed to set keep-alive: %s",
                                                 strerror (errno));
                         }
@@ -1832,7 +1839,7 @@ socket_server_event_handler (int fd, int idx, void *data,
                                            SA (&new_trans->myinfo.sockaddr),
                                            &new_trans->myinfo.sockaddr_len);
                         if (ret == -1) {
-                                gf_log (this->name, GF_LOG_DEBUG,
+                                gf_log (this->name, GF_LOG_WARNING,
                                         "getsockname on %d failed (%s)",
                                         new_sock, strerror (errno));
                                 close (new_sock);
@@ -1867,8 +1874,11 @@ socket_server_event_handler (int fd, int idx, void *data,
                                         ret = -1;
                         }
                         pthread_mutex_unlock (&new_priv->lock);
-                        if (ret == -1)
+                        if (ret == -1) {
+                                gf_log ("", GF_LOG_WARNING,
+                                        "failed to register the socket with event");
                                 goto unlock;
+                        }
 
                         ret = rpc_transport_notify (this, RPC_TRANSPORT_ACCEPT,
                                                     new_trans);
@@ -1888,8 +1898,8 @@ socket_disconnect (rpc_transport_t *this)
         socket_private_t *priv = NULL;
         int               ret = -1;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -1915,14 +1925,14 @@ socket_connect (rpc_transport_t *this, int port)
         glusterfs_ctx_t         *ctx = NULL;
         sa_family_t              sa_family = {0, };
 
-        if (!this || !this->private)
-                goto err;
+        GF_VALIDATE_OR_GOTO ("socket", this, err);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, err);
 
         priv = this->private;
         ctx = this->ctx;
 
         if (!priv) {
-                gf_log (this->name, GF_LOG_DEBUG,
+                gf_log_callingfn (this->name, GF_LOG_WARNING,
                         "connect() called on uninitialized transport");
                 goto err;
         }
@@ -1934,8 +1944,8 @@ socket_connect (rpc_transport_t *this, int port)
         pthread_mutex_unlock (&priv->lock);
 
         if (sock != -1) {
-                gf_log (this->name, GF_LOG_TRACE,
-                        "connect () called on transport already connected");
+                gf_log_callingfn (this->name, GF_LOG_TRACE,
+                                  "connect () called on transport already connected");
                 ret = 0;
                 goto err;
         }
@@ -2054,8 +2064,11 @@ socket_connect (rpc_transport_t *this, int port)
 
                 priv->idx = event_register (ctx->event_pool, priv->sock,
                                             socket_event_handler, this, 1, 1);
-                if (priv->idx == -1)
+                if (priv->idx == -1) {
+                        gf_log ("", GF_LOG_WARNING,
+                                "failed to register the event");
                         ret = -1;
+                }
         }
 unlock:
         pthread_mutex_unlock (&priv->lock);
@@ -2077,8 +2090,8 @@ socket_listen (rpc_transport_t *this)
         glusterfs_ctx_t         *ctx = NULL;
         sa_family_t              sa_family = {0, };
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv   = this->private;
         myinfo = &this->myinfo;
@@ -2091,8 +2104,8 @@ socket_listen (rpc_transport_t *this)
         pthread_mutex_unlock (&priv->lock);
 
         if (sock != -1)  {
-                gf_log (this->name, GF_LOG_DEBUG,
-                        "alreading listening");
+                gf_log_callingfn (this->name, GF_LOG_DEBUG,
+                                  "alreading listening");
                 return ret;
         }
 
@@ -2192,7 +2205,7 @@ socket_listen (rpc_transport_t *this)
                                             this, 1, 0);
 
                 if (priv->idx == -1) {
-                        gf_log (this->name, GF_LOG_DEBUG,
+                        gf_log (this->name, GF_LOG_WARNING,
                                 "could not register socket %d with events",
                                 priv->sock);
                         ret = -1;
@@ -2219,8 +2232,8 @@ socket_submit_request (rpc_transport_t *this, rpc_transport_req_t *req)
         struct ioq       *entry = NULL;
         glusterfs_ctx_t  *ctx = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
         ctx  = this->ctx;
@@ -2229,7 +2242,7 @@ socket_submit_request (rpc_transport_t *this, rpc_transport_req_t *req)
         {
                 if (priv->connected != 1) {
                         if (!priv->submit_log && !priv->connect_finish_log) {
-                                gf_log (this->name, GF_LOG_DEBUG,
+                                gf_log (this->name, GF_LOG_INFO,
                                         "not connected (priv->connected = %d)",
                                         priv->connected);
                                 priv->submit_log = 1;
@@ -2282,8 +2295,8 @@ socket_submit_reply (rpc_transport_t *this, rpc_transport_reply_t *reply)
         struct ioq       *entry = NULL;
         glusterfs_ctx_t  *ctx = NULL;
 
-        if (!this || !this->private)
-                goto out;
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
         ctx  = this->ctx;
@@ -2292,7 +2305,7 @@ socket_submit_reply (rpc_transport_t *this, rpc_transport_reply_t *reply)
         {
                 if (priv->connected != 1) {
                         if (!priv->submit_log && !priv->connect_finish_log) {
-                                gf_log (this->name, GF_LOG_DEBUG,
+                                gf_log (this->name, GF_LOG_INFO,
                                         "not connected (priv->connected = %d)",
                                         priv->connected);
                                 priv->submit_log = 1;
@@ -2339,9 +2352,8 @@ socket_getpeername (rpc_transport_t *this, char *hostname, int hostlen)
 {
         int32_t ret = -1;
 
-        if ((this == NULL) || (hostname == NULL)) {
-                goto out;
-        }
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", hostname, out);
 
         if (hostlen < (strlen (this->peerinfo.identifier) + 1)) {
                 goto out;
@@ -2360,9 +2372,8 @@ socket_getpeeraddr (rpc_transport_t *this, char *peeraddr, int addrlen,
 {
         int32_t ret = -1;
 
-        if ((this == NULL) || (sa == NULL)) {
-                goto out;
-        }
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", sa, out);
 
         *sa = this->peerinfo.sockaddr;
 
@@ -2380,9 +2391,8 @@ socket_getmyname (rpc_transport_t *this, char *hostname, int hostlen)
 {
         int32_t ret = -1;
 
-        if ((this == NULL) || (hostname == NULL)) {
-                goto out;
-        }
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", hostname, out);
 
         if (hostlen < (strlen (this->myinfo.identifier) + 1)) {
                 goto out;
@@ -2401,9 +2411,8 @@ socket_getmyaddr (rpc_transport_t *this, char *myaddr, int addrlen,
 {
         int32_t ret = 0;
 
-        if ((this == NULL) || (sa == NULL)) {
-                goto out;
-        }
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", sa, out);
 
         *sa =  this->myinfo.sockaddr;
 
@@ -2461,11 +2470,8 @@ reconfigure (rpc_transport_t *this, dict_t *options)
         char             *optstr = NULL;
         int               ret = -1;
 
-        if (!this || !this->private) {
-                ret =-1;
-                goto out;
-        }
-
+        GF_VALIDATE_OR_GOTO ("socket", this, out);
+        GF_VALIDATE_OR_GOTO ("socket", this->private, out);
 
         priv = this->private;
 
@@ -2500,16 +2506,13 @@ socket_init (rpc_transport_t *this)
         uint32_t          keepalive = 0;
 
         if (this->private) {
-                gf_log (this->name, GF_LOG_DEBUG,
-                        "double init attempted");
+                gf_log_callingfn (this->name, GF_LOG_ERROR,
+                                  "double init attempted");
                 return -1;
         }
 
         priv = GF_CALLOC (1, sizeof (*priv), gf_common_mt_socket_private_t);
         if (!priv) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "calloc (1, %"GF_PRI_SIZET") returned NULL",
-                        sizeof (*priv));
                 return -1;
         }
 
