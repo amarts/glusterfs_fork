@@ -127,8 +127,6 @@ ra_waitq_return (ra_waitq_t *waitq)
         ra_waitq_t   *next  = NULL;
         call_frame_t *frame = NULL;
 
-        GF_VALIDATE_OR_GOTO ("read-ahead", waitq, out);
-
         for (trav = waitq; trav; trav = next) {
                 next = trav->next;
 
@@ -137,7 +135,6 @@ ra_waitq_return (ra_waitq_t *waitq)
                 GF_FREE (trav);
         }
 
-out:
         return;
 }
 
@@ -187,7 +184,7 @@ ra_fault_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
                 page = ra_page_get (file, pending_offset);
                 if (!page) {
-                        gf_log (this->name, GF_LOG_WARNING,
+                        gf_log (this->name, GF_LOG_TRACE,
                                 "wasted copy: %"PRId64"[+%"PRId64"] file=%p",
                                 pending_offset, file->page_size, file);
                         goto unlock;

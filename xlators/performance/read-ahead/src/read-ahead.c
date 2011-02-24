@@ -498,7 +498,7 @@ ra_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         }
 
         if (file->offset != offset) {
-                gf_log (this->name, GF_LOG_WARNING,
+                gf_log (this->name, GF_LOG_TRACE,
                         "unexpected offset (%"PRId64" != %"PRId64") resetting",
                         file->offset, offset);
 
