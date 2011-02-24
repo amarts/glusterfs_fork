@@ -1798,6 +1798,7 @@ wb_resume_other_requests (call_frame_t *frame, wb_file_t *file,
         GF_VALIDATE_OR_GOTO (frame->this->name, other_requests, out);
 
         if (list_empty (other_requests)) {
+                ret = 0;
                 goto out;
         }
 
