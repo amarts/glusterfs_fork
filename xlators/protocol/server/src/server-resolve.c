@@ -70,7 +70,8 @@ prepare_components (call_frame_t *frame)
         count = component_count (resolve->path);
         components = GF_CALLOC (sizeof (*components), count,
                                 gf_server_mt_resolv_comp_t);
-        GF_VALIDATE_OR_GOTO ("server", components, out);
+        if (!components)
+                goto out;
 
         resolve->components = components;
 
@@ -194,6 +195,9 @@ resolve_deep_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         i = (long) cookie;
 
         if (op_ret == -1) {
+                gf_log (this->name, GF_LOG_WARNING,
+                        "%s: failed to resolve (%s)",
+                        resolve->resolved, strerror (op_errno));
                 goto get_out_of_here;
         }
 
@@ -285,6 +289,8 @@ resolve_path_simple (call_frame_t *frame)
         components = resolve->components;
 
         if (!components) {
+                gf_log ("", GF_LOG_INFO,
+                        "failed to resolve, component not found");
                 resolve->op_ret   = -1;
                 resolve->op_errno = ENOENT;
                 goto out;
@@ -296,6 +302,8 @@ resolve_path_simple (call_frame_t *frame)
         }
 
         if (ino_idx == -1) {
+                gf_log ("", GF_LOG_INFO,
+                        "failed to resolve, inode index not found");
                 resolve->op_ret  = -1;
                 resolve->op_errno = EINVAL;
                 goto out;
@@ -306,6 +314,8 @@ resolve_path_simple (call_frame_t *frame)
                 goto noparent;
 
         if (!components[par_idx].inode) {
+                gf_log ("", GF_LOG_INFO,
+                        "failed to resolve, parent inode not found");
                 resolve->op_ret    = -1;
                 resolve->op_errno  = ENOENT;
                 goto out;
@@ -315,12 +325,16 @@ noparent:
 
         if (!components[ino_idx].inode &&
             (resolve->type == RESOLVE_MUST || resolve->type == RESOLVE_EXACT)) {
+                gf_log ("", GF_LOG_INFO,
+                        "failed to resolve, inode not found");
                 resolve->op_ret    = -1;
                 resolve->op_errno  = ENOENT;
                 goto out;
         }
 
         if (components[ino_idx].inode && resolve->type == RESOLVE_NOT) {
+                gf_log ("", GF_LOG_INFO,
+                        "failed to resolve, inode found");
                 resolve->op_ret    = -1;
                 resolve->op_errno  = EEXIST;
                 goto out;
@@ -399,7 +413,7 @@ resolve_entry_simple (call_frame_t *frame)
         }
 
         if (resolve->type == RESOLVE_NOT) {
-                gf_log (this->name, GF_LOG_DEBUG, "inode (pointer: %p ino:%"
+                gf_log (this->name, GF_LOG_INFO, "inode (pointer: %p ino:%"
                         PRIu64") found for path (%s) while type is RESOLVE_NOT",
                         inode, inode->ino, resolve->path);
                 resolve->op_ret   = -1;
@@ -526,6 +540,7 @@ server_resolve_fd (call_frame_t *frame)
         state->fd = gf_fd_fdptr_get (conn->fdtable, fd_no);
 
         if (!state->fd) {
+                gf_log ("", GF_LOG_INFO, "fd not found in context");
                 resolve->op_ret   = -1;
                 resolve->op_errno = EBADF;
         }
@@ -559,7 +574,7 @@ server_resolve (call_frame_t *frame)
 
         } else if (resolve->path) {
 
-                gf_log (frame->this->name, GF_LOG_WARNING,
+                gf_log (frame->this->name, GF_LOG_INFO,
                         "pure path resolution for %s (%s)",
                         resolve->path, gf_fop_list[frame->root->op]);
                 resolve_path_deep (frame);

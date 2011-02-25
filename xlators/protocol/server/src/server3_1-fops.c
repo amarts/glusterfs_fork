@@ -66,9 +66,9 @@ server_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         inode_t          *root_inode = NULL;
         inode_t          *link_inode = NULL;
         loc_t             fresh_loc  = {0,};
-        gfs3_lookup_rsp   rsp        = {0, };
+        gfs3_lookup_rsp   rsp        = {0,};
         int32_t           ret        = -1;
-        uuid_t            rootgfid   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+        uuid_t            rootgfid   = {0,};
 
         state = CALL_STATE(frame);
 
@@ -128,6 +128,7 @@ server_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 if (inode == root_inode) {
                         /* we just looked up root ("/") */
                         stbuf->ia_ino = 1;
+                        rootgfid[15]  = 1;
                         uuid_copy (stbuf->ia_gfid, rootgfid);
                         if (inode->ia_type == 0)
                                 inode->ia_type = stbuf->ia_type;
@@ -151,7 +152,7 @@ server_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 }
 
                 gf_log (this->name,
-                        (op_errno == ENOENT ? GF_LOG_TRACE : GF_LOG_DEBUG),
+                        (op_errno == ENOENT ? GF_LOG_TRACE : GF_LOG_INFO),
                         "%"PRId64": LOOKUP %s (%"PRId64") ==> %"PRId32" (%s)",
                         frame->root->unique, state->loc.path,
                         state->loc.inode ? state->loc.inode->ino : 0,
@@ -245,7 +246,7 @@ server_inodelk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                        &state->loc, NULL, frame->root->pid,
                                        frame->root->lk_owner, GF_FOP_INODELK);
         } else if (op_errno != ENOSYS) {
-                gf_log (this->name, GF_LOG_TRACE,
+                gf_log (this->name, GF_LOG_INFO,
                         "%"PRId64": INODELK %s (%"PRId64") ==> %"PRId32" (%s)",
                         frame->root->unique, state->loc.path,
                         state->loc.inode ? state->loc.inode->ino : 0, op_ret,
@@ -2828,8 +2829,6 @@ server_create (rpcsvc_request_t *req)
 
                 buf = memdup (args.dict.dict_val, args.dict.dict_len);
                 if (buf == NULL) {
-                        gf_log (state->conn->bound_xl->name, GF_LOG_ERROR,
-                                "out of memory");
                         goto out;
                 }
 
@@ -4078,8 +4077,6 @@ server_mknod (rpcsvc_request_t *req)
 
                 buf = memdup (args.dict.dict_val, args.dict.dict_len);
                 if (buf == NULL) {
-                        gf_log (state->conn->bound_xl->name, GF_LOG_ERROR,
-                                "out of memory");
                         goto out;
                 }
 
@@ -4178,8 +4175,6 @@ server_mkdir (rpcsvc_request_t *req)
 
                 buf = memdup (args.dict.dict_val, args.dict.dict_len);
                 if (buf == NULL) {
-                        gf_log (state->conn->bound_xl->name, GF_LOG_ERROR,
-                                "out of memory");
                         goto out;
                 }
 
@@ -4626,8 +4621,6 @@ server_symlink (rpcsvc_request_t *req)
 
                 buf = memdup (args.dict.dict_val, args.dict.dict_len);
                 if (buf == NULL) {
-                        gf_log (state->conn->bound_xl->name, GF_LOG_ERROR,
-                                "out of memory");
                         goto out;
                 }
 
@@ -4994,8 +4987,6 @@ server_lookup (rpcsvc_request_t *req)
 
                 buf = memdup (args.dict.dict_val, args.dict.dict_len);
                 if (buf == NULL) {
-                        gf_log (conn->bound_xl->name, GF_LOG_ERROR,
-                                "out of memory");
                         goto out;
                 }
 
