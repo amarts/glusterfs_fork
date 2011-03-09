@@ -595,8 +595,10 @@ __fd_ctx_set (fd_t *fd, xlator_t *xlator, uint64_t value)
         int ret = 0;
         int set_idx = -1;
 
-	if (!fd || !xlator)
-		return -1;
+        if (!fd || !xlator) {
+                gf_log_callingfn ("", 1, "%p %p", fd, xlator);
+                return -1;
+        }
 
         for (index = 0; index < fd->xl_count; index++) {
                 if (!fd->_ctx[index].key) {
@@ -612,6 +614,7 @@ __fd_ctx_set (fd_t *fd, xlator_t *xlator, uint64_t value)
         }
 
         if (set_idx == -1) {
+                gf_log_callingfn ("", 1, "%p %p", fd, xlator);
                 ret = -1;
                 goto out;
         }
@@ -629,8 +632,10 @@ fd_ctx_set (fd_t *fd, xlator_t *xlator, uint64_t value)
 {
         int ret = 0;
 
-	if (!fd || !xlator)
-		return -1;
+        if (!fd || !xlator) {
+                gf_log_callingfn ("", 1, "%p %p", fd, xlator);
+                return -1;
+        }
 
         LOCK (&fd->lock);
         {

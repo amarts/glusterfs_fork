@@ -1740,7 +1740,8 @@ socket_event_handler (int fd, int idx, void *data,
         }
 
         if ((ret < 0) || poll_err) {
-                gf_log ("transport", GF_LOG_INFO, "disconnecting now");
+                /* Logging has happened already in earlier cases */
+                gf_log ("transport", GF_LOG_DEBUG, "disconnecting now");
                 socket_event_poll_err (this);
                 rpc_transport_unref (this);
         }

@@ -1476,12 +1476,14 @@ pl_lookup (call_frame_t *frame,
         local = GF_CALLOC (1, sizeof (*local), gf_locks_mt_pl_local_t);
         GF_VALIDATE_OR_GOTO (this->name, local, out);
 
-        if (dict_get (xattr_req, GLUSTERFS_ENTRYLK_COUNT))
-                local->entrylk_count_req = 1;
-        if (dict_get (xattr_req, GLUSTERFS_INODELK_COUNT))
-                local->inodelk_count_req = 1;
-        if (dict_get (xattr_req, GLUSTERFS_POSIXLK_COUNT))
-                local->posixlk_count_req = 1;
+        if (xattr_req) {
+                if (dict_get (xattr_req, GLUSTERFS_ENTRYLK_COUNT))
+                        local->entrylk_count_req = 1;
+                if (dict_get (xattr_req, GLUSTERFS_INODELK_COUNT))
+                        local->inodelk_count_req = 1;
+                if (dict_get (xattr_req, GLUSTERFS_POSIXLK_COUNT))
+                        local->posixlk_count_req = 1;
+        }
 
         frame->local = local;
 

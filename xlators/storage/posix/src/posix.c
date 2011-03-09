@@ -913,7 +913,7 @@ posix_opendir (call_frame_t *frame, xlator_t *this,
         }
 
         op_ret = fd_ctx_set (fd, this, (uint64_t)(long)pfd);
-        if (!op_ret)
+        if (op_ret)
                 gf_log (this->name, GF_LOG_WARNING,
                         "failed to set the fd context path=%s fd=%p",
                         loc->path, fd);
@@ -2152,7 +2152,7 @@ posix_create (call_frame_t *frame, xlator_t *this,
         pfd->fd    = _fd;
 
         op_ret = fd_ctx_set (fd, this, (uint64_t)(long)pfd);
-        if (!op_ret)
+        if (op_ret)
                 gf_log (this->name, GF_LOG_WARNING,
                         "failed to set the fd context path=%s fd=%p",
                         loc->path, fd);
@@ -2250,7 +2250,7 @@ posix_open (call_frame_t *frame, xlator_t *this,
                 pfd->flushwrites = 1;
 
         op_ret = fd_ctx_set (fd, this, (uint64_t)(long)pfd);
-        if (!op_ret)
+        if (op_ret)
                 gf_log (this->name, GF_LOG_WARNING,
                         "failed to set the fd context path=%s fd=%p",
                         loc->path, fd);
