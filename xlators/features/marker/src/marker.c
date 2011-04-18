@@ -977,7 +977,7 @@ marker_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
         priv = this->private;
 
         if (priv->feature_enabled == 0)
-                goto wind;
+                goto rename_wind;
 
         GET_CONTRI_KEY (contri_key, oldloc->parent->gfid, ret);
         if (ret < 0)
@@ -1002,10 +1002,15 @@ marker_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
         ret = loc_copy (&oplocal->loc, oldloc);
         if (ret == -1)
                 goto err;
-wind:
 
         STACK_WIND (frame, marker_quota_removexattr_cbk, FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->removexattr, oldloc, contri_key);
+        return 0;
+
+rename_wind:
+        STACK_WIND (frame, marker_rename_cbk, FIRST_CHILD(this),
+                    FIRST_CHILD(this)->fops->rename, oldloc, newloc);
+
         return 0;
 err:
         STACK_UNWIND_STRICT (rename, frame, -1, ENOMEM, NULL,
