@@ -792,7 +792,7 @@ marker_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc)
         priv = this->private;
 
         if (priv->feature_enabled == 0)
-                goto wind;
+                goto unlink_wind;
 
         ALLOCATE_OR_GOTO (local, marker_local_t, err);
 
@@ -802,10 +802,14 @@ marker_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc)
 
         if (ret == -1)
                 goto err;
-wind:
+
         STACK_WIND (frame, marker_unlink_stat_cbk, FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->stat, loc);
+        return 0;
 
+unlink_wind:
+        STACK_WIND (frame, marker_unlink_cbk, FIRST_CHILD(this),
+                    FIRST_CHILD(this)->fops->unlink, loc);
         return 0;
 err:
         STACK_UNWIND_STRICT (unlink, frame, -1, ENOMEM, NULL, NULL);
