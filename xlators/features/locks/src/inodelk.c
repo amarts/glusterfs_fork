@@ -543,7 +543,7 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
                    struct gf_flock *flock, loc_t *loc, fd_t *fd)
 {
         int32_t op_ret   = -1;
-        int32_t op_errno = 0;
+        int32_t op_errno = EINVAL;
         int     ret      = -1;
         int     can_block = 0;
         void *                  transport  = NULL;
@@ -585,6 +585,8 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
                         "Releasing all locks from transport %p", transport);
 
                 release_inode_locks_of_transport (this, dom, inode, transport);
+
+                op_ret = 0;
                 goto unwind;
         }
 
