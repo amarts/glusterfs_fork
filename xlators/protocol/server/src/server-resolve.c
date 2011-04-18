@@ -575,7 +575,7 @@ server_resolve (call_frame_t *frame)
 
         } else if (resolve->path) {
 
-                gf_log (frame->this->name, GF_LOG_INFO,
+                gf_log_callingfn (frame->this->name, GF_LOG_INFO,
                         "pure path resolution for %s (%s)",
                         resolve->path, gf_fop_list[frame->root->op]);
                 resolve_path_deep (frame);

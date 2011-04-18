@@ -1305,8 +1305,8 @@ quota_markdirty (call_frame_t *frame, void *cookie,
 
         local = frame->local;
 
-        if (op_ret == -1){
-                gf_log (this->name, GF_LOG_ERROR,
+        if (op_ret == -1) {
+                gf_log_callingfn (this->name, GF_LOG_ERROR,
                         "lock setting failed on %s (%s)",
                         local->parent_loc.path, strerror (op_errno));
 
@@ -1440,7 +1440,7 @@ initiate_quota_txn (xlator_t *this, loc_t *loc)
 
         ret = quota_inode_ctx_get (loc->inode, this, &ctx);
         if (ret == -1) {
-                gf_log (this->name, GF_LOG_WARNING,
+                gf_log_callingfn (this->name, GF_LOG_WARNING,
                         "inode ctx get failed, aborting quota txn");
                 ret = -1;
                 goto out;
