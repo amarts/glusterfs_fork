@@ -160,8 +160,8 @@ out:
         rsp.op_errno = gf_errno_to_error (op_errno);
 
         if (op_ret) {
-                gf_log (this->name,
-                        (op_errno == ENOENT ? GF_LOG_TRACE : GF_LOG_INFO),
+                gf_log_callingfn (this->name,
+                                  ((op_errno == ENOENT) ? GF_LOG_TRACE : GF_LOG_INFO),
                         "%"PRId64": LOOKUP %s (%"PRId64") ==> %"PRId32" (%s)",
                         frame->root->unique, state->loc.path,
                         state->loc.inode ? state->loc.inode->ino : 0,

@@ -2224,7 +2224,7 @@ out:
         if (rsp.op_ret == -1) {
                 /* any error other than ENOENT */
                 if (rsp.op_errno != ENOENT)
-                        gf_log (this->name, GF_LOG_INFO, "remote operation failed: %s",
+                        gf_log_callingfn (this->name, GF_LOG_INFO, "remote operation failed: %s",
                                 strerror (rsp.op_errno));
                 else
                         gf_log (this->name, GF_LOG_TRACE, "not found on remote node");
@@ -3922,6 +3922,9 @@ client3_1_setxattr (call_frame_t *frame, xlator_t *this,
         if (!(args->loc && args->loc->inode))
                 goto unwind;
 
+        if (uuid_is_null (args->loc->inode->gfid))
+                gf_log_callingfn ("test", 3, "problem");
+
         memcpy (req.gfid,  args->loc->inode->gfid, 16);
         if (args->dict) {
                 ret = dict_allocate_and_serialize (args->dict,
@@ -5254,6 +5257,9 @@ client3_1_setattr (call_frame_t *frame, xlator_t *this,
 
         if (!(args->loc && args->loc->inode))
                 goto unwind;
+
+        if (uuid_is_null (args->loc->inode->gfid))
+                gf_log_callingfn ("test", 3, "problem");
 
         memcpy (req.gfid, args->loc->inode->gfid, 16);
         req.path = (char *)args->loc->path;
