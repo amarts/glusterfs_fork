@@ -951,11 +951,15 @@ marker_quota_removexattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 unwind:
         STACK_UNWIND_STRICT (rename, frame, -1, ENOMEM, NULL,
                              NULL, NULL, NULL, NULL);
-        local->oplocal = NULL;
-        marker_local_unref (local);
-        marker_local_unref (oplocal);
-        GF_FREE (local);
-        GF_FREE (oplocal);
+        if (local) {
+                local->oplocal = NULL;
+                marker_local_unref (local);
+                GF_FREE (local);
+        }
+        if (oplocal) {
+                marker_local_unref (oplocal);
+                GF_FREE (oplocal);
+        }
         return 0;
 }
 
