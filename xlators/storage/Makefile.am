@@ -1,3 +1,3 @@
-SUBDIRS = posix
+SUBDIRS = posix cdp-store
 
 CLEANFILES = 
