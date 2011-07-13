@@ -79,12 +79,6 @@ struct cdp_private {
 	struct timeval prev_fetch_time;
 	struct timeval init_time;
 
-        time_t last_landfill_check;
-        int32_t janitor_sleep_duration;
-        struct list_head janitor_fds;
-        pthread_cond_t janitor_cond;
-        pthread_mutex_t janitor_lock;
-
 	int64_t read_value;    /* Total read, from init */
 	int64_t write_value;   /* Total write, from init */
         int64_t nr_files;
@@ -102,17 +96,8 @@ struct cdp_private {
 	gf_boolean_t    o_direct;     /* always open files in O_DIRECT mode */
 
 
-/* 
-   decide whether cdp_unlink does open (file), unlink (file), close (fd)
-   instead of just unlink (file). with the former approach there is no lockout
-   of access to parent directory during removal of very large files for the
-   entire duration of freeing of data blocks.
-*/ 
-        gf_boolean_t    background_unlink;
 
-/* janitor thread which cleans up /.trash (created by replicate) */
-        pthread_t       janitor;
-        gf_boolean_t    janitor_present;
+        /* janitor thread which cleans up /.trash (created by replicate) */
         char *          trash_path;
 };
 
@@ -120,32 +105,56 @@ struct cdp_private {
 
 #define CDP_BASE_PATH_LEN(this) (((struct cdp_private *)this->private)->base_path_length)
 
-#define MAKE_REAL_PATH(var, this, path) do {                            \
-		var = alloca (strlen (path) + CDP_BASE_PATH_LEN(this) + 2); \
-                strcpy (var, CDP_BASE_PATH(this));			\
-                strcpy (&var[CDP_BASE_PATH_LEN(this)], path);		\
-        } while (0)
+#define MAKE_GFID_PATH(path,this,gfid)    do {                          \
+                int     ret  = 0;                                       \
+                int32_t dir1 = 0;                                       \
+                int32_t dir2 = 0;                                       \
+                struct stat tempbuf = {0,};                             \
+                                                                        \
+                if (uuid_is_null (gfid))                                \
+                        break;                                          \
+                                                                        \
+                path = alloca (1024);                                   \
+                dir1 = gfid[0] + ((int)(gfid[1] & 0x3f) << 8);          \
+                dir2 = gfid[2] + ((int)(gfid[3] & 0x3f) << 8);          \
+                snprintf (path, 1024, "%s/%d/%d/%s/type",               \
+                          CDP_BASE_PATH(this),dir1,dir2,                \
+                          uuid_utoa (gfid));                            \
+                ret = stat (path, &tempbuf);                            \
+                if (!ret && S_ISDIR (tempbuf.st_mode)) {                \
+                        snprintf (path, 1024, "%s/%d/%d/%s/HEAD/",      \
+                                  CDP_BASE_PATH(this),dir1,dir2,        \
+                                  uuid_utoa (gfid));                    \
+                } else {                                                \
+                        snprintf (path, 1024, "%s/%d/%d/%s/HEAD/data",  \
+                                  CDP_BASE_PATH(this),dir1,dir2,        \
+                                  uuid_utoa (gfid));                    \
+                }                                                       \
+        } while(0)
 
 
 /* Helper functions */
 int setgid_override (xlator_t *this, char *real_path, gid_t *gid);
-int cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req);
-int cdp_fstat_with_gfid (xlator_t *this, int fd, struct iatt *stbuf_p);
-int cdp_lstat_with_gfid (xlator_t *this, const char *path, struct iatt *buf);
+int cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req,
+                  uuid_t gfid);
+int cdp_fstat_with_gfid (xlator_t *this, int fd, struct iatt *stbuf_p,
+                         uuid_t gfid);
+int cdp_lstat_with_gfid (xlator_t *this, const char *path, struct iatt *buf,
+                         uuid_t gfid);
 dict_t *cdp_lookup_xattr_fill (xlator_t *this, const char *path,
                                  loc_t *loc, dict_t *xattr, struct iatt *buf);
 int cdp_handle_pair (xlator_t *this, const char *real_path,
                        data_pair_t *trav, int flags);
 int cdp_fhandle_pair (xlator_t *this, int fd, data_pair_t *trav, int flags);
-void cdp_spawn_janitor_thread (xlator_t *this);
 int cdp_get_file_contents (xlator_t *this, const char *path,
                              const char *name, char **contents);
 int cdp_set_file_contents (xlator_t *this, const char *path,
                              data_pair_t *trav, int flags);
 int cdp_acl_xattr_set (xlator_t *this, const char *path, dict_t *xattr_req);
-int cdp_gfid_heal (xlator_t *this, const char *path, dict_t *xattr_req);
 int cdp_entry_create_xattr_set (xlator_t *this, const char *path,
                                   dict_t *dict);
+int is_gfid_dir_empty (xlator_t *this, const char *path);
+int create_gfid_directory_path (xlator_t *this, uuid_t gfid, mode_t type);
 
 
 #endif /* _CDP_H_ */

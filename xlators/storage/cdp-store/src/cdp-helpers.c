@@ -228,7 +228,8 @@ cdp_fill_ino_from_gfid (xlator_t *this, struct iatt *buf)
 }
 
 int
-cdp_lstat_with_gfid (xlator_t *this, const char *path, struct iatt *stbuf_p)
+cdp_lstat_with_gfid (xlator_t *this, const char *path, struct iatt *stbuf_p,
+                       uuid_t gfid)
 {
         struct cdp_private  *priv    = NULL;
         int                    ret     = 0;
@@ -243,11 +244,13 @@ cdp_lstat_with_gfid (xlator_t *this, const char *path, struct iatt *stbuf_p)
 
         iatt_from_stat (&stbuf, &lstatbuf);
 
-        ret = cdp_fill_gfid_path (this, path, &stbuf);
-        if (ret)
-                gf_log_callingfn (this->name, GF_LOG_DEBUG, "failed to get gfid");
+        if (!IA_ISDIR(stbuf.ia_type))
+                stbuf.ia_nlink--;
 
-        cdp_fill_ino_from_gfid (this, &stbuf);
+        if (gfid) {
+                uuid_copy (stbuf.ia_gfid, gfid);
+                cdp_fill_ino_from_gfid (this, &stbuf);
+        }
 
         if (stbuf_p)
                 *stbuf_p = stbuf;
@@ -257,7 +260,7 @@ out:
 
 
 int
-cdp_fstat_with_gfid (xlator_t *this, int fd, struct iatt *stbuf_p)
+cdp_fstat_with_gfid (xlator_t *this, int fd, struct iatt *stbuf_p, uuid_t gfid)
 {
         struct cdp_private  *priv    = NULL;
         int                    ret     = 0;
@@ -272,11 +275,13 @@ cdp_fstat_with_gfid (xlator_t *this, int fd, struct iatt *stbuf_p)
 
         iatt_from_stat (&stbuf, &fstatbuf);
 
-        ret = cdp_fill_gfid_fd (this, fd, &stbuf);
-        if (ret)
-                gf_log_callingfn (this->name, GF_LOG_DEBUG, "failed to get gfid");
+        if (!IA_ISDIR(stbuf.ia_type))
+                stbuf.ia_nlink--;
 
-        cdp_fill_ino_from_gfid (this, &stbuf);
+        if (gfid) {
+                uuid_copy (stbuf.ia_gfid, gfid);
+                cdp_fill_ino_from_gfid (this, &stbuf);
+        }
 
         if (stbuf_p)
                 *stbuf_p = stbuf;
@@ -317,53 +322,39 @@ out:
  */
 
 int
-setgid_override (xlator_t *this, char *real_path, gid_t *gid)
+setgid_override (xlator_t *this, char *path, gid_t *gid)
 {
-        char *                 tmp_path     = NULL;
-        char *                 parent_path  = NULL;
-        struct iatt            parent_stbuf;
-
+        struct iatt stbuf;
         int op_ret = 0;
 
-        tmp_path = gf_strdup (real_path);
-        if (!tmp_path) {
-                op_ret = -ENOMEM;
-                goto out;
-        }
-
-        parent_path = dirname (tmp_path);
-
-        op_ret = cdp_lstat_with_gfid (this, parent_path, &parent_stbuf);
+        op_ret = cdp_lstat_with_gfid (this, path, &stbuf, NULL);
         if (op_ret == -1) {
                 op_ret = -errno;
                 gf_log_callingfn (this->name, GF_LOG_ERROR,
                                   "lstat on parent directory (%s) failed: %s",
-                                  parent_path, strerror (errno));
+                                  path, strerror (errno));
                 goto out;
         }
 
-        if (parent_stbuf.ia_prot.sgid) {
+        if (stbuf.ia_prot.sgid) {
                 /*
                  * Entries created inside a setgid directory
                  * should inherit the gid from the parent
                  */
 
-                *gid = parent_stbuf.ia_gid;
+                *gid = stbuf.ia_gid;
         }
+
 out:
-
-        if (tmp_path)
-                GF_FREE (tmp_path);
-
         return op_ret;
 }
 
 
 int
-cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req)
+cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req,
+              uuid_t gfid)
 {
         void        *uuid_req = NULL;
-        uuid_t       uuid_curr;
         int          ret = 0;
         struct stat  stat = {0, };
 
@@ -373,7 +364,7 @@ cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req)
         if (sys_lstat (path, &stat) != 0)
                 goto out;
 
-        ret = sys_lgetxattr (path, GFID_XATTR_KEY, uuid_curr, 16);
+        ret = sys_lgetxattr (path, GFID_XATTR_KEY, gfid, 16);
         if (ret == 16) {
                 ret = 0;
                 goto out;
@@ -387,6 +378,9 @@ cdp_gfid_set (xlator_t *this, const char *path, dict_t *xattr_req)
         }
 
         ret = sys_lsetxattr (path, GFID_XATTR_KEY, uuid_req, 16, XATTR_CREATE);
+
+        if (!ret)
+                uuid_copy (gfid, uuid_req);
 
 out:
         return ret;
@@ -489,7 +483,7 @@ cdp_get_file_contents (xlator_t *this, const char *real_path,
         key = (char *) &(name[15]);
         sprintf (real_filepath, "%s/%s", real_path, key);
 
-        op_ret = cdp_lstat_with_gfid (this, real_filepath, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_filepath, &stbuf, NULL);
         if (op_ret == -1) {
                 op_ret = -errno;
                 gf_log (this->name, GF_LOG_ERROR, "lstat failed on %s: %s",
@@ -639,219 +633,6 @@ out:
         return ret;
 }
 
-
-static int
-janitor_walker (const char *fpath, const struct stat *sb,
-                int typeflag, struct FTW *ftwbuf)
-{
-        switch (sb->st_mode & S_IFMT) {
-        case S_IFREG:
-        case S_IFBLK:
-        case S_IFLNK:
-        case S_IFCHR:
-        case S_IFIFO:
-        case S_IFSOCK:
-                gf_log (THIS->name, GF_LOG_TRACE,
-                        "unlinking %s", fpath);
-                unlink (fpath);
-                break;
-
-        case S_IFDIR:
-                if (ftwbuf->level) { /* don't remove top level dir */
-                        gf_log (THIS->name, GF_LOG_TRACE,
-                                "removing directory %s", fpath);
-
-                        rmdir (fpath);
-                }
-                break;
-        }
-
-        return 0;   /* 0 = FTW_CONTINUE */
-}
-
-
-static struct cdp_fd *
-janitor_get_next_fd (xlator_t *this)
-{
-        struct cdp_private *priv = NULL;
-        struct cdp_fd *pfd = NULL;
-
-        struct timespec timeout;
-
-        priv = this->private;
-
-        pthread_mutex_lock (&priv->janitor_lock);
-        {
-                if (list_empty (&priv->janitor_fds)) {
-                        time (&timeout.tv_sec);
-                        timeout.tv_sec += priv->janitor_sleep_duration;
-                        timeout.tv_nsec = 0;
-
-                        pthread_cond_timedwait (&priv->janitor_cond,
-                                                &priv->janitor_lock,
-                                                &timeout);
-                        goto unlock;
-                }
-
-                pfd = list_entry (priv->janitor_fds.next, struct cdp_fd,
-                                  list);
-
-                list_del (priv->janitor_fds.next);
-        }
-unlock:
-        pthread_mutex_unlock (&priv->janitor_lock);
-
-        return pfd;
-}
-
-
-static void *
-cdp_janitor_thread_proc (void *data)
-{
-        xlator_t *            this = NULL;
-        struct cdp_private *priv = NULL;
-        struct cdp_fd *pfd;
-
-        time_t now;
-
-        this = data;
-        priv = this->private;
-
-        THIS = this;
-
-        while (1) {
-                time (&now);
-                if ((now - priv->last_landfill_check) > priv->janitor_sleep_duration) {
-                        gf_log (this->name, GF_LOG_TRACE,
-                                "janitor cleaning out /" GF_REPLICATE_TRASH_DIR);
-
-                        nftw (priv->trash_path,
-                              janitor_walker,
-                              32,
-                              FTW_DEPTH | FTW_PHYS);
-
-                        priv->last_landfill_check = now;
-                }
-
-                pfd = janitor_get_next_fd (this);
-                if (pfd) {
-                        if (pfd->dir == NULL) {
-                                gf_log (this->name, GF_LOG_TRACE,
-                                        "janitor: closing file fd=%d", pfd->fd);
-                                close (pfd->fd);
-                        } else {
-                                gf_log (this->name, GF_LOG_TRACE,
-                                        "janitor: closing dir fd=%p", pfd->dir);
-                                closedir (pfd->dir);
-                        }
-
-                        if (pfd->path)
-                                GF_FREE (pfd->path);
-
-                        GF_FREE (pfd);
-                }
-        }
-
-        return NULL;
-}
-
-
-void
-cdp_spawn_janitor_thread (xlator_t *this)
-{
-        struct cdp_private *priv = NULL;
-        int ret = 0;
-
-        priv = this->private;
-
-        LOCK (&priv->lock);
-        {
-                if (!priv->janitor_present) {
-                        ret = pthread_create (&priv->janitor, NULL,
-                                              cdp_janitor_thread_proc, this);
-
-                        if (ret < 0) {
-                                gf_log (this->name, GF_LOG_ERROR,
-                                        "spawning janitor thread failed: %s",
-                                        strerror (errno));
-                                goto unlock;
-                        }
-
-                        priv->janitor_present = _gf_true;
-                }
-        }
-unlock:
-        UNLOCK (&priv->lock);
-}
-
-static int
-is_fresh_file (struct stat *stat)
-{
-        struct timeval tv;
-
-        gettimeofday (&tv, NULL);
-
-        if ((stat->st_ctime >= (tv.tv_sec - 1))
-            && (stat->st_ctime <= tv.tv_sec))
-                return 1;
-
-        return 0;
-}
-
-
-int
-cdp_gfid_heal (xlator_t *this, const char *path, dict_t *xattr_req)
-{
-        /* The purpose of this function is to prevent a race
-           where an inode creation FOP (like mkdir/mknod/create etc)
-           races with lookup in the following way:
-
-                   {create thread}       |    {lookup thread}
-                                         |
-                                         t0
-                      mkdir ("name")     |
-                                         t1
-                                         |     cdp_gfid_set ("name", 2);
-                                         t2
-             cdp_gfid_set ("name", 1); |
-                                         t3
-                      lstat ("name");    |     lstat ("name");
-
-          In the above case mkdir FOP would have resulted with GFID 2 while
-          it should have been GFID 1. It matters in the case where GFID would
-          have gotten set to 1 on other subvolumes of replciate/distribute
-
-          The "solution" here is that, if we detect lookup is attempting to
-          set a GFID on a file which is created very recently, but does not
-          yet have a GFID (i.e, between t1 and t2), then "fake" it as though
-          cdp_gfid_heal was called at t0 instead.
-        */
-
-        uuid_t       uuid_curr;
-        int          ret = 0;
-        struct stat  stat = {0, };
-
-        if (!xattr_req)
-                goto out;
-
-        if (sys_lstat (path, &stat) != 0)
-                goto out;
-
-        ret = sys_lgetxattr (path, GFID_XATTR_KEY, uuid_curr, 16);
-        if (ret != 16) {
-                if (is_fresh_file (&stat)) {
-                        ret = -1;
-                        errno = ENOENT;
-                        goto out;
-                }
-        }
-
-        ret = cdp_gfid_set (this, path, xattr_req);
-out:
-        return ret;
-}
-
-
 int
 cdp_acl_xattr_set (xlator_t *this, const char *path, dict_t *xattr_req)
 {
@@ -915,5 +696,121 @@ cdp_entry_create_xattr_set (xlator_t *this, const char *path,
         ret = 0;
 
 out:
+        return ret;
+}
+
+
+int
+create_gfid_directory_path (xlator_t *this, uuid_t gfid, mode_t type)
+{
+        int      ret  = -1;
+        int32_t  dir1 = 0;
+        int32_t  dir2 = 0;
+        char    *path = NULL;
+
+        if (uuid_is_null (gfid))
+                goto out;
+
+        path = alloca (1024);
+        if (!path)
+                goto out;
+
+        dir1 = gfid[0] + ((int)(gfid[1] & 0x3f) << 8);
+        dir2 = gfid[2] + ((int)(gfid[3] & 0x3f) << 8);
+
+        snprintf (path, 1024, "%s/%d",
+                  CDP_BASE_PATH(this),dir1);
+        ret = mkdir (path, 0777);
+        if ((ret == -1) && (errno != EEXIST))
+                goto out;
+
+        snprintf (path, 1024, "%s/%d/%d",
+                  CDP_BASE_PATH(this),dir1,dir2);
+        ret = mkdir (path, 0777);
+        if ((ret == -1) && (errno != EEXIST))
+                goto out;
+
+        snprintf (path, 1024, "%s/%d/%d/%s",
+                  CDP_BASE_PATH(this),dir1,dir2,
+                  uuid_utoa (gfid));
+        ret = mkdir (path, 0777);
+        if (ret)
+                goto out;
+
+        snprintf (path, 1024, "%s/%d/%d/%s/HEAD/",
+                  CDP_BASE_PATH(this),dir1,dir2,
+                  uuid_utoa (gfid));
+        ret = mkdir (path, (type & 0777));
+        if (ret)
+                goto out;
+
+        ret = 0;
+        snprintf (path, 1024, "%s/%d/%d/%s/type",
+                  CDP_BASE_PATH(this),dir1,dir2,
+                  uuid_utoa (gfid));
+        switch (type & S_IFMT) {
+        case S_IFDIR:
+                ret = mkdir (path, type);
+                break;
+        case S_IFLNK:
+                ret = symlink ("glusterfs-symlink-type", path);
+                break;
+        case S_IFBLK:
+        case S_IFCHR:
+                /* needs the 'dev' values to be set */
+                ret = mknod (path, type, makedev (13, 42));
+                break;
+        default:
+                ret = mknod (path, type, 0);
+                break;
+        }
+out:
+        if (ret)
+                gf_log (this->name, GF_LOG_ERROR,
+                        "failed to create the parent directory %s (%s)",
+                        path, strerror (errno));
+
+        return ret;
+}
+
+int
+is_gfid_dir_empty (xlator_t *this, const char *path)
+{
+        struct dirent *entry     = NULL;
+        char          *gfid_path = NULL;
+        DIR           *dir       = NULL;
+        uuid_t         gfid      = {0,};
+        int            ret       = 1;
+        int            op_ret    = 0;
+
+        op_ret = sys_lgetxattr (path, GFID_XATTR_KEY, gfid, 16);
+        /* Return value of getxattr */
+        if (op_ret == 16)
+                op_ret = 0;
+
+        if (op_ret)
+                goto out;
+
+        MAKE_GFID_PATH (gfid_path, this, gfid);
+
+        dir = opendir (gfid_path);
+        if (!dir)
+                goto out;
+
+        while (1) {
+                entry = readdir (dir);
+                if (!entry)
+                        goto out;
+
+                if (strcmp (entry->d_name, ".") && strcmp (entry->d_name, "..")) {
+                        gf_log (this->name, 1, "%s", entry->d_name);
+                        ret = 0;
+                        goto out;
+                }
+        }
+
+out:
+        if (dir)
+                closedir (dir);
         return ret;
 }

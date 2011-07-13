@@ -83,10 +83,6 @@
 int
 cdp_forget (xlator_t *this, inode_t *inode)
 {
-        uint64_t tmp_cache = 0;
-        if (!inode_ctx_del (inode, this, &tmp_cache))
-                dict_destroy ((dict_t *)(long)tmp_cache);
-
         return 0;
 }
 
@@ -96,28 +92,54 @@ int32_t
 cdp_lookup (call_frame_t *frame, xlator_t *this,
               loc_t *loc, dict_t *xattr_req)
 {
-        struct iatt buf                = {0, };
-        char *      real_path          = NULL;
-        int32_t     op_ret             = -1;
-        int32_t     entry_ret          = 0;
-        int32_t     op_errno           = 0;
-        dict_t *    xattr              = NULL;
-        char *      pathdup            = NULL;
-        char *      parentpath         = NULL;
-        struct iatt postparent         = {0,};
+        struct iatt buf          = {0, };
+        char *      real_path    = NULL;
+        int32_t     op_ret       = -1;
+        int32_t     entry_ret    = 0;
+        int32_t     op_errno     = 0;
+        dict_t *    xattr        = NULL;
+        char *      parentpath   = NULL;
+        struct iatt postparent   = {0,};
+        uuid_t      gfid         = {0,};
 
         VALIDATE_OR_GOTO (frame, out);
         VALIDATE_OR_GOTO (this, out);
         VALIDATE_OR_GOTO (loc, out);
         VALIDATE_OR_GOTO (loc->path, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
-        cdp_gfid_heal (this, real_path, xattr_req);
+        if (!real_path) {
+                /* Get the gfid path from parent */
+                if (loc->parent)
+                        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+                else {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "inode with no gfid and parent %s",
+                                loc->path);
+                        goto out;
+                }
 
-        op_ret   = cdp_lstat_with_gfid (this, real_path, &buf);
+                strcat (real_path, loc->name);
+                op_ret = sys_lgetxattr (real_path, GFID_XATTR_KEY, gfid, 16);
+                /* Return value of getxattr */
+                if (op_ret == 16)
+                        op_ret = 0;
+                if (op_ret) {
+                        op_errno = errno;
+                        if ((op_ret == -1) && (errno == ENOENT)) {
+                                entry_ret = -1;
+                                goto parent;
+                        }
+                        goto out;
+                }
+                MAKE_GFID_PATH (real_path, this, gfid);
+        } else {
+                uuid_copy (gfid, loc->inode->gfid);
+        }
+
+        op_ret   = cdp_lstat_with_gfid (this, real_path, &buf, gfid);
         op_errno = errno;
-
         if (op_ret == -1) {
                 if (op_errno != ENOENT) {
                         gf_log (this->name, GF_LOG_ERROR,
@@ -136,12 +158,10 @@ cdp_lookup (call_frame_t *frame, xlator_t *this,
 
 parent:
         if (loc->parent) {
-                pathdup = gf_strdup (real_path);
-                GF_VALIDATE_OR_GOTO (this->name, pathdup, out);
+                MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
-                parentpath = dirname (pathdup);
-
-                op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+                op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                                loc->parent->gfid);
                 if (op_ret == -1) {
                         op_errno = errno;
                         gf_log (this->name, GF_LOG_ERROR,
@@ -153,9 +173,6 @@ parent:
 
         op_ret = entry_ret;
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
-
         if (xattr)
                 dict_ref (xattr);
 
@@ -188,9 +205,10 @@ cdp_stat (call_frame_t *frame, xlator_t *this, loc_t *loc)
         VALIDATE_OR_GOTO (priv, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &buf);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &buf,
+                                        loc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -324,9 +342,10 @@ cdp_setattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (loc, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &statpre);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &statpre,
+                                        loc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -380,7 +399,8 @@ cdp_setattr (call_frame_t *frame, xlator_t *this,
                 }
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &statpost);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &statpost,
+                                        loc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -472,7 +492,8 @@ cdp_fsetattr (call_frame_t *frame, xlator_t *this,
         }
         pfd = (struct cdp_fd *)(long)tmp_pfd;
 
-        op_ret = cdp_fstat_with_gfid (this, pfd->fd, &statpre);
+        op_ret = cdp_fstat_with_gfid (this, pfd->fd, &statpre,
+                                        fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -527,7 +548,8 @@ cdp_fsetattr (call_frame_t *frame, xlator_t *this,
                 }
         }
 
-        op_ret = cdp_fstat_with_gfid (this, pfd->fd, &statpost);
+        op_ret = cdp_fstat_with_gfid (this, pfd->fd, &statpost,
+                                        fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -566,7 +588,7 @@ cdp_opendir (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (fd, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         dir = opendir (real_path);
 
@@ -635,8 +657,6 @@ cdp_releasedir (xlator_t *this,
         uint64_t          tmp_pfd  = 0;
         int               ret      = 0;
 
-        struct cdp_private *priv = NULL;
-
         VALIDATE_OR_GOTO (this, out);
         VALIDATE_OR_GOTO (fd, out);
 
@@ -655,23 +675,23 @@ cdp_releasedir (xlator_t *this,
                 goto out;
         }
 
-        priv = this->private;
-
         if (!pfd->path) {
                 gf_log (this->name, GF_LOG_WARNING,
                         "pfd->path was NULL. fd=%p pfd=%p",
                         fd, pfd);
         }
 
-        pthread_mutex_lock (&priv->janitor_lock);
-        {
-                INIT_LIST_HEAD (&pfd->list);
-                list_add_tail (&pfd->list, &priv->janitor_fds);
-                pthread_cond_signal (&priv->janitor_cond);
-        }
-        pthread_mutex_unlock (&priv->janitor_lock);
+        closedir (pfd->dir);
 
+        /* Snapshoting comes here */
 out:
+        if (pfd) {
+                if (pfd->path)
+                        GF_FREE (pfd->path);
+
+                GF_FREE (pfd);
+        }
+
         return 0;
 }
 
@@ -695,7 +715,7 @@ cdp_readlink (call_frame_t *frame, xlator_t *this,
 
         dest = alloca (size + 1);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         op_ret = readlink (real_path, dest, size);
         if (op_ret == -1) {
@@ -708,7 +728,8 @@ cdp_readlink (call_frame_t *frame, xlator_t *this,
 
         dest[op_ret] = 0;
 
-        lstat_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+        lstat_ret = cdp_lstat_with_gfid (this, real_path, &stbuf,
+                                           loc->inode->gfid);
         if (lstat_ret == -1) {
                 op_ret = -1;
                 op_errno = errno;
@@ -739,10 +760,12 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
         char                  was_present = 1;
         struct cdp_private *priv        = NULL;
         gid_t                 gid         = 0;
-        char                 *pathdup   = NULL;
         struct iatt           preparent = {0,};
         struct iatt           postparent = {0,};
         char                 *parentpath = NULL;
+        uuid_t                gfid = {0,};
+        struct stat           tmpbuf = {0,};
+        char                 *gfid_path = NULL;
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -753,7 +776,8 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
         gid = frame->root->gid;
 
@@ -765,12 +789,9 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
         }
 
         SET_FS_ID (frame->root->uid, gid);
-        pathdup = gf_strdup (real_path);
-        GF_VALIDATE_OR_GOTO (this->name, pathdup, out);
 
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -779,38 +800,57 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = mknod (real_path, mode, dev);
+        {
+                /* Create a entry in parent */
+                strcat (real_path, loc->name);
 
-        if (op_ret == -1) {
-                op_errno = errno;
-                if ((op_errno == EINVAL) && S_ISREG (mode)) {
-                        /* Over Darwin, mknod with (S_IFREG|mode)
-                           doesn't work */
-                        tmp_fd = creat (real_path, mode);
-                        if (tmp_fd == -1) {
+                op_ret = stat (real_path, &tmpbuf);
+                if ((op_ret == -1) && (errno == ENOENT))
+                        was_present = 0;
+
+                op_ret = mknod (real_path, mode, dev);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        if ((op_errno == EINVAL) && S_ISREG (mode)) {
+                                /* Over Darwin, mknod with (S_IFREG|mode)
+                                   doesn't work */
+                                tmp_fd = creat (real_path, mode);
+                                if (tmp_fd == -1) {
+                                        gf_log (this->name, GF_LOG_ERROR,
+                                                "create failed on %s: %s",
+                                                loc->path, strerror (errno));
+                                        goto out;
+                                }
+                                close (tmp_fd);
+                        } else {
                                 gf_log (this->name, GF_LOG_ERROR,
-                                        "create failed on %s: %s",
-                                        loc->path, strerror (errno));
+                                        "mknod on %s failed: %s", loc->path,
+                                        strerror (op_errno));
                                 goto out;
                         }
-                        close (tmp_fd);
-                } else {
-
+                }
+                op_ret = cdp_gfid_set (this, real_path, params, gfid);
+                if (op_ret) {
                         gf_log (this->name, GF_LOG_ERROR,
-                                "mknod on %s failed: %s", loc->path,
+                                "setting gfid on %s failed", loc->path);
+                }
+
+                create_gfid_directory_path (this, gfid, mode);
+                MAKE_GFID_PATH (gfid_path, this, gfid);
+
+                op_ret = link (real_path, gfid_path);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "hardlink on %s failed: %s", loc->path,
                                 strerror (op_errno));
                         goto out;
                 }
         }
 
-        op_ret = cdp_gfid_set (this, real_path, params);
-        if (op_ret) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "setting gfid on %s failed", loc->path);
-        }
 
 #ifndef HAVE_SET_FSID
-        op_ret = lchown (real_path, frame->root->uid, gid);
+        op_ret = lchown (gfid_path, frame->root->uid, gid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -834,16 +874,17 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
                         strerror (errno));
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, gfid_path, &stbuf, gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
-                        "mknod on %s failed: %s", loc->path,
+                        "lstat on %s failed: %s", loc->path,
                         strerror (op_errno));
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -855,16 +896,14 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
-
         SET_TO_OLD_FS_ID ();
 
         STACK_UNWIND_STRICT (mknod, frame, op_ret, op_errno,
                              (loc)?loc->inode:NULL, &stbuf, &preparent, &postparent);
 
         if ((op_ret == -1) && (!was_present)) {
-                unlink (real_path);
+                if (real_path)
+                        unlink (real_path);
         }
 
         return 0;
@@ -881,10 +920,12 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
         char                  was_present = 1;
         struct cdp_private *priv        = NULL;
         gid_t                 gid         = 0;
-        char                 *pathdup   = NULL;
         char                 *parentpath = NULL;
         struct iatt           preparent = {0,};
         struct iatt           postparent = {0,};
+        uuid_t                gfid = {0,};
+        char                 *gfid_path   = NULL;
+        struct stat           tmpbuf = {0,};
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -895,14 +936,10 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
         gid = frame->root->gid;
-
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)) {
-                was_present = 0;
-        }
 
         op_ret = setgid_override (this, real_path, &gid);
         if (op_ret < 0) {
@@ -912,13 +949,8 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
         }
 
         SET_FS_ID (frame->root->uid, gid);
-        pathdup = gf_strdup (real_path);
-        if (!pathdup)
-                goto out;
-
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -927,23 +959,41 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = mkdir (real_path, mode);
-        if (op_ret == -1) {
-                op_errno = errno;
-                gf_log (this->name, GF_LOG_ERROR,
-                        "mkdir of %s failed: %s", loc->path,
-                        strerror (op_errno));
-                goto out;
-        }
+        {
+                /* Create a entry in parent */
+                strcat (real_path, loc->name);
 
-        op_ret = cdp_gfid_set (this, real_path, params);
-        if (op_ret) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "setting gfid on %s failed", loc->path);
+                op_ret = stat (real_path, &tmpbuf);
+                if ((op_ret == -1) && (errno == ENOENT))
+                        was_present = 0;
+
+                op_ret = mkdir (real_path, mode);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "mkdir of %s failed: %s", loc->path,
+                                strerror (op_errno));
+                        goto out;
+                }
+                op_ret = cdp_gfid_set (this, real_path, params, gfid);
+                if (op_ret) {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "setting gfid on %s failed", loc->path);
+                }
+
+                op_ret = create_gfid_directory_path (this, gfid, S_IFDIR | mode);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "mkdir of %s failed: %s", gfid_path,
+                                strerror (op_errno));
+                        goto out;
+                }
+                MAKE_GFID_PATH (gfid_path, this, gfid);
         }
 
 #ifndef HAVE_SET_FSID
-        op_ret = chown (real_path, frame->root->uid, gid);
+        op_ret = chown (gfid_path, frame->root->uid, gid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -967,7 +1017,7 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
                         strerror (errno));
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, gfid_path, &stbuf, gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -976,7 +1026,8 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -988,16 +1039,14 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
-
         SET_TO_OLD_FS_ID ();
 
         STACK_UNWIND_STRICT (mkdir, frame, op_ret, op_errno,
                              (loc)?loc->inode:NULL, &stbuf, &preparent, &postparent);
 
         if ((op_ret == -1) && (!was_present)) {
-                unlink (real_path);
+                if (real_path)
+                        sys_unlink (real_path);
         }
 
         return 0;
@@ -1011,10 +1060,7 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
         int32_t                  op_ret    = -1;
         int32_t                  op_errno  = 0;
         char                    *real_path = NULL;
-        char                    *pathdup   = NULL;
         char                    *parentpath = NULL;
-        int32_t                  fd = -1;
-        struct cdp_private    *priv      = NULL;
         struct iatt            preparent = {0,};
         struct iatt            postparent = {0,};
 
@@ -1025,15 +1071,11 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (loc, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
-        pathdup = gf_strdup (real_path);
-        if (!pathdup)
-                goto out;
-
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1042,20 +1084,8 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        priv = this->private;
-        if (priv->background_unlink) {
-                if (IA_ISREG (loc->inode->ia_type)) {
-                        fd = open (real_path, O_RDONLY);
-                        if (fd == -1) {
-                                op_ret = -1;
-                                op_errno = errno;
-                                gf_log (this->name, GF_LOG_ERROR,
-                                        "open of %s failed: %s", loc->path,
-                                        strerror (op_errno));
-                                goto out;
-                        }
-                }
-        }
+        /* Need some enhancement */
+        strcat (real_path, loc->name);
 
         op_ret = sys_unlink (real_path);
         if (op_ret == -1) {
@@ -1066,7 +1096,13 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        /* TODO: this info can be used as 'trash' feature, if we don't
+           delete the hardlink file */
+        gf_log (this->name, GF_LOG_DEBUG, "deleted %s with gfid %s",
+                loc->path, uuid_utoa (loc->inode->gfid));
+
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1078,17 +1114,10 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
-
         SET_TO_OLD_FS_ID ();
 
         STACK_UNWIND_STRICT (unlink, frame, op_ret, op_errno,
                              &preparent, &postparent);
-
-        if (fd != -1) {
-                close (fd);
-        }
 
         return 0;
 }
@@ -1101,11 +1130,11 @@ cdp_rmdir (call_frame_t *frame, xlator_t *this,
         int32_t op_ret    = -1;
         int32_t op_errno  = 0;
         char *  real_path = NULL;
-        char *  pathdup   = NULL;
         char *  parentpath = NULL;
         struct iatt   preparent = {0,};
         struct iatt   postparent = {0,};
         struct cdp_private    *priv      = NULL;
+        char *  gfid_path = NULL;
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -1116,15 +1145,12 @@ cdp_rmdir (call_frame_t *frame, xlator_t *this,
         priv = this->private;
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (gfid_path, this, loc->inode->gfid);
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
-        pathdup = gf_strdup (real_path);
-        if (!pathdup)
-                goto out;
-
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1133,39 +1159,28 @@ cdp_rmdir (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        if (flags) {
-                uint32_t hashval = 0;
-                char *tmp_path = alloca (strlen (priv->trash_path) + 16);
+        strcat (real_path, loc->name);
 
-                mkdir (priv->trash_path, 0755);
-                hashval = gf_dm_hashfn (real_path, strlen (real_path));
-                sprintf (tmp_path, "%s/%u", priv->trash_path, hashval);
-                op_ret = rename (real_path, tmp_path);
-        } else {
-                op_ret = rmdir (real_path);
-        }
+        op_ret = rmdir (gfid_path);
         op_errno = errno;
 
         if (op_errno == EEXIST)
                 /* Solaris sets errno = EEXIST instead of ENOTEMPTY */
                 op_errno = ENOTEMPTY;
 
-        /* No need to log a common error as ENOTEMPTY */
-        if (op_ret == -1 && op_errno != ENOTEMPTY) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "rmdir of %s failed: %s", loc->path,
-                        strerror (op_errno));
-        }
+        if (!op_ret)
+                op_ret = rmdir (real_path);
 
         if (op_ret == -1) {
                 gf_log (this->name,
                         (op_errno == ENOTEMPTY) ? GF_LOG_DEBUG : GF_LOG_ERROR,
-                        "%s on %s failed", (flags) ? "rename" : "rmdir",
-                        loc->path);
+                        "rmdir on %s failed %s",
+                        loc->path, strerror (op_errno));
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1175,9 +1190,6 @@ cdp_rmdir (call_frame_t *frame, xlator_t *this,
         }
 
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
-
         SET_TO_OLD_FS_ID ();
 
         STACK_UNWIND_STRICT (rmdir, frame, op_ret, op_errno,
@@ -1198,10 +1210,12 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
         struct cdp_private *priv        = NULL;
         gid_t                 gid         = 0;
         char                  was_present = 1;
-        char                 *pathdup   = NULL;
         char                 *parentpath = NULL;
         struct iatt           preparent = {0,};
         struct iatt           postparent = {0,};
+        uuid_t                gfid = {0,};
+        struct stat           tmpbuf = {0,};
+        char                 *gfid_path = NULL;
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -1213,12 +1227,8 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
-
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)){
-                was_present = 0;
-        }
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
         gid = frame->root->gid;
 
@@ -1230,13 +1240,8 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
         }
 
         SET_FS_ID (frame->root->uid, gid);
-        pathdup = gf_strdup (real_path);
-        if (!pathdup)
-                goto out;
 
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent, NULL);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1245,24 +1250,44 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = symlink (linkname, real_path);
+        {
+                /* Create a entry in parent */
+                strcat (real_path, loc->name);
 
-        if (op_ret == -1) {
-                op_errno = errno;
-                gf_log (this->name, GF_LOG_ERROR,
-                        "symlink of %s --> %s failed: %s",
-                        loc->path, linkname, strerror (op_errno));
-                goto out;
-        }
+                op_ret = stat (real_path, &tmpbuf);
+                if ((op_ret == -1) && (errno == ENOENT))
+                        was_present = 0;
 
-        op_ret = cdp_gfid_set (this, real_path, params);
-        if (op_ret) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "setting gfid on %s failed", loc->path);
+                op_ret = symlink (linkname, real_path);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "symlink of %s --> %s failed: %s",
+                                loc->path, linkname, strerror (op_errno));
+                        goto out;
+                }
+
+                op_ret = cdp_gfid_set (this, real_path, params, gfid);
+                if (op_ret) {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "setting gfid on %s failed", loc->path);
+                }
+
+                create_gfid_directory_path (this, gfid, S_IFLNK | 0777);
+                MAKE_GFID_PATH (gfid_path, this, gfid);
+
+                op_ret = link (real_path, gfid_path);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "hardlink of %s --> %s failed: %s",
+                                real_path, gfid_path, strerror (op_errno));
+                        goto out;
+                }
         }
 
 #ifndef HAVE_SET_FSID
-        op_ret = lchown (real_path, frame->root->uid, gid);
+        op_ret = lchown (gfid_path, frame->root->uid, gid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1286,7 +1311,7 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
                         strerror (errno));
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf, gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1295,7 +1320,8 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1307,8 +1333,6 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (pathdup)
-                GF_FREE (pathdup);
 
         SET_TO_OLD_FS_ID ();
 
@@ -1327,23 +1351,23 @@ int
 cdp_rename (call_frame_t *frame, xlator_t *this,
               loc_t *oldloc, loc_t *newloc)
 {
-        int32_t               op_ret       = -1;
-        int32_t               op_errno     = 0;
-        char                 *real_oldpath = NULL;
-        char                 *real_newpath = NULL;
-        struct iatt           stbuf        = {0, };
-        struct cdp_private *priv         = NULL;
-        char                  was_present  = 1;
-        char                 *oldpathdup    = NULL;
-        char                 *oldparentpath = NULL;
-        char                 *newpathdup    = NULL;
-        char                 *newparentpath = NULL;
-        struct iatt           preoldparent  = {0, };
-        struct iatt           postoldparent = {0, };
-        struct iatt           prenewparent  = {0, };
-        struct iatt           postnewparent = {0, };
-        char                  olddirid[64];
-        char                  newdirid[64];
+        int32_t             op_ret         = -1;
+        int32_t             op_errno       = 0;
+        char               *real_oldpath   = NULL;
+        char               *real_newpath   = NULL;
+        struct iatt         stbuf          = {0, };
+        struct cdp_private *priv           = NULL;
+        char                was_present    = 1;
+        char               *oldparentpath  = NULL;
+        char               *newparentpath  = NULL;
+        struct iatt         preoldparent   = {0, };
+        struct iatt         postoldparent  = {0, };
+        struct iatt         prenewparent   = {0, };
+        struct iatt         postnewparent  = {0, };
+        char                olddirid[64]   = {0,} ;
+        char                newdirid[64]   = {0,};
+        struct stat         tmpbuf         = {0,};
+        uuid_t              newdir_gfid    = {0,};
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -1356,16 +1380,14 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (priv, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_oldpath, this, oldloc->path);
-        MAKE_REAL_PATH (real_newpath, this, newloc->path);
+        MAKE_GFID_PATH (real_oldpath, this, oldloc->parent->gfid);
+        MAKE_GFID_PATH (real_newpath, this, newloc->parent->gfid);
 
-        oldpathdup = gf_strdup (real_oldpath);
-        if (!oldpathdup)
-                goto out;
+        MAKE_GFID_PATH (newparentpath, this, newloc->parent->gfid);
+        MAKE_GFID_PATH (oldparentpath, this, oldloc->parent->gfid);
 
-        oldparentpath = dirname (oldpathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, oldparentpath, &preoldparent);
+        op_ret = cdp_lstat_with_gfid (this, oldparentpath, &preoldparent,
+                                      oldloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1374,13 +1396,8 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        newpathdup = gf_strdup (real_newpath);
-        if (!newpathdup)
-                goto out;
-
-        newparentpath = dirname (newpathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, newparentpath, &prenewparent);
+        op_ret = cdp_lstat_with_gfid (this, newparentpath, &prenewparent,
+                                      newloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1389,12 +1406,28 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)){
+        strcat (real_oldpath, oldloc->name);
+        strcat (real_newpath, newloc->name);
+
+        op_ret = stat (real_newpath, &tmpbuf);
+        if ((op_ret == -1) && (errno == ENOENT))
                 was_present = 0;
+
+        if (!op_ret && S_ISDIR (tmpbuf.st_mode) &&
+            (IA_ISDIR (oldloc->inode->ia_type))) {
+                /* Need to check destination for empty or not */
+                if (!is_gfid_dir_empty (this, real_newpath)) {
+                        gf_log (this->name, GF_LOG_DEBUG,
+                                "rename of %s to %s failed: %s",
+                                oldloc->path, newloc->path,
+                                strerror (ENOTEMPTY));
+                        op_ret = -1;
+                        op_errno = ENOTEMPTY;
+                        goto out;
+                }
         }
 
-        if (was_present && IA_ISDIR(stbuf.ia_type) && !newloc->inode) {
+        if (was_present && S_ISDIR(tmpbuf.st_mode) && !newloc->inode) {
                 gf_log (this->name, GF_LOG_WARNING,
                         "found directory at %s while expecting ENOENT",
                         real_newpath);
@@ -1403,16 +1436,19 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        if (was_present && IA_ISDIR(stbuf.ia_type) &&
-            uuid_compare (newloc->inode->gfid, stbuf.ia_gfid)) {
-                gf_log (this->name, GF_LOG_WARNING,
-                        "found directory %s at %s while renaming %s",
-                        uuid_utoa_r (newloc->inode->gfid, olddirid),
-                        real_newpath,
-                        uuid_utoa_r (stbuf.ia_gfid, newdirid));
-                op_ret = -1;
-                op_errno = EEXIST;
-                goto out;
+        if (was_present && S_ISDIR(tmpbuf.st_mode)) {
+                op_ret = sys_lgetxattr (real_newpath, GFID_XATTR_KEY,
+                                        newdir_gfid, 16);
+                if ((op_ret == 16) &&
+                    uuid_compare (newloc->inode->gfid, newdir_gfid)) {
+                        gf_log (this->name, GF_LOG_WARNING,
+                                "found directory %s at %s while renaming %s",
+                                uuid_utoa_r (newloc->inode->gfid, olddirid),
+                                real_newpath, uuid_utoa_r (newdir_gfid, newdirid));
+                        op_ret = -1;
+                        op_errno = EEXIST;
+                        goto out;
+                }
         }
 
         op_ret = sys_rename (real_oldpath, real_newpath);
@@ -1425,7 +1461,8 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf,
+                                      oldloc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1434,7 +1471,8 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, oldparentpath, &postoldparent);
+        op_ret = cdp_lstat_with_gfid (this, oldparentpath, &postoldparent,
+                                      oldloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1443,7 +1481,8 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, newparentpath, &postnewparent);
+        op_ret = cdp_lstat_with_gfid (this, newparentpath, &postnewparent,
+                                        newloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1455,12 +1494,6 @@ cdp_rename (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (oldpathdup)
-                GF_FREE (oldpathdup);
-
-        if (newpathdup)
-                GF_FREE (newpathdup);
-
 
         SET_TO_OLD_FS_ID ();
 
@@ -1487,7 +1520,6 @@ cdp_link (call_frame_t *frame, xlator_t *this,
         struct iatt           stbuf        = {0, };
         struct cdp_private *priv         = NULL;
         char                  was_present  = 1;
-        char                 *newpathdup   = NULL;
         char                 *newparentpath = NULL;
         struct iatt           preparent = {0,};
         struct iatt           postparent = {0,};
@@ -1503,28 +1535,20 @@ cdp_link (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (priv, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_oldpath, this, oldloc->path);
-        MAKE_REAL_PATH (real_newpath, this, newloc->path);
+        MAKE_GFID_PATH (real_oldpath, this, oldloc->inode->gfid);
+        MAKE_GFID_PATH (newparentpath, this, newloc->parent->gfid);
+        MAKE_GFID_PATH (real_newpath, this, newloc->parent->gfid);
 
-        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)) {
-                was_present = 0;
-        }
-
-        newpathdup  = gf_strdup (real_newpath);
-        if (!newpathdup) {
-                op_errno = ENOMEM;
-                goto out;
-        }
-
-        newparentpath = dirname (newpathdup);
-        op_ret = cdp_lstat_with_gfid (this, newparentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, newparentpath, &preparent,
+                                        newloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR, "lstat failed: %s: %s",
                         newparentpath, strerror (op_errno));
                 goto out;
         }
+
+        strcat (real_newpath, newloc->name);
 
         op_ret = link (real_oldpath, real_newpath);
         if (op_ret == -1) {
@@ -1535,7 +1559,8 @@ cdp_link (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_newpath, &stbuf,
+                                        oldloc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1544,7 +1569,8 @@ cdp_link (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, newparentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, newparentpath, &postparent,
+                                        newloc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR, "lstat failed: %s: %s",
@@ -1555,8 +1581,6 @@ cdp_link (call_frame_t *frame, xlator_t *this,
         op_ret = 0;
 
 out:
-        if (newpathdup)
-                GF_FREE (newpathdup);
         SET_TO_OLD_FS_ID ();
 
         STACK_UNWIND_STRICT (link, frame, op_ret, op_errno,
@@ -1569,7 +1593,6 @@ out:
 
         return 0;
 }
-
 
 int32_t
 cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
@@ -1591,9 +1614,10 @@ cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
         VALIDATE_OR_GOTO (priv, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &prebuf);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &prebuf,
+                                        loc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1611,7 +1635,8 @@ cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &postbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &postbuf,
+                                        loc->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR, "lstat on %s failed: %s",
@@ -1645,6 +1670,9 @@ cdp_create (call_frame_t *frame, xlator_t *this,
         struct cdp_fd *      pfd         = NULL;
         struct cdp_private * priv        = NULL;
         char                   was_present = 1;
+        uuid_t                gfid = {0,};
+        struct stat           tmpbuf = {0,};
+        char                 *gfid_path = NULL;
 
         gid_t                  gid         = 0;
         char                  *pathdup   = NULL;
@@ -1663,7 +1691,8 @@ cdp_create (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->parent->gfid);
+        MAKE_GFID_PATH (parentpath, this, loc->parent->gfid);
 
         gid = frame->root->gid;
 
@@ -1675,13 +1704,9 @@ cdp_create (call_frame_t *frame, xlator_t *this,
         }
 
         SET_FS_ID (frame->root->uid, gid);
-        pathdup = gf_strdup (real_path);
-        if (!pathdup)
-                goto out;
 
-        parentpath = dirname (pathdup);
-
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &preparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1697,33 +1722,56 @@ cdp_create (call_frame_t *frame, xlator_t *this,
                 _flags = flags | O_CREAT;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)) {
-                was_present = 0;
-        }
-
         if (priv->o_direct)
                 _flags |= O_DIRECT;
 
-        _fd = open (real_path, _flags, mode);
+        {
 
-        if (_fd == -1) {
-                op_errno = errno;
-                op_ret = -1;
-                gf_log (this->name, GF_LOG_ERROR,
-                        "open on %s failed: %s", loc->path,
-                        strerror (op_errno));
-                goto out;
-        }
+                /* Create a entry in parent */
+                strcat (real_path, loc->name);
 
-        op_ret = cdp_gfid_set (this, real_path, params);
-        if (op_ret) {
-                gf_log (this->name, GF_LOG_ERROR,
-                        "setting gfid on %s failed", loc->path);
+                op_ret = stat (real_path, &tmpbuf);
+                if ((op_ret == -1) && (errno == ENOENT))
+                        was_present = 0;
+
+                _fd = open (real_path, _flags, mode);
+                if (_fd == -1) {
+                        op_errno = errno;
+                        op_ret = -1;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "open on %s failed: %s", loc->path,
+                                strerror (op_errno));
+                        goto out;
+                }
+
+                op_ret = cdp_gfid_set (this, real_path, params, gfid);
+                if (op_ret) {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "setting gfid on %s failed", loc->path);
+                }
+
+                op_ret = create_gfid_directory_path (this, gfid, S_IFREG | mode);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "mkdir of %s failed: %s", gfid_path,
+                                strerror (op_errno));
+                        goto out;
+                }
+                MAKE_GFID_PATH (gfid_path, this, gfid);
+
+                op_ret = link (real_path, gfid_path);
+                if (op_ret == -1) {
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "hardlink on %s failed: %s", loc->path,
+                                strerror (op_errno));
+                        goto out;
+                }
         }
 
 #ifndef HAVE_SET_FSID
-        op_ret = chown (real_path, frame->root->uid, gid);
+        op_ret = chown (gfid_path, frame->root->uid, gid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1746,7 +1794,7 @@ cdp_create (call_frame_t *frame, xlator_t *this,
                         strerror (errno));
         }
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &stbuf);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &stbuf, gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1754,7 +1802,8 @@ cdp_create (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent);
+        op_ret = cdp_lstat_with_gfid (this, parentpath, &postparent,
+                                        loc->parent->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -1796,7 +1845,8 @@ out:
                 close (_fd);
 
                 if (!was_present) {
-                        unlink (real_path);
+                        if (real_path)
+                                unlink (real_path);
                 }
         }
 
@@ -1832,7 +1882,7 @@ cdp_open (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         op_ret = setgid_override (this, real_path, &gid);
         if (op_ret < 0) {
@@ -1846,7 +1896,7 @@ cdp_open (call_frame_t *frame, xlator_t *this,
         if (priv->o_direct)
                 flags |= O_DIRECT;
 
-        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+        op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf, loc->inode->gfid);
         if ((op_ret == -1) && (errno == ENOENT)) {
                 was_present = 0;
         }
@@ -1891,7 +1941,7 @@ cdp_open (call_frame_t *frame, xlator_t *this,
 #endif
 
         if (flags & O_CREAT) {
-                op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf);
+                op_ret = cdp_lstat_with_gfid (this, real_path, &stbuf, loc->inode->gfid);
                 if (op_ret == -1) {
                         op_errno = errno;
                         gf_log (this->name, GF_LOG_ERROR, "lstat on (%s) "
@@ -2003,7 +2053,7 @@ cdp_readv (call_frame_t *frame, xlator_t *this,
          *  we read from
          */
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &stbuf);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &stbuf, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -2154,7 +2204,7 @@ cdp_writev (call_frame_t *frame, xlator_t *this,
 
         _fd = pfd->fd;
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &preop);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &preop, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -2190,7 +2240,7 @@ cdp_writev (call_frame_t *frame, xlator_t *this,
                         fsync (_fd);
                 }
 
-                ret = cdp_fstat_with_gfid (this, _fd, &postop);
+                ret = cdp_fstat_with_gfid (this, _fd, &postop, fd->inode->gfid);
                 if (ret == -1) {
                         op_ret = -1;
                         op_errno = errno;
@@ -2224,7 +2274,7 @@ cdp_statfs (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (loc, out);
         VALIDATE_OR_GOTO (this->private, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         priv = this->private;
 
@@ -2301,7 +2351,7 @@ cdp_release (xlator_t *this,
 
         priv = this->private;
 
-        ret = fd_ctx_get (fd, this, &tmp_pfd);
+        ret = fd_ctx_del (fd, this, &tmp_pfd);
         if (ret < 0) {
                 gf_log (this->name, GF_LOG_WARNING,
                         "pfd is NULL from fd=%p", fd);
@@ -2315,13 +2365,7 @@ cdp_release (xlator_t *this,
                         pfd->dir, fd);
         }
 
-        pthread_mutex_lock (&priv->janitor_lock);
-        {
-                INIT_LIST_HEAD (&pfd->list);
-                list_add_tail (&pfd->list, &priv->janitor_fds);
-                pthread_cond_signal (&priv->janitor_cond);
-        }
-        pthread_mutex_unlock (&priv->janitor_lock);
+        close (pfd->fd);
 
         LOCK (&priv->lock);
         {
@@ -2330,6 +2374,13 @@ cdp_release (xlator_t *this,
         UNLOCK (&priv->lock);
 
 out:
+        if (pfd) {
+                if (pfd->path)
+                        GF_FREE (pfd->path);
+
+                GF_FREE (pfd);
+        }
+
         return 0;
 }
 
@@ -2372,7 +2423,7 @@ cdp_fsync (call_frame_t *frame, xlator_t *this,
 
         _fd = pfd->fd;
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &preop);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &preop, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_WARNING,
@@ -2402,7 +2453,7 @@ cdp_fsync (call_frame_t *frame, xlator_t *this,
                 }
         }
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &postop);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &postop, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_WARNING,
@@ -2441,7 +2492,7 @@ cdp_setxattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (loc, out);
         VALIDATE_OR_GOTO (dict, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         dict_del (dict, GFID_XATTR_KEY);
 
@@ -2497,7 +2548,7 @@ cdp_getxattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (loc, out);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         priv = this->private;
 
@@ -2829,7 +2880,7 @@ cdp_removexattr (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         SET_FS_ID (frame->root->uid, frame->root->gid);
 
@@ -2970,8 +3021,8 @@ do_xattrop (call_frame_t *frame, xlator_t *this,
                 _fd = pfd->fd;
         }
 
-        if (loc && loc->path)
-                MAKE_REAL_PATH (real_path, this, loc->path);
+        if (loc && loc->inode)
+                MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         if (loc) {
                 path  = gf_strdup (loc->path);
@@ -3143,7 +3194,7 @@ cdp_access (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (this, out);
         VALIDATE_OR_GOTO (loc, out);
 
-        MAKE_REAL_PATH (real_path, this, loc->path);
+        MAKE_GFID_PATH (real_path, this, loc->inode->gfid);
 
         op_ret = access (real_path, mask & 07);
         if (op_ret == -1) {
@@ -3197,7 +3248,7 @@ cdp_ftruncate (call_frame_t *frame, xlator_t *this,
 
         _fd = pfd->fd;
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &preop);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &preop, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -3216,7 +3267,7 @@ cdp_ftruncate (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &postop);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &postop, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR,
@@ -3270,7 +3321,7 @@ cdp_fstat (call_frame_t *frame, xlator_t *this,
 
         _fd = pfd->fd;
 
-        op_ret = cdp_fstat_with_gfid (this, _fd, &buf);
+        op_ret = cdp_fstat_with_gfid (this, _fd, &buf, fd->inode->gfid);
         if (op_ret == -1) {
                 op_errno = errno;
                 gf_log (this->name, GF_LOG_ERROR, "fstat failed on fd=%p: %s",
@@ -3470,8 +3521,8 @@ cdp_do_readdir (call_frame_t *frame, xlator_t *this,
                         break;
                 }
 
-                if ((!strcmp(real_path, base_path))
-                    && (!strcmp(entry->d_name, GF_REPLICATE_TRASH_DIR)))
+                if ((!strcmp(real_path, base_path)) &&
+                    (!strcmp(entry->d_name, GF_REPLICATE_TRASH_DIR)))
                         continue;
 
                 if ((!strcmp (real_path, base_path))
@@ -3513,7 +3564,7 @@ cdp_do_readdir (call_frame_t *frame, xlator_t *this,
                 list_for_each_entry (tmp_entry, &entries.list, list) {
                         strcpy (entry_path + real_path_len + 1,
                                 tmp_entry->d_name);
-                        cdp_lstat_with_gfid (this, entry_path, &stbuf);
+                        cdp_lstat_with_gfid (this, entry_path, &stbuf, NULL);
                         if (stbuf.ia_ino)
                                 tmp_entry->d_ino = stbuf.ia_ino;
                         tmp_entry->d_stat = stbuf;
@@ -3709,12 +3760,11 @@ init (xlator_t *this)
         data_t                *tmp_data      = NULL;
         struct stat            buf           = {0,};
         gf_boolean_t           tmp_bool      = 0;
-        int                    dict_ret      = 0;
         int                    ret           = 0;
         int                    op_ret        = -1;
-        int32_t                janitor_sleep = 0;
         uuid_t                 old_uuid;
         uuid_t                 dict_uuid;
+        uuid_t                 root_gfid = {0,};
 
         dir_data = dict_get (this->options, "directory");
 
@@ -3887,23 +3937,6 @@ init (xlator_t *this)
                                 "'statfs()' returns dummy size");
         }
 
-        _private->background_unlink = 0;
-        tmp_data = dict_get (this->options, "background-unlink");
-        if (tmp_data) {
-                if (gf_string2boolean (tmp_data->data,
-                                       &_private->background_unlink) == -1) {
-                        ret = -1;
-                        gf_log (this->name, GF_LOG_ERROR,
-                                "'background-unlink' takes only boolean "
-                                "options");
-                        goto out;
-                }
-
-                if (_private->background_unlink)
-                        gf_log (this->name, GF_LOG_DEBUG,
-                                "unlinks will be performed in background");
-        }
-
         tmp_data = dict_get (this->options, "o-direct");
         if (tmp_data) {
                 if (gf_string2boolean (tmp_data->data,
@@ -3917,18 +3950,6 @@ init (xlator_t *this)
                         gf_log (this->name, GF_LOG_DEBUG,
                                 "o-direct mode is enabled (O_DIRECT "
                                 "for every open)");
-        }
-
-        _private->janitor_sleep_duration = 600;
-
-        dict_ret = dict_get_int32 (this->options, "janitor-sleep-duration",
-                                   &janitor_sleep);
-        if (dict_ret == 0) {
-                gf_log (this->name, GF_LOG_DEBUG,
-                        "Setting janitor sleep duration to %d.",
-                        janitor_sleep);
-
-                _private->janitor_sleep_duration = janitor_sleep;
         }
 
 #ifndef GF_DARWIN_HOST_OS
@@ -3960,11 +3981,13 @@ init (xlator_t *this)
 #endif
         this->private = (void *)_private;
 
-        pthread_mutex_init (&_private->janitor_lock, NULL);
-        pthread_cond_init (&_private->janitor_cond, NULL);
-        INIT_LIST_HEAD (&_private->janitor_fds);
+        /* wanted 'this->private' to be set before this */
+        root_gfid[15] = 1;
+        ret = create_gfid_directory_path (this, root_gfid, S_IFDIR | 0777);
+        if ((ret == -1) && (errno != EEXIST))
+                goto out;
 
-        cdp_spawn_janitor_thread (this);
+        ret = 0;
 out:
         return ret;
 }
@@ -4045,9 +4068,5 @@ struct volume_options options[] = {
           .type = GF_OPTION_TYPE_BOOL },
         { .key  = {"mandate-attribute"},
           .type = GF_OPTION_TYPE_BOOL },
-        { .key  = {"background-unlink"},
-          .type = GF_OPTION_TYPE_BOOL },
-        { .key  = {"janitor-sleep-duration"},
-          .type = GF_OPTION_TYPE_INT },
         { .key  = {NULL} }
 };
