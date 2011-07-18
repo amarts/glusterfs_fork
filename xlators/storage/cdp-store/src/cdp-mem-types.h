@@ -30,6 +30,7 @@ enum gf_cdp_mem_types_ {
         gf_cdp_mt_int32_t,
         gf_cdp_mt_cdp_dev_t,
         gf_cdp_mt_trash_path,
+        gf_cdp_mt_snap_idx_t,
         gf_cdp_mt_end
 };
 #endif

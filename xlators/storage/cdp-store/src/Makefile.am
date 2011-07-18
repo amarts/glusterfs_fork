@@ -4,7 +4,7 @@ xlatordir = $(libdir)/glusterfs/$(PACKAGE_VERSION)/xlator/storage
 
 cdp_store_la_LDFLAGS = -module -avoidversion
 
-cdp_store_la_SOURCES = cdp.c cdp-helpers.c
+cdp_store_la_SOURCES = cdp.c cdp-helpers.c cdp-snapshot.c
 cdp_store_la_LIBADD = $(top_builddir)/libglusterfs/src/libglusterfs.la
 
 noinst_HEADERS = cdp.h cdp-mem-types.h

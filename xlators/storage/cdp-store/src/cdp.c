@@ -639,6 +639,8 @@ out:
                 if (pfd) {
                         if (pfd->path)
                                 GF_FREE (pfd->path);
+                        if (pfd->snap_fd)
+                                GF_FREE (pfd->snap_fd);
                         GF_FREE (pfd);
                         pfd = NULL;
                 }
@@ -651,11 +653,14 @@ out:
 
 int32_t
 cdp_releasedir (xlator_t *this,
-                  fd_t *fd)
+                fd_t *fd)
 {
         struct cdp_fd * pfd      = NULL;
-        uint64_t          tmp_pfd  = 0;
-        int               ret      = 0;
+        uint64_t        tmp_pfd  = 0;
+        uint64_t        tmp_value = 0;
+        int             ret      = 0;
+        char            snap_name[64] = {0,};
+        struct timeval  tv = {0,};
 
         VALIDATE_OR_GOTO (this, out);
         VALIDATE_OR_GOTO (fd, out);
@@ -683,11 +688,28 @@ cdp_releasedir (xlator_t *this,
 
         closedir (pfd->dir);
 
-        /* Snapshoting comes here */
+        ret = inode_ctx_del (fd->inode, this, &tmp_value);
+        if (!ret && tmp_value) {
+                /* Snapshoting comes here */
+                ret = gettimeofday (&tv, NULL);
+                if (ret) {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "failed to get timeof day, hence no snapshot (%s)",
+                                strerror (errno));
+                        goto out;
+                }
+
+                snprintf (snap_name, 64, "%ld", tv.tv_sec);
+                gf_create_directory_snapshot (this, fd->inode, snap_name);
+        }
+
 out:
         if (pfd) {
                 if (pfd->path)
                         GF_FREE (pfd->path);
+
+                if (pfd->snap_fd)
+                        GF_FREE (pfd->snap_fd);
 
                 GF_FREE (pfd);
         }
@@ -893,6 +915,12 @@ cdp_mknod (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
+
         op_ret = 0;
 
 out:
@@ -1036,6 +1064,12 @@ cdp_mkdir (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
+
         op_ret = 0;
 
 out:
@@ -1110,6 +1144,12 @@ cdp_unlink (call_frame_t *frame, xlator_t *this,
                         loc->path, strerror (op_errno));
                 goto out;
         }
+
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
 
         op_ret = 0;
 
@@ -1188,6 +1228,14 @@ cdp_rmdir (call_frame_t *frame, xlator_t *this,
                         loc->path, strerror (op_errno));
                 goto out;
         }
+
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
+
+        op_ret = 0;
 
 out:
         SET_TO_OLD_FS_ID ();
@@ -1329,6 +1377,12 @@ cdp_symlink (call_frame_t *frame, xlator_t *this,
                         loc->path, strerror (op_errno));
                 goto out;
         }
+
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
 
         op_ret = 0;
 
@@ -1600,9 +1654,16 @@ cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
         int32_t               op_ret    = -1;
         int32_t               op_errno  = 0;
         char                 *real_path = 0;
-        struct cdp_private *priv      = NULL;
+        struct cdp_private   *priv      = NULL;
         struct iatt           prebuf    = {0,};
         struct iatt           postbuf   = {0,};
+        struct snap_fds       snap    = {0,};
+        fd_t                 *iter_fd = NULL;
+        struct cdp_fd        *pfd     = NULL;
+        uint64_t              tmp_pfd = 0;
+        char                  fd_not_open = 0;
+        char                  snap_file = 0;
+        char                  index_path[PATH_MAX];
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -1626,6 +1687,10 @@ cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
                 goto out;
         }
 
+        snap_file = gf_is_a_snapshot_file (this, loc->inode->gfid);
+
+        /* TODO: if there are no 'open fd' then should we create a snapshot
+           before doing a truncate */
         op_ret = truncate (real_path, offset);
         if (op_ret == -1) {
                 op_errno = errno;
@@ -1633,6 +1698,40 @@ cdp_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset)
                         "truncate on %s failed: %s",
                         loc->path, strerror (op_errno));
                 goto out;
+        }
+
+        if (snap_file) {
+                /* snapshot: update index file */
+                if (list_empty (&loc->inode->fd_list)) {
+                        fd_not_open = 1;
+                        gf_snap_read_index_file (index_path, O_RDWR,
+                                                 &snap);
+                } else {
+                        list_for_each_entry (iter_fd, &loc->inode->fd_list,
+                                             inode_list) {
+                                gf_log (this->name, GF_LOG_DEBUG,
+                                        "fd is open");
+                                op_ret = fd_ctx_get (iter_fd, this, &tmp_pfd);
+                                if (op_ret < 0) {
+                                        gf_log (this->name, GF_LOG_DEBUG,
+                                                "pfd not found in fd's ctx");
+                                        goto out;
+                                }
+                                pfd = (struct cdp_fd *)(long)tmp_pfd;
+                                pfd->need_snapshot = 1;
+
+                                snap = pfd->snap_fd[0];
+                        }
+                }
+                if (offset > prebuf.ia_size)
+                        gf_snap_writev_update_index (this, &snap, prebuf.ia_size,
+                                                     (offset - prebuf.ia_size));
+                else
+                        gf_snap_truncate_index (this, &snap, offset);
+
+                gf_sync_snap_info_file (&snap);
+                if (fd_not_open)
+                        close (snap.idx_fd);
         }
 
         op_ret = cdp_lstat_with_gfid (this, real_path, &postbuf,
@@ -1828,6 +1927,12 @@ cdp_create (call_frame_t *frame, xlator_t *this,
                         "failed to set the fd context path=%s fd=%p",
                         loc->path, fd);
 
+        op_ret = inode_ctx_put (loc->parent, this, 1);
+        if (op_ret)
+                gf_log (this->name, GF_LOG_WARNING,
+                        "failed to set the inode context of parent=%s",
+                        loc->path);
+
         LOCK (&priv->lock);
         {
                 priv->nr_files++;
@@ -1865,11 +1970,12 @@ cdp_open (call_frame_t *frame, xlator_t *this,
         int32_t               op_errno     = 0;
         char                 *real_path    = NULL;
         int32_t               _fd          = -1;
-        struct cdp_fd      *pfd          = NULL;
-        struct cdp_private *priv         = NULL;
+        struct cdp_fd        *pfd          = NULL;
+        struct cdp_private   *priv         = NULL;
         char                  was_present  = 1;
         gid_t                 gid          = 0;
         struct iatt           stbuf        = {0, };
+        int                   snap_file    = 0;
 
         DECLARE_OLD_FS_ID_VAR;
 
@@ -1901,25 +2007,43 @@ cdp_open (call_frame_t *frame, xlator_t *this,
                 was_present = 0;
         }
 
-        _fd = open (real_path, flags, 0);
-        if (_fd == -1) {
-                op_ret   = -1;
-                op_errno = errno;
-                gf_log (this->name, GF_LOG_ERROR,
-                        "open on %s: %s", real_path, strerror (op_errno));
-                goto out;
-        }
-
         pfd = GF_CALLOC (1, sizeof (*pfd), gf_cdp_mt_cdp_fd);
         if (!pfd) {
                 op_errno = errno;
                 goto out;
         }
 
-        pfd->flags = flags;
+        snap_file = gf_is_a_snapshot_file (this, loc->inode->gfid);
+
+        if (!snap_file) {
+                _fd = open (real_path, flags, 0);
+                if (_fd == -1) {
+                        op_ret   = -1;
+                        op_errno = errno;
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "open on %s: %s", real_path, strerror (op_errno));
+                        goto out;
+                }
+                goto post_op;
+        }
+
+        /* Snapshot file */
+        _fd = gf_snapshot_open (this, pfd, loc->inode, NULL, flags);
+        if (_fd < 0) {
+                op_ret   = -1;
+                op_errno = errno;
+                gf_log (this->name, GF_LOG_ERROR,
+                        "open on %s: %s", real_path, strerror (op_errno));
+                goto out;
+        }
+post_op:
         pfd->fd    = _fd;
+        pfd->flags = flags;
         if (wbflags == GF_OPEN_FSYNC)
                 pfd->flushwrites = 1;
+
+        if (snap_file)
+                pfd->snapshot = 1;
 
         op_ret = fd_ctx_set (fd, this, (uint64_t)(long)pfd);
         if (op_ret)
@@ -1963,6 +2087,8 @@ out:
                 if (_fd != -1) {
                         close (_fd);
                 }
+                if (pfd)
+                        GF_FREE (pfd);
         }
 
         SET_TO_OLD_FS_ID ();
@@ -2023,6 +2149,14 @@ cdp_readv (call_frame_t *frame, xlator_t *this,
         if (!iobuf) {
                 op_errno = ENOMEM;
                 goto out;
+        }
+
+        /* Snapshot */
+        if (pfd->snapshot) {
+                ret = gf_snap_readv (frame, this, pfd, offset, size);
+                if (ret)
+                        gf_log (this->name, GF_LOG_ERROR, "readv failed");
+                return 0;
         }
 
         _fd = pfd->fd;
@@ -2223,9 +2357,16 @@ cdp_writev (call_frame_t *frame, xlator_t *this,
                 goto out;
         }
 
+        pfd->need_snapshot = 1;
+        /* Snapshot */
+        if (pfd->snapshot) {
+                gf_snap_writev_update_index (this, &pfd->snap_fd[0], offset,
+                                             op_ret);
+        }
+
         LOCK (&priv->lock);
         {
-                priv->write_value    += op_ret;
+                priv->write_value += op_ret;
         }
         UNLOCK (&priv->lock);
 
@@ -2343,8 +2484,10 @@ cdp_release (xlator_t *this,
 {
         struct cdp_private * priv     = NULL;
         struct cdp_fd *      pfd      = NULL;
-        int                    ret      = -1;
-        uint64_t               tmp_pfd  = 0;
+        int                  ret      = -1;
+        uint64_t             tmp_pfd  = 0;
+        struct timeval       tv       = {0,};
+        char                 snap_name[64] = {0,};
 
         VALIDATE_OR_GOTO (this, out);
         VALIDATE_OR_GOTO (fd, out);
@@ -2373,10 +2516,27 @@ cdp_release (xlator_t *this,
         }
         UNLOCK (&priv->lock);
 
+        /* Snapshotting comes here */
+        /* TODO: get the timestamp */
+        if (pfd->need_snapshot) {
+                ret = gettimeofday (&tv, NULL);
+                if (ret) {
+                        gf_log (this->name, GF_LOG_ERROR,
+                                "failed to get timeof day, hence no snapshot (%s)",
+                                strerror (errno));
+                        goto out;
+                }
+
+                snprintf (snap_name, 64, "%ld", tv.tv_sec);
+                gf_create_snapshot (this, fd->inode, snap_name);
+        }
 out:
         if (pfd) {
                 if (pfd->path)
                         GF_FREE (pfd->path);
+
+                if (pfd->snap_fd)
+                        GF_FREE (pfd->snap_fd);
 
                 GF_FREE (pfd);
         }
@@ -3265,6 +3425,18 @@ cdp_ftruncate (call_frame_t *frame, xlator_t *this,
                         "ftruncate failed on fd=%p: %s",
                         fd, strerror (errno));
                 goto out;
+        }
+
+        pfd->need_snapshot = 1;
+
+        /* Snapshot : */
+        if (pfd->snapshot) {
+                if (offset > preop.ia_size)
+                        gf_snap_writev_update_index (this, &pfd->snap_fd[0],
+                                                     preop.ia_size,
+                                                     (offset - preop.ia_size));
+                else
+                        gf_snap_truncate_index (this, &pfd->snap_fd[0], offset);
         }
 
         op_ret = cdp_fstat_with_gfid (this, _fd, &postop, fd->inode->gfid);

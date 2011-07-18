@@ -53,10 +53,20 @@
 #include "timer.h"
 #include "cdp-mem-types.h"
 
+struct snap_info {
+        uint64_t start;
+        uint64_t size;
+};
+struct snap_fds {
+        int               fd;
+        int               idx_len;
+        int               idx_fd;
+        struct snap_info *snap_idx;
+};
+
 /**
  * cdp_fd - internal structure common to file and directory fd's
  */
-
 struct cdp_fd {
 	int     fd;      /* fd returned by the kernel */
 	int32_t flags;   /* flags for open/creat      */
@@ -64,6 +74,14 @@ struct cdp_fd {
 	DIR *   dir;     /* handle returned by the kernel */
         int     flushwrites;
         struct list_head list; /* to add to the janitor list */
+
+        int32_t          snapshot;  /* whether snapshot ? yes/no */
+        int32_t          need_snapshot; /* Whether we need to create a snapshot
+                                           in 'release' */
+        int32_t          fd_count;  /* length of the fd array in case of snapshot */
+
+        /* XXX - FIXME: make runtime allocation instead of hard limit */
+        struct snap_fds *snap_fd;
 };
 
 
@@ -132,6 +150,21 @@ struct cdp_private {
                 }                                                       \
         } while(0)
 
+#define MAKE_ONLY_GFID_PATH(path,this,gfid)    do {                     \
+                int32_t dir1 = 0;                                       \
+                int32_t dir2 = 0;                                       \
+                                                                        \
+                if (uuid_is_null (gfid))                                \
+                        break;                                          \
+                                                                        \
+                path = alloca (1024);                                   \
+                dir1 = gfid[0] + ((int)(gfid[1] & 0x3f) << 8);          \
+                dir2 = gfid[2] + ((int)(gfid[3] & 0x3f) << 8);          \
+                snprintf (path, 1024, "%s/%d/%d/%s",                    \
+                          CDP_BASE_PATH(this),dir1,dir2,                \
+                          uuid_utoa (gfid));                            \
+        } while(0)
+
 
 /* Helper functions */
 int setgid_override (xlator_t *this, char *real_path, gid_t *gid);
@@ -155,6 +188,22 @@ int cdp_entry_create_xattr_set (xlator_t *this, const char *path,
                                   dict_t *dict);
 int is_gfid_dir_empty (xlator_t *this, const char *path);
 int create_gfid_directory_path (xlator_t *this, uuid_t gfid, mode_t type);
+
+/* Snapshot related */
+int gf_create_snapshot (xlator_t *this, inode_t *inode, const char *snap_name);
+int gf_create_directory_snapshot (xlator_t *this, inode_t *inode,
+                                  const char *snap_name);
+int gf_snap_read_index_file (const char *index_path, int32_t open_flag,
+                             struct snap_fds *snap);
+int gf_snap_writev_update_index (xlator_t *this, struct snap_fds *snap,
+                                 off_t offset, int32_t size);
+int gf_snap_truncate_index (xlator_t *this, struct snap_fds *snap, off_t offset);
+int gf_snap_readv (call_frame_t *frame, xlator_t *this, struct cdp_fd *pfd,
+                   off_t offset, size_t size);
+int gf_sync_snap_info_file (struct snap_fds *snap);
+int gf_is_a_snapshot_file (xlator_t *this, uuid_t gfid);
+int gf_snapshot_open (xlator_t *this, struct cdp_fd *pfd, inode_t *inode,
+                      const char *snap_name, int32_t flags);
 
 
 #endif /* _CDP_H_ */
