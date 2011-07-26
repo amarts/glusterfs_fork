@@ -2014,7 +2014,7 @@ cdp_open (call_frame_t *frame, xlator_t *this,
         }
 
         snap_file = gf_is_a_snapshot_file (this, loc->inode->gfid);
-
+        gf_log ("", 1, "%s %d", loc->path, snap_file);
         if (!snap_file) {
                 _fd = open (real_path, flags, 0);
                 if (_fd == -1) {
@@ -2042,8 +2042,10 @@ post_op:
         if (wbflags == GF_OPEN_FSYNC)
                 pfd->flushwrites = 1;
 
-        if (snap_file)
+        if (snap_file) {
+                gf_log ("", 1, "here too");
                 pfd->snapshot = 1;
+        }
 
         op_ret = fd_ctx_set (fd, this, (uint64_t)(long)pfd);
         if (op_ret)
@@ -2152,6 +2154,7 @@ cdp_readv (call_frame_t *frame, xlator_t *this,
         }
 
         /* Snapshot */
+        gf_log ("", 1, "before readv");
         if (pfd->snapshot) {
                 ret = gf_snap_readv (frame, this, pfd, offset, size);
                 if (ret)
@@ -2360,6 +2363,7 @@ cdp_writev (call_frame_t *frame, xlator_t *this,
         pfd->need_snapshot = 1;
         /* Snapshot */
         if (pfd->snapshot) {
+                gf_log ("",1, "%ld %d", offset, op_ret);
                 gf_snap_writev_update_index (this, &pfd->snap_fd[0], offset,
                                              op_ret);
         }
@@ -2471,6 +2475,11 @@ cdp_flush (call_frame_t *frame, xlator_t *this,
 
         op_ret = 0;
 
+        if (pfd->snapshot) {
+                gf_log ("", 1, "here in flush");
+                gf_sync_snap_info_file (&pfd->snap_fd[0]);
+        }
+
 out:
         STACK_UNWIND_STRICT (flush, frame, op_ret, op_errno);
 
@@ -2518,6 +2527,11 @@ cdp_release (xlator_t *this,
 
         /* Snapshotting comes here */
         /* TODO: get the timestamp */
+        if (pfd->snapshot) {
+                gf_log ("", 1, "here in release");
+                gf_sync_and_free_pfd (this, pfd);
+        }
+
         if (pfd->need_snapshot) {
                 ret = gettimeofday (&tv, NULL);
                 if (ret) {

@@ -1422,7 +1422,7 @@ server_graph_builder (volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
                 }
         }
 
-        xl = volgen_graph_add (graph, "storage/posix", volname);
+        xl = volgen_graph_add (graph, "storage/cdp-store", volname);
         if (!xl)
                 return -1;
 

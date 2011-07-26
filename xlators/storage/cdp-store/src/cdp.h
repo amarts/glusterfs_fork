@@ -204,6 +204,7 @@ int gf_sync_snap_info_file (struct snap_fds *snap);
 int gf_is_a_snapshot_file (xlator_t *this, uuid_t gfid);
 int gf_snapshot_open (xlator_t *this, struct cdp_fd *pfd, inode_t *inode,
                       const char *snap_name, int32_t flags);
+int gf_sync_and_free_pfd (xlator_t *this, struct cdp_fd *pfd);
 
 
 #endif /* _CDP_H_ */

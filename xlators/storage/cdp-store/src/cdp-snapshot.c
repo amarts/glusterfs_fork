@@ -196,7 +196,7 @@ gf_create_snap_index (const char *path, const char *snap_name, off_t start,
 
         snprintf (index_path, ZR_PATH_MAX, "%s/%s/index", path, snap_name);
 
-        fd = creat (index_path, 0400);
+        fd = open (index_path, O_CREAT | O_EXCL | O_RDWR, 0400);
         if (fd < 0)
                 goto out;
 
@@ -426,7 +426,7 @@ fd_check_done:
         strcat (temp_path, "/snapshot");
 
         ret = mknod (temp_path, S_IFREG, 0);
-        if (ret)
+        if (ret && (errno != EEXIST))
                 gf_log (this->name, GF_LOG_WARNING,
                         "failed to touch the snapshot entry %s",
                         strerror (errno));
@@ -864,6 +864,7 @@ gf_snap_readv (call_frame_t *frame, xlator_t *this, struct cdp_fd *pfd,
         priv = this->private;
         VALIDATE_OR_GOTO (priv, out);
 
+        gf_log ("", 1, "here");
         op_ret = cdp_fstat_with_gfid (this, pfd->fd, &stbuf, NULL);
         if (op_ret == -1) {
                 op_errno = errno;
@@ -918,7 +919,7 @@ gf_snap_readv (call_frame_t *frame, xlator_t *this, struct cdp_fd *pfd,
                                 tmp_offset, strerror (op_errno));
                         goto out;
                 }
-                
+
                 op_ret = read (_fd, iobuf->ptr + total_read, tmp_size);
                 if (op_ret == -1) {
                         op_errno = errno;
@@ -928,6 +929,8 @@ gf_snap_readv (call_frame_t *frame, xlator_t *this, struct cdp_fd *pfd,
                         goto out;
                 }
 
+                gf_log (this->name, GF_LOG_INFO, "%ld %ld %ld %ld %d",
+                        trav_off, trav_size, total_read, tmp_size, op_ret);
                 trav_off   += op_ret;
                 trav_size  -= op_ret;
                 total_read += op_ret;
