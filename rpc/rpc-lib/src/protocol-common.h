@@ -64,6 +64,7 @@ enum gf_fop_procnum {
         GFS3_OP_READDIRP,
         GFS3_OP_RELEASE,
         GFS3_OP_RELEASEDIR,
+        GFS3_OP_FREMOVEXATTR,
         GFS3_OP_MAXVALUE,
 } ;
 
@@ -192,7 +193,7 @@ enum glusterd_brick_procnum {
 #define GLUSTER_CBK_VERSION      1   /* 0.0.1 */
 
 #define GLUSTER3_1_FOP_PROGRAM   1298437 /* Completely random */
-#define GLUSTER3_1_FOP_VERSION   310 /* 3.1.0 */
+#define GLUSTER3_1_FOP_VERSION   330 /* 3.3.0 */
 #define GLUSTER3_1_FOP_PROCCNT   GFS3_OP_MAXVALUE
 
 /* Second version */
@@ -203,7 +204,7 @@ enum glusterd_brick_procnum {
 #define GD_FRIEND_VERSION        2  /* 0.0.2 */
 
 #define GLUSTER_CLI_PROGRAM      1238463 /* Completely random */
-#define GLUSTER_CLI_VERSION      2   /* 0.0.1 */
+#define GLUSTER_CLI_VERSION      2   /* 0.0.2 */
 
 #define GD_BRICK_PROGRAM         4867634 /*Completely random*/
 #define GD_BRICK_VERSION         2

@@ -2505,12 +2505,21 @@ fuse_statfs (xlator_t *this, fuse_in_header_t *finh, void *msg)
 void
 fuse_setxattr_resume (fuse_state_t *state)
 {
-        gf_log ("glusterfs-fuse", GF_LOG_TRACE,
-                "%"PRIu64": SETXATTR %s/%"PRIu64" (%s)", state->finh->unique,
-                state->loc.path, state->finh->nodeid, state->name);
+        if (state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": SETXATTR %p/%"PRIu64" (%s)", state->finh->unique,
+                        state->fd, state->finh->nodeid, state->name);
 
-        FUSE_FOP (state, fuse_setxattr_cbk, GF_FOP_SETXATTR,
-                  setxattr, &state->loc, state->dict, state->flags);
+                FUSE_FOP (state, fuse_setxattr_cbk, GF_FOP_FSETXATTR,
+                          fsetxattr, state->fd, state->dict, state->flags);
+        } else {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": SETXATTR %s/%"PRIu64" (%s)", state->finh->unique,
+                        state->loc.path, state->finh->nodeid, state->name);
+
+                FUSE_FOP (state, fuse_setxattr_cbk, GF_FOP_SETXATTR,
+                          setxattr, &state->loc, state->dict, state->flags);
+        }
 }
 
 static void
@@ -2578,14 +2587,23 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         GET_STATE (this, finh, state);
         state->size = fsi->size;
         ret = fuse_loc_fill (&state->loc, state, finh->nodeid, 0, NULL);
-        if ((state->loc.inode == NULL) ||
-            (ret < 0)) {
+        if (!state->loc.inode) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
-                        "%"PRIu64": SETXATTR %s/%"PRIu64" (%s) (fuse_loc_fill() failed)",
-                        finh->unique,
-                        state->loc.path, finh->nodeid, name);
+                        "%"PRIu64": SETXATTR %s/%"PRIu64" (%s) "
+                        "(fuse_loc_fill() failed (%d))",
+                        finh->unique, state->loc.path, finh->nodeid, name, ret);
 
                 send_fuse_err (this, finh, ENOENT);
+                free_fuse_state (state);
+                return;
+        }
+
+        state->fd = fd_lookup (state->loc.inode, state->finh->pid);
+        if (!state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_WARNING,
+                        "%"PRIu64": SETXATTR %"PRIu64" (fuse_loc_fill() failed)",
+                        state->finh->unique, state->finh->nodeid);
+                send_fuse_err (state->this, state->finh, ENOENT);
                 free_fuse_state (state);
                 return;
         }
@@ -2621,8 +2639,10 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         state->flags = fsi->flags;
         state->name = newkey;
 
-        uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
-        state->resolve.path = gf_strdup (state->loc.path);
+        if (!state->fd) {
+                uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
+                state->resolve.path = gf_strdup (state->loc.path);
+        }
 
         fuse_resolve_and_resume (state, fuse_setxattr_resume);
 
@@ -2748,12 +2768,21 @@ out:
 void
 fuse_getxattr_resume (fuse_state_t *state)
 {
-        gf_log ("glusterfs-fuse", GF_LOG_TRACE,
-                "%"PRIu64": GETXATTR %s/%"PRIu64" (%s)", state->finh->unique,
-                state->loc.path, state->finh->nodeid, state->name);
+        if (state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": GETXATTR %p/%"PRIu64" (%s)", state->finh->unique,
+                        state->fd, state->finh->nodeid, state->name);
 
-        FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_GETXATTR,
-                  getxattr, &state->loc, state->name);
+                FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_FGETXATTR,
+                          fgetxattr, state->fd, state->name);
+        } else {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": GETXATTR %s/%"PRIu64" (%s)", state->finh->unique,
+                        state->loc.path, state->finh->nodeid, state->name);
+
+                FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_GETXATTR,
+                          getxattr, &state->loc, state->name);
+        }
 }
 
 static void
@@ -2810,13 +2839,23 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         GET_STATE (this, finh, state);
 
         ret = fuse_loc_fill (&state->loc, state, finh->nodeid, 0, NULL);
-        if ((state->loc.inode == NULL) ||
-            (ret < 0)) {
+        if (!state->loc.inode) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
-                        "%"PRIu64": GETXATTR %s/%"PRIu64" (%s) (fuse_loc_fill() failed)",
-                        finh->unique, state->loc.path, finh->nodeid, name);
+                        "%"PRIu64": GETXATTR %s/%"PRIu64" (%s) "
+                        "(fuse_loc_fill() failed (%d))",
+                        finh->unique, state->loc.path, finh->nodeid, name, ret);
 
                 send_fuse_err (this, finh, ENOENT);
+                free_fuse_state (state);
+                return;
+        }
+
+        state->fd = fd_lookup (state->loc.inode, state->finh->pid);
+        if (!state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_WARNING,
+                        "%"PRIu64": GETXATTR %"PRIu64" (fuse_loc_fill() failed)",
+                        state->finh->unique, state->finh->nodeid);
+                send_fuse_err (state->this, state->finh, ENOENT);
                 free_fuse_state (state);
                 return;
         }
@@ -2831,8 +2870,10 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         state->size = fgxi->size;
         state->name = newkey;
 
-        uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
-        state->resolve.path = gf_strdup (state->loc.path);
+        if (!state->fd) {
+                uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
+                state->resolve.path = gf_strdup (state->loc.path);
+        }
 
         fuse_resolve_and_resume (state, fuse_getxattr_resume);
  out:
@@ -2842,12 +2883,21 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 void
 fuse_listxattr_resume (fuse_state_t *state)
 {
-        gf_log ("glusterfs-fuse", GF_LOG_TRACE,
-                "%"PRIu64": LISTXATTR %s/%"PRIu64, state->finh->unique,
-                state->loc.path, state->finh->nodeid);
+        if (state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": LISTXATTR %p/%"PRIu64, state->finh->unique,
+                        state->fd, state->finh->nodeid);
 
-        FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_GETXATTR,
-                  getxattr, &state->loc, NULL);
+                FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_FGETXATTR,
+                          fgetxattr, state->fd, NULL);
+        } else {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": LISTXATTR %s/%"PRIu64, state->finh->unique,
+                        state->loc.path, state->finh->nodeid);
+
+                FUSE_FOP (state, fuse_xattr_cbk, GF_FOP_GETXATTR,
+                          getxattr, &state->loc, NULL);
+        }
 }
 
 static void
@@ -2861,20 +2911,32 @@ fuse_listxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         GET_STATE (this, finh, state);
 
         ret = fuse_loc_fill (&state->loc, state, finh->nodeid, 0, NULL);
-        if ((state->loc.inode == NULL) ||
-            (ret < 0)) {
+        if (!state->loc.inode) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
-                        "%"PRIu64": LISTXATTR %s/%"PRIu64" (fuse_loc_fill() failed)",
-                        finh->unique, state->loc.path, finh->nodeid);
+                        "%"PRIu64": LISTXATTR %s/%"PRIu64
+                        " (fuse_loc_fill() failed (%d))",
+                        finh->unique, state->loc.path, finh->nodeid, ret);
 
                 send_fuse_err (this, finh, ENOENT);
                 free_fuse_state (state);
                 return;
         }
 
+        state->fd = fd_lookup (state->loc.inode, state->finh->pid);
+        if (!state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_WARNING,
+                        "%"PRIu64": LISTXATTR %"PRIu64" (fuse_loc_fill() failed)",
+                        state->finh->unique, state->finh->nodeid);
+                send_fuse_err (state->this, state->finh, ENOENT);
+                free_fuse_state (state);
+                return;
+        }
+
         state->size = fgxi->size;
-        uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
-        state->resolve.path = gf_strdup (state->loc.path);
+        if (!state->fd) {
+                uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
+                state->resolve.path = gf_strdup (state->loc.path);
+        }
 
         fuse_resolve_and_resume (state, fuse_listxattr_resume);
 
@@ -2884,12 +2946,21 @@ fuse_listxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 void
 fuse_removexattr_resume (fuse_state_t *state)
 {
-        gf_log ("glusterfs-fuse", GF_LOG_TRACE,
-                "%"PRIu64": REMOVEXATTR %s/%"PRIu64" (%s)", state->finh->unique,
-                state->loc.path, state->finh->nodeid, state->name);
+        if (state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": REMOVEXATTR %p/%"PRIu64" (%s)", state->finh->unique,
+                        state->fd, state->finh->nodeid, state->name);
 
-        FUSE_FOP (state, fuse_err_cbk, GF_FOP_REMOVEXATTR,
-                  removexattr, &state->loc, state->name);
+                FUSE_FOP (state, fuse_err_cbk, GF_FOP_FREMOVEXATTR,
+                          fremovexattr, state->fd, state->name);
+        } else {
+                gf_log ("glusterfs-fuse", GF_LOG_TRACE,
+                        "%"PRIu64": REMOVEXATTR %s/%"PRIu64" (%s)", state->finh->unique,
+                        state->loc.path, state->finh->nodeid, state->name);
+
+                FUSE_FOP (state, fuse_err_cbk, GF_FOP_REMOVEXATTR,
+                          removexattr, &state->loc, state->name);
+        }
 }
 
 static void
@@ -2907,13 +2978,23 @@ fuse_removexattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
         ret = fuse_loc_fill (&state->loc, state, finh->nodeid, 0, NULL);
-        if ((state->loc.inode == NULL) ||
-            (ret < 0)) {
+        if (!state->loc.inode) {
                 gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
-                        "%"PRIu64": REMOVEXATTR %s/%"PRIu64" (%s) (fuse_loc_fill() failed)",
-                        finh->unique, state->loc.path, finh->nodeid, name);
+                        "%"PRIu64": REMOVEXATTR %s/%"PRIu64" (%s) "
+                        "(fuse_loc_fill() failed (%d))",
+                        finh->unique, state->loc.path, finh->nodeid, name, ret);
 
                 send_fuse_err (this, finh, ENOENT);
+                free_fuse_state (state);
+                return;
+        }
+
+        state->fd = fd_lookup (state->loc.inode, state->finh->pid);
+        if (!state->fd) {
+                gf_log ("glusterfs-fuse", GF_LOG_WARNING,
+                        "%"PRIu64": REMOVEXATTR %"PRIu64" (fuse_loc_fill() failed)",
+                        state->finh->unique, state->finh->nodeid);
+                send_fuse_err (state->this, state->finh, ENOENT);
                 free_fuse_state (state);
                 return;
         }
@@ -2926,8 +3007,10 @@ fuse_removexattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         }
 
         state->name = newkey;
-        uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
-        state->resolve.path = gf_strdup (state->loc.path);
+        if (!state->fd) {
+                uuid_copy (state->resolve.gfid, state->loc.inode->gfid);
+                state->resolve.path = gf_strdup (state->loc.path);
+        }
 
         fuse_resolve_and_resume (state, fuse_removexattr_resume);
         return;
