@@ -3526,7 +3526,7 @@ out:
 
 int32_t
 posix_do_readdir (call_frame_t *frame, xlator_t *this,
-                  fd_t *fd, size_t size, off_t off, int whichop)
+                  fd_t *fd, size_t size, off_t off, int whichop, dict_t *dict)
 {
         uint64_t              tmp_pfd        = 0;
         struct posix_fd      *pfd            = NULL;
@@ -3543,7 +3543,7 @@ posix_do_readdir (call_frame_t *frame, xlator_t *this,
         struct iatt           stbuf          = {0, };
         char                  base_path[PATH_MAX] = {0,};
         gf_dirent_t          *tmp_entry      = NULL;
-
+        inode_table_t        *itable         = NULL;
 
         VALIDATE_OR_GOTO (frame, out);
         VALIDATE_OR_GOTO (this, out);
@@ -3604,19 +3604,35 @@ posix_do_readdir (call_frame_t *frame, xlator_t *this,
 
         /* pick ENOENT to indicate EOF */
         op_errno = errno;
-
-        if (whichop == GF_FOP_READDIRP) {
-                list_for_each_entry (tmp_entry, &entries.list, list) {
-                        strcpy (entry_path + real_path_len + 1,
-                                tmp_entry->d_name);
-                        posix_lstat_with_gfid (this, entry_path, &stbuf);
-                        if (stbuf.ia_ino)
-                                tmp_entry->d_ino = stbuf.ia_ino;
-                        tmp_entry->d_stat = stbuf;
-                }
-        }
-
         op_ret = count;
+
+        if (whichop != GF_FOP_READDIRP)
+                goto out;
+
+        itable = fd->inode->table;
+
+        list_for_each_entry (tmp_entry, &entries.list, list) {
+                strcpy (entry_path + real_path_len + 1,
+                        tmp_entry->d_name);
+                posix_lstat_with_gfid (this, entry_path, &stbuf);
+                if (stbuf.ia_ino)
+                        tmp_entry->d_ino = stbuf.ia_ino;
+
+                if (dict) {
+                        tmp_entry->inode = inode_find (itable, stbuf.ia_gfid);
+                        if (!tmp_entry->inode)
+                                tmp_entry->inode = inode_new (itable);
+
+                        /* if we don't send the 'loc', open-fd-count
+                         * be a problem.
+                         */
+                        tmp_entry->dict =
+                                posix_lookup_xattr_fill (this, entry_path,
+                                                         NULL, dict, &stbuf);
+                }
+
+                tmp_entry->d_stat = stbuf;
+        }
 
 out:
         STACK_UNWIND_STRICT (readdir, frame, op_ret, op_errno, &entries);
@@ -3631,16 +3647,16 @@ int32_t
 posix_readdir (call_frame_t *frame, xlator_t *this,
                fd_t *fd, size_t size, off_t off)
 {
-        posix_do_readdir (frame, this, fd, size, off, GF_FOP_READDIR);
+        posix_do_readdir (frame, this, fd, size, off, GF_FOP_READDIR, NULL);
         return 0;
 }
 
 
 int32_t
 posix_readdirp (call_frame_t *frame, xlator_t *this,
-                fd_t *fd, size_t size, off_t off)
+                fd_t *fd, size_t size, off_t off, dict_t *dict)
 {
-        posix_do_readdir (frame, this, fd, size, off, GF_FOP_READDIRP);
+        posix_do_readdir (frame, this, fd, size, off, GF_FOP_READDIRP, dict);
         return 0;
 }
 

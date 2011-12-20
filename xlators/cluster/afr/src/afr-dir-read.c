@@ -573,7 +573,8 @@ afr_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                            children[next_call_child],
                                            children[next_call_child]->fops->readdirp,
                                            local->fd,
-                                           local->cont.readdir.size, 0);
+                                           local->cont.readdir.size, 0,
+                                           local->cont.readdir.dict);
                         return 0;
                 }
         }
@@ -615,7 +616,8 @@ afr_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                                    (void *) (long) read_child,
                                                    children[call_child],
                                                    children[call_child]->fops->readdirp,
-                                                   local->fd, local->cont.readdir.size, offset);
+                                                   local->fd, local->cont.readdir.size, offset,
+                                                   local->cont.readdir.dict);
                                 return 0;
                         }
                 } else {
@@ -631,7 +633,7 @@ out:
 
 int32_t
 afr_do_readdir (call_frame_t *frame, xlator_t *this,
-                fd_t *fd, size_t size, off_t offset, int whichop)
+                fd_t *fd, size_t size, off_t offset, int whichop, dict_t *dict)
 {
         afr_private_t *  priv       = NULL;
         xlator_t **      children   = NULL;
@@ -680,6 +682,7 @@ afr_do_readdir (call_frame_t *frame, xlator_t *this,
 
         local->fd                  = fd_ref (fd);
         local->cont.readdir.size   = size;
+        local->cont.readdir.dict   = (dict)? dict_ref (dict) : NULL;
 
         if (priv->strict_readdir) {
                 ret = fd_ctx_get (fd, this, &ctx);
@@ -716,7 +719,7 @@ afr_do_readdir (call_frame_t *frame, xlator_t *this,
                                    (void *) (long) call_child,
                                    children[call_child],
                                    children[call_child]->fops->readdirp, fd,
-                                   size, offset);
+                                   size, offset, dict);
 
         op_ret = 0;
 out:
@@ -731,16 +734,16 @@ int32_t
 afr_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
              off_t offset)
 {
-        afr_do_readdir (frame, this, fd, size, offset, GF_FOP_READDIR);
+        afr_do_readdir (frame, this, fd, size, offset, GF_FOP_READDIR, NULL);
         return 0;
 }
 
 
 int32_t
 afr_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
-              off_t offset)
+              off_t offset, dict_t *dict)
 {
-        afr_do_readdir (frame, this, fd, size, offset, GF_FOP_READDIRP);
+        afr_do_readdir (frame, this, fd, size, offset, GF_FOP_READDIRP, dict);
         return 0;
 }
 

@@ -1353,8 +1353,8 @@ out:
 
 
 int32_t
-sp_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
-            off_t off)
+sp_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
+             off_t off, dict_t *dict)
 {
         sp_cache_t *cache    = NULL;
         sp_local_t *local    = NULL;
@@ -1403,7 +1403,7 @@ sp_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         }
 
         STACK_WIND (frame, sp_readdir_cbk, FIRST_CHILD(this),
-                    FIRST_CHILD(this)->fops->readdirp, fd, size, off);
+                    FIRST_CHILD(this)->fops->readdirp, fd, size, off, dict);
 
         return 0;
 
@@ -1416,6 +1416,12 @@ unwind:
         return 0;
 }
 
+int32_t
+sp_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
+            off_t off)
+{
+        return sp_readdirp (frame, this, fd, size, off, NULL);
+}
 
 int32_t
 sp_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
@@ -4217,7 +4223,7 @@ out:
 struct xlator_fops fops = {
         .lookup      = sp_lookup,
         .readdir     = sp_readdir,
-        .readdirp    = sp_readdir,
+        .readdirp    = sp_readdirp,
         .open        = sp_open,
         .create      = sp_create,
         .opendir     = sp_opendir,

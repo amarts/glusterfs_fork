@@ -2747,6 +2747,47 @@ quota_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc)
 }
 
 
+int
+quota_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                    int op_ret, int op_errno, gf_dirent_t *entries)
+{
+        gf_dirent_t *entry = NULL;
+
+        if (op_ret <= 0)
+                goto unwind;
+
+        list_for_each_entry (entry, &entries->list, list) {
+                /* TODO: fill things */
+        }
+
+unwind:
+        STACK_UNWIND_STRICT (readdirp, frame, op_ret, op_errno, entries);
+
+        return 0;
+}
+int
+quota_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
+                off_t offset, dict_t *dict)
+{
+        int ret = 0;
+
+        if (dict) {
+                ret = dict_set_uint64 (dict, QUOTA_SIZE_KEY, 0);
+                if (ret < 0) {
+                        goto err;
+                }
+        }
+
+        STACK_WIND (frame, quota_readdirp_cbk,
+                    FIRST_CHILD(this), FIRST_CHILD(this)->fops->readdirp,
+                    fd, size, offset, dict);
+        return 0;
+err:
+        STACK_UNWIND_STRICT (readdirp, frame, -1, EINVAL, NULL);
+        return 0;
+}
+
+
 int32_t
 mem_acct_init (xlator_t *this)
 {
@@ -2950,7 +2991,8 @@ struct xlator_fops fops = {
         .fsync     = quota_fsync,
         .setattr   = quota_setattr,
         .fsetattr  = quota_fsetattr,
-        .mknod     = quota_mknod
+        .mknod     = quota_mknod,
+        .readdirp  = quota_readdirp,
 };
 
 struct xlator_cbks cbks = {
