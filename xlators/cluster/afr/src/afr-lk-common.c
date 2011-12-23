@@ -62,7 +62,10 @@ afr_set_lk_owner (call_frame_t *frame, xlator_t *this)
         gf_log (this->name, GF_LOG_TRACE,
                 "Setting lk-owner=%llu",
                 (unsigned long long) (unsigned long)frame->root);
-        frame->root->lk_owner = (uint64_t) (unsigned long)frame->root;
+
+        frame->root->lkowner_len = sizeof (frame->root);
+
+        SET_FRAME_ROOT_LK_OWNER (frame, ((unsigned long)frame->root));
 }
 
 static int
@@ -115,7 +118,7 @@ internal_lock_count (call_frame_t *frame, xlator_t *this)
 
 static void
 afr_print_inodelk (char *str, int size, int cmd,
-                   struct gf_flock *flock, uint64_t owner)
+                   struct gf_flock *flock, char *owner)
 {
         char *cmd_str = NULL;
         char *type_str = NULL;
@@ -163,11 +166,11 @@ afr_print_inodelk (char *str, int size, int cmd,
         }
 
         snprintf (str, size, "lock=INODELK, cmd=%s, type=%s, "
-                  "start=%llu, len=%llu, pid=%llu, lk-owner=%llu",
+                  "start=%llu, len=%llu, pid=%llu, lk-owner=%s",
                   cmd_str, type_str, (unsigned long long) flock->l_start,
                   (unsigned long long) flock->l_len,
                   (unsigned long long) flock->l_pid,
-                  (unsigned long long) owner);
+                  owner);
 
 }
 
@@ -183,11 +186,11 @@ afr_print_lockee (char *str, int size, loc_t *loc, fd_t *fd,
 
 void
 afr_print_entrylk (char *str, int size, const char *basename,
-                   uint64_t owner)
+                   char *owner)
 {
-        snprintf (str, size, "Basename=%s, lk-owner=%llu",
+        snprintf (str, size, "Basename=%s, lk-owner=%s",
                   basename ? basename : "<nul>",
-                  (unsigned long long)owner);
+                  owner);
 }
 
 static void
@@ -602,7 +605,7 @@ afr_unlock_inodelk (call_frame_t *frame, xlator_t *this)
         flock.l_type  = F_UNLCK;
 
         gf_log (this->name, GF_LOG_DEBUG, "attempting data unlock range %"PRIu64
-                " %"PRIu64" by %"PRIu64, flock.l_start, flock.l_len,
+                " %"PRIu64" by %s", flock.l_start, flock.l_len,
                 frame->root->lk_owner);
 
         call_count = afr_locked_nodes_count (int_lock->inode_locked_nodes,
@@ -1422,7 +1425,7 @@ afr_nonblocking_inodelk (call_frame_t *frame, xlator_t *this)
         flock.l_type  = int_lock->lk_flock.l_type;
 
         gf_log (this->name, GF_LOG_DEBUG, "attempting data lock range %"PRIu64
-                " %"PRIu64" by %"PRIu64, flock.l_start, flock.l_len,
+                " %"PRIu64" by %s", flock.l_start, flock.l_len,
                 frame->root->lk_owner);
 
         full_flock.l_type = int_lock->lk_flock.l_type;
@@ -1952,7 +1955,8 @@ afr_recover_lock (call_frame_t *frame, xlator_t *this,
 
         lock_recovery_child = local->lock_recovery_child;
 
-        frame->root->lk_owner = flock->l_owner;
+        frame->root->lkowner_len = sizeof (flock->l_owner);
+        SET_FRAME_ROOT_LK_OWNER (frame, (flock->l_owner));
 
         STACK_WIND_COOKIE (frame, afr_recover_lock_cbk,
                            (void *) (long) lock_recovery_child,

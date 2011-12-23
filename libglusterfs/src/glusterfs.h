@@ -107,6 +107,11 @@
 /* TODO: Should we use PATH-MAX? On some systems it may save space */
 #define ZR_PATH_MAX 4096
 
+/* GlusterFS's maximum supported Auxilary GIDs */
+#define GF_MAX_AUX_GROUPS   500
+
+#define GF_MAX_LOCK_OWNER_LEN 1024 /* 1kB as per NLM */
+
 /* NOTE: add members ONLY at the end (just before _MAXVALUE) */
 typedef enum {
         GF_FOP_NULL = 0,

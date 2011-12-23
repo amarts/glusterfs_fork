@@ -126,7 +126,7 @@ pl_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 static int
 truncate_allowed (pl_inode_t *pl_inode,
                   void *transport, pid_t client_pid,
-                  uint64_t owner, off_t offset)
+                  char *owner, int32_t owner_len, off_t offset)
 {
         posix_lock_t *l = NULL;
         posix_lock_t  region = {.list = {0, }, };
@@ -136,7 +136,8 @@ truncate_allowed (pl_inode_t *pl_inode,
         region.fl_end     = LLONG_MAX;
         region.transport  = transport;
         region.client_pid = client_pid;
-        region.owner      = owner;
+        region.owner_len  = owner_len;
+        memcpy (region.owner, owner, min (owner_len, GF_MAX_LOCK_OWNER_LEN));
 
         pthread_mutex_lock (&pl_inode->mutex);
         {
@@ -193,6 +194,7 @@ truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
             && pl_inode->mandatory
             && !truncate_allowed (pl_inode, frame->root->trans,
                                   frame->root->pid, frame->root->lk_owner,
+                                  frame->root->lkowner_len,
                                   local->offset)) {
                 op_ret   = -1;
                 op_errno = EAGAIN;
@@ -324,7 +326,7 @@ delete_locks_of_fd (xlator_t *this, pl_inode_t *pl_inode, fd_t *fd)
 
 static void
 __delete_locks_of_owner (pl_inode_t *pl_inode,
-                         void *transport, uint64_t owner)
+                         void *transport, char *owner)
 {
         posix_lock_t *tmp = NULL;
         posix_lock_t *l = NULL;
@@ -333,10 +335,11 @@ __delete_locks_of_owner (pl_inode_t *pl_inode,
 
         list_for_each_entry_safe (l, tmp, &pl_inode->ext_list, list) {
                 if ((l->transport == transport)
-                    && (l->owner == owner)) {
+                    && (memcmp (l->owner, owner,
+                                min (l->owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0)) {
                         gf_log ("posix-locks", GF_LOG_TRACE,
                                 " Flushing lock"
-                                "%s (pid=%d) (lk-owner=%"PRIu64") %"PRId64" - %"PRId64" state: %s",
+                                "%s (pid=%d) (lk-owner=%s) %"PRId64" - %"PRId64" state: %s",
                                 l->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 l->client_pid,
                                 l->owner,
@@ -408,8 +411,8 @@ int
 pl_flush (call_frame_t *frame, xlator_t *this,
           fd_t *fd)
 {
-        pl_inode_t            *pl_inode = NULL;
-        uint64_t              owner     = -1;
+        pl_inode_t *pl_inode = NULL;
+        char       *owner    = NULL;
 
         owner = frame->root->lk_owner;
 
@@ -423,7 +426,7 @@ pl_flush (call_frame_t *frame, xlator_t *this,
 
         pl_trace_flush (this, frame, fd);
 
-        if (owner == 0) {
+        if (frame->root->lkowner_len == 0) {
                 /* Handle special case when protocol/server sets lk-owner to zero.
                  * This usually happens due to a client disconnection. Hence, free
                  * all locks opened with this fd.
@@ -633,7 +636,9 @@ pl_readv (call_frame_t *frame, xlator_t *this,
                 region.transport  = frame->root->trans;
                 region.fd_num     = fd_to_fdnum(fd);
                 region.client_pid = frame->root->pid;
-                region.owner      = frame->root->lk_owner;
+                region.owner_len  = frame->root->lkowner_len;
+                memcpy (region.owner, frame->root->lk_owner,
+                        min (region.owner_len, GF_MAX_LOCK_OWNER_LEN));
 
                 pthread_mutex_lock (&pl_inode->mutex);
                 {
@@ -727,7 +732,9 @@ pl_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 region.transport  = frame->root->trans;
                 region.fd_num     = fd_to_fdnum(fd);
                 region.client_pid = frame->root->pid;
-                region.owner      = frame->root->lk_owner;
+                region.owner_len  = frame->root->lkowner_len;
+                memcpy (region.owner, frame->root->lk_owner,
+                        min (region.owner_len, GF_MAX_LOCK_OWNER_LEN));
 
                 pthread_mutex_lock (&pl_inode->mutex);
                 {
@@ -806,7 +813,7 @@ lock_dup (posix_lock_t *lock)
 
         new_lock = new_posix_lock (&lock->user_flock, lock->transport,
                                    lock->client_pid, lock->owner,
-                                   (fd_t *)lock->fd_num);
+                                   lock->owner_len, (fd_t *)lock->fd_num);
         return new_lock;
 }
 
@@ -899,7 +906,9 @@ __set_next_lock_fd (pl_fdctx_t *fdctx, posix_lock_t *reqlock)
         reqlock->fl_start    = lock->fl_start;
         reqlock->fl_type     = lock->fl_type;
         reqlock->fl_end      = lock->fl_end;
-        reqlock->owner       = lock->owner;
+        reqlock->owner_len   = lock->owner_len;
+        memcpy (reqlock->owner, lock->owner,
+                min (lock->owner_len, GF_MAX_LOCK_OWNER_LEN));
 
 out:
         if (lock)
@@ -964,16 +973,16 @@ int
 pl_lk (call_frame_t *frame, xlator_t *this,
        fd_t *fd, int32_t cmd, struct gf_flock *flock)
 {
-        void                  *transport = NULL;
-        pid_t                  client_pid = 0;
-        uint64_t               owner      = 0;
-        pl_inode_t            *pl_inode = NULL;
-        int                    op_ret = 0;
-        int                    op_errno = 0;
-        int                    can_block = 0;
-        posix_lock_t          *reqlock = NULL;
-        posix_lock_t          *conf = NULL;
-        int                    ret = 0;
+        void         *transport  = NULL;
+        pid_t         client_pid = 0;
+        char         *owner      = NULL;
+        pl_inode_t   *pl_inode   = NULL;
+        int           op_ret     = 0;
+        int           op_errno   = 0;
+        int           can_block  = 0;
+        posix_lock_t *reqlock    = NULL;
+        posix_lock_t *conf       = NULL;
+        int           ret        = 0;
 
         transport  = frame->root->trans;
         client_pid = frame->root->pid;
@@ -993,7 +1002,7 @@ pl_lk (call_frame_t *frame, xlator_t *this,
         }
 
         reqlock = new_posix_lock (flock, transport, client_pid,
-                                  owner, fd);
+                                  owner, frame->root->lkowner_len, fd);
 
         if (!reqlock) {
                 op_ret = -1;
@@ -1327,7 +1336,7 @@ __get_posixlk_count (xlator_t *this, pl_inode_t *pl_inode)
 
                         gf_log (this->name, GF_LOG_DEBUG,
                                 " XATTR DEBUG"
-                                "%s (pid=%d) (lk-owner=%"PRIu64") %"PRId64" - %"PRId64" state: %s",
+                                "%s (pid=%d) (lk-owner=%s) %"PRId64" - %"PRId64" state: %s",
                                 lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 lock->client_pid,
                                 lock->owner,
@@ -1504,7 +1513,7 @@ out:
 
 void
 pl_dump_lock (char *str, int size, struct gf_flock *flock,
-              uint64_t owner, void *trans, time_t *granted_time,
+              char *owner, void *trans, time_t *granted_time,
               time_t *blkd_time, gf_boolean_t active)
 {
         char *type_str = NULL;
@@ -1526,31 +1535,32 @@ pl_dump_lock (char *str, int size, struct gf_flock *flock,
 
         if (active) {
                 if (blkd_time && *blkd_time == 0) {
-                        snprintf (str, size, "type=%s, start=%llu, len=%llu, pid=%llu, lk-owner=%llu, transport=%p, "
-                                  "granted at  %s",
+                        snprintf (str, size, "type=%s, start=%llu, len=%llu, "
+                                  "pid=%llu, lk-owner=%s, transport=%p, "
+                                  "granted at %s",
                                   type_str, (unsigned long long) flock->l_start,
                                   (unsigned long long) flock->l_len,
                                   (unsigned long long) flock->l_pid,
-                                  (unsigned long long) owner,
+                                  owner,
                                   trans, ctime (granted_time));
                 } else {
-                        snprintf (str, size, "type=%s, start=%llu, len=%llu, pid=%llu, lk-owner=%llu, transport=%p, "
+                        snprintf (str, size, "type=%s, start=%llu, len=%llu, "
+                                  "pid=%llu, lk-owner=%s, transport=%p, "
                                   "blocked at %s, granted at  %s",
                                   type_str, (unsigned long long) flock->l_start,
                                   (unsigned long long) flock->l_len,
                                   (unsigned long long) flock->l_pid,
-                                  (unsigned long long) owner,
+                                  owner,
                                   trans, ctime (blkd_time), ctime (granted_time));
                 }
         }
         else {
-                snprintf (str, size, "type=%s, start=%llu, len=%llu, pid=%llu, lk-owner=%llu, transport=%p, "
-                          "blocked at  %s",
+                snprintf (str, size, "type=%s, start=%llu, len=%llu, pid=%llu, "
+                          "lk-owner=%s, transport=%p, blocked at  %s",
                           type_str, (unsigned long long) flock->l_start,
                           (unsigned long long) flock->l_len,
                           (unsigned long long) flock->l_pid,
-                          (unsigned long long) owner,
-                          trans, ctime (blkd_time));
+                          owner, trans, ctime (blkd_time));
         }
 
 }

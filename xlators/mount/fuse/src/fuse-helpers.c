@@ -139,7 +139,7 @@ void
 frame_fill_groups (call_frame_t *frame)
 {
         char         filename[128];
-        char         line[128];
+        char         line[4096];
         char        *ptr = NULL;
         int          ret = 0;
         FILE        *fp = NULL;
@@ -156,7 +156,7 @@ frame_fill_groups (call_frame_t *frame)
         if (!fp)
                 goto out;
 
-        while ((ptr = fgets (line, 128, fp))) {
+        while ((ptr = fgets (line, 4096, fp))) {
                 if (strncmp (ptr, "Groups:", 7) != 0)
                         continue;
 
@@ -172,7 +172,7 @@ frame_fill_groups (call_frame_t *frame)
                         if (!endptr || *endptr)
                                 break;
                         frame->root->groups[idx++] = id;
-                        if (idx == GF_REQUEST_MAXGROUPS)
+                        if (idx == GF_MAX_AUX_GROUPS)
                                 break;
                 }
 
@@ -185,6 +185,17 @@ out:
         return;
 }
 
+void
+fuse_pack_lk_owner (char *lkbuf, uint64_t lk_owner)
+{
+        int i = 0;
+        int j = 0;
+
+        for (i = 0; i < 8; i++) {
+		lkbuf[i] = (uint8_t)((lk_owner >> j) & 0xff);
+                j += 8;
+        }
+}
 
 call_frame_t *
 get_call_frame_for_req (fuse_state_t *state)
@@ -208,7 +219,8 @@ get_call_frame_for_req (fuse_state_t *state)
                 frame->root->uid      = finh->uid;
                 frame->root->gid      = finh->gid;
                 frame->root->pid      = finh->pid;
-                frame->root->lk_owner = state->lk_owner;
+                fuse_pack_lk_owner (frame->root->lk_owner, state->lk_owner);
+                frame->root->lkowner_len = 8;
                 frame->root->unique   = finh->unique;
         }
 

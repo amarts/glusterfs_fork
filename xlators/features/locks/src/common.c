@@ -143,9 +143,9 @@ __pl_inode_is_empty (pl_inode_t *pl_inode)
 void
 pl_print_locker (char *str, int size, xlator_t *this, call_frame_t *frame)
 {
-        snprintf (str, size, "Pid=%llu, lk-owner=%llu, Transport=%p, Frame=%llu",
+        snprintf (str, size, "Pid=%llu, lk-owner=%s (%d), Transport=%p, Frame=%llu",
                   (unsigned long long) frame->root->pid,
-                  (unsigned long long) frame->root->lk_owner,
+                  frame->root->lk_owner, frame->root->lkowner_len,
                   (void *)frame->root->trans,
                   (unsigned long long) frame->root->unique);
 }
@@ -187,7 +187,7 @@ pl_print_lockee (char *str, int size, fd_t *fd, loc_t *loc)
 
 void
 pl_print_lock (char *str, int size, int cmd,
-               struct gf_flock *flock, uint64_t owner)
+               struct gf_flock *flock, char *owner, int32_t owner_len)
 {
         char *cmd_str = NULL;
         char *type_str = NULL;
@@ -235,11 +235,11 @@ pl_print_lock (char *str, int size, int cmd,
         }
 
         snprintf (str, size, "lock=FCNTL, cmd=%s, type=%s, "
-                  "start=%llu, len=%llu, pid=%llu, lk-owner=%llu",
+                  "start=%llu, len=%llu, pid=%llu, lk-owner=%s (%d)",
                   cmd_str, type_str, (unsigned long long) flock->l_start,
                   (unsigned long long) flock->l_len,
                   (unsigned long long) flock->l_pid,
-                  (unsigned long long) owner);
+                  owner, owner_len);
 }
 
 
@@ -262,7 +262,8 @@ pl_trace_in (xlator_t *this, call_frame_t *frame, fd_t *fd, loc_t *loc,
         if (domain)
                 pl_print_inodelk (pl_lock, 256, cmd, flock, domain);
         else
-                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner);
+                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner,
+                               frame->root->lkowner_len);
 
         gf_log (this->name, GF_LOG_INFO,
                 "[REQUEST] Locker = {%s} Lockee = {%s} Lock = {%s}",
@@ -312,7 +313,8 @@ pl_trace_out (xlator_t *this, call_frame_t *frame, fd_t *fd, loc_t *loc,
         if (domain)
                 pl_print_inodelk (pl_lock, 256, cmd, flock, domain);
         else
-                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner);
+                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner,
+                               frame->root->lkowner_len);
 
         pl_print_verdict (verdict, 32, op_ret, op_errno);
 
@@ -342,7 +344,8 @@ pl_trace_block (xlator_t *this, call_frame_t *frame, fd_t *fd, loc_t *loc,
         if (domain)
                 pl_print_inodelk (pl_lock, 256, cmd, flock, domain);
         else
-                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner);
+                pl_print_lock (pl_lock, 256, cmd, flock, frame->root->lk_owner,
+                               frame->root->lkowner_len);
 
         gf_log (this->name, GF_LOG_INFO,
                 "[BLOCKED] Locker = {%s} Lockee = {%s} Lock = {%s}",
@@ -468,7 +471,7 @@ out:
 /* Create a new posix_lock_t */
 posix_lock_t *
 new_posix_lock (struct gf_flock *flock, void *transport, pid_t client_pid,
-                uint64_t owner, fd_t *fd)
+                char *owner, int32_t owner_len, fd_t *fd)
 {
         posix_lock_t *lock = NULL;
 
@@ -494,7 +497,8 @@ new_posix_lock (struct gf_flock *flock, void *transport, pid_t client_pid,
         lock->fd_num     = fd_to_fdnum (fd);
         lock->fd         = fd;
         lock->client_pid = client_pid;
-        lock->owner      = owner;
+        lock->owner_len  = owner_len;
+        memcpy (lock->owner, owner, min (owner_len, GF_MAX_LOCK_OWNER_LEN));
 
         INIT_LIST_HEAD (&lock->list);
 
@@ -523,10 +527,17 @@ __destroy_lock (posix_lock_t *lock)
 void
 posix_lock_to_flock (posix_lock_t *lock, struct gf_flock *flock)
 {
+        uint64_t tmp_lock_val = 0;
+        int i = 0;
+        int j = 0;
+
         flock->l_pid   = lock->client_pid;
         flock->l_type  = lock->fl_type;
         flock->l_start = lock->fl_start;
-        flock->l_owner = lock->owner;
+        for (i = sizeof (uint64_t) - 1; i >= 0 ; i--, j += 8) {
+                tmp_lock_val += ((uint64_t)lock->owner[i] << j);
+        }
+        flock->l_owner = tmp_lock_val;
 
         if (lock->fl_end == LLONG_MAX)
                 flock->l_len = 0;
@@ -569,8 +580,9 @@ int
 same_owner (posix_lock_t *l1, posix_lock_t *l2)
 {
 
-                return ((l1->owner == l2->owner) &&
-                        (l1->transport  == l2->transport));
+        return ((memcmp (l1->owner, l2->owner,
+                         min (l1->owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0) &&
+                (l1->transport  == l2->transport));
 
 }
 
@@ -788,7 +800,9 @@ __insert_and_merge (pl_inode_t *pl_inode, posix_lock_t *lock)
                                 sum->transport  = lock->transport;
                                 sum->fd_num     = lock->fd_num;
                                 sum->client_pid = lock->client_pid;
-                                sum->owner      = lock->owner;
+                                sum->owner_len  = lock->owner_len;
+                                memcpy (sum->owner, lock->owner,
+                                        min (lock->owner_len, GF_MAX_LOCK_OWNER_LEN));
 
                                 __delete_lock (pl_inode, conf);
                                 __destroy_lock (conf);
@@ -804,7 +818,9 @@ __insert_and_merge (pl_inode_t *pl_inode, posix_lock_t *lock)
                                 sum->transport  = conf->transport;
                                 sum->fd_num     = conf->fd_num;
                                 sum->client_pid = conf->client_pid;
-                                sum->owner      = conf->owner;
+                                sum->owner_len  = conf->owner_len;
+                                memcpy (sum->owner, conf->owner,
+                                        min (conf->owner_len, GF_MAX_LOCK_OWNER_LEN));
 
                                 v = subtract_locks (sum, lock);
 
@@ -889,7 +905,7 @@ __grant_blocked_locks (xlator_t *this, pl_inode_t *pl_inode, struct list_head *g
                         posix_lock_to_flock (l, &conf->user_flock);
 
                         gf_log (this->name, GF_LOG_TRACE,
-                                "%s (pid=%d) lk-owner:%"PRIu64" %"PRId64" - %"PRId64" => Granted",
+                                "%s (pid=%d) lk-owner:%s %"PRId64" - %"PRId64" => Granted",
                                 l->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 l->client_pid,
                                 l->owner,
@@ -959,7 +975,7 @@ pl_send_prelock_unlock (xlator_t *this, pl_inode_t *pl_inode,
 
         unlock_lock = new_posix_lock (&flock, old_lock->transport,
                                       old_lock->client_pid, old_lock->owner,
-                                      old_lock->fd);
+                                      old_lock->owner_len, old_lock->fd);
         GF_VALIDATE_OR_GOTO (this->name, unlock_lock, out);
         ret = 0;
 
@@ -1011,7 +1027,7 @@ pl_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
 
                 if (__is_lock_grantable (pl_inode, lock)) {
                         gf_log (this->name, GF_LOG_TRACE,
-                                "%s (pid=%d) lk-owner:%"PRIu64" %"PRId64" - %"PRId64" => OK",
+                                "%s (pid=%d) lk-owner:%s %"PRId64" - %"PRId64" => OK",
                                 lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 lock->client_pid,
                                 lock->owner,
@@ -1020,7 +1036,7 @@ pl_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                         __insert_and_merge (pl_inode, lock);
                 } else if (can_block) {
                         gf_log (this->name, GF_LOG_TRACE,
-                                "%s (pid=%d) lk-owner:%"PRIu64" %"PRId64" - %"PRId64" => Blocked",
+                                "%s (pid=%d) lk-owner:%s %"PRId64" - %"PRId64" => Blocked",
                                 lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 lock->client_pid,
                                 lock->owner,
@@ -1031,7 +1047,7 @@ pl_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                         ret = -1;
                 } else {
                         gf_log (this->name, GF_LOG_TRACE,
-                                "%s (pid=%d) lk-owner:%"PRIu64" %"PRId64" - %"PRId64" => NOK",
+                                "%s (pid=%d) lk-owner:%s %"PRId64" - %"PRId64" => NOK",
                                 lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                 lock->client_pid,
                                 lock->owner,

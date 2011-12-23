@@ -187,7 +187,7 @@ __lock_reservelk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                 list_add_tail (&lock->list, &pl_inode->blocked_reservelks);
 
                 gf_log (this->name, GF_LOG_TRACE,
-                        "%s (pid=%d) lk-owner:%"PRIu64" %"PRId64" - %"PRId64" => Blocked",
+                        "%s (pid=%d) lk-owner:%s %"PRId64" - %"PRId64" => Blocked",
                         lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                         lock->client_pid,
                         lock->owner,
@@ -292,7 +292,7 @@ grant_blocked_reserve_locks (xlator_t *this, pl_inode_t *pl_inode)
 
         list_for_each_entry_safe (lock, tmp, &granted, list) {
                 gf_log (this->name, GF_LOG_TRACE,
-                        "%s (pid=%d) (lk-owner=%"PRIu64") %"PRId64" - %"PRId64" => Granted",
+                        "%s (pid=%d) (lk-owner=%s) %"PRId64" - %"PRId64" => Granted",
                         lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                         lock->client_pid,
                         lock->owner,
@@ -429,7 +429,7 @@ pl_reserve_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                         ret = __lock_reservelk (this, pl_inode, lock, can_block);
                         if (ret < 0)
                                 gf_log (this->name, GF_LOG_TRACE,
-                                        "%s (pid=%d) (lk-owner=%"PRIu64") %"PRId64" - %"PRId64" => NOK",
+                                        "%s (pid=%d) (lk-owner=%s) %"PRId64" - %"PRId64" => NOK",
                                         lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                         lock->client_pid,
                                         lock->owner,
@@ -437,7 +437,7 @@ pl_reserve_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                                         lock->user_flock.l_len);
                         else
                                 gf_log (this->name, GF_LOG_TRACE,
-                                        "%s (pid=%d) (lk-owner=%"PRIu64") %"PRId64" - %"PRId64" => OK",
+                                        "%s (pid=%d) (lk-owner=%s) %"PRId64" - %"PRId64" => OK",
                                         lock->fl_type == F_UNLCK ? "Unlock" : "Lock",
                                         lock->client_pid,
                                         lock->owner,

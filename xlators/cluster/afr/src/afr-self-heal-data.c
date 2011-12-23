@@ -395,7 +395,7 @@ afr_sh_data_erase_pending (call_frame_t *frame, xlator_t *this)
 
         afr_sh_pending_to_delta (priv, sh->xattr, sh->delta_matrix, sh->success,
                                  priv->child_count, AFR_DATA_TRANSACTION);
-        gf_log (this->name, GF_LOG_DEBUG, "Delta matrix for: %"PRIu64,
+        gf_log (this->name, GF_LOG_DEBUG, "Delta matrix for: %s",
                 frame->root->lk_owner);
         afr_sh_print_pending_matrix (sh->delta_matrix, this);
 
@@ -658,7 +658,7 @@ afr_sh_data_fix (call_frame_t *frame, xlator_t *this)
         sh = &local->self_heal;
         priv = this->private;
 
-        gf_log (this->name, GF_LOG_DEBUG, "Pending matrix for: %"PRIu64,
+        gf_log (this->name, GF_LOG_DEBUG, "Pending matrix for: %s",
                 frame->root->lk_owner);
         nsources = afr_build_sources (this, sh->xattr, sh->buf, sh->pending_matrix,
                                       sh->sources, sh->success_children,
@@ -1126,13 +1126,13 @@ afr_sh_data_post_blocking_inodelk_cbk (call_frame_t *frame, xlator_t *this)
 
         if (int_lock->lock_op_ret < 0) {
                 gf_log (this->name, GF_LOG_ERROR, "Blocking data inodelks "
-                        "failed for %s. by %"PRIu64,
+                        "failed for %s. by %s",
                         local->loc.path, frame->root->lk_owner);
                 sh->data_lock_failure_handler (frame, this);
         } else {
 
                 gf_log (this->name, GF_LOG_DEBUG, "Blocking data inodelks "
-                        "done for %s by %"PRIu64". Proceding to self-heal",
+                        "done for %s by %s. Proceding to self-heal",
                         local->loc.path, frame->root->lk_owner);
                 sh->data_lock_success_handler (frame, this);
         }
@@ -1153,14 +1153,14 @@ afr_sh_data_post_nonblocking_inodelk_cbk (call_frame_t *frame, xlator_t *this)
 
         if (int_lock->lock_op_ret < 0) {
                 gf_log (this->name, GF_LOG_DEBUG, "Non Blocking data inodelks "
-                        "failed for %s. by %"PRIu64,
+                        "failed for %s. by %s",
                         local->loc.path, frame->root->lk_owner);
                 int_lock->lock_cbk = afr_sh_data_post_blocking_inodelk_cbk;
                 afr_blocking_lock (frame, this);
         } else {
 
                 gf_log (this->name, GF_LOG_DEBUG, "Non Blocking data inodelks "
-                        "done for %s by %"PRIu64". Proceeding to self-heal",
+                        "done for %s by %s. Proceeding to self-heal",
                         local->loc.path, frame->root->lk_owner);
                 sh->data_lock_success_handler (frame, this);
         }

@@ -39,7 +39,7 @@ server_decode_groups (call_frame_t *frame, rpcsvc_request_t *req)
         if (frame->root->ngrps == 0)
                 return 0;
 
-        if (frame->root->ngrps > GF_REQUEST_MAXGROUPS)
+        if (frame->root->ngrps > GF_MAX_AUX_GROUPS)
                 return -1;
 
         for (; i < frame->root->ngrps; ++i)
@@ -149,8 +149,8 @@ free_state (server_state_t *state)
 
 int
 gf_add_locker (struct _lock_table *table, const char *volume,
-               loc_t *loc, fd_t *fd, pid_t pid, uint64_t owner,
-               glusterfs_fop_t type)
+               loc_t *loc, fd_t *fd, pid_t pid, char *owner,
+               int32_t owner_len, glusterfs_fop_t type)
 {
         int32_t         ret = -1;
         struct _locker *new = NULL;
@@ -173,7 +173,8 @@ gf_add_locker (struct _lock_table *table, const char *volume,
         }
 
         new->pid   = pid;
-        new->owner = owner;
+        memcpy (new->owner, owner, min (owner_len, GF_MAX_LOCK_OWNER_LEN));
+        new->owner_len = owner_len;
 
         LOCK (&table->lock);
         {
@@ -190,7 +191,8 @@ out:
 
 int
 gf_del_locker (struct _lock_table *table, const char *volume,
-               loc_t *loc, fd_t *fd, uint64_t owner, glusterfs_fop_t type)
+               loc_t *loc, fd_t *fd, char *owner, int32_t owner_len,
+               glusterfs_fop_t type)
 {
         struct _locker    *locker = NULL;
         struct _locker    *tmp = NULL;
@@ -213,13 +215,16 @@ gf_del_locker (struct _lock_table *table, const char *volume,
 
                 list_for_each_entry_safe (locker, tmp, head, lockers) {
                         if (locker->fd && fd &&
-                            (locker->fd == fd) && (locker->owner == owner)
-                            && !strcmp (locker->volume, volume)) {
+                            (locker->fd == fd) &&
+                            (memcmp (locker->owner, owner,
+                                     min (owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0) &&
+                            !strcmp (locker->volume, volume)) {
                                 list_move_tail (&locker->lockers, &del);
                         } else if (locker->loc.inode &&
                                    loc &&
                                    (locker->loc.inode == loc->inode) &&
-                                   (locker->owner == owner)
+                                   (memcmp (locker->owner, owner,
+                                            min (owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0)
                                    && !strcmp (locker->volume, volume)) {
                                 list_move_tail (&locker->lockers, &del);
                         }
@@ -329,9 +334,10 @@ do_lock_table_cleanup (xlator_t *this, server_connection_t *conn,
                   lock owner = 0 is a special case that tells posix-locks
                   to release all locks from this transport
                 */
-                tmp_frame->root->pid      = 0;
-                tmp_frame->root->lk_owner = 0;
-                tmp_frame->root->trans    = conn;
+                tmp_frame->root->pid         = 0;
+                tmp_frame->root->lkowner_len = 0;
+                tmp_frame->root->trans       = conn;
+                memset (tmp_frame->root->lk_owner, 0, GF_MAX_LOCK_OWNER_LEN);
 
                 if (locker->fd) {
                         GF_ASSERT (locker->fd->inode);
@@ -376,9 +382,10 @@ do_lock_table_cleanup (xlator_t *this, server_connection_t *conn,
         list_for_each_entry_safe (locker, tmp, &entrylk_lockers, lockers) {
                 tmp_frame = copy_frame (frame);
 
-                tmp_frame->root->lk_owner = 0;
-                tmp_frame->root->pid      = 0;
-                tmp_frame->root->trans    = conn;
+                tmp_frame->root->lkowner_len = 0;
+                tmp_frame->root->pid         = 0;
+                tmp_frame->root->trans       = conn;
+                memset (tmp_frame->root->lk_owner, 0, GF_MAX_LOCK_OWNER_LEN);
 
                 if (locker->fd) {
                         GF_ASSERT (locker->fd->inode);
@@ -495,7 +502,10 @@ do_fd_cleanup (xlator_t *this, server_connection_t *conn, call_frame_t *frame,
 
                         tmp_frame->root->pid = 0;
                         tmp_frame->root->trans = conn;
-                        tmp_frame->root->lk_owner = 0;
+                        tmp_frame->root->lkowner_len = 0;
+                        memset (tmp_frame->root->lk_owner, 0,
+                                GF_MAX_LOCK_OWNER_LEN);
+
                         STACK_WIND (tmp_frame,
                                     server_connection_cleanup_flush_cbk,
                                     bound_xl, bound_xl->fops->flush, fd);
@@ -645,8 +655,10 @@ server_connection_destroy (xlator_t *this, server_connection_t *conn)
                           lock_owner = 0 is a special case that tells posix-locks
                           to release all locks from this transport
                         */
-                        tmp_frame->root->lk_owner = 0;
+                        tmp_frame->root->lkowner_len = 0;
                         tmp_frame->root->trans = conn;
+                        memset (tmp_frame->root->lk_owner, 0,
+                                GF_MAX_LOCK_OWNER_LEN);
 
                         if (locker->fd) {
                                 GF_ASSERT (locker->fd->inode);
@@ -691,8 +703,10 @@ server_connection_destroy (xlator_t *this, server_connection_t *conn)
                 list_for_each_entry_safe (locker, tmp, &entrylk_lockers, lockers) {
                         tmp_frame = copy_frame (frame);
 
-                        tmp_frame->root->lk_owner = 0;
+                        tmp_frame->root->lkowner_len = 0;
                         tmp_frame->root->trans = conn;
+                        memset (tmp_frame->root->lk_owner, 0,
+                                GF_MAX_LOCK_OWNER_LEN);
 
                         if (locker->fd) {
                                 GF_ASSERT (locker->fd->inode);
@@ -910,7 +924,9 @@ get_frame_from_request (rpcsvc_request_t *req)
         frame->root->gid      = req->gid;
         frame->root->pid      = req->pid;
         frame->root->trans    = req->trans->xl_private;
-        frame->root->lk_owner = req->lk_owner;
+        frame->root->lkowner_len = req->lk_owner_len;
+        memcpy (frame->root->lk_owner, req->lk_owner,
+                min (req->lk_owner_len, GF_MAX_LOCK_OWNER_LEN));
 
         server_decode_groups (frame, req);
 

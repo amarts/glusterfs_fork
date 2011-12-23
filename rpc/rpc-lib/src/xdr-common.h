@@ -44,6 +44,7 @@ enum gf_dump_procnum {
 #define GLUSTER_DUMP_PROGRAM 123451501 /* Completely random */
 #define GLUSTER_DUMP_VERSION 1
 
+#define GF_MAX_AUTH_BYTES   2048
 
 #if GF_DARWIN_HOST_OS
 #define xdr_u_quad_t xdr_u_int64_t
@@ -66,6 +67,22 @@ enum gf_dump_procnum {
 #define xdr_quad_t   xdr_int64_t
 #define xdr_uint32_t xdr_uint32_t
 #endif
+
+struct auth_glusterfs_parms_v2 {
+	int pid;
+	int uid;
+	int gid;
+	struct {
+		u_int groups_len;
+		u_short *groups_val;
+	} groups;
+	struct {
+		u_int lk_owner_len;
+		char *lk_owner_val;
+	} lk_owner;
+};
+typedef struct auth_glusterfs_parms_v2 auth_glusterfs_parms_v2;
+
 
 struct auth_glusterfs_parms {
 	uint64_t lk_owner;
@@ -100,6 +117,8 @@ typedef struct gf_dump_rsp gf_dump_rsp;
 
 extern bool_t
 xdr_auth_glusterfs_parms (XDR *xdrs, auth_glusterfs_parms *objp);
+extern bool_t
+xdr_auth_glusterfs_parms_v2 (XDR *xdrs, auth_glusterfs_parms_v2 *objp);
 extern bool_t xdr_gf_dump_req (XDR *, gf_dump_req*);
 extern bool_t xdr_gf_prog_detail (XDR *, gf_prog_detail*);
 extern bool_t xdr_gf_dump_rsp (XDR *, gf_dump_rsp*);

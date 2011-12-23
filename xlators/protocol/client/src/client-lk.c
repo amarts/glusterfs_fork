@@ -36,7 +36,7 @@ __dump_client_lock (client_posix_lock_t *lock)
 
         gf_log (this->name, GF_LOG_INFO,
                 "{fd=%p}"
-                "{%s lk-owner:%"PRIu64" %"PRId64" - %"PRId64"}"
+                "{%s lk-owner:%s %"PRId64" - %"PRId64"}"
                 "{start=%"PRId64" end=%"PRId64"}",
                 lock->fd,
                 lock->fl_type == F_WRLCK ? "Write-Lock" : "Read-Lock",
@@ -137,7 +137,8 @@ add_locks (client_posix_lock_t *l1, client_posix_lock_t *l2)
 static int
 same_owner (client_posix_lock_t *l1, client_posix_lock_t *l2)
 {
-        return ((l1->owner == l2->owner));
+        return (memcmp(l1->owner, l2->owner,
+                       min (l1->owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0);
 }
 
 /* Return true if the locks overlap, false otherwise */
@@ -365,7 +366,7 @@ destroy_client_lock (client_posix_lock_t *lock)
 }
 
 int32_t
-delete_granted_locks_owner (fd_t *fd, uint64_t owner)
+delete_granted_locks_owner (fd_t *fd, char *owner)
 {
         clnt_fd_ctx_t     *fdctx = NULL;
         client_posix_lock_t *lock  = NULL;
@@ -389,7 +390,8 @@ delete_granted_locks_owner (fd_t *fd, uint64_t owner)
         pthread_mutex_lock (&fdctx->mutex);
         {
                 list_for_each_entry_safe (lock, tmp, &fdctx->lock_list, list) {
-                        if (lock->owner == owner) {
+                        if (memcmp (lock->owner, owner,
+                                    min (lock->owner_len, GF_MAX_LOCK_OWNER_LEN)) == 0) {
                                 list_del_init (&lock->list);
                                 list_add_tail (&lock->list, &delete_list);
                                 count++;
@@ -486,8 +488,8 @@ client_cmd_to_gf_cmd (int32_t cmd, int32_t *gf_cmd)
 }
 
 static client_posix_lock_t *
-new_client_lock (struct gf_flock *flock, uint64_t owner,
-                 int32_t cmd, fd_t *fd)
+new_client_lock (struct gf_flock *flock, char *owner,
+                 int32_t owner_len, int32_t cmd, fd_t *fd)
 {
         client_posix_lock_t *new_lock = NULL;
 
@@ -509,7 +511,9 @@ new_client_lock (struct gf_flock *flock, uint64_t owner,
 	else
 		new_lock->fl_end = flock->l_start + flock->l_len - 1;
 
-        new_lock->owner = owner;
+        new_lock->owner = memdup (owner, owner_len);
+        new_lock->owner_len = owner_len;
+
         new_lock->cmd = cmd; /* Not really useful */
 
 out:
@@ -527,8 +531,8 @@ client_save_number_fds (clnt_conf_t *conf, int count)
 }
 
 int
-client_add_lock_for_recovery (fd_t *fd, struct gf_flock *flock, uint64_t owner,
-                              int32_t cmd)
+client_add_lock_for_recovery (fd_t *fd, struct gf_flock *flock, char *owner,
+                              int32_t owner_len, int32_t cmd)
 {
         clnt_fd_ctx_t       *fdctx = NULL;
         xlator_t            *this  = NULL;
@@ -553,7 +557,7 @@ client_add_lock_for_recovery (fd_t *fd, struct gf_flock *flock, uint64_t owner,
                 goto out;
         }
 
-        lock = new_client_lock (flock, owner, cmd, fd);
+        lock = new_client_lock (flock, owner, owner_len, cmd, fd);
         if (!lock) {
                 ret = -ENOMEM;
                 goto out;
@@ -580,7 +584,9 @@ construct_reserve_unlock (struct gf_flock *lock, call_frame_t *frame,
         lock->l_len = 0; /* Whole file */
         lock->l_pid = (uint64_t)(unsigned long)frame->root;
 
-        frame->root->lk_owner = client_lock->owner;
+        memcpy (frame->root->lk_owner, client_lock->owner,
+                min (client_lock->owner_len, GF_MAX_LOCK_OWNER_LEN));
+        frame->root->lkowner_len = client_lock->owner_len;
 
         return 0;
 }
@@ -593,7 +599,10 @@ construct_reserve_lock (client_posix_lock_t *client_lock, call_frame_t *frame,
 
         memcpy (lock, &(client_lock->user_flock), sizeof (struct gf_flock));
 
-        frame->root->lk_owner = client_lock->owner;
+        memcpy (frame->root->lk_owner, client_lock->owner,
+                min (client_lock->owner_len, GF_MAX_LOCK_OWNER_LEN));
+
+        frame->root->lkowner_len = client_lock->owner_len;
 
         return 0;
 }
@@ -828,7 +837,9 @@ client_send_recovery_lock (call_frame_t *frame, xlator_t *this,
                            client_posix_lock_t *lock)
 {
 
-        frame->root->lk_owner = lock->owner;
+        memcpy (frame->root->lk_owner, lock->owner,
+                min (lock->owner_len, GF_MAX_LOCK_OWNER_LEN));
+        frame->root->lkowner_len = lock->owner_len;
 
         /* Send all locks as F_SETLK to prevent the frame
            from blocking if there is a conflict */

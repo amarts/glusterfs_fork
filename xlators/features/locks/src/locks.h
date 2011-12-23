@@ -55,8 +55,9 @@ struct __posix_lock {
            across nodes */
 
         void              *transport;     /* to identify client node */
+        char               owner[GF_MAX_LOCK_OWNER_LEN];  /* lock owner from apps */
+        int32_t            owner_len;
         pid_t              client_pid;    /* pid of client process */
-        uint64_t           owner;         /* lock owner from fuse */
 };
 typedef struct __posix_lock posix_lock_t;
 
@@ -83,8 +84,9 @@ struct __pl_inode_lock {
            across nodes */
 
         void              *transport;     /* to identify client node */
+        char               owner[GF_MAX_LOCK_OWNER_LEN];
+        int32_t            owner_len;
         pid_t              client_pid;    /* pid of client process */
-        uint64_t           owner;
 };
 typedef struct __pl_inode_lock pl_inode_lock_t;
 
@@ -120,9 +122,10 @@ struct __entry_lock {
         struct timeval     blkd_time;   /*time at which lock was queued into blkd list*/
         struct timeval     granted_time; /*time at which lock was queued into active list*/
 
-        void      *trans;
+        void             *trans;
+        char              owner[GF_MAX_LOCK_OWNER_LEN];
+        int32_t           owner_len;
         pid_t             client_pid;    /* pid of client process */
-        uint64_t          owner;
 };
 typedef struct __entry_lock pl_entry_lock_t;
 

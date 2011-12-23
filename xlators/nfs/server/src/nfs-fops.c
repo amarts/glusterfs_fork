@@ -132,7 +132,10 @@ nfs_create_frame (xlator_t *xl, nfs_user_t *nfu)
                 gf_log (GF_NFS, GF_LOG_TRACE, "gid: %d", nfu->gids[x]);
                 frame->root->groups[y] = nfu->gids[x];
         }
-        frame->root->lk_owner = nfs_frame_getctr ();
+
+        frame->root->lkowner_len = sizeof (int);
+
+        SET_FRAME_ROOT_LK_OWNER (frame, nfs_frame_getctr ());
 
 err:
         return frame;

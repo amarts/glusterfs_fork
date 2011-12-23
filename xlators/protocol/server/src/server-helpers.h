@@ -52,14 +52,14 @@ gf_add_locker (struct _lock_table *table, const char *volume,
                loc_t *loc,
                fd_t *fd,
                pid_t pid,
-               uint64_t owner,
+               char *owner, int32_t owner_len,
                glusterfs_fop_t type);
 
 int32_t
 gf_del_locker (struct _lock_table *table, const char *volume,
                loc_t *loc,
                fd_t *fd,
-               uint64_t owner,
+               char *owner, int32_t owner_len,
                glusterfs_fop_t type);
 
 void

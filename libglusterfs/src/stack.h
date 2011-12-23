@@ -106,8 +106,9 @@ struct _call_stack_t {
         gid_t                         gid;
         pid_t                         pid;
         uint32_t                      ngrps;
-        uint32_t                      groups[GF_REQUEST_MAXGROUPS];
-        uint64_t                      lk_owner;
+        gid_t                         groups[GF_MAX_AUX_GROUPS];
+        uint32_t                      lkowner_len;
+        char                          lk_owner[GF_MAX_LOCK_OWNER_LEN];
 
         call_frame_t                  frames;
 
@@ -319,6 +320,14 @@ STACK_DESTROY (call_stack_t *stack)
         } while (0)
 
 
+#define SET_FRAME_ROOT_LK_OWNER(fr,data) do {                           \
+                int i = 0;                                              \
+                int j = 0;                                              \
+                for (i = 0, j = 0; i < fr->root->lkowner_len; i++, j += 8) { \
+                        fr->root->lk_owner[i] =  (char)(((data) >> j) & 0xff); \
+                }                                                       \
+        } while (0)
+
 static inline call_frame_t *
 copy_frame (call_frame_t *frame)
 {
@@ -343,13 +352,15 @@ copy_frame (call_frame_t *frame)
         newstack->op  = oldstack->op;
         newstack->type = oldstack->type;
         memcpy (newstack->groups, oldstack->groups,
-                sizeof (uint32_t) * GF_REQUEST_MAXGROUPS);
+                sizeof (gid_t) * GF_MAX_AUX_GROUPS);
         newstack->unique = oldstack->unique;
 
         newstack->frames.this = frame->this;
         newstack->frames.root = newstack;
         newstack->pool = oldstack->pool;
-        newstack->lk_owner = oldstack->lk_owner;
+        newstack->lkowner_len = oldstack->lkowner_len;
+        memcpy (newstack->lk_owner, oldstack->lk_owner,
+                min (oldstack->lkowner_len, GF_MAX_LOCK_OWNER_LEN));
 
         LOCK_INIT (&newstack->frames.lock);
 
