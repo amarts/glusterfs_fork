@@ -933,12 +933,23 @@ fuse_setattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 state->lk_owner = fsi->lock_owner;
 #endif
 
-        if ((state->loc.inode == NULL && ret == 0) ||
-            (ret < 0)) {
+        state->valid = fsi->valid;
 
+        if (fsi->valid & FATTR_FH) {
+                state->fd = FH_TO_FD (fsi->fh);
+        }
+
+#ifdef GF_TEST_FFOP
+        /* this is for calls like 'fchmod()' */
+        if (!state->fd)
+                state->fd = fd_lookup (state->loc.inode, state->finh->pid);
+#endif /* GF_TEST_FFOP */
+
+        /* It is possible to get ftruncate without proper inode info from fuse */
+        if (ret && !state->fd) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
-                        "%"PRIu64": SETATTR %s (fuse_loc_fill() failed)",
-                        finh->unique, state->loc.path);
+                        "%"PRIu64": SETATTR %s (fuse_loc_fill() failed (%d))",
+                        finh->unique, state->loc.path, ret);
 
                 send_fuse_err (this, finh, ENOENT);
                 free_fuse_state (state);
@@ -946,15 +957,18 @@ fuse_setattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 return;
         }
 
+        if (!state->fd && !state->loc.inode) {
+                gf_log ("glusterfs-fuse", GF_LOG_WARNING,
+                        "%"PRIu64": SETATTR %"PRIu64" (fuse_loc_fill() failed)",
+                        state->finh->unique, state->finh->nodeid);
+                send_fuse_err (state->this, state->finh, ENOENT);
+                free_fuse_state (state);
+                return;
+        }
+
         gf_log ("glusterfs-fuse", GF_LOG_TRACE,
                 "%"PRIu64": SETATTR (%"PRIu64")%s", finh->unique,
                 finh->nodeid, state->loc.path);
-
-        state->valid = fsi->valid;
-
-        if (fsi->valid & FATTR_FH) {
-                state->fd = FH_TO_FD (fsi->fh);
-        }
 
         if ((fsi->valid & (FATTR_MASK)) != FATTR_SIZE) {
                 if (fsi->valid & FATTR_SIZE) {
@@ -2598,8 +2612,10 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 return;
         }
 
+#ifdef GF_TEST_FFOP
         state->fd = fd_lookup (state->loc.inode, state->finh->pid);
-        if (!state->fd) {
+#endif /* GF_TEST_FFOP */
+        if (ret && !state->fd) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": SETXATTR %"PRIu64" (fuse_loc_fill() failed)",
                         state->finh->unique, state->finh->nodeid);
@@ -2850,8 +2866,10 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 return;
         }
 
+#ifdef GF_TEST_FFOP
         state->fd = fd_lookup (state->loc.inode, state->finh->pid);
-        if (!state->fd) {
+#endif /* GF_TEST_FFOP */
+        if (ret && !state->fd) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": GETXATTR %"PRIu64" (fuse_loc_fill() failed)",
                         state->finh->unique, state->finh->nodeid);
@@ -2922,8 +2940,10 @@ fuse_listxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 return;
         }
 
+#ifdef GF_TEST_FFOP
         state->fd = fd_lookup (state->loc.inode, state->finh->pid);
-        if (!state->fd) {
+#endif /* GF_TEST_FFOP */
+        if (ret && !state->fd) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": LISTXATTR %"PRIu64" (fuse_loc_fill() failed)",
                         state->finh->unique, state->finh->nodeid);
@@ -2989,8 +3009,10 @@ fuse_removexattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 return;
         }
 
+#ifdef GF_TEST_FFOP
         state->fd = fd_lookup (state->loc.inode, state->finh->pid);
-        if (!state->fd) {
+#endif /* GF_TEST_FFOP */
+        if (ret && !state->fd) {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": REMOVEXATTR %"PRIu64" (fuse_loc_fill() failed)",
                         state->finh->unique, state->finh->nodeid);
