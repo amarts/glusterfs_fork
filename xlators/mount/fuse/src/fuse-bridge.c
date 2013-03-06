@@ -9,6 +9,7 @@
 */
 
 #include <sys/wait.h>
+#include <stdlib.h>
 #include "fuse-bridge.h"
 #include "mount-gluster-compat.h"
 
@@ -22,6 +23,29 @@ static int gf_fuse_xattr_enotsup_log;
 void fini (xlator_t *this_xl);
 
 static void fuse_invalidate_inode(xlator_t *this, uint64_t fuse_ino);
+
+
+static inline void
+gf_uuid_generate (xlator_t *this, uuid_t gfid)
+{
+        int ret = -1;
+        fuse_private_t *priv = NULL;
+
+        priv = this->private;
+
+        /* if its a regular mount, don't bother about it */
+
+        if (!priv->aux_gfid_mount) {
+                uuid_generate (gfid);
+                return;
+        }
+        /* now, lets have a common file from which we get the gfid for
+           the entry */
+        /* TODO: decide on the file name from which we get gfid, or even
+           better, think of better options */
+
+        return;
+}
 
 /*
  * Send an invalidate notification up to fuse to purge the file from local
@@ -467,7 +491,7 @@ fuse_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 state->loc.inode = inode_new (itable);
                 state->is_revalidate = 2;
                 if (uuid_is_null (state->gfid))
-                        uuid_generate (state->gfid);
+                        gf_uuid_generate (this, state->gfid);
                 fuse_gfid_set (state);
 
                 STACK_WIND (frame, fuse_lookup_cbk,
@@ -511,7 +535,7 @@ fuse_lookup_resume (fuse_state_t *state)
                         state->loc.path);
                 state->loc.inode = inode_new (state->loc.parent->table);
                 if (uuid_is_null (state->gfid))
-                        uuid_generate (state->gfid);
+                        gf_uuid_generate (THIS, state->gfid);
                 fuse_gfid_set (state);
         }
 
@@ -522,11 +546,51 @@ fuse_lookup_resume (fuse_state_t *state)
 static void
 fuse_lookup (xlator_t *this, fuse_in_header_t *finh, void *msg)
 {
-        char         *name      = msg;
-        fuse_state_t *state     = NULL;
+        char           *name      = msg;
+        fuse_state_t   *state     = NULL;
+        fuse_private_t *priv      = NULL;
 
+        priv = this->private;
         GET_STATE (this, finh, state);
 
+        if (priv->aux_gfid_mount &&
+            (finh->nodeid == 1) &&
+            (strcmp (".gfid-path", name) == 0)) {
+                call_frame_t *frame = NULL;
+
+                frame = get_call_frame_for_req (state);
+                frame->root->state = state;
+
+                /* virtual stat entry */
+                priv->root_stbuf.ia_gfid[15] = 0xd;
+                priv->root_stbuf.ia_ino = 13;
+
+                /* need to build 'state->loc' ourself */
+                state->loc.inode = inode_new (state->itable);
+                state->loc.parent = state->itable->root;
+                state->loc.name = name;
+
+                fuse_entry_cbk (frame, NULL, this, 0, 0,
+                                state->loc.inode, &priv->root_stbuf, NULL);
+                return;
+        }
+
+        if (priv->aux_gfid_mount) {
+                inode_t *parent = NULL;
+                uuid_t aux_gfid = {0,};
+                aux_gfid[15] = 0xd;
+
+                parent = fuse_ino_to_inode (finh->nodeid, state->this);
+                if ((uuid_compare (aux_gfid, parent->gfid) == 0) &&
+                    (uuid_parse (name, aux_gfid) == 0)) {
+                        fuse_gfid_set (state);
+                        state->loc.inode = inode_new (state->itable);
+                        uuid_copy (state->loc.gfid, aux_gfid);
+                        FUSE_FOP (state, fuse_lookup_cbk, GF_FOP_LOOKUP,
+                                  lookup, &state->loc, state->xdata);
+                        return;
+                }
+        }
         (void) fuse_resolve_entry_init (state, &state->resolve,
                                         finh->nodeid, name);
 
@@ -639,6 +703,10 @@ fuse_attr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_fop_list[frame->root->op],
                         state->loc.path ? state->loc.path : "ERR",
                         buf->ia_ino);
+
+                if (__is_root_gfid (buf->ia_gfid)) {
+                        priv->root_stbuf = *buf;
+                }
 
                 buf->ia_blksize = this->ctx->page_size;
                 gf_fuse_stat2attr (buf, &fao.attr, priv->enable_ino32);
@@ -1366,7 +1434,7 @@ fuse_mknod (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        uuid_generate (state->gfid);
+        gf_uuid_generate (this, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1429,7 +1497,7 @@ fuse_mkdir (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        uuid_generate (state->gfid);
+        gf_uuid_generate (this, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1560,7 +1628,7 @@ fuse_symlink (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        uuid_generate (state->gfid);
+        gf_uuid_generate (this, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1927,7 +1995,7 @@ fuse_create (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        uuid_generate (state->gfid);
+        gf_uuid_generate (this, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -5024,6 +5092,9 @@ init (xlator_t *this_xl)
 
         GF_OPTION_INIT ("selinux", priv->selinux, bool, cleanup_exit);
 
+        GF_OPTION_INIT ("auxilary-gfid-mount", priv->aux_gfid_mount, bool,
+                        cleanup_exit);
+
         GF_OPTION_INIT ("read-only", priv->read_only, bool, cleanup_exit);
 
         GF_OPTION_INIT ("enable-ino32", priv->enable_ino32, bool, cleanup_exit);
@@ -5306,6 +5377,12 @@ struct volume_options options[] = {
         },
         { .key = {"fuse-mountopts"},
           .type = GF_OPTION_TYPE_STR
+        },
+        { .key  = {"auxilary-gfid-mount"},
+          .type = GF_OPTION_TYPE_BOOL,
+          .default_value = "off",
+          .description = "an option which makes the mount point allow "
+          "access to gfid directly",
         },
         { .key = {NULL} },
 };

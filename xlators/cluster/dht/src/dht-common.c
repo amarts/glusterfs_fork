@@ -1399,7 +1399,6 @@ dht_lookup (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (this, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
 
         conf = this->private;
         if (!conf)
@@ -2074,7 +2073,6 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (this, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
         VALIDATE_OR_GOTO (this->private, err);
 
         conf   = this->private;
@@ -2418,7 +2416,6 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (this, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
 
         GF_IF_INTERNAL_XATTR_GOTO ("trusted.glusterfs.dht*", xattr,
                                    op_errno, err);
@@ -2647,7 +2644,6 @@ dht_removexattr (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_REMOVEXATTR);
         if (!local) {
@@ -2876,7 +2872,6 @@ dht_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         VALIDATE_OR_GOTO (this, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
         VALIDATE_OR_GOTO (this->private, err);
 
         conf = this->private;
@@ -4805,7 +4800,6 @@ dht_entrylk (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (this, err);
         VALIDATE_OR_GOTO (loc, err);
         VALIDATE_OR_GOTO (loc->inode, err);
-        VALIDATE_OR_GOTO (loc->path, err);
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_ENTRYLK);
         if (!local) {

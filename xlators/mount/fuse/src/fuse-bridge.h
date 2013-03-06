@@ -119,6 +119,10 @@ struct fuse_private {
         /* for fuse queue length and congestion threshold */
         int background_qlen;
         int congestion_threshold;
+
+        gf_boolean_t aux_gfid_mount;
+        /* root inode's stbuf */
+        struct iatt root_stbuf;
 };
 typedef struct fuse_private fuse_private_t;
 
