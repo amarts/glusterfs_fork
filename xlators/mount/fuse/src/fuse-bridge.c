@@ -26,7 +26,7 @@ static void fuse_invalidate_inode(xlator_t *this, uint64_t fuse_ino);
 
 
 static inline void
-gf_uuid_generate (xlator_t *this, uuid_t gfid)
+gf_uuid_generate (xlator_t *this, int32_t pid, uuid_t gfid)
 {
         int ret = -1;
         fuse_private_t *priv = NULL;
@@ -43,6 +43,40 @@ gf_uuid_generate (xlator_t *this, uuid_t gfid)
            the entry */
         /* TODO: decide on the file name from which we get gfid, or even
            better, think of better options */
+
+#if defined(GF_LINUX_HOST_OS)
+        char         filename[32];
+        char         line[4096];
+        char        *ptr = NULL;
+        FILE        *fp = NULL;
+
+        ret = snprintf (filename, sizeof (filename),
+                        "/proc/%d/environ", pid);
+        if (ret >= sizeof (filename))
+                goto out;
+
+        fp = fopen (filename, "r");
+        if (!fp)
+                goto out;
+
+        while ((ptr = fgets (line, sizeof (line), fp))) {
+                if (strncmp (ptr, "GLUSTERFS_GFID=", 15) != 0)
+                        continue;
+
+                ptr = line + 15;
+
+                ret = uuid_parse (ptr, gfid);
+                if (!ret) {
+                        fclose (fp);
+                        return;
+                }
+        }
+out:
+        if (fp)
+                fclose (fp);
+#endif /* GF_LINUX_HOST_OS */
+
+        uuid_generate (gfid);
 
         return;
 }
@@ -491,7 +525,7 @@ fuse_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 state->loc.inode = inode_new (itable);
                 state->is_revalidate = 2;
                 if (uuid_is_null (state->gfid))
-                        gf_uuid_generate (this, state->gfid);
+                        gf_uuid_generate (this, state->finh->pid, state->gfid);
                 fuse_gfid_set (state);
 
                 STACK_WIND (frame, fuse_lookup_cbk,
@@ -535,7 +569,7 @@ fuse_lookup_resume (fuse_state_t *state)
                         state->loc.path);
                 state->loc.inode = inode_new (state->loc.parent->table);
                 if (uuid_is_null (state->gfid))
-                        gf_uuid_generate (THIS, state->gfid);
+                        gf_uuid_generate (THIS, state->finh->pid, state->gfid);
                 fuse_gfid_set (state);
         }
 
@@ -1434,7 +1468,7 @@ fuse_mknod (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        gf_uuid_generate (this, state->gfid);
+        gf_uuid_generate (this, state->finh->pid, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1497,7 +1531,7 @@ fuse_mkdir (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        gf_uuid_generate (this, state->gfid);
+        gf_uuid_generate (this, state->finh->pid, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1628,7 +1662,7 @@ fuse_symlink (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        gf_uuid_generate (this, state->gfid);
+        gf_uuid_generate (this, state->finh->pid, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
@@ -1995,7 +2029,7 @@ fuse_create (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         GET_STATE (this, finh, state);
 
-        gf_uuid_generate (this, state->gfid);
+        gf_uuid_generate (this, state->finh->pid, state->gfid);
 
         fuse_resolve_entry_init (state, &state->resolve, finh->nodeid, name);
 
