@@ -95,7 +95,7 @@ typedef struct _ios_sample_t {
         gid_t  gid;
         char   identifier[UNIX_PATH_MAX];
         glusterfs_fop_t fop_type;
-        struct timeval timestamp;
+        struct timespec timestamp;
         double elapsed;
 } ios_sample_t;
 
@@ -221,7 +221,7 @@ is_fop_latency_started (call_frame_t *frame)
                                                                         \
                 conf = this->private;                                   \
                 if (conf && conf->measure_latency) {                    \
-                        gettimeofday (&frame->end, NULL);               \
+                        timespec_now (&frame->end);                     \
                         update_ios_latency (conf, frame, GF_FOP_##op);  \
                 }                                                       \
         } while (0)
@@ -232,7 +232,7 @@ is_fop_latency_started (call_frame_t *frame)
                                                                          \
                 conf = this->private;                                    \
                 if (conf && conf->measure_latency) {                     \
-                        gettimeofday (&frame->begin, NULL);              \
+                        timespec_now (&frame->begin);                    \
                 } else {                                                 \
                         memset (&frame->begin, 0, sizeof (frame->begin));\
                 }                                                        \
@@ -260,7 +260,7 @@ is_fop_latency_started (call_frame_t *frame)
                 if (conf && conf->measure_latency &&                          \
                     conf->count_fop_hits) {                                   \
                         BUMP_FOP (op);                                        \
-                        gettimeofday (&frame->end, NULL);                     \
+                        timespec_now (&frame->end);                           \
                         update_ios_latency (conf, frame, GF_FOP_##op);        \
                 }                                                             \
         } while (0)
@@ -269,15 +269,15 @@ is_fop_latency_started (call_frame_t *frame)
         do {                                                                   \
                 struct ios_conf         *conf = NULL;                          \
                 double                   elapsed;                              \
-                struct timeval          *begin, *end;                          \
+                struct timespec         *begin, *end;                          \
                 double                   throughput;                           \
                 int                      flag = 0;                             \
                                                                                \
                 begin = &frame->begin;                                         \
                 end   = &frame->end;                                           \
                                                                                \
-                elapsed = (end->tv_sec - begin->tv_sec) * 1e6                  \
-                        + (end->tv_usec - begin->tv_usec);                     \
+                elapsed = (end->tv_sec - begin->tv_sec) * 1e9                  \
+                        + (end->tv_nsec - begin->tv_nsec);                     \
                 throughput = op_ret / elapsed;                                 \
                                                                                \
                 conf = this->private;                                          \
@@ -1055,7 +1055,7 @@ _io_stats_write_latency_sample (xlator_t *this, ios_sample_t *sample,
         conf = this->private;
 
         epoch_time = (sample->timestamp).tv_sec +
-          ((sample->timestamp).tv_usec / 1000000.0);
+                ((sample->timestamp).tv_nsec / 1e9);
 
         if (strlen (sample->identifier) == 0) {
                 hostname = "Unknown";
@@ -1692,7 +1692,7 @@ void collect_ios_latency_sample (struct ios_conf *conf,
 {
         ios_sample_buf_t *ios_sample_buf = NULL;
         ios_sample_t     *ios_sample = NULL;
-        struct timeval   *timestamp = NULL;
+        struct timespec  *timestamp = NULL;
         call_stack_t     *root = NULL;
 
 
@@ -1711,7 +1711,7 @@ void collect_ios_latency_sample (struct ios_conf *conf,
         ios_sample->uid = root->uid;
         ios_sample->gid = root->gid;
         (ios_sample->timestamp).tv_sec = timestamp->tv_sec;
-        (ios_sample->timestamp).tv_usec = timestamp->tv_usec;
+        (ios_sample->timestamp).tv_nsec = timestamp->tv_nsec;
         memcpy (&ios_sample->identifier, &root->identifier,
                 sizeof (root->identifier));
 
@@ -1756,13 +1756,13 @@ update_ios_latency (struct ios_conf *conf, call_frame_t *frame,
                     glusterfs_fop_t op)
 {
         double elapsed;
-        struct timeval *begin, *end;
+        struct timespec *begin, *end;
 
         begin = &frame->begin;
         end   = &frame->end;
 
-        elapsed = (end->tv_sec - begin->tv_sec) * 1e6
-                + (end->tv_usec - begin->tv_usec);
+        elapsed = (end->tv_sec - begin->tv_sec) * 1e9
+                + (end->tv_nsec - begin->tv_nsec);
 
         update_ios_latency_stats (&conf->cumulative, elapsed, op);
         update_ios_latency_stats (&conf->incremental, elapsed, op);

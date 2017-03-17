@@ -464,9 +464,17 @@ __xlator_init(xlator_t *xl)
 {
         xlator_t *old_THIS = NULL;
         int       ret = 0;
+        int       fop_idx = 0;
 
         old_THIS = THIS;
         THIS = xl;
+
+        /* initialize the metrics related locks */
+        for (fop_idx = 0; fop_idx < GF_FOP_MAXVALUE; fop_idx++) {
+                GF_ATOMIC_INIT (xl->metrics[fop_idx].fop, 0);
+                GF_ATOMIC_INIT (xl->metrics[fop_idx].cbk, 0);
+                GF_ATOMIC_INIT (xl->metrics[fop_idx].failed_cbk, 0);
+        }
 
         xlator_init_lock ();
         ret = xl->init (xl);
