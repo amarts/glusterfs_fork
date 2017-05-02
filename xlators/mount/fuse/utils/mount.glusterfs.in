@@ -26,11 +26,13 @@ _init ()
     LOG_DEBUG=DEBUG;
     LOG_TRACE=TRACE;
 
+    PORT=49999;
     HOST_NAME_MAX=64;
 
     prefix="@prefix@";
     exec_prefix=@exec_prefix@;
     cmd_line=$(echo "@sbindir@/glusterfs");
+    local_fs_cmdline="";
 
     # check whether getfattr exists
     export PATH
@@ -331,6 +333,7 @@ start_glusterfs ()
                     volume_id="$volume_id.$transport";
                     cmd_line=$(echo "$cmd_line --volfile-server-transport=$transport");
                 fi
+                local_fs_cmdline=$(echo "$cmd_line --volfile-id=${volume_id:1}.client");
                 cmd_line=$(echo "$cmd_line --volfile-id=$volume_id");
             fi
         fi
@@ -338,21 +341,25 @@ start_glusterfs ()
         cmd_line=$(echo "$cmd_line --volfile=$volfile_loc");
     fi
 
-    if [ -n "$fuse_mountopts" ]; then
-        cmd_line=$(echo "$cmd_line --fuse-mountopts=$fuse_mountopts");
-    fi
-
     if [ -n "$subdir_mount" ]; then
         cmd_line=$(echo "$cmd_line --subdir-mount=/$subdir_mount");
     fi
 
-    cmd_line=$(echo "$cmd_line $mount_point");
-    $cmd_line;
+    local_fs_cmdline=$(echo "$local_fs_cmdline --xlator-option=${volume_id:1}-server.listen-port=$PORT");
+    echo $local_fs_cmdline;
+    $local_fs_cmdline;
+
+    if [ -n "$fuse_mountopts" ]; then
+        cmd_line=$(echo "$cmd_line --fuse-mountopts=$fuse_mountopts");
+    fi
+
+    fuse_cmd_line=$(echo "$cmd_line --xlator-option=${volume_id:1}-client.remote-port=$PORT $mount_point");
+    $fuse_cmd_line;
+
     if [ $? -ne 0 ]; then
         warn "Mount failed. Please check the log file for more details."
         exit 1;
     fi
-
 
     inode=$( ${getinode} $mount_point 2>/dev/null);
     # this is required if the stat returns error
