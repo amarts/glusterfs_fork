@@ -230,10 +230,12 @@ STACK_RESET (call_stack_t *stack)
    the address offset should give the index */
 
 /* +1 is required as 0 means NULL fop, and we don't have a variable for it */
+#define get_fop_index_from_fn(xl, fn)                                       \
+        (1 + (((long)&(fn) - (long)&((xl)->fops->stat)) / sizeof (void *)))
+
 #define set_fop_index(to, xl, fn)                                       \
         do {                                                            \
-                to = 1 + (((long)&(fn) - (long)&((xl)->fops->stat)) /   \
-                          sizeof (void *));                             \
+                to = get_fop_index_from_fn ((xl), (fn));                \
         } while (0)
 
 
@@ -248,14 +250,11 @@ STACK_RESET (call_stack_t *stack)
                 frame->wind_to = #fn;                                   \
                 old_THIS = THIS;                                        \
                 THIS = next_xl;                                         \
-                gf_msg_trace ("stack-trace", 0,                         \
-                              "stack-address: %p, "                     \
-                              "winding from %s to %s",                  \
-                              frame->root, old_THIS->name,              \
-                              THIS->name);                              \
-                int op = 1 + (((long)&(fn) - (long)&((next_xl)->fops->stat)) / \
-                              sizeof (void *));                         \
-                GF_ATOMIC_INC (next_xl->metrics[op].fop);               \
+                /* Need to capture counts at leaf node */               \
+                if (!next_xl->children) {                               \
+                        int op = get_fop_index_from_fn((next_xl), (fn)); \
+                        GF_ATOMIC_INC (next_xl->metrics[op].fop);       \
+                }                                                       \
                 next_xl_fn (frame, next_xl, params);                    \
                 THIS = old_THIS;                                        \
         } while (0)
@@ -368,6 +367,9 @@ STACK_RESET (call_stack_t *stack)
                 timespec_now (&frame->end);                             \
                 if (op_ret < 0) {                                       \
                         GF_ATOMIC_INC (THIS->metrics[frame->op].cbk);   \
+                }                                                       \
+                if (_parent->ret == NULL) {                             \
+                        timespec_now (&_parent->end);                   \
                 }                                                       \
                 fn (_parent, frame->cookie, _parent->this, op_ret,      \
                     op_errno, params);                                  \
