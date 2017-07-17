@@ -2705,16 +2705,16 @@ unwind:
                         local->op_errno = ENOTCONN;
         }
 
-	AFR_STACK_UNWIND (discover, frame, local->op_ret, local->op_errno,
+	AFR_STACK_UNWIND (lookup, frame, local->op_ret, local->op_errno,
 			  local->inode, &local->replies[read_subvol].poststat,
-			  local->replies[read_subvol].xdata);
+			  local->replies[read_subvol].xdata, &local->replies[read_subvol].postparent);
 }
 
 
 int
 afr_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 		  int op_ret, int op_errno, inode_t *inode, struct iatt *buf,
-		  dict_t *xdata)
+		  dict_t *xdata, struct iatt *parent_iatt)
 {
         afr_local_t *   local = NULL;
         int             call_count      = -1;
@@ -2731,7 +2731,8 @@ afr_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 	local->replies[child_index].op_errno = op_errno;
 	if (op_ret != -1) {
 		local->replies[child_index].poststat = *buf;
-		if (xdata)
+                local->replies[child_index].postparent = *parent_iatt;
+			if (xdata)
 			local->replies[child_index].xdata = dict_ref (xdata);
 	}
 
@@ -2789,7 +2790,7 @@ afr_discover_do (call_frame_t *frame, xlator_t *this, int err)
                         STACK_WIND_COOKIE (frame, afr_discover_cbk,
                                            (void *) (long) i,
                                            priv->children[i],
-                                           priv->children[i]->fops->discover,
+                                           priv->children[i]->fops->lookup,
                                            &local->loc, local->xattr_req);
                         if (!--call_count)
                                 break;
@@ -2865,7 +2866,7 @@ afr_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
 
 	return 0;
 out:
-	AFR_STACK_UNWIND (discover, frame, -1, op_errno, NULL, NULL, NULL);
+	AFR_STACK_UNWIND (lookup, frame, -1, op_errno, NULL, NULL, NULL, NULL);
 	return 0;
 }
 

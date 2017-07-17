@@ -589,7 +589,7 @@ out:
 int
 dht_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                   int op_ret, int op_errno,
-                  inode_t *inode, struct iatt *stbuf, dict_t *xattr)
+                  inode_t *inode, struct iatt *stbuf, dict_t *xattr, struct iatt *postparent)
 {
         dht_local_t  *local                   = NULL;
         int           this_call_cnt           = 0;
@@ -685,6 +685,8 @@ dht_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         local->inode = inode_ref (inode);
 
                 dht_iatt_merge (this, &local->stbuf, stbuf, prev);
+                dht_iatt_merge (this, &local->postparent, postparent,
+                                prev);
         }
 unlock:
         UNLOCK (&frame->lock);
@@ -778,7 +780,7 @@ dht_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
         for (i = 0; i < call_cnt; i++) {
                 STACK_WIND_COOKIE (discover_frame, dht_discover_cbk,
                                    conf->subvolumes[i], conf->subvolumes[i],
-                                   conf->subvolumes[i]->fops->discover,
+                                   conf->subvolumes[i]->fops->lookup,
                                    &local->loc, local->xattr_req);
         }
 
