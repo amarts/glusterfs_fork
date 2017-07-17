@@ -6544,6 +6544,7 @@ rpc_clnt_procedure_t clnt4_0_fop_actors[GF_FOP_MAXVALUE] = {
         [GF_FOP_READDIRP]    = { "READDIRP",    client3_3_readdirp },
 	[GF_FOP_FALLOCATE]   = { "FALLOCATE",	client3_3_fallocate },
 	[GF_FOP_DISCARD]     = { "DISCARD",	client3_3_discard },
+        [GF_FOP_ZEROFILL]     = { "ZEROFILL",     client3_3_zerofill},
         [GF_FOP_RELEASE]     = { "RELEASE",     client3_3_release },
         [GF_FOP_RELEASEDIR]  = { "RELEASEDIR",  client3_3_releasedir },
         [GF_FOP_GETSPEC]     = { "GETSPEC",     client3_getspec },
