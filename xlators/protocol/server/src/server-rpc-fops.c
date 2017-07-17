@@ -7184,6 +7184,13 @@ rpcsvc_actor_t glusterfs4_0_fop_actors[] = {
         [GFS3_OP_FREMOVEXATTR] = { "FREMOVEXATTR", GFS3_OP_FREMOVEXATTR, server3_3_fremovexattr, NULL, 0},
         [GFS3_OP_FALLOCATE]    = {"FALLOCATE",    GFS3_OP_FALLOCATE,    server3_3_fallocate,    NULL, 0, DRC_NA},
         [GFS3_OP_DISCARD]      = {"DISCARD",      GFS3_OP_DISCARD,      server3_3_discard,      NULL, 0, DRC_NA},
+        [GFS3_OP_ZEROFILL]     = {"ZEROFILL",     GFS3_OP_ZEROFILL,     server3_3_zerofill,     NULL, 0, DRC_NA},
+        [GFS3_OP_IPC]          = {"IPC",          GFS3_OP_IPC,          server3_3_ipc,          NULL, 0, DRC_NA},
+        [GFS3_OP_SEEK]         = {"SEEK",         GFS3_OP_SEEK,         server3_3_seek,         NULL, 0, DRC_NA},
+        [GFS3_OP_LEASE]       =  {"LEASE",        GFS3_OP_LEASE,        server3_3_lease,        NULL, 0, DRC_NA},
+        [GFS3_OP_GETACTIVELK]  = {"GETACTIVELK",  GFS3_OP_GETACTIVELK,  server3_3_getactivelk,  NULL, 0, DRC_NA},
+        [GFS3_OP_SETACTIVELK]  = {"SETACTIVELK",  GFS3_OP_SETACTIVELK,  server3_3_setactivelk,  NULL, 0, DRC_NA},
+        [GFS3_OP_COMPOUND]     = {"COMPOUND",     GFS3_OP_COMPOUND,     server3_3_compound,     NULL, 0, DRC_NA},
 };
 
 
