@@ -22,15 +22,15 @@ dump_mem_acct_details(xlator_t *xl, int fd)
 
         if (!xl || !xl->mem_acct)
                 return;
-        dprintf (fd, "%s.%s.total.num_types %d\n", xl->type, xl->name,
+        dprintf (fd, "# %s.%s.total.num_types %d\n", xl->type, xl->name,
                  xl->mem_acct->num_types);
-        dprintf (fd, "type, in-use-size, in-use-units, max-size, "      \
+        dprintf (fd, "# type, in-use-size, in-use-units, max-size, "      \
                  "max-units, total-allocs\n");
         for (i = 0; i < xl->mem_acct->num_types; i++) {
                 mem_rec = &xl->mem_acct->rec[i];
                 if (mem_rec->num_allocs == 0)
                         continue;
-                dprintf (fd, "%s, %"GF_PRI_SIZET", %u, %"GF_PRI_SIZET", %u, %u\n",
+                dprintf (fd, "# %s, %"GF_PRI_SIZET", %u, %"GF_PRI_SIZET", %u, %u\n",
                          mem_rec->typestr, mem_rec->size, mem_rec->num_allocs,
                          mem_rec->max_size, mem_rec->max_num_allocs,
                          mem_rec->total_allocs);
@@ -38,7 +38,7 @@ dump_mem_acct_details(xlator_t *xl, int fd)
 }
 
 static void
-dump_memory_accounting (xlator_t *xl, int fd)
+dump_global_memory_accounting (int fd)
 {
 #if MEMORY_ACCOUNTING_STATS
         int      i        = 0;
@@ -60,16 +60,12 @@ dump_memory_accounting (xlator_t *xl, int fd)
                 dprintf (fd, "memory.total.blk_size[%d] %lu\n", i, count);
         }
 
-        dprintf (fd, "----\n");
+        dprintf (fd, "#----\n");
 #endif
 
         /* This is not a metric to be watched in admin guide,
            but keeping it here till we resolve all leak-issues
            would be great */
-        while (xl) {
-                dump_mem_acct_details (xl, fd);
-                xl = xl->next;
-        }
 }
 
 
@@ -87,15 +83,18 @@ dump_latency_and_count (xlator_t *xl, int fd)
                 fop = GF_ATOMIC_GET (xl->metrics[index].fop);
                 cbk = GF_ATOMIC_GET (xl->metrics[index].cbk);
                 if (fop) {
-                        dprintf (fd, "%s.%d.%s.count %lu\n", xl->name,
+                        dprintf (fd, "%s.%d.%s.count %lu\n",
+                                 xl->name,
                                  (graph) ? graph->id : 0, gf_fop_list[index], fop);
                 }
                 if (cbk) {
-                        dprintf (fd, "%s.%d.%s.fail_count %lu\n", xl->name,
+                        dprintf (fd, "%s.%d.%s.fail_count %lu\n",
+                                 xl->name,
                                  (graph) ? graph->id : 0, gf_fop_list[index], cbk);
                 }
                 if (xl->latencies[index].mean != 0.0) {
-                        dprintf (fd, "%s.%d.%s.latency %lf\n", xl->name,
+                        dprintf (fd, "%s.%d.%s.latency %lf\n",
+                                 xl->name,
                                  (graph) ? graph->id : 0, gf_fop_list[index],
                                  xl->latencies[index].mean);
                 }
@@ -130,27 +129,48 @@ dump_inode_stats (glusterfs_ctx_t *ctx, int fd)
 }
 
 static void
-dump_metrics (glusterfs_ctx_t *ctx, int fd)
+dump_global_metrics (glusterfs_ctx_t *ctx, int fd)
 {
-        xlator_t *xl = NULL;
+        struct timeval tv;
+        time_t nowtime;
+        struct tm *nowtm;
+        char tmbuf[64] = {0,};
+
+        gettimeofday(&tv, NULL);
+        nowtime = tv.tv_sec;
+        nowtm = localtime(&nowtime);
+        strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", nowtm);
+
+        /* Let every file have information on which process dumped info */
+        dprintf (fd, "## %s\n", ctx->cmdlinestr);
+        dprintf (fd, "### %s\n", tmbuf);
+        dprintf (fd, "### BrickName: %s\n", ctx->cmd_args.brick_name);
+        dprintf (fd, "### MountName: %s\n", ctx->cmd_args.mount_point);
+        dprintf (fd, "### VolumeName: %s\n", ctx->cmd_args.volume_name);
+
+        /* Dump memory accounting */
+        dump_global_memory_accounting (fd);
+        dprintf (fd, "# -----\n");
+
+        dump_call_stack_details (ctx, fd);
+        dprintf (fd, "# -----\n");
+
+        dump_inode_stats (ctx, fd);
+        dprintf (fd, "# -----\n");
+
+        return;
+}
+
+static void
+dump_xl_metrics (glusterfs_ctx_t *ctx, int fd)
+{
+        xlator_t *xl;
 
         xl = ctx->active->top;
 
-        /* Let every file have information on which process dumped info */
-        dprintf (fd, "%s\n", ctx->cmdlinestr);
-
-        /* Dump memory accounting */
-        dump_memory_accounting (xl, fd);
-        dprintf (fd, "-----\n");
-
-        dump_call_stack_details (ctx, fd);
-        dprintf (fd, "-----\n");
-
-        dump_inode_stats (ctx, fd);
-        dprintf (fd, "-----\n");
-
         while (xl) {
                 dump_latency_and_count (xl, fd);
+                dump_mem_acct_details (xl, fd);
                 xl = xl->next;
         }
 
@@ -174,7 +194,9 @@ gf_monitor_metrics (int sig, glusterfs_ctx_t *ctx)
                 return;
         }
 
-        dump_metrics (ctx, fd);
+        dump_global_metrics (ctx, fd);
+
+        dump_xl_metrics (ctx, fd);
 
         sys_fsync (fd);
         sys_close (fd);
