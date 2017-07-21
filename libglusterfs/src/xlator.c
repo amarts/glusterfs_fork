@@ -239,6 +239,8 @@ xlator_dynload (xlator_t *xl)
                 xl->fini        = vtbl->fini;
                 xl->reconfigure = vtbl->reconfigure;
                 xl->notify      = vtbl->notify;
+                xl->dump_metrics = vtbl->dump_metrics;
+                xl->reset_metrics = vtbl->reset_metrics;
         }
         else {
                 if (!(*VOID(&xl->init) = dlsym (handle, "init"))) {
@@ -262,6 +264,16 @@ xlator_dynload (xlator_t *xl)
                 if (!(*VOID(&(xl->notify)) = dlsym (handle, "notify"))) {
                         gf_msg_trace ("xlator", 0, "dlsym(notify) on %s -- "
                                       "neglecting", dlerror ());
+                }
+                if (!(*VOID(&(xl->dump_metrics)) = dlsym (handle,
+                                                          "dump_metrics"))) {
+                        gf_msg_trace ("xlator", 0, "dlsym(dump_metrics) on %s -- "
+                                      "neglecting", dlerror ());
+                }
+                if (!(*VOID(&(xl->reset_metrics)) = dlsym (handle,
+                                                           "reset_metrics"))) {
+                        gf_msg_trace ("xlator", 0, "dlsym(reset_metrics) "
+                                      "on %s -- neglecting", dlerror ());
                 }
 
         }

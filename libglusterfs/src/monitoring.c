@@ -171,6 +171,10 @@ dump_xl_metrics (glusterfs_ctx_t *ctx, int fd)
         while (xl) {
                 dump_latency_and_count (xl, fd);
                 dump_mem_acct_details (xl, fd);
+
+                if (xl->dump_metrics)
+                        xl->dump_metrics (xl, fd);
+
                 xl = xl->next;
         }
 

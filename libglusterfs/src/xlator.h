@@ -964,6 +964,8 @@ struct _xlator {
         int32_t           (*init) (xlator_t *this);
         int32_t           (*reconfigure) (xlator_t *this, dict_t *options);
 	int32_t           (*mem_acct_init) (xlator_t *this);
+        int32_t           (*dump_metrics) (xlator_t *this, int fd);
+        int32_t           (*reset_metrics) (xlator_t *this);
 	event_notify_fn_t notify;
 
         gf_loglevel_t    loglevel;   /* Log level for translator */
@@ -1002,6 +1004,8 @@ typedef struct {
         void                    (*fini) (xlator_t *this);
         int32_t                 (*reconfigure) (xlator_t *this,
                                                 dict_t *options);
+        int32_t                 (*dump_metrics) (xlator_t *this, int fd);
+        int32_t                 (*reset_metrics) (xlator_t *this);
         event_notify_fn_t       notify;
 } class_methods_t;
 
