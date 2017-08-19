@@ -54,7 +54,7 @@ jbrc_@NAME@_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 priv->active = last_xl;
                 goto unwind;
         }
-        if ((op_errno != EREMOTE) && (op_errno != ENOTCONN)) {
+        if ((op_errno != EREMOTE) && (op_errno != GF_ERROR_CODE_NOTCONN)) {
                 goto unwind;
         }
 

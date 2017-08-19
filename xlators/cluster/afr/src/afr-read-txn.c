@@ -196,7 +196,7 @@ afr_read_txn (call_frame_t *frame, xlator_t *this, inode_t *inode,
         if (priv->quorum_reads &&
             priv->quorum_count && !afr_has_quorum (priv->child_up, this)) {
                 local->op_ret = -1;
-                local->op_errno = ENOTCONN;
+                local->op_errno = GF_ERROR_CODE_NOTCONN;
                 read_subvol = -1;
                 goto read;
         }

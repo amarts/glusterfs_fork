@@ -2223,7 +2223,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                         if (!ctx->active) {
                                 need_term = 1;
                         }
-                        emval = ENOTCONN;
+                        emval = GF_ERROR_CODE_NOTCONN;
                         GF_LOG_OCCASIONALLY (log_ctr2, "glusterfsd-mgmt",
                                              GF_LOG_INFO,
                                              "Exhausted all volfile servers");
@@ -2242,7 +2242,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                         if (!ctx->active) {
                                 need_term = 1;
                         }
-                        emval = ENOTCONN;
+                        emval = GF_ERROR_CODE_NOTCONN;
                         break;
                 }
                 gf_log ("glusterfsd-mgmt", GF_LOG_INFO,

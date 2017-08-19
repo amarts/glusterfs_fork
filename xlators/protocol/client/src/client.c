@@ -1329,7 +1329,7 @@ client_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
 {
         int                   ret         = -1;
         int                   op_ret      = -1;
-        int                   op_errno    = ENOTCONN;
+        int                   op_errno    = GF_ERROR_CODE_NOTCONN;
         int                   need_unwind = 0;
         clnt_conf_t          *conf        = NULL;
         rpc_clnt_procedure_t *proc        = NULL;
@@ -1369,7 +1369,7 @@ client_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
 
         conf = this->private;
         if (!conf || !conf->fops) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 need_unwind = 1;
                 goto out;
         }

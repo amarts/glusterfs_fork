@@ -1232,7 +1232,7 @@ __glusterd_tier_status_cbk (struct rpc_req *req, struct iovec *iov,
         args = frame->local;
 
         if (-1 == req->rpc_status) {
-                args->op_errno = ENOTCONN;
+                args->op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1309,7 +1309,7 @@ glusterd_op_tier_status (dict_t *dict, char **op_errstr, dict_t *rsp_dict,
         priv = this->private;
         GF_VALIDATE_OR_GOTO (this->name, priv, out);
         args.op_ret = -1;
-        args.op_errno = ENOTCONN;
+        args.op_errno = GF_ERROR_CODE_NOTCONN;
         data = GF_CALLOC (1, sizeof (*data),
                         gf_gld_mt_op_allack_ctx_t);
 

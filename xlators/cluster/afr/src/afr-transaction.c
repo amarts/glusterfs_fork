@@ -70,7 +70,7 @@ afr_zero_fill_stat (afr_local_t *local)
 /* In case of errors afr needs to choose which xdata from lower xlators it needs
  * to unwind with. The way it is done is by checking if there are
  * any good subvols which failed. Give preference to errnos other than
- * ENOTCONN even if the child is source */
+ * GF_ERROR_CODE_NOTCONN even if the child is source */
 void
 afr_pick_error_xdata (afr_local_t *local, afr_private_t *priv,
                       inode_t *inode1, unsigned char *readable1,
@@ -101,7 +101,7 @@ afr_pick_error_xdata (afr_local_t *local, afr_private_t *priv,
                 if (local->replies[i].op_ret >= 0)
                         continue;
 
-                if (local->replies[i].op_errno == ENOTCONN)
+                if (local->replies[i].op_errno == GF_ERROR_CODE_NOTCONN)
                         continue;
 
                 /*Order is important in the following condition*/
@@ -359,7 +359,7 @@ afr_txn_arbitrate_fop (call_frame_t *frame, xlator_t *this)
             local->transaction.pre_op_sources[ARBITER_BRICK_INDEX]) {
                 local->internal_lock.lock_cbk = local->transaction.done;
                 local->op_ret = -1;
-                local->op_errno =  ENOTCONN;
+                local->op_errno =  GF_ERROR_CODE_NOTCONN;
                 afr_restore_lk_owner (frame);
                 afr_unlock (frame, this);
         } else {
@@ -652,8 +652,8 @@ afr_handle_symmetric_errors (call_frame_t *frame, xlator_t *this)
 		}
 		i_errno = local->replies[i].op_errno;
 
-		if (i_errno == ENOTCONN) {
-			/* ENOTCONN is not a symmetric error. We do not
+		if (i_errno == GF_ERROR_CODE_NOTCONN) {
+			/* GF_ERROR_CODE_NOTCONN is not a symmetric error. We do not
 			   know if the operation was performed on the
 			   backend or not.
 			*/
@@ -1736,7 +1736,7 @@ afr_changelog_pre_op (call_frame_t *frame, xlator_t *this)
          * single node.
          */
         if (call_count == 0) {
-		op_errno = ENOTCONN;
+		op_errno = GF_ERROR_CODE_NOTCONN;
 		goto err;
 	}
 

@@ -49,7 +49,7 @@ int32_t
 afr_quorum_errno (afr_private_t *priv)
 {
         if (priv->quorum_reads)
-                return ENOTCONN;
+                return GF_ERROR_CODE_NOTCONN;
         return EROFS;
 }
 
@@ -68,7 +68,7 @@ afr_is_consistent_io_possible (afr_local_t *local, afr_private_t *priv,
                 gf_msg (THIS->name, GF_LOG_INFO, 0,
                         AFR_MSG_SUBVOLS_DOWN, "All subvolumes are not up");
                 if (op_errno)
-                        *op_errno = ENOTCONN;
+                        *op_errno = GF_ERROR_CODE_NOTCONN;
                 return _gf_false;
         }
         return _gf_true;
@@ -1375,7 +1375,7 @@ afr_inode_refresh_do (call_frame_t *frame, xlator_t *this)
 		if (local->fd && AFR_COUNT(local->child_up, priv->child_count))
 	                afr_inode_refresh_done (frame, this, EBADFD);
 		else
-	                afr_inode_refresh_done (frame, this, ENOTCONN);
+	                afr_inode_refresh_done (frame, this, GF_ERROR_CODE_NOTCONN);
                 return 0;
         }
 	for (i = 0; i < priv->child_count; i++) {
@@ -1825,7 +1825,7 @@ afr_handle_inconsistent_fop (call_frame_t *frame, int32_t *op_ret,
         return;
 inconsistent:
         *op_ret = -1;
-        *op_errno = ENOTCONN;
+        *op_errno = GF_ERROR_CODE_NOTCONN;
 }
 
 void
@@ -2257,7 +2257,7 @@ unwind:
                                                       readable);
         if (AFR_IS_ARBITER_BRICK (priv, read_subvol) && local->op_ret == 0) {
                         local->op_ret = -1;
-                        local->op_errno = ENOTCONN;
+                        local->op_errno = GF_ERROR_CODE_NOTCONN;
         }
 
         ret = dict_get_str (local->xattr_req, "gfid-heal-msg", &gfid_heal_msg);
@@ -2718,7 +2718,7 @@ unwind:
         }
         if (AFR_IS_ARBITER_BRICK (priv, read_subvol) && local->op_ret == 0) {
                         local->op_ret = -1;
-                        local->op_errno = ENOTCONN;
+                        local->op_errno = GF_ERROR_CODE_NOTCONN;
         }
 
 	AFR_STACK_UNWIND (lookup, frame, local->op_ret, local->op_errno,
@@ -2835,7 +2835,7 @@ afr_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
 		goto out;
 
         if (!local->call_count) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2997,7 +2997,7 @@ afr_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req)
 		goto out;
 
         if (!local->call_count) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -3712,7 +3712,7 @@ afr_unlock_partial_lock_cbk (call_frame_t *frame, void *cookie,
         local = frame->local;
         priv = this->private;
 
-        if (op_ret < 0 && op_errno != ENOTCONN) {
+        if (op_ret < 0 && op_errno != GF_ERROR_CODE_NOTCONN) {
                 if (local->fd)
                         gf_uuid_copy (gfid, local->fd->inode->gfid);
                 else
@@ -4200,7 +4200,7 @@ afr_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                 local->call_count--;
         call_count = local->call_count;
 	if (!call_count) {
-		op_errno = ENOTCONN;
+		op_errno = GF_ERROR_CODE_NOTCONN;
 		goto out;
 	}
 
@@ -4237,7 +4237,7 @@ afr_lk_unlock_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
 
-        if (op_ret < 0 && op_errno != ENOTCONN && op_errno != EBADFD) {
+        if (op_ret < 0 && op_errno != GF_ERROR_CODE_NOTCONN && op_errno != EBADFD) {
                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                         AFR_MSG_UNLOCK_FAIL,
                         "gfid=%s: unlock failed on subvolume %s "
@@ -4436,7 +4436,7 @@ afr_ipc_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 if (!local->replies[i].valid)
                         continue;
                 if (local->replies[i].op_ret < 0 &&
-                    local->replies[i].op_errno != ENOTCONN) {
+                    local->replies[i].op_errno != GF_ERROR_CODE_NOTCONN) {
                         local->op_ret = local->replies[i].op_ret;
                         local->op_errno = local->replies[i].op_errno;
                         if (local->xdata_rsp)
@@ -4462,7 +4462,7 @@ afr_ipc_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!succeded && !failed) {
                 local->op_ret = -1;
-                local->op_errno = ENOTCONN;
+                local->op_errno = GF_ERROR_CODE_NOTCONN;
         }
 
         AFR_STACK_UNWIND (ipc, frame, local->op_ret, local->op_errno,
@@ -5248,7 +5248,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
                 gf_msg (THIS->name, GF_LOG_INFO, 0,
                         AFR_MSG_SUBVOLS_DOWN, "no subvolumes up");
                 if (op_errno)
-                        *op_errno = ENOTCONN;
+                        *op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 

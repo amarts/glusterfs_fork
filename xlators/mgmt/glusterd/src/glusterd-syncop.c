@@ -354,7 +354,7 @@ gd_syncop_mgmt_v3_lock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -457,7 +457,7 @@ gd_syncop_mgmt_v3_unlock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -557,7 +557,7 @@ _gd_syncop_mgmt_lock_cbk (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -656,7 +656,7 @@ _gd_syncop_mgmt_unlock_cbk (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -753,7 +753,7 @@ _gd_syncop_stage_op_cbk (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -895,7 +895,7 @@ _gd_syncop_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
         args->op_errno = EINVAL;
 
         if (-1 == req->rpc_status) {
-                args->op_errno = ENOTCONN;
+                args->op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -962,7 +962,7 @@ gd_syncop_mgmt_brick_op (struct rpc_clnt *rpc, glusterd_pending_node_t *pnode,
 
         this = THIS;
         args.op_ret = -1;
-        args.op_errno = ENOTCONN;
+        args.op_errno = GF_ERROR_CODE_NOTCONN;
 
         if ((pnode->type == GD_NODE_NFS) ||
             (pnode->type == GD_NODE_QUOTAD) || (pnode->type == GD_NODE_SCRUB) ||
@@ -1018,7 +1018,7 @@ gd_syncop_mgmt_brick_op (struct rpc_clnt *rpc, glusterd_pending_node_t *pnode,
         }
 
         if (req->op == GLUSTERD_BRICK_TERMINATE) {
-                if (args.op_ret && (args.op_errno == ENOTCONN)) {
+                if (args.op_ret && (args.op_errno == GF_ERROR_CODE_NOTCONN)) {
                         /*
                          * This is actually OK.  It happens when the target
                          * brick process exits and we saw the closed connection
@@ -1069,7 +1069,7 @@ _gd_syncop_commit_op_cbk (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 

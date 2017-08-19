@@ -919,7 +919,7 @@ ec_delete_stale_name (dict_t *gfid_db, char *key, data_t *d, void *data)
                  * file is recoverable, so don't delete it*/
 
                 /* Please note that the lookup call above could fail with
-                 * ENOTCONN on all subvoumes and still this branch will be
+                 * GF_ERROR_CODE_NOTCONN on all subvoumes and still this branch will be
                  * true, but in those cases conservatively we decide to not
                  * delete the file until we are sure*/
                 ret = 0;

@@ -605,7 +605,7 @@ dht_access_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         if (local->call_cnt != 1)
                 goto out;
-        if ((op_ret == -1) && ((op_errno == ENOTCONN) ||
+        if ((op_ret == -1) && ((op_errno == GF_ERROR_CODE_NOTCONN) ||
                 dht_inode_missing(op_errno)) &&
                 IA_ISDIR(local->loc.inode->ia_type)) {
                 subvol = dht_subvol_next_available (this, prev);

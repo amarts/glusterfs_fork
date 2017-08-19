@@ -149,7 +149,7 @@ quiesce_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_lookup_stub (frame, default_lookup_resume,
                                         &local->loc, local->dict);
@@ -181,7 +181,7 @@ quiesce_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_stat_stub (frame, default_stat_resume,
                                       &local->loc, xdata);
@@ -211,7 +211,7 @@ quiesce_access_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_access_stub (frame, default_access_resume,
                                         &local->loc, local->flag, xdata);
@@ -241,7 +241,7 @@ quiesce_readlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_readlink_stub (frame, default_readlink_resume,
                                           &local->loc, local->size, xdata);
@@ -271,7 +271,7 @@ quiesce_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_open_stub (frame, default_open_resume,
                                       &local->loc, local->flag, local->fd,
@@ -303,7 +303,7 @@ quiesce_readv_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_readv_stub (frame, default_readv_resume,
                                        local->fd, local->size, local->offset,
@@ -335,7 +335,7 @@ quiesce_flush_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_flush_stub (frame, default_flush_resume,
                                        local->fd, xdata);
@@ -367,7 +367,7 @@ quiesce_fsync_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fsync_stub (frame, default_fsync_resume,
                                        local->fd, local->flag, xdata);
@@ -397,7 +397,7 @@ quiesce_fstat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fstat_stub (frame, default_fstat_resume,
                                        local->fd, xdata);
@@ -427,7 +427,7 @@ quiesce_opendir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_opendir_stub (frame, default_opendir_resume,
                                          &local->loc, local->fd, xdata);
@@ -457,7 +457,7 @@ quiesce_fsyncdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fsyncdir_stub (frame, default_fsyncdir_resume,
                                           local->fd, local->flag, xdata);
@@ -486,7 +486,7 @@ quiesce_statfs_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_statfs_stub (frame, default_statfs_resume,
                                         &local->loc, xdata);
@@ -516,7 +516,7 @@ quiesce_fgetxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fgetxattr_stub (frame, default_fgetxattr_resume,
                                            local->fd, local->name, xdata);
@@ -547,7 +547,7 @@ quiesce_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_getxattr_stub (frame, default_getxattr_resume,
                                           &local->loc, local->name, xdata);
@@ -579,7 +579,7 @@ quiesce_rchecksum_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_rchecksum_stub (frame, default_rchecksum_resume,
                                            local->fd, local->offset, local->flag, xdata);
@@ -611,7 +611,7 @@ quiesce_readdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_readdir_stub (frame, default_readdir_resume,
                                          local->fd, local->size, local->offset, xdata);
@@ -642,7 +642,7 @@ quiesce_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_readdirp_stub (frame, default_readdirp_resume,
                                           local->fd, local->size, local->offset,
@@ -680,7 +680,7 @@ quiesce_writev_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_writev_stub (frame, default_writev_resume,
                                         local->fd, local->vector, local->flag,
@@ -715,7 +715,7 @@ quiesce_xattrop_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_xattrop_stub (frame, default_xattrop_resume,
                                          &local->loc, local->xattrop_flags,
@@ -749,7 +749,7 @@ quiesce_fxattrop_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fxattrop_stub (frame, default_fxattrop_resume,
                                           local->fd, local->xattrop_flags,
@@ -783,7 +783,7 @@ quiesce_lk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_lk_stub (frame, default_lk_resume,
                                     local->fd, local->flag, &local->flock, xdata);
@@ -816,7 +816,7 @@ quiesce_inodelk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_inodelk_stub (frame, default_inodelk_resume,
                                          local->volname, &local->loc,
@@ -850,7 +850,7 @@ quiesce_finodelk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_finodelk_stub (frame, default_finodelk_resume,
                                          local->volname, local->fd,
@@ -883,7 +883,7 @@ quiesce_entrylk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_entrylk_stub (frame, default_entrylk_resume,
                                          local->volname, &local->loc,
@@ -916,7 +916,7 @@ quiesce_fentrylk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fentrylk_stub (frame, default_fentrylk_resume,
                                           local->volname, local->fd,
@@ -950,7 +950,7 @@ quiesce_setattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         frame->local = NULL;
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_setattr_stub (frame, default_setattr_resume,
                                          &local->loc, &local->stbuf, local->flag, xdata);
@@ -986,7 +986,7 @@ quiesce_fsetattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         frame->local = NULL;
 
-        if ((op_ret == -1) && (op_errno == ENOTCONN)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTCONN)) {
                 /* Re-transmit (by putting in the queue) */
                 stub = fop_fsetattr_stub (frame, default_fsetattr_resume,
                                           local->fd, &local->stbuf, local->flag, xdata);

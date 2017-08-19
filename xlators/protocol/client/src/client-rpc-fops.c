@@ -140,7 +140,7 @@ client3_3_symlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_symlink_rsp);
@@ -207,7 +207,7 @@ client3_3_mknod_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_mknod_rsp);
@@ -269,7 +269,7 @@ client3_3_mkdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_mkdir_rsp);
@@ -402,7 +402,7 @@ client3_3_open_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_open_rsp);
@@ -464,7 +464,7 @@ client3_3_stat_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_stat_rsp);
@@ -523,7 +523,7 @@ client3_3_readlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_readlink_rsp);
@@ -586,7 +586,7 @@ client3_3_unlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_unlink_rsp);
@@ -646,7 +646,7 @@ client3_3_rmdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_rmdir_rsp);
@@ -702,7 +702,7 @@ client3_3_truncate_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_truncate_rsp);
@@ -755,7 +755,7 @@ client3_3_statfs_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_statfs_rsp);
@@ -809,7 +809,7 @@ client3_3_writev_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -865,7 +865,7 @@ client3_3_flush_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -926,7 +926,7 @@ client3_3_fsync_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -980,7 +980,7 @@ client3_3_setxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1041,7 +1041,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1116,7 +1116,7 @@ client3_3_fgetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_fgetxattr_rsp);
@@ -1180,7 +1180,7 @@ client3_3_removexattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1235,7 +1235,7 @@ client3_3_fremovexattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1284,7 +1284,7 @@ client3_3_fsyncdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1333,7 +1333,7 @@ client3_3_access_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1385,7 +1385,7 @@ client3_3_ftruncate_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_ftruncate_rsp);
@@ -1437,7 +1437,7 @@ client3_3_fstat_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_fstat_rsp);
@@ -1487,7 +1487,7 @@ client3_3_inodelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1536,7 +1536,7 @@ client3_3_finodelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1587,7 +1587,7 @@ client3_3_entrylk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1636,7 +1636,7 @@ client3_3_fentrylk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1691,7 +1691,7 @@ client3_3_xattrop_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_xattrop_rsp);
@@ -1754,7 +1754,7 @@ client3_3_fxattrop_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1817,7 +1817,7 @@ client3_3_fsetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gf_common_rsp);
@@ -1873,7 +1873,7 @@ client3_3_fsetattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_fsetattr_rsp);
@@ -1924,7 +1924,7 @@ client3_3_fallocate_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_fallocate_rsp);
@@ -1981,7 +1981,7 @@ client3_3_discard_cbk(struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic(*iov, &rsp, (xdrproc_t) xdr_gfs3_discard_rsp);
@@ -2032,7 +2032,7 @@ client3_3_zerofill_cbk(struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic(*iov, &rsp, (xdrproc_t) xdr_gfs3_zerofill_rsp);
@@ -2080,7 +2080,7 @@ client3_3_ipc_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic(*iov, &rsp, (xdrproc_t) xdr_gfs3_ipc_rsp);
@@ -2129,7 +2129,7 @@ client3_3_seek_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
         ret = xdr_to_generic(*iov, &rsp, (xdrproc_t) xdr_gfs3_seek_rsp);
@@ -2181,7 +2181,7 @@ client3_3_setattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2240,7 +2240,7 @@ client3_3_create_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2307,7 +2307,7 @@ client3_3_rchecksum_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2368,7 +2368,7 @@ client3_3_lease_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, ENOTCONN,
                         PC_MSG_REMOTE_OP_FAILED, "Lease fop failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2419,7 +2419,7 @@ client3_3_lk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2495,7 +2495,7 @@ client3_3_readdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2556,7 +2556,7 @@ client3_3_readdirp_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2614,7 +2614,7 @@ client3_3_rename_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2676,7 +2676,7 @@ client3_3_link_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2735,7 +2735,7 @@ client3_3_opendir_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2809,7 +2809,7 @@ client3_3_lookup_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2910,7 +2910,7 @@ client3_3_readv_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -2986,7 +2986,7 @@ client3_3_getactivelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -3047,7 +3047,7 @@ client3_3_setactivelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -3104,7 +3104,7 @@ client3_3_compound_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 

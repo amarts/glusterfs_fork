@@ -233,7 +233,7 @@ gf_history_changelog_scan ()
         if (!jnl)
                 goto out;
         if (JNL_IS_API_DISCONNECTED (jnl)) {
-                errno = ENOTCONN;
+                errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 

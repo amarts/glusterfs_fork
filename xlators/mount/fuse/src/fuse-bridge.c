@@ -5528,7 +5528,7 @@ init (xlator_t *this_xl)
                         gf_log (this_xl->name, GF_LOG_ERROR,
                                 "%s %s does not exist",
                                 ZR_MOUNTPOINT_OPT, value_string);
-                } else if (errno == ENOTCONN) {
+                } else if (errno == GF_ERROR_CODE_NOTCONN) {
                         gf_log (this_xl->name, GF_LOG_ERROR,
                                 "Mountpoint %s seems to have a stale "
                                 "mount, run 'umount %s' and try again.",

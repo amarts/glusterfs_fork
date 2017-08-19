@@ -2367,7 +2367,7 @@ void __ec_manager(ec_fop_data_t * fop, int32_t error)
 
         if (!ec_must_wind (fop)) {
                 if (ec->xl_up_count < ec->fragments) {
-                    error = ENOTCONN;
+                    error = GF_ERROR_CODE_NOTCONN;
                 }
         }
 

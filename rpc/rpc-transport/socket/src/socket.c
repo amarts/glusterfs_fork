@@ -38,7 +38,7 @@
 #include <errno.h>
 #include <rpc/xdr.h>
 #include <sys/ioctl.h>
-#define GF_LOG_ERRNO(errno) ((errno == ENOTCONN) ? GF_LOG_DEBUG : GF_LOG_ERROR)
+#define GF_LOG_ERRNO(errno) ((errno == GF_ERROR_CODE_NOTCONN) ? GF_LOG_DEBUG : GF_LOG_ERROR)
 #define SA(ptr) ((struct sockaddr *)ptr)
 
 #define SSL_ENABLED_OPT     "transport.socket.ssl-enabled"
@@ -576,7 +576,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
                         gf_log (this->name, GF_LOG_DEBUG,
                                 "EOF from peer %s", this->peerinfo.identifier);
                         opcount = -1;
-                        errno = ENOTCONN;
+                        errno = GF_ERROR_CODE_NOTCONN;
                         break;
                 }
                 if (ret == -1) {
@@ -2592,7 +2592,7 @@ socket_poller (void *ctx)
 				/* Suppress errors while making progress. */
 				pfd[1].revents &= ~POLL_MASK_ERROR;
 			}
-			else if (errno == ENOTCONN) {
+			else if (errno == GF_ERROR_CODE_NOTCONN) {
 				ret = 0;
 			}
                         if (priv->ot_state == OT_PLEASE_DIE) {
@@ -2608,7 +2608,7 @@ socket_poller (void *ctx)
 				/* Suppress errors while making progress. */
 				pfd[1].revents &= ~POLL_MASK_ERROR;
 			}
-			else if (errno == ENOTCONN) {
+			else if (errno == GF_ERROR_CODE_NOTCONN) {
 				ret = 0;
 			}
                         if (priv->ot_state == OT_PLEASE_DIE) {
@@ -3308,7 +3308,7 @@ socket_connect (rpc_transport_t *this, int port)
                 if (priv->use_ssl && !priv->own_thread) {
                         cname = ssl_setup_connection(this,0);
                         if (!cname) {
-                                errno = ENOTCONN;
+                                errno = GF_ERROR_CODE_NOTCONN;
                                 ret = -1;
                                 gf_log(this->name,GF_LOG_ERROR,
                                        "client setup failed");

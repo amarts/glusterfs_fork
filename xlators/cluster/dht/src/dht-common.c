@@ -1012,7 +1012,7 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 if (op_ret == -1) {
                         local->op_errno = op_errno;
 
-                        if ((op_errno != ENOTCONN)
+                        if ((op_errno != GF_ERROR_CODE_NOTCONN)
                             && (op_errno != GF_ERROR_CODE_NOENT)
                             && (op_errno != GF_ERROR_CODE_STALE)) {
                                 gf_msg (this->name, GF_LOG_INFO, op_errno,
@@ -2129,7 +2129,7 @@ dht_lookup_linkfile_cbk (call_frame_t *frame, void *cookie,
                 removed, which can take away the namespace, and subvol is
                 anyways down. */
 
-                if (op_errno != ENOTCONN)
+                if (op_errno != GF_ERROR_CODE_NOTCONN)
                         goto err;
                 else
                         goto unwind;
@@ -2360,7 +2360,7 @@ dht_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 }
         }
 
-        if (is_dir || (op_ret == -1 && op_errno == ENOTCONN)) {
+        if (is_dir || (op_ret == -1 && op_errno == GF_ERROR_CODE_NOTCONN)) {
                 dht_lookup_directory (frame, this, &local->loc);
                 return 0;
         }
@@ -2736,7 +2736,7 @@ dht_unlink_linkfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if ((op_ret == -1) && !((op_errno == GF_ERROR_CODE_NOENT) ||
-                                        (op_errno == ENOTCONN))) {
+                                        (op_errno == GF_ERROR_CODE_NOTCONN))) {
                         local->op_errno = op_errno;
                         gf_msg_debug (this->name, op_errno,
                                       "Unlink link: subvolume %s"
@@ -3181,7 +3181,7 @@ dht_vgetxattr_dir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         {
                 this_call_cnt = --local->call_cnt;
                 if (op_ret < 0) {
-                        if (op_errno != ENOTCONN) {
+                        if (op_errno != GF_ERROR_CODE_NOTCONN) {
                                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                                         DHT_MSG_GET_XATTR_FAILED,
                                         "getxattr err for dir");
@@ -3428,7 +3428,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
 
                         /* This is a place holder for every other error
                          * case. I am not sure of how to interpret
-                         * ENOTCONN etc. As of now, choosing to ignore
+                         * GF_ERROR_CODE_NOTCONN etc. As of now, choosing to ignore
                          * down subvol and return a good result(if any)
                          * from other subvol.
                          */
@@ -3633,7 +3633,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
          * below
          * for directory:
          *  wind to all subvolumes and exclude subvolumes which
-         *  return ENOTCONN (in callback)
+         *  return GF_ERROR_CODE_NOTCONN (in callback)
          *
          * NOTE: Don't trust inode here, as that may not be valid
          *       (until inode_link() happens)
@@ -4294,7 +4294,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
 
                         ret = dht_update_commit_hash_for_layout (frame);
                         if (ret) {
-                                op_errno = ENOTCONN;
+                                op_errno = GF_ERROR_CODE_NOTCONN;
                                 goto err;
                         }
                         return ret;
@@ -4307,7 +4307,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                 ret = dht_fix_directory_layout (frame, dht_common_setxattr_cbk,
                                                 layout);
                 if (ret) {
-                        op_errno = ENOTCONN;
+                        op_errno = GF_ERROR_CODE_NOTCONN;
                         goto err;
                 }
                 return ret;
@@ -4326,7 +4326,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                                                         dht_common_setxattr_cbk,
                                                         layout);
                         if (ret) {
-                                op_errno = ENOTCONN;
+                                op_errno = GF_ERROR_CODE_NOTCONN;
                                 goto err;
                         }
                         return ret;
@@ -8955,7 +8955,7 @@ dht_ipc_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         LOCK (&frame->lock);
         {
-                if (op_ret < 0 && op_errno != ENOTCONN) {
+                if (op_ret < 0 && op_errno != GF_ERROR_CODE_NOTCONN) {
                         local->op_errno = op_errno;
                         goto unlock;
                 }

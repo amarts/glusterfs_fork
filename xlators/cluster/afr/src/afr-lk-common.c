@@ -667,7 +667,7 @@ afr_unlock_inodelk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         priv = this->private;
 
-        if (op_ret < 0 && op_errno != ENOTCONN && op_errno != EBADFD) {
+        if (op_ret < 0 && op_errno != GF_ERROR_CODE_NOTCONN && op_errno != EBADFD) {
                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                         AFR_MSG_UNLOCK_FAIL,
                         "path=%s gfid=%s: unlock failed on subvolume %s "

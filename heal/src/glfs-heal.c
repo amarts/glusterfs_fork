@@ -1500,7 +1500,7 @@ main (int argc, char **argv)
         top_subvol = glfs_active_subvol (fs);
         if (!top_subvol) {
                 ret = -errno;
-                if (errno == ENOTCONN) {
+                if (errno == GF_ERROR_CODE_NOTCONN) {
                         gf_asprintf (&op_errstr, "Volume %s is not started "
                                                  "(Or) All the bricks are not "
                                                  "running.", volname);

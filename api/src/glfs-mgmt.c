@@ -822,7 +822,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                         }
                         server = ctx->cmd_args.curr_server;
                         if (server->list.next == &ctx->cmd_args.volfile_servers) {
-                                errno = ENOTCONN;
+                                errno = GF_ERROR_CODE_NOTCONN;
                                 gf_msg ("glfs-mgmt", GF_LOG_INFO, ENOTCONN,
                                         API_MSG_VOLFILE_SERVER_EXHAUST,
                                         "Exhausted all volfile servers");
@@ -844,7 +844,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                                         API_MSG_DICT_SET_FAILED,
                                         "failed to set transport-type: %s",
                                         server->transport);
-                                errno = ENOTCONN;
+                                errno = GF_ERROR_CODE_NOTCONN;
                                 glfs_init_done (fs, -1);
                                 break;
                         }
@@ -859,7 +859,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                                                 API_MSG_DICT_SET_FAILED,
                                                 "failed to set socket.connect-path: %s",
                                                 server->volfile_server);
-                                        errno = ENOTCONN;
+                                        errno = GF_ERROR_CODE_NOTCONN;
                                         glfs_init_done (fs, -1);
                                         break;
                                 }
@@ -879,7 +879,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                                                 API_MSG_DICT_SET_FAILED,
                                                 "failed to set remote-port: %d",
                                                 server->port);
-                                        errno = ENOTCONN;
+                                        errno = GF_ERROR_CODE_NOTCONN;
                                         glfs_init_done (fs, -1);
                                         break;
                                 }
@@ -893,7 +893,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                                                 API_MSG_DICT_SET_FAILED,
                                                 "failed to set remote-host: %s",
                                                 server->volfile_server);
-                                        errno = ENOTCONN;
+                                        errno = GF_ERROR_CODE_NOTCONN;
                                         glfs_init_done (fs, -1);
                                         break;
                                 }

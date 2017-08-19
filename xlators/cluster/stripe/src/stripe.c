@@ -194,7 +194,7 @@ stripe_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         strerror (op_errno));
                         if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
-                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != ENOTCONN)) ||
+                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_NOTCONN)) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -382,7 +382,7 @@ stripe_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         strerror (op_errno));
                         if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
-                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != ENOTCONN)
+                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_NOTCONN)
                               && (op_errno != GF_ERROR_CODE_STALE)) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
@@ -634,7 +634,7 @@ stripe_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -686,7 +686,7 @@ stripe_statfs_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         {
                 callcnt = --local->call_count;
 
-                if (op_ret && (op_errno != ENOTCONN)) {
+                if (op_ret && (op_errno != GF_ERROR_CODE_NOTCONN)) {
                         local->op_errno = op_errno;
                 }
                 if (op_ret == 0) {
@@ -737,7 +737,7 @@ stripe_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                 goto err;
         }
         local->op_ret = -1;
-        local->op_errno = ENOTCONN;
+        local->op_errno = GF_ERROR_CODE_NOTCONN;
         frame->local = local;
 
         local->call_count = priv->child_count;
@@ -846,7 +846,7 @@ stripe_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset, 
         priv = this->private;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1006,7 +1006,7 @@ stripe_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1232,7 +1232,7 @@ stripe_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
 
         /* If any one node is down, don't allow rename */
         if (priv->nodes_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1374,13 +1374,13 @@ stripe_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc,
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
         /* Don't unlink a file if a node is down */
         if (priv->nodes_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1515,7 +1515,7 @@ stripe_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags, dict_t
 
         /* don't delete a directory if any of the subvolume is down */
         if (priv->nodes_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1864,7 +1864,7 @@ stripe_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         priv = this->private;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -1886,7 +1886,7 @@ stripe_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                         goto err;
                 }
                 local->op_ret = -1;
-                local->op_errno = ENOTCONN;
+                local->op_errno = GF_ERROR_CODE_NOTCONN;
                 local->stripe_size = stripe_get_matching_bs (loc->path, priv);
                 frame->local = local;
                 local->inode = inode_ref (loc->inode);
@@ -2088,7 +2088,7 @@ stripe_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -2226,7 +2226,7 @@ stripe_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc, 
 
         /* If any one node is down, don't allow link operation */
         if (priv->nodes_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -2552,7 +2552,7 @@ stripe_create (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 goto err;
         }
         local->op_ret = -1;
-        local->op_errno = ENOTCONN;
+        local->op_errno = GF_ERROR_CODE_NOTCONN;
         local->stripe_size = stripe_get_matching_bs (loc->path, priv);
         frame->local = local;
         local->inode = inode_ref (loc->inode);
@@ -2675,7 +2675,7 @@ stripe_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -2772,7 +2772,7 @@ stripe_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd, dict_
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 
@@ -2948,7 +2948,7 @@ stripe_flush (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
         /* Initialization */
@@ -5167,7 +5167,7 @@ stripe_readdirp (call_frame_t *frame, xlator_t *this,
         trav = this->children;
 
         if (priv->first_child_down) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto err;
         }
 

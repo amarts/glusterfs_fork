@@ -139,7 +139,7 @@ quota_enforcer_lookup_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -180,14 +180,14 @@ quota_enforcer_lookup_cbk (struct rpc_req *req, struct iovec *iov,
 out:
         rsp.op_errno = op_errno;
 
-        /* We need to retry connecting to quotad on ENOTCONN error.
+        /* We need to retry connecting to quotad on GF_ERROR_CODE_NOTCONN error.
          * Suppose if there are two volumes vol1 and vol2,
          * and quota is enabled and limit is set on vol1.
          * Now if IO is happening on vol1 and quota is enabled/disabled
          * on vol2, quotad gets restarted and client will receive
-         * ENOTCONN in the IO path of vol1
+         * GF_ERROR_CODE_NOTCONN in the IO path of vol1
          */
-        if (rsp.op_ret == -1 && rsp.op_errno == ENOTCONN) {
+        if (rsp.op_ret == -1 && rsp.op_errno == GF_ERROR_CODE_NOTCONN) {
                 if (local->quotad_conn_retry >= 12) {
                         priv->quotad_conn_status = 1;
                         gf_log (this->name, GF_LOG_WARNING, "failed to connect "

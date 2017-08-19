@@ -599,7 +599,7 @@ gd_mgmt_v3_lock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -880,7 +880,7 @@ gd_mgmt_v3_pre_validate_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1214,7 +1214,7 @@ gd_mgmt_v3_brick_op_cbk_fn (struct rpc_req *req, struct iovec *iov,
            the command is success)
         */
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1431,7 +1431,7 @@ gd_mgmt_v3_commit_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1715,7 +1715,7 @@ gd_mgmt_v3_post_validate_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -1941,7 +1941,7 @@ gd_mgmt_v3_unlock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         frame->cookie = NULL;
 
         if (-1 == req->rpc_status) {
-                op_errno = ENOTCONN;
+                op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 

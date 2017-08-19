@@ -6008,7 +6008,7 @@ __glusterd_peer_rpc_notify (struct rpc_clnt *rpc, void *mydata,
         xlator_t             *this        = NULL;
         glusterd_conf_t      *conf        = NULL;
         int                   ret         = 0;
-        int32_t               op_errno    = ENOTCONN;
+        int32_t               op_errno    = GF_ERROR_CODE_NOTCONN;
         glusterd_peerinfo_t  *peerinfo    = NULL;
         glusterd_peerctx_t   *peerctx     = NULL;
         gf_boolean_t         quorum_action = _gf_false;

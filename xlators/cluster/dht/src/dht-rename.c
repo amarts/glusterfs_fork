@@ -556,7 +556,7 @@ dht_rename_dir (call_frame_t *frame, xlator_t *this)
                                 DHT_MSG_RENAME_FAILED,
                                 "Rename dir failed: subvolume down (%s)",
                                 conf->subvolumes[i]->name);
-                        op_errno = ENOTCONN;
+                        op_errno = GF_ERROR_CODE_NOTCONN;
                         goto err;
                 }
         }

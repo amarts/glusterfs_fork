@@ -2366,10 +2366,10 @@ gf_defrag_handle_migrate_error (int32_t op_errno, gf_defrag_info_t *defrag)
 {
         /* if errno is not ENOSPC or ENOTCONN, we can still continue
            with rebalance process */
-        if ((op_errno != ENOSPC) && (op_errno != ENOTCONN))
+        if ((op_errno != ENOSPC) && (op_errno != GF_ERROR_CODE_NOTCONN))
                 return 1;
 
-        if (op_errno == ENOTCONN) {
+        if (op_errno == GF_ERROR_CODE_NOTCONN) {
                 /* Most probably mount point went missing (mostly due
                    to a brick down), say rebalance failure to user,
                    let him restart it if everything is fine */
@@ -2837,7 +2837,7 @@ gf_defrag_task (void *opaque)
                                 ret = gf_defrag_migrate_single_file
                                                         ((void *)iterator);
 
-                                /*Critical errors: ENOTCONN and ENOSPACE*/
+                                /*Critical errors: GF_ERROR_CODE_NOTCONN and ENOSPACE*/
                                 if (ret) {
                                         dht_set_global_defrag_error
                                                          (defrag, ret);

@@ -60,7 +60,7 @@ client3_getspec_cbk (struct rpc_req *req, struct iovec *iov, int count,
                         PC_MSG_RPC_STATUS_ERROR, "received RPC status error, "
                         "returning ENOTCONN");
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -706,7 +706,7 @@ client3_3_reopen_cbk (struct rpc_req *req, struct iovec *iov, int count,
                         PC_MSG_RPC_STATUS_ERROR, "received RPC status error, "
                         "returning ENOTCONN");
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
@@ -795,7 +795,7 @@ client3_3_reopendir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                         PC_MSG_RPC_STATUS_ERROR, "received RPC status error, "
                         "returning ENOTCONN");
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOTCONN;
+                rsp.op_errno = GF_ERROR_CODE_NOTCONN;
                 goto out;
         }
 
