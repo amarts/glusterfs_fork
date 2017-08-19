@@ -1336,7 +1336,7 @@ dht_selfheal_dir_mkdir_lookup_done (call_frame_t *frame, xlator_t *this)
 
         cnt = layout->cnt;
         for (i = 0; i < cnt; i++) {
-                if (layout->list[i].err == ESTALE ||
+                if (layout->list[i].err == GF_ERROR_CODE_STALE ||
                     layout->list[i].err == ENOENT ||
                     local->selfheal.force_mkdir) {
                         gf_msg_debug (this->name, 0,
@@ -1390,7 +1390,7 @@ dht_selfheal_dir_mkdir_lookup_cbk (call_frame_t *frame, void *cookie,
         LOCK (&frame->lock);
         {
                 if ((op_ret < 0) &&
-                    (op_errno == ENOENT || op_errno == ESTALE)) {
+                    (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)) {
                         local->selfheal.hole_cnt = !local->selfheal.hole_cnt ? 1
                                                 : local->selfheal.hole_cnt + 1;
                 }
@@ -1412,7 +1412,7 @@ dht_selfheal_dir_mkdir_lookup_cbk (call_frame_t *frame, void *cookie,
                 } else {
                         for (i = 0; i < layout->cnt; i++) {
                                 if (layout->list[i].err == ENOENT ||
-                                    layout->list[i].err == ESTALE ||
+                                    layout->list[i].err == GF_ERROR_CODE_STALE ||
                                     local->selfheal.force_mkdir)
                                         missing_dirs++;
                         }

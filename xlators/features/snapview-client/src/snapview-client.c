@@ -277,20 +277,20 @@ gf_svc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (op_ret) {
                 if (subvolume == FIRST_CHILD (this)) {
                         gf_log (this->name,
-                                (op_errno == ENOENT || op_errno == ESTALE)
+                                (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)
                                 ? GF_LOG_DEBUG:GF_LOG_ERROR,
                                 "Lookup failed on normal graph with error %s",
                                 strerror (op_errno));
                 } else {
                         gf_log (this->name,
-                                (op_errno == ENOENT || op_errno == ESTALE)
+                                (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)
                                 ? GF_LOG_DEBUG:GF_LOG_ERROR,
                                 "Lookup failed on snapview graph with error %s",
                                 strerror (op_errno));
                         goto out;
                 }
 
-                if ((op_errno == ENOENT || op_errno == ESTALE) &&
+                if ((op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE) &&
                     !gf_uuid_is_null (local->loc.gfid)) {
                         if (inode != NULL)
                                 ret = svc_inode_ctx_get (this, inode,
@@ -1662,7 +1662,7 @@ gf_svc_readdirp_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
 
         if (op_ret) {
-                if (op_errno == ESTALE && !local->revalidate) {
+                if (op_errno == GF_ERROR_CODE_STALE && !local->revalidate) {
                         local->revalidate = 1;
                         ret = gf_svc_special_dir_revalidate_lookup (frame,
                                                                     this,

@@ -172,7 +172,7 @@ posix_make_ancestryfromgfid (xlator_t *this, char *path, int pathsize,
                         if (len < 0) {
                                 *op_errno = errno;
                                 gf_msg (this->name, (errno == ENOENT ||
-                                                      errno == ESTALE)
+                                                      errno == GF_ERROR_CODE_STALE)
                                         ? GF_LOG_DEBUG:GF_LOG_ERROR, errno,
                                         P_MSG_READLINK_FAILED, "could not read"
                                         " the link from the gfid handle %s ",

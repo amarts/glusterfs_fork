@@ -2230,7 +2230,7 @@ retrynew:
 	ret = syncop_rename (subvol, &oldloc, &newloc, NULL, NULL);
         DECODE_SYNCOP_ERR (ret);
 
-	if (ret == -1 && errno == ESTALE) {
+	if (ret == -1 && errno == GF_ERROR_CODE_STALE) {
 		if (reval < DEFAULT_REVAL_COUNT) {
 			reval++;
 			loc_wipe (&oldloc);
@@ -2314,7 +2314,7 @@ retrynew:
 	ret = syncop_link (subvol, &oldloc, &newloc, &newiatt, NULL, NULL);
         DECODE_SYNCOP_ERR (ret);
 
-	if (ret == -1 && errno == ESTALE) {
+	if (ret == -1 && errno == GF_ERROR_CODE_STALE) {
 		loc_wipe (&oldloc);
 		loc_wipe (&newloc);
 		if (reval--)

@@ -1002,7 +1002,7 @@ err:
 }
 
 
-/* TODO: for 'lk()' call, we need some other special error, may be ESTALE to
+/* TODO: for 'lk()' call, we need some other special error, may be GF_ERROR_CODE_STALE to
    indicate that lock migration happened on the fd, so we can consider it as
    phase 2 of migration */
 int

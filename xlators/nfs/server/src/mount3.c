@@ -1124,7 +1124,7 @@ mnt3_resolve_subdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         mres = frame->local;
         ms = mres->mstate;
         mntxl = (xlator_t *)cookie;
-        if (op_ret == -1 && op_errno == ESTALE) {
+        if (op_ret == -1 && op_errno == GF_ERROR_CODE_STALE) {
                 /* Nuke inode from cache and try the LOOKUP
                  * request again. */
                 return __mnt3_fresh_lookup (mres);

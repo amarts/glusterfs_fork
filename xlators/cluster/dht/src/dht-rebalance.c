@@ -375,9 +375,9 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
 
         ret = syncop_lookup (this, loc, &stbuf, NULL, dict, &xattr_rsp);
         if (ret) {
-                /*Ignore ENOENT and ESTALE as file might have been
+                /*Ignore ENOENT and GF_ERROR_CODE_STALE as file might have been
                   migrated already*/
-                if (-ret == ENOENT || -ret == ESTALE) {
+                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                         ret = -2;
                         goto out;
                 }
@@ -1939,7 +1939,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                         }
 
                         ret = syncop_setxattr (old_target, loc, dict, 0, NULL, NULL);
-                        if (ret && -ret != ESTALE && -ret != ENOENT) {
+                        if (ret && -ret != GF_ERROR_CODE_STALE && -ret != ENOENT) {
                                 gf_msg (this->name, GF_LOG_ERROR, -ret,
                                         DHT_MSG_MIGRATE_FILE_FAILED,
                                         "failed to set xattr on %s in %s",
@@ -1947,8 +1947,8 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 *fop_errno = -ret;
                                 ret = -1;
                                 goto out;
-                        } else if (-ret == ESTALE || -ret == ENOENT) {
-                               /* The failure ESTALE indicates that the linkto
+                        } else if (-ret == GF_ERROR_CODE_STALE || -ret == ENOENT) {
+                               /* The failure GF_ERROR_CODE_STALE indicates that the linkto
                                 * file on the hashed subvol might have been deleted.
                                 * In this case will create a linkto file with new target
                                 * as linkto xattr value*/
@@ -1965,7 +1965,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 ret = syncop_create (old_target, loc, O_RDWR,
                                                      DHT_LINKFILE_MODE, linkto_fd,
                                                      NULL, dict, NULL);
-                                if (ret != 0 && -ret != EEXIST && -ret != ESTALE) {
+                                if (ret != 0 && -ret != EEXIST && -ret != GF_ERROR_CODE_STALE) {
                                         *fop_errno = -ret;
                                         ret = -1;
                                         gf_msg (this->name, GF_LOG_ERROR, -ret,
@@ -3564,7 +3564,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         goto out;
                 }
 
-                if (-ret == ENOENT || -ret == ESTALE) {
+                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                 DHT_MSG_DIR_LOOKUP_FAILED,
                                 "Dir:%s renamed or removed. Skipping",
@@ -3587,7 +3587,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                                              &perrno);
 
                 if (ret && (ret != 2)) {
-                        if (perrno == ENOENT || perrno == ESTALE) {
+                        if (perrno == ENOENT || perrno == GF_ERROR_CODE_STALE) {
                                 ret = 0;
                                 goto out;
                         } else {
@@ -3621,7 +3621,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
 
         ret = syncop_opendir (this, loc, fd, NULL, NULL);
         if (ret) {
-                if (-ret == ENOENT || -ret == ESTALE) {
+                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                         ret = 0;
                         goto out;
                 }
@@ -3640,7 +3640,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
         {
 
                 if (ret < 0) {
-                        if (-ret == ENOENT || -ret == ESTALE) {
+                        if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                                 ret = 0;
                                 goto out;
                         }
@@ -3717,7 +3717,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
 
                         /*In case the gfid stored in the inode by inode_link
                          * and the gfid obtained in the lookup differs, then
-                         * client3_3_lookup_cbk will return ESTALE and proper
+                         * client3_3_lookup_cbk will return GF_ERROR_CODE_STALE and proper
                          * error will be captured
                          */
 
@@ -3741,7 +3741,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         ret = syncop_lookup (this, &entry_loc, &iatt, NULL,
                                              NULL, NULL);
                         if (ret) {
-                                if (-ret == ENOENT || -ret == ESTALE) {
+                                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                                 DHT_MSG_DIR_LOOKUP_FAILED,
                                                 "Dir:%s renamed or removed. "
@@ -3769,7 +3769,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         ret = syncop_setxattr (this, &entry_loc, fix_layout,
                                                0, NULL, NULL);
                         if (ret) {
-                                if (-ret == ENOENT || -ret == ESTALE) {
+                                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
                                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                                 DHT_MSG_LAYOUT_FIX_FAILED,
                                                 "Setxattr failed. Dir %s "

@@ -520,7 +520,7 @@ dht_discover_complete (xlator_t *this, call_frame_t *discover_frame)
                        if (!source && !layout->list[i].err)
                                 source = layout->list[i].xlator;
                         if (layout->list[i].err == ENOENT ||
-                            layout->list[i].err == ESTALE) {
+                            layout->list[i].err == GF_ERROR_CODE_STALE) {
                                 heal_path = 1;
                         }
 
@@ -1014,7 +1014,7 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
                         if ((op_errno != ENOTCONN)
                             && (op_errno != ENOENT)
-                            && (op_errno != ESTALE)) {
+                            && (op_errno != GF_ERROR_CODE_STALE)) {
                                 gf_msg (this->name, GF_LOG_INFO, op_errno,
                                         DHT_MSG_REVALIDATE_CBK_INFO,
                                         "Revalidate: subvolume %s for %s "
@@ -1022,10 +1022,10 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         prev->name, local->loc.path,
                                         gfid);
                         }
-                        if (op_errno == ESTALE) {
-                                /* propagate the ESTALE to parent.
+                        if (op_errno == GF_ERROR_CODE_STALE) {
+                                /* propagate the GF_ERROR_CODE_STALE to parent.
                                  * setting local->return_estale would send
-                                 * ESTALE to parent. */
+                                 * GF_ERROR_CODE_STALE to parent. */
                                 local->return_estale = 1;
                         }
 
@@ -1230,7 +1230,7 @@ cont:
                  * some reason layout is not present on it, then local->stbuf
                  * will be EINVAL. This is an indication that the subvols
                  * active in the cluster do not have layouts on disk.
-                 * Unwind with ESTALE to trigger a fresh lookup */
+                 * Unwind with GF_ERROR_CODE_STALE to trigger a fresh lookup */
                 if (is_dir && local->stbuf.ia_type == IA_INVAL) {
                         local->op_ret = -1;
                         local->op_errno = ESTALE;
@@ -7759,7 +7759,7 @@ dht_rmdir_hashed_subvol_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         local->op_ret   = -1;
                         if (conf->subvolume_cnt != 1) {
                                 if (op_errno != ENOENT && op_errno != EACCES
-                                    && op_errno != ESTALE) {
+                                    && op_errno != GF_ERROR_CODE_STALE) {
                                         local->need_selfheal = 1;
                                 }
                         }
@@ -7872,7 +7872,7 @@ dht_rmdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if (op_ret == -1) {
-                        if ((op_errno != ENOENT) && (op_errno != ESTALE)) {
+                        if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
                                 local->op_errno = op_errno;
                                 local->op_ret = -1;
 
@@ -8680,7 +8680,7 @@ dht_rmdir_opendir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "opendir on %s for %s failed, "
                               "gfid = %s,",
                               prev->name, local->loc.path, gfid);
-                if ((op_errno != ENOENT) && (op_errno != ESTALE)) {
+                if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
                         local->op_ret = -1;
                         local->op_errno = op_errno;
                 }
@@ -9403,7 +9403,7 @@ dht_log_new_layout_for_dir_selfheal (xlator_t *this, loc_t *loc,
         * This log will help to debug cases where:
         * a) Different processes set different layout of a directory.
         * b) Error captured in lookup, which will be filled in layout->err
-        * (like ENOENT, ESTALE etc)
+        * (like ENOENT, GF_ERROR_CODE_STALE etc)
         */
 
         for (i = 0; i < layout->cnt; i++) {

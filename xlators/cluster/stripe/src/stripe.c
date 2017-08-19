@@ -192,7 +192,7 @@ stripe_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         "%s returned error %s",
                                         prev->this->name,
                                         strerror (op_errno));
-                        if (local->op_errno != ESTALE)
+                        if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
                         if (((op_errno != ENOENT) && (op_errno != ENOTCONN)) ||
                             (prev->this == FIRST_CHILD (this)))
@@ -375,15 +375,15 @@ stripe_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 callcnt = --local->call_count;
 
                 if (op_ret == -1) {
-                        if ((op_errno != ENOENT) && (op_errno != ESTALE))
+                        if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE))
                                 gf_log (this->name, GF_LOG_DEBUG,
                                         "%s returned error %s",
                                         prev->this->name,
                                         strerror (op_errno));
-                        if (local->op_errno != ESTALE)
+                        if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
                         if (((op_errno != ENOENT) && (op_errno != ENOTCONN)
-                              && (op_errno != ESTALE)) ||
+                              && (op_errno != GF_ERROR_CODE_STALE)) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                         if (op_errno == ENOENT)

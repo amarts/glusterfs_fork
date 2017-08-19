@@ -1152,7 +1152,7 @@ client_setvolume_cbk (struct rpc_req *req, struct iovec *iov, int count, void *m
                         auth_fail = _gf_true;
                         op_ret = 0;
                 }
-                if (op_errno == ESTALE) {
+                if (op_errno == GF_ERROR_CODE_STALE) {
                         ret = client_notify_dispatch (this,
                                                       GF_EVENT_VOLFILE_MODIFIED,
                                                       NULL);

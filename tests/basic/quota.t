@@ -112,7 +112,7 @@ TEST ! mv $M0/1/3/ $M0/1/2/3_mvd;
 ## ---------------------------
 
 ## ------------------------------
-## Check if presence of nfs mount results in ESTALE errors for I/O
+## Check if presence of nfs mount results in GF_ERROR_CODE_STALE errors for I/O
 #  on a fuse mount. Note: Quota command internally uses a fuse mount,
 #  though this may change.
 ## -----------------------------

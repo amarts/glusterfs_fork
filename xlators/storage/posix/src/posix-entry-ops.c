@@ -413,7 +413,7 @@ parent:
                                 " parent %s failed", par_path);
 			if (op_errno == ENOENT)
 				/* If parent directory is missing in a lookup,
-				   errno should be ESTALE (bad handle) and not
+				   errno should be GF_ERROR_CODE_STALE (bad handle) and not
 				   ENOENT (missing entry)
 				*/
 				op_errno = ESTALE;

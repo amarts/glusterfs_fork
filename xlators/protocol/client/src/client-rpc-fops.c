@@ -481,7 +481,7 @@ out:
         if (rsp.op_ret == -1) {
                 /* stale filehandles are possible during normal operations, no
                  * need to spam the logs with these */
-                if (rsp.op_errno == ESTALE) {
+                if (rsp.op_errno == GF_ERROR_CODE_STALE) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s",
                                       strerror (gf_error_to_errno
@@ -1064,7 +1064,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 out:
         if (rsp.op_ret == -1) {
                 if ((op_errno == ENOTSUP) || (op_errno == ENODATA) ||
-                     (op_errno == ESTALE) || (op_errno == ENOENT)) {
+                     (op_errno == GF_ERROR_CODE_STALE) || (op_errno == ENOENT)) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s. Path: %s "
                                       "(%s). Key: %s", strerror (op_errno),
@@ -2858,7 +2858,7 @@ out:
         if (rsp.op_ret == -1) {
                 /* any error other than ENOENT */
                 if (!(local->loc.name && rsp.op_errno == ENOENT) &&
-		    !(rsp.op_errno == ESTALE))
+		    !(rsp.op_errno == GF_ERROR_CODE_STALE))
                         gf_msg (this->name, GF_LOG_WARNING, rsp.op_errno,
                                 PC_MSG_REMOTE_OP_FAILED, "remote operation "
                                 "failed. Path: %s (%s)",

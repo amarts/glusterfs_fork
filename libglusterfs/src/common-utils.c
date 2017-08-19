@@ -4169,8 +4169,8 @@ gf_backtrace_save (char *buf)
 gf_loglevel_t
 fop_log_level (glusterfs_fop_t fop, int op_errno)
 {
-        /* if gfid doesn't exist ESTALE comes */
-        if (op_errno == ENOENT || op_errno == ESTALE)
+        /* if gfid doesn't exist GF_ERROR_CODE_STALE comes */
+        if (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)
                 return GF_LOG_DEBUG;
 
         if ((fop == GF_FOP_ENTRYLK) ||

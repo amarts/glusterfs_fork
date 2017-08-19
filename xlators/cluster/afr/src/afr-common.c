@@ -2284,7 +2284,7 @@ unwind:
  * others in that they must be given higher priority while
  * returning to the user.
  *
- * The hierarchy is ENODATA > ENOENT > ESTALE > others
+ * The hierarchy is ENODATA > ENOENT > GF_ERROR_CODE_STALE > others
  */
 
 int
@@ -2294,7 +2294,7 @@ afr_higher_errno (int32_t old_errno, int32_t new_errno)
 		return ENODATA;
         if (old_errno == ENOENT || new_errno == ENOENT)
                 return ENOENT;
-	if (old_errno == ESTALE || new_errno == ESTALE)
+	if (old_errno == GF_ERROR_CODE_STALE || new_errno == GF_ERROR_CODE_STALE)
 		return ESTALE;
 
 	return new_errno;
@@ -2633,7 +2633,7 @@ afr_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 	local->replies[child_index].op_errno = op_errno;
         /*
          * On revalidate lookup if the gfid-changed, afr should unwind the fop
-         * with ESTALE so that a fresh lookup will be sent by the top xlator.
+         * with GF_ERROR_CODE_STALE so that a fresh lookup will be sent by the top xlator.
          * So remember it.
          */
         if (xdata && dict_get (xdata, "gfid-changed"))

@@ -213,7 +213,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
         } while (0)
 
 #define GF_SELECT_LOG_LEVEL(_errno)                     \
-        (((_errno == ENOENT) || (_errno == ESTALE))?    \
+        (((_errno == ENOENT) || (_errno == GF_ERROR_CODE_STALE))?    \
          GF_LOG_DEBUG)
 
 #define GET_STATE(this, finh, state)                                       \

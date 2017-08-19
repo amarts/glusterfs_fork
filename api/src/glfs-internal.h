@@ -104,7 +104,7 @@
 #endif
 
 #define ESTALE_RETRY(ret,errno,reval,loc,label) do {	\
-	if (ret == -1 && errno == ESTALE) {	        \
+	if (ret == -1 && errno == GF_ERROR_CODE_STALE) {	        \
 		if (reval < DEFAULT_REVAL_COUNT) {	\
 			reval++;			\
 			loc_wipe (loc);			\

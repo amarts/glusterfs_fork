@@ -522,7 +522,7 @@ dht_check_and_open_fd_on_subvol_task (void *data)
                  * checks to handle it.
                  */
 
-                if ((-ret != ENOENT) && (-ret != ESTALE)) {
+                if ((-ret != ENOENT) && (-ret != GF_ERROR_CODE_STALE)) {
                         local->op_errno = -ret;
                         ret = -1;
                 } else {

@@ -457,7 +457,7 @@ init_compat_errno_arrays ()
         gf_errno_to_error_array[EINPROGRESS] = GF_ERROR_CODE_INPROGRESS;
 
 /* SUN Network File System */
-/*      ESTALE          151     / * Stale NFS file handle */
+/*      GF_ERROR_CODE_STALE          151     / * Stale NFS file handle */
         gf_error_convert_array[GF_ERROR_CODE_STALE].error = ESTALE;
         gf_errno_to_error_array[ESTALE] = GF_ERROR_CODE_STALE;
 
@@ -613,7 +613,7 @@ init_compat_errno_arrays ()
         gf_error_convert_array[GF_ERROR_CODE_DQUOT].error = EDQUOT;
         gf_errno_to_error_array[EDQUOT] = GF_ERROR_CODE_DQUOT;
 
-        /*      ESTALE          70              / * Stale NFS file handle */
+        /*      GF_ERROR_CODE_STALE          70              / * Stale NFS file handle */
         gf_error_convert_array[GF_ERROR_CODE_STALE].error = ESTALE;
         gf_errno_to_error_array[ESTALE] = GF_ERROR_CODE_STALE;
 
@@ -908,7 +908,7 @@ init_compat_errno_arrays ()
         gf_error_convert_array[GF_ERROR_CODE_DQUOT].error = EDQUOT;
         gf_errno_to_error_array[EDQUOT] = GF_ERROR_CODE_DQUOT;
 
-        /*      ESTALE          70              / * Stale NFS file handle */
+        /*      GF_ERROR_CODE_STALE          70              / * Stale NFS file handle */
         gf_error_convert_array[GF_ERROR_CODE_STALE].error = ESTALE;
         gf_errno_to_error_array[ESTALE] = GF_ERROR_CODE_STALE;
 

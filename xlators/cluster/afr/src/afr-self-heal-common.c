@@ -326,7 +326,7 @@ afr_check_stale_error (struct afr_reply *replies, afr_private_t *priv)
 
         for (i = 0; i < priv->child_count; i++) {
                 tmp_errno = replies[i].op_errno;
-                if (tmp_errno == ENOENT || tmp_errno == ESTALE) {
+                if (tmp_errno == ENOENT || tmp_errno == GF_ERROR_CODE_STALE) {
                         op_errno = afr_higher_errno (op_errno, tmp_errno);
                         stale_count++;
                 }

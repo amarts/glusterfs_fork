@@ -191,7 +191,7 @@ ra_fault_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                  * dirty and poisoned by the time we get here, we cancel its
                  * effect so that a subsequent user read doesn't get data that
                  * we know is stale (because we made it stale ourselves).  We
-                 * can't use ESTALE because that has special significance.
+                 * can't use GF_ERROR_CODE_STALE because that has special significance.
                  * ECANCELED has no such special meaning, and is close to what
                  * we're trying to indicate.
                  */

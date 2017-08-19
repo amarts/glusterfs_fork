@@ -747,7 +747,7 @@ afr_selfheal_entry_granular_dirent (xlator_t *subvol, gf_dirent_t *entry,
         afr_granular_esh_args_t *args = data;
 
         /* Look up the actual inode associated with entry. If the lookup returns
-         * ESTALE or ENOENT, then it means we have a stale index. Remove it.
+         * GF_ERROR_CODE_STALE or ENOENT, then it means we have a stale index. Remove it.
          * This is analogous to the check in afr_shd_index_heal() except that
          * here it is achieved through LOOKUP and in afr_shd_index_heal() through
          * a GETXATTR.
