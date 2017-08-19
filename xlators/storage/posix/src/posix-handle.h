@@ -41,7 +41,7 @@
                 op_ret = sys_lgetxattr (path, key, &value, sizeof (value));    \
                 if (op_ret == -1) {                                            \
                         op_errno = errno;                                      \
-                        if (op_errno == ENOATTR) {                             \
+                        if (op_errno == GF_ERROR_CODE_NOATTR) {                             \
                                 value = 1;                                     \
                                 SET_PGFID_XATTR (path, key, value, flags,      \
                                                  op_ret, this, label);         \
@@ -71,7 +71,7 @@
        op_ret = sys_lgetxattr (path, key, &value, sizeof (value));  \
        if (op_ret == -1) {                                              \
                op_errno = errno;                                        \
-               if (op_errno == ENOATTR || op_errno == GF_ERROR_CODE_NODATA) {        \
+               if (op_errno == GF_ERROR_CODE_NOATTR || op_errno == GF_ERROR_CODE_NODATA) {        \
                        value = 1;                                       \
                } else {                                                 \
                        gf_msg (this->name, GF_LOG_WARNING, errno,       \

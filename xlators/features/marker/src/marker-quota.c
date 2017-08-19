@@ -885,7 +885,7 @@ mq_remove_contri (xlator_t *this, loc_t *loc, quota_inode_ctx_t *ctx,
         ret = syncop_removexattr (FIRST_CHILD(this), loc, contri_key, 0, NULL);
         if (ret < 0) {
                 if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE || -ret == GF_ERROR_CODE_NODATA ||
-                    -ret == ENOATTR) {
+                    -ret == GF_ERROR_CODE_NOATTR) {
                         /* Remove contri in done when unlink operation is
                          * performed, so return success on ENOENT/ESTSLE
                          * rename operation removes xattr earlier,

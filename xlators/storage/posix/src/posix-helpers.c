@@ -137,7 +137,7 @@ posix_handle_georep_xattrs (call_frame_t *frame, const char *name,
                 if (fnmatch (georep_xattr[i] , name, FNM_PERIOD) == 0) {
                         ret = -1;
                         if (op_errno)
-                               *op_errno = ENOATTR;
+                               *op_errno = GF_ERROR_CODE_NOATTR;
 
                         gf_msg_debug ("posix", ENOATTR,
                                       "Ignoring the key %s as an internal "
@@ -2247,7 +2247,7 @@ posix_fetch_signature_xattr (char *real_path,
         } else {
                 if (errno == ERANGE)
                         xattrsize = sys_lgetxattr (real_path, key, NULL, 0);
-                if ((errno == ENOATTR) || (errno == GF_ERROR_CODE_NODATA))
+                if ((errno == GF_ERROR_CODE_NOATTR) || (errno == GF_ERROR_CODE_NODATA))
                         return 0;
                 if (xattrsize == -1)
                         goto error_return;
@@ -2286,7 +2286,7 @@ posix_fd_fetch_signature_xattr (int fd,
         ssize_t  xattrsize = 0;
 
         xattrsize = sys_fgetxattr (fd, key, NULL, 0);
-        if ((xattrsize == -1) && ((errno == ENOATTR) || (errno == GF_ERROR_CODE_NODATA)))
+        if ((xattrsize == -1) && ((errno == GF_ERROR_CODE_NOATTR) || (errno == GF_ERROR_CODE_NODATA)))
                 return 0;
         if (xattrsize == -1)
                 goto error_return;

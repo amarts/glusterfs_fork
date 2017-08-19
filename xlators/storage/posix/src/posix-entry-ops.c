@@ -1874,7 +1874,7 @@ posix_unlink (call_frame_t *frame, xlator_t *this,
                                 P_MSG_XATTR_FAILED, "modification of "
                                 "parent gfid xattr failed (path:%s gfid:%s)",
                                 real_path, uuid_utoa (loc->inode->gfid));
-                        if (op_errno != ENOATTR)
+                        if (op_errno != GF_ERROR_CODE_NOATTR)
                             /* Allow unlink if pgfid xattr is not set. */
                             goto out;
                 }
@@ -1886,7 +1886,7 @@ posix_unlink (call_frame_t *frame, xlator_t *this,
                                                        loc->name);
                 if (op_ret < 0) {
                         /* Allow unlink if pgfid xattr is not set. */
-                        if (errno != ENOATTR)
+                        if (errno != GF_ERROR_CODE_NOATTR)
                                 goto out;
                 }
         }

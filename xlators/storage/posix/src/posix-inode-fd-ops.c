@@ -2646,7 +2646,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
 
         if (name && posix_is_gfid2path_xattr (name)) {
                 op_ret = -1;
-                op_errno = ENOATTR;
+                op_errno = GF_ERROR_CODE_NOATTR;
                 goto out;
         }
 
@@ -2818,7 +2818,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
         if (loc->inode && name &&
             (strcmp (name, GFID2PATH_VIRT_XATTR_KEY) == 0)) {
                 if (!priv->gfid2path) {
-                        op_errno = ENOATTR;
+                        op_errno = GF_ERROR_CODE_NOATTR;
                         op_ret = -1;
                         goto out;
                 }
@@ -2908,7 +2908,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
                                                              " brick with 'user_xattr' "
                                                              "flag)");
                                 }
-                                if ((op_errno == ENOATTR) ||
+                                if ((op_errno == GF_ERROR_CODE_NOATTR) ||
                                                        (op_errno == GF_ERROR_CODE_NODATA)) {
                                         gf_msg_debug (this->name, 0,
                                                       "No such attribute:%s for file %s",
@@ -3207,7 +3207,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
                         if (size == -1) {
                                 op_ret = -1;
                                 op_errno = errno;
-                                if (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR) {
+                                if (errno == GF_ERROR_CODE_NODATA || errno == GF_ERROR_CODE_NOATTR) {
                                         gf_msg_debug (this->name, 0, "fgetxattr"
                                                       " failed on key %s (%s)",
                                                       key, strerror (op_errno));
@@ -3522,13 +3522,13 @@ _posix_remove_xattr (dict_t *dict, char *key, data_t *value, void *data)
                 op_ret = sys_fremovexattr (filler->fdnum, key);
 
         if (op_ret == -1) {
-                if (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR)
+                if (errno == GF_ERROR_CODE_NODATA || errno == GF_ERROR_CODE_NOATTR)
                         op_ret = 0;
         }
 
         if (op_ret == -1) {
                 filler->op_errno = errno;
-                if (errno != ENOATTR && errno != GF_ERROR_CODE_NODATA && errno != EPERM) {
+                if (errno != GF_ERROR_CODE_NOATTR && errno != GF_ERROR_CODE_NODATA && errno != EPERM) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_XATTR_FAILED, "removexattr failed on "
                                 "file/dir %s with gfid: %s (for %s)",
@@ -3584,7 +3584,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
 
         if (posix_is_gfid2path_xattr (name)) {
                 op_ret = -1;
-                *op_errno = ENOATTR;
+                *op_errno = GF_ERROR_CODE_NOATTR;
                 goto out;
         }
 
@@ -3629,7 +3629,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
                         op_ret = sys_fremovexattr (_fd, name);
                 if (op_ret == -1) {
                         *op_errno = errno;
-                        if (*op_errno != ENOATTR && *op_errno != GF_ERROR_CODE_NODATA &&
+                        if (*op_errno != GF_ERROR_CODE_NOATTR && *op_errno != GF_ERROR_CODE_NODATA &&
                             *op_errno != EPERM) {
                                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                                         P_MSG_XATTR_FAILED,
@@ -3900,7 +3900,7 @@ _posix_handle_xattr_keyvalue_pair (dict_t *d, char *k, data_t *v,
 
                 op_errno = errno;
                 if ((size == -1) && (op_errno != GF_ERROR_CODE_NODATA) &&
-                    (op_errno != ENOATTR)) {
+                    (op_errno != GF_ERROR_CODE_NOATTR)) {
                         if (op_errno == ENOTSUP) {
                                 GF_LOG_OCCASIONALLY(gf_posix_xattr_enotsup_log,
                                                     this->name, GF_LOG_WARNING,

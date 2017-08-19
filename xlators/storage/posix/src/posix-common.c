@@ -648,7 +648,7 @@ posix_init (xlator_t *this)
                                 goto out;
                         }
                 } else if ((size == -1) &&
-                           (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR)) {
+                           (errno == GF_ERROR_CODE_NODATA || errno == GF_ERROR_CODE_NOATTR)) {
                                 gf_msg (this->name, GF_LOG_ERROR, errno,
                                         P_MSG_VOLUME_ID_ABSENT,
                                         "Extended attribute trusted.glusterfs."
@@ -660,7 +660,7 @@ posix_init (xlator_t *this)
                                 goto out;
 
                 }  else if ((size == -1) && (errno != GF_ERROR_CODE_NODATA) &&
-                            (errno != ENOATTR)) {
+                            (errno != GF_ERROR_CODE_NOATTR)) {
                         /* Wrong 'volume-id' is set, it should be error */
                         gf_event (EVENT_POSIX_BRICK_VERIFICATION_FAILED,
                                 "brick=%s:%s",
@@ -704,7 +704,7 @@ posix_init (xlator_t *this)
                 ret = -1;
                 goto out;
         } else if ((size == -1) && (errno != GF_ERROR_CODE_NODATA) &&
-                   (errno != ENOATTR)) {
+                   (errno != GF_ERROR_CODE_NOATTR)) {
                 /* Wrong 'gfid' is set, it should be error */
                 gf_msg (this->name, GF_LOG_WARNING, errno,
                         P_MSG_GFID_SET_FAILED,

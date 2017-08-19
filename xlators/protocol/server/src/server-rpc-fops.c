@@ -768,7 +768,7 @@ server_removexattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (op_ret == -1) {
                 state = CALL_STATE (frame);
-                if (ENODATA == op_errno || ENOATTR == op_errno)
+                if (ENODATA == op_errno || GF_ERROR_CODE_NOATTR == op_errno)
                         loglevel = GF_LOG_DEBUG;
                 else
                         loglevel = GF_LOG_INFO;

@@ -1533,7 +1533,7 @@ marker_do_rename (call_frame_t *frame, void *cookie, xlator_t *this,
         if (cookie == (void *) _GF_UID_GID_CHANGED)
                 MARKER_RESET_UID_GID (frame, frame->root, local);
 
-        if ((op_ret < 0) && (op_errno != ENOATTR) && (op_errno != GF_ERROR_CODE_NODATA)) {
+        if ((op_ret < 0) && (op_errno != GF_ERROR_CODE_NOATTR) && (op_errno != GF_ERROR_CODE_NODATA)) {
                 local->err = op_errno ? op_errno : EINVAL;
                 gf_log (this->name, GF_LOG_WARNING,
                         "fetching contribution values from %s (gfid:%s) "
