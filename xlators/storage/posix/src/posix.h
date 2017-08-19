@@ -65,7 +65,7 @@
 #define DISK_SPACE_CHECK_AND_GOTO(frame, priv, op_ret, op_errno, out)  do {   \
                if (frame->root->pid >= 0 && priv->disk_space_full) {          \
                         op_ret = -1;                                          \
-                        op_errno = ENOSPC;                                    \
+                        op_errno = GF_ERROR_CODE_NOSPC;                                    \
                         gf_msg_debug ("posix", ENOSPC,                        \
                                       "disk space utilization reached limits" \
                                       " for path %s ",  priv->base_path);     \

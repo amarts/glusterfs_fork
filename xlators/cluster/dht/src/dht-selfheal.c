@@ -1631,7 +1631,7 @@ dht_get_layout_count (xlator_t *this, dht_layout_t *layout, int new_layout)
         if (!count || !new_layout) {
                 for (i = 0; i < layout->cnt; i++) {
                         err = layout->list[i].err;
-                        if (err == ENOSPC) {
+                        if (err == GF_ERROR_CODE_NOSPC) {
                                 layout->list[i].err = -1;
                                 count++;
                         }
@@ -1788,7 +1788,7 @@ dht_fix_layout_of_directory (call_frame_t *frame, loc_t *loc,
         }
 
         for (i = 0; i < new_layout->cnt; i++) {
-		if (layout->list[i].err != ENOSPC)
+		if (layout->list[i].err != GF_ERROR_CODE_NOSPC)
 			new_layout->list[i].err = layout->list[i].err;
 		else
 			new_layout->list[i].err = -1;

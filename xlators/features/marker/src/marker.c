@@ -569,7 +569,7 @@ marker_specific_setxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = (marker_local_t*) frame->local;
 
-        if (op_ret == -1 && op_errno == ENOSPC) {
+        if (op_ret == -1 && op_errno == GF_ERROR_CODE_NOSPC) {
                 marker_error_handler (this, local, op_errno);
                 done = 1;
                 goto out;

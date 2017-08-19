@@ -4871,7 +4871,7 @@ quota_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 	/*
 	 * Note that by using len as the delta we're assuming the range from
 	 * offset to offset+len has not already been allocated. This can result
-	 * in ENOSPC errors attempting to allocate an already allocated range.
+	 * in GF_ERROR_CODE_NOSPC errors attempting to allocate an already allocated range.
 	 */
         local->delta = len;
         local->object_delta = 0;

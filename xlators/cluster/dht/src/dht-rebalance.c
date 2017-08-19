@@ -963,7 +963,7 @@ __dht_check_free_space (xlator_t *this, xlator_t *to, xlator_t *from, loc_t *loc
 
                         /* this is not a 'failure', but we don't want to
                            consider this as 'success' too :-/ */
-                        *fop_errno = ENOSPC;
+                        *fop_errno = GF_ERROR_CODE_NOSPC;
                         ret = -1;
                         goto out;
                 }
@@ -1026,7 +1026,7 @@ find_new_subvol:
                         "bricks", loc->path);
 
                *target_changed = _gf_false;
-                *fop_errno = ENOSPC;
+                *fop_errno = GF_ERROR_CODE_NOSPC;
                 ret = -1;
                 goto out;
         } else {
@@ -2279,7 +2279,7 @@ rebalance_task_completion (int op_ret, call_frame_t *sync_frame, void *data)
                    as we can't preserve the exact errno, lets say there was
                    no space to migrate-data
                 */
-                op_errno = ENOSPC;
+                op_errno = GF_ERROR_CODE_NOSPC;
         } else if (op_ret == 1) {
                 /* migration didn't happen, but is not a failure, let the user
                    understand that he doesn't have permission to migrate the
@@ -2364,9 +2364,9 @@ dht_build_root_loc (inode_t *inode, loc_t *loc)
 int32_t
 gf_defrag_handle_migrate_error (int32_t op_errno, gf_defrag_info_t *defrag)
 {
-        /* if errno is not ENOSPC or ENOTCONN, we can still continue
+        /* if errno is not GF_ERROR_CODE_NOSPC or ENOTCONN, we can still continue
            with rebalance process */
-        if ((op_errno != ENOSPC) && (op_errno != GF_ERROR_CODE_NOTCONN))
+        if ((op_errno != GF_ERROR_CODE_NOSPC) && (op_errno != GF_ERROR_CODE_NOTCONN))
                 return 1;
 
         if (op_errno == GF_ERROR_CODE_NOTCONN) {
@@ -2377,7 +2377,7 @@ gf_defrag_handle_migrate_error (int32_t op_errno, gf_defrag_info_t *defrag)
                 return -1;
         }
 
-        if (op_errno == ENOSPC) {
+        if (op_errno == GF_ERROR_CODE_NOSPC) {
                 /* rebalance process itself failed, may be
                    remote brick went down, or write failed due to
                    disk full etc etc.. */
@@ -2646,7 +2646,7 @@ gf_defrag_migrate_single_file (void *opaque)
         ret = dht_migrate_file (this, &entry_loc, cached_subvol,
                                 hashed_subvol, rebal_type, &fop_errno);
         if (ret < 0) {
-                if (fop_errno == ENOSPC) {
+                if (fop_errno == GF_ERROR_CODE_NOSPC) {
                         gf_msg_debug (this->name, 0, "migrate-data skipped for"
                                       " %s due to space constraints",
                                       entry_loc.path);
