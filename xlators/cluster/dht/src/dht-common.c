@@ -3383,7 +3383,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
 
         LOCK (&frame->lock);
         {
-                if (local->op_errno == ENODATA ||
+                if (local->op_errno == GF_ERROR_CODE_NODATA ||
                     local->op_errno == EOPNOTSUPP) {
                         /* Nothing to do here, we have already found
                          * a subvol which does not have the get_real_filename
@@ -3394,7 +3394,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
 
                 if (op_ret == -1) {
 
-                        if (op_errno == ENODATA || op_errno == EOPNOTSUPP) {
+                        if (op_errno == GF_ERROR_CODE_NODATA || op_errno == EOPNOTSUPP) {
                                 /* This subvol does not have the optimization.
                                  * Better let the user know we don't support it.
                                  * Remove previous results if any.
@@ -3691,7 +3691,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                 }
 
                 if (hashed_subvol == cached_subvol) {
-                        op_errno = ENODATA;
+                        op_errno = GF_ERROR_CODE_NODATA;
                         goto err;
                 }
 

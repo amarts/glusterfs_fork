@@ -243,7 +243,7 @@ afr_selfheal_name_need_heal_check (xlator_t *this, struct afr_reply *replies)
 			continue;
 
                 if ((replies[i].op_ret == -1) &&
-                    (replies[i].op_errno == ENODATA))
+                    (replies[i].op_errno == GF_ERROR_CODE_NODATA))
                         need_heal = _gf_true;
 
 		if (first_idx == -1) {
@@ -683,7 +683,7 @@ afr_selfheal_name_unlocked_inspect (call_frame_t *frame, xlator_t *this,
 			continue;
 
                 if ((replies[i].op_ret == -1) &&
-                    (replies[i].op_errno == ENODATA))
+                    (replies[i].op_errno == GF_ERROR_CODE_NODATA))
                         *need_heal = _gf_true;
 
 		if (first_idx == -1) {

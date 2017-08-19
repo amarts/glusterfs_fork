@@ -771,7 +771,7 @@ bd_get_origin (bd_priv_t *priv, loc_t *loc, fd_t *fd, dict_t *dict)
 
         prop = lvm_lv_get_property (lv, "origin");
         if (!prop.is_valid || !prop.value.string) {
-                ret = ENODATA;
+                ret = GF_ERROR_CODE_NODATA;
                 goto out;
         }
 

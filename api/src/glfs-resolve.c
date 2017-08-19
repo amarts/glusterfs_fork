@@ -27,6 +27,7 @@
 #include "gfapi-messages.h"
 #include "inode.h"
 #include "glfs-internal.h"
+#include "compat-errno.h"
 
 #define graphid_str(subvol) (uuid_utoa((unsigned char *)subvol->graph->graph_uuid))
 int

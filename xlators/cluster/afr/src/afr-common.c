@@ -2284,14 +2284,14 @@ unwind:
  * others in that they must be given higher priority while
  * returning to the user.
  *
- * The hierarchy is ENODATA > GF_ERROR_CODE_NOENT > GF_ERROR_CODE_STALE > others
+ * The hierarchy is GF_ERROR_CODE_NODATA > GF_ERROR_CODE_NOENT > GF_ERROR_CODE_STALE > others
  */
 
 int
 afr_higher_errno (int32_t old_errno, int32_t new_errno)
 {
-	if (old_errno == ENODATA || new_errno == ENODATA)
-		return ENODATA;
+	if (old_errno == GF_ERROR_CODE_NODATA || new_errno == GF_ERROR_CODE_NODATA)
+		return GF_ERROR_CODE_NODATA;
         if (old_errno == GF_ERROR_CODE_NOENT || new_errno == GF_ERROR_CODE_NOENT)
                 return GF_ERROR_CODE_NOENT;
 	if (old_errno == GF_ERROR_CODE_STALE || new_errno == GF_ERROR_CODE_STALE)
@@ -2575,7 +2575,7 @@ afr_lookup_entry_heal (call_frame_t *frame, xlator_t *this)
 			continue;
 
                 if ((replies[i].op_ret == -1) &&
-                    (replies[i].op_errno == ENODATA))
+                    (replies[i].op_errno == GF_ERROR_CODE_NODATA))
                         need_heal = _gf_true;
 
 		if (first == -1) {

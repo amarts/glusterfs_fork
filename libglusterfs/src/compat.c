@@ -75,7 +75,7 @@ solaris_fgetxattr(int fd, const char* key, char *value, size_t size)
                                 LG_MSG_READ_ATTRIBUTE_FAILED, "Couldn't read "
                                 "extended attribute for the file %d", fd);
                 if (errno == GF_ERROR_CODE_NOENT)
-                        errno = ENODATA;
+                        errno = GF_ERROR_CODE_NODATA;
                 return -1;
         }
 
@@ -371,7 +371,7 @@ solaris_removexattr(const char *path, const char* key)
                 close (attrfd);
         } else {
                 if (errno == GF_ERROR_CODE_NOENT)
-                        errno = ENODATA;
+                        errno = GF_ERROR_CODE_NODATA;
                 ret = -1;
         }
 
@@ -412,7 +412,7 @@ solaris_getxattr(const char *path,
                                 LG_MSG_READ_ATTRIBUTE_FAILED, "Couldn't read "
                                 "extended attribute for the file %s", path);
                 if (errno == GF_ERROR_CODE_NOENT)
-                        errno = ENODATA;
+                        errno = GF_ERROR_CODE_NODATA;
                 ret = -1;
         }
         GF_FREE (mapped_path);

@@ -155,7 +155,7 @@ class NormalMixin(object):
                     self.slave.server.set_stime(path, self.uuid, xt)
         if isinstance(xt, int) and xt != ENODATA:
             return xt
-        if xt == ENODATA or xt < self.volmark:
+        if xt == GF_ERROR_CODE_NODATA or xt < self.volmark:
             if opts['create']:
                 xt = _xtime_now()
                 rsc.server.aggregated.set_xtime(path, self.uuid, xt)

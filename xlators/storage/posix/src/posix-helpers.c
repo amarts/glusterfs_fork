@@ -2247,7 +2247,7 @@ posix_fetch_signature_xattr (char *real_path,
         } else {
                 if (errno == ERANGE)
                         xattrsize = sys_lgetxattr (real_path, key, NULL, 0);
-                if ((errno == ENOATTR) || (errno == ENODATA))
+                if ((errno == ENOATTR) || (errno == GF_ERROR_CODE_NODATA))
                         return 0;
                 if (xattrsize == -1)
                         goto error_return;
@@ -2286,7 +2286,7 @@ posix_fd_fetch_signature_xattr (int fd,
         ssize_t  xattrsize = 0;
 
         xattrsize = sys_fgetxattr (fd, key, NULL, 0);
-        if ((xattrsize == -1) && ((errno == ENOATTR) || (errno == ENODATA)))
+        if ((xattrsize == -1) && ((errno == ENOATTR) || (errno == GF_ERROR_CODE_NODATA)))
                 return 0;
         if (xattrsize == -1)
                 goto error_return;

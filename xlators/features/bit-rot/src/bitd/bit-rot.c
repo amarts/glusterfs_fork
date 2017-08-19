@@ -453,7 +453,7 @@ br_object_read_sign (inode_t *linked_inode, fd_t *fd, br_object_t *object,
 static int br_object_sign_softerror (int32_t op_errno)
 {
         return ((op_errno == GF_ERROR_CODE_NOENT) || (op_errno == GF_ERROR_CODE_STALE)
-                || (op_errno == ENODATA));
+                || (op_errno == GF_ERROR_CODE_NODATA));
 }
 
 void
@@ -996,7 +996,7 @@ bitd_oneshot_crawl (xlator_t *subvol,
          * As of now, 2 cases  are possible and handled.
          * 1) GlusterFS is upgraded from a previous version which does not
          *    have any idea about bit-rot and have data in the filesystem.
-         *    In this case syncop_getxattr fails with ENODATA and the object
+         *    In this case syncop_getxattr fails with GF_ERROR_CODE_NODATA and the object
          *    is signed. (In real, when crawler sends lookup, bit-rot-stub
          *    creates the xattrs before returning lookup reply)
          * 2) Bit-rot was not enabled or BitD was dows for some reasons, during
@@ -1024,7 +1024,7 @@ bitd_oneshot_crawl (xlator_t *subvol,
                  * No need to sign the zero byte objects as the signing
                  * happens upon first modification of the object.
                  */
-                if (op_errno == ENODATA && (iatt.ia_size != 0))
+                if (op_errno == GF_ERROR_CODE_NODATA && (iatt.ia_size != 0))
                         need_signing = _gf_true;
                 if (op_errno == EINVAL)
                         gf_msg (this->name, GF_LOG_WARNING, 0,

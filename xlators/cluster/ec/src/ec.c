@@ -864,7 +864,7 @@ ec_gf_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         return 0;
 out:
-        error = ENODATA;
+        error = GF_ERROR_CODE_NODATA;
         STACK_UNWIND_STRICT (getxattr, frame, -1, error, NULL, NULL);
         return 0;
 }
@@ -881,7 +881,7 @@ ec_gf_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                       NULL, fd, name, xdata);
         return 0;
 out:
-        error = ENODATA;
+        error = GF_ERROR_CODE_NODATA;
         STACK_UNWIND_STRICT (fgetxattr, frame, -1, error, NULL, NULL);
         return 0;
 }

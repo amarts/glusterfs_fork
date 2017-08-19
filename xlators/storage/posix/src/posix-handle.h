@@ -71,7 +71,7 @@
        op_ret = sys_lgetxattr (path, key, &value, sizeof (value));  \
        if (op_ret == -1) {                                              \
                op_errno = errno;                                        \
-               if (op_errno == ENOATTR || op_errno == ENODATA) {        \
+               if (op_errno == ENOATTR || op_errno == GF_ERROR_CODE_NODATA) {        \
                        value = 1;                                       \
                } else {                                                 \
                        gf_msg (this->name, GF_LOG_WARNING, errno,       \

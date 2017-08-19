@@ -1028,7 +1028,7 @@ ec_prepare_update_cbk (call_frame_t *frame, void *cookie,
                                                &ctx->config);
                 if (op_errno != 0) {
                     if ((lock->loc.inode->ia_type == IA_IFREG) ||
-                        (op_errno != ENODATA)) {
+                        (op_errno != GF_ERROR_CODE_NODATA)) {
                         gf_msg (this->name, GF_LOG_ERROR, op_errno,
                                 EC_MSG_CONFIG_XATTR_GET_FAIL,
                                 "Unable to get config xattr");

@@ -279,7 +279,7 @@ ssl_do (rpc_transport_t *this, void *buf, size_t len, SSL_trinary_func *func)
 			/* This is what we get when remote disconnects. */
 			gf_log(this->name,GF_LOG_DEBUG,
 			       "syscall error (probably remote disconnect)");
-			errno = ENODATA;
+			errno = GF_ERROR_CODE_NODATA;
 			goto out;
 		default:
 			errno = EIO;
@@ -560,7 +560,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
 
 			if (ret == 0) {
 				gf_log(this->name,GF_LOG_DEBUG,"EOF on socket");
-				errno = ENODATA;
+				errno = GF_ERROR_CODE_NODATA;
 				ret = -1;
 			}
                         if (ret == -1 && errno == EAGAIN) {

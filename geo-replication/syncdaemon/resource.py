@@ -364,7 +364,7 @@ class Server(object):
                                     'trusted.glusterfs.dht.linkto') == '')
         except (IOError, OSError):
             ex = sys.exc_info()[1]
-            if ex.errno in (ENOENT, ENODATA):
+            if ex.errno in (ENOENT, GF_ERROR_CODE_NODATA):
                 return False
             else:
                 raise

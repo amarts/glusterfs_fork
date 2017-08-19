@@ -195,7 +195,7 @@ out:
                 gf_log (this->name, GF_LOG_ERROR, "buf->ia_gfid is null for "
                         "%s", (real_path) ? real_path : "");
                 op_ret = -1;
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
         }
         STACK_UNWIND_STRICT (discover, frame, op_ret, op_errno,
                              (loc) ? loc->inode : NULL, &buf, xattr);
@@ -2841,7 +2841,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
                                              xdata);
                 if (op_ret < 0) {
                         op_ret = -1;
-                        op_errno = ENODATA;
+                        op_errno = GF_ERROR_CODE_NODATA;
                         goto out;
                 }
 
@@ -2909,7 +2909,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
                                                              "flag)");
                                 }
                                 if ((op_errno == ENOATTR) ||
-                                                       (op_errno == ENODATA)) {
+                                                       (op_errno == GF_ERROR_CODE_NODATA)) {
                                         gf_msg_debug (this->name, 0,
                                                       "No such attribute:%s for file %s",
                                                       key, real_path);
@@ -3207,7 +3207,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
                         if (size == -1) {
                                 op_ret = -1;
                                 op_errno = errno;
-                                if (errno == ENODATA || errno == ENOATTR) {
+                                if (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR) {
                                         gf_msg_debug (this->name, 0, "fgetxattr"
                                                       " failed on key %s (%s)",
                                                       key, strerror (op_errno));
@@ -3522,13 +3522,13 @@ _posix_remove_xattr (dict_t *dict, char *key, data_t *value, void *data)
                 op_ret = sys_fremovexattr (filler->fdnum, key);
 
         if (op_ret == -1) {
-                if (errno == ENODATA || errno == ENOATTR)
+                if (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR)
                         op_ret = 0;
         }
 
         if (op_ret == -1) {
                 filler->op_errno = errno;
-                if (errno != ENOATTR && errno != ENODATA && errno != EPERM) {
+                if (errno != ENOATTR && errno != GF_ERROR_CODE_NODATA && errno != EPERM) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_XATTR_FAILED, "removexattr failed on "
                                 "file/dir %s with gfid: %s (for %s)",
@@ -3629,7 +3629,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
                         op_ret = sys_fremovexattr (_fd, name);
                 if (op_ret == -1) {
                         *op_errno = errno;
-                        if (*op_errno != ENOATTR && *op_errno != ENODATA &&
+                        if (*op_errno != ENOATTR && *op_errno != GF_ERROR_CODE_NODATA &&
                             *op_errno != EPERM) {
                                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                                         P_MSG_XATTR_FAILED,
@@ -3899,7 +3899,7 @@ _posix_handle_xattr_keyvalue_pair (dict_t *d, char *k, data_t *v,
                 }
 
                 op_errno = errno;
-                if ((size == -1) && (op_errno != ENODATA) &&
+                if ((size == -1) && (op_errno != GF_ERROR_CODE_NODATA) &&
                     (op_errno != ENOATTR)) {
                         if (op_errno == ENOTSUP) {
                                 GF_LOG_OCCASIONALLY(gf_posix_xattr_enotsup_log,

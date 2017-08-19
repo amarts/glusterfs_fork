@@ -428,7 +428,7 @@ out:
                         "buf->ia_gfid is null for "
                         "%s", (real_path) ? real_path : "");
                 op_ret = -1;
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
         }
 
         if (op_ret == 0)

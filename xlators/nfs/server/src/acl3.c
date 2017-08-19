@@ -280,7 +280,7 @@ acl3_getacl_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         }
         cs = frame->local;
         getaclreply = &cs->args.getaclreply;
-        if ((op_ret < 0) && (op_errno != ENODATA && op_errno != ENOATTR)) {
+        if ((op_ret < 0) && (op_errno != GF_ERROR_CODE_NODATA && op_errno != ENOATTR)) {
                 stat = nfs3_cbk_errno_status (op_ret, op_errno);
                 goto err;
         } else if (!dict) {
@@ -350,7 +350,7 @@ acl3_default_getacl_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         }
         cs = frame->local;
         getaclreply = &cs->args.getaclreply;
-        if ((op_ret < 0) && (op_errno != ENODATA && op_errno != ENOATTR)) {
+        if ((op_ret < 0) && (op_errno != GF_ERROR_CODE_NODATA && op_errno != ENOATTR)) {
                 stat = nfs3_cbk_errno_status (op_ret, op_errno);
                 goto err;
         } else if (!dict) {

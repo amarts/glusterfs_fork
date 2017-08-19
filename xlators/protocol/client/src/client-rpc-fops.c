@@ -1063,7 +1063,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
 out:
         if (rsp.op_ret == -1) {
-                if ((op_errno == ENOTSUP) || (op_errno == ENODATA) ||
+                if ((op_errno == ENOTSUP) || (op_errno == GF_ERROR_CODE_NODATA) ||
                      (op_errno == GF_ERROR_CODE_STALE) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s. Path: %s "
@@ -1137,7 +1137,7 @@ client3_3_fgetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 out:
         if (rsp.op_ret == -1) {
                 if ((op_errno == ENOTSUP) || (op_errno == ERANGE) ||
-                     (op_errno == ENODATA) || (op_errno == GF_ERROR_CODE_NOENT)) {
+                     (op_errno == GF_ERROR_CODE_NODATA) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s",
                                       strerror (op_errno));

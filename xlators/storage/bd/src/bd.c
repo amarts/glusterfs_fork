@@ -1182,7 +1182,7 @@ bd_offload_dest_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         char       *linkto = NULL;
         int         ret    = -1;
 
-        if (op_ret < 0 && op_errno != ENODATA) {
+        if (op_ret < 0 && op_errno != GF_ERROR_CODE_NODATA) {
                 op_errno = EINVAL;
                 goto out;
         }

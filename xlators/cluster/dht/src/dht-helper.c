@@ -1316,7 +1316,7 @@ dht_migration_complete_check_task (void *data)
          * the mode bits can be passed on to the higher layer for appropriate
          * action.
          */
-        if (-ret == ENODATA) {
+        if (-ret == GF_ERROR_CODE_NODATA) {
                 /* This DHT translator is not migrating this file */
 
                 ret = inode_ctx_reset1 (inode, this, &tmp_miginfo);
@@ -1593,7 +1593,7 @@ dht_rebalance_inprogress_task (void *data)
          * action.
          */
 
-        if (-ret == ENODATA) {
+        if (-ret == GF_ERROR_CODE_NODATA) {
                 /* This DHT layer is not migrating this file */
                 ret = inode_ctx_reset1 (inode, this, &tmp_miginfo);
                 if (tmp_miginfo) {

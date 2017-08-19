@@ -648,7 +648,7 @@ posix_init (xlator_t *this)
                                 goto out;
                         }
                 } else if ((size == -1) &&
-                           (errno == ENODATA || errno == ENOATTR)) {
+                           (errno == GF_ERROR_CODE_NODATA || errno == ENOATTR)) {
                                 gf_msg (this->name, GF_LOG_ERROR, errno,
                                         P_MSG_VOLUME_ID_ABSENT,
                                         "Extended attribute trusted.glusterfs."
@@ -659,7 +659,7 @@ posix_init (xlator_t *this)
                                 ret = -1;
                                 goto out;
 
-                }  else if ((size == -1) && (errno != ENODATA) &&
+                }  else if ((size == -1) && (errno != GF_ERROR_CODE_NODATA) &&
                             (errno != ENOATTR)) {
                         /* Wrong 'volume-id' is set, it should be error */
                         gf_event (EVENT_POSIX_BRICK_VERIFICATION_FAILED,
@@ -703,7 +703,7 @@ posix_init (xlator_t *this)
                         dir_data->data);
                 ret = -1;
                 goto out;
-        } else if ((size == -1) && (errno != ENODATA) &&
+        } else if ((size == -1) && (errno != GF_ERROR_CODE_NODATA) &&
                    (errno != ENOATTR)) {
                 /* Wrong 'gfid' is set, it should be error */
                 gf_msg (this->name, GF_LOG_WARNING, errno,
@@ -762,7 +762,7 @@ posix_init (xlator_t *this)
                 /*
                  * At least on NetBSD, the chdir() above uncovers a
                  * race condition which cause file lookup to fail
-                 * with ENODATA for a few seconds. The volume quickly
+                 * with GF_ERROR_CODE_NODATA for a few seconds. The volume quickly
                  * reaches a sane state, but regression tests are fast
                  * enough to choke on it. The reason is obscure (as
                  * often with race conditions), but sleeping here for

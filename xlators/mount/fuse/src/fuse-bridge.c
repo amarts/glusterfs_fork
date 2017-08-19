@@ -644,7 +644,7 @@ fuse_lookup_resume (fuse_state_t *state)
          * Hence try to do a regular lookup
          */
         if ((state->resolve.op_ret == -1)
-            && (state->resolve.op_errno == ENODATA)) {
+            && (state->resolve.op_errno == GF_ERROR_CODE_NODATA)) {
                 state->resolve.op_ret = 0;
         }
 
@@ -3448,7 +3448,7 @@ fuse_xattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 send_fuse_xattr (this, finh, value, ret, state->size);
                                 /* if(ret >...)...else if...else */
                         } else {
-                                send_fuse_err (this, finh, ENODATA);
+                                send_fuse_err (this, finh, GF_ERROR_CODE_NODATA);
                         } /* if(value_data)...else */
                 } else {
                         /* if callback for listxattr */
@@ -3474,7 +3474,7 @@ fuse_xattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 } /* if(state->name)...else */
         } else {
                 /* if failure - no need to check if listxattr or getxattr */
-                if (op_errno != ENODATA && op_errno != ENOATTR) {
+                if (op_errno != GF_ERROR_CODE_NODATA && op_errno != ENOATTR) {
                         if (op_errno == ENOTSUP) {
                                 GF_LOG_OCCASIONALLY (gf_fuse_xattr_enotsup_log,
                                                      "glusterfs-fuse",
@@ -3495,7 +3495,7 @@ fuse_xattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 frame->root->unique,
                                 gf_fop_list[frame->root->op], state->name,
                                 state->loc.path, strerror (op_errno));
-                } /* if(op_errno!= ENODATA)...else */
+                } /* if(op_errno!= GF_ERROR_CODE_NODATA)...else */
 
                 send_fuse_err (this, finh, op_errno);
         } /* if(op_ret>=0)...else */
@@ -3633,7 +3633,7 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         ret = fuse_check_selinux_cap_xattr (priv, name);
         if (ret) {
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
                 goto err;
         }
 

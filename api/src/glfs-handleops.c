@@ -15,6 +15,7 @@
 #include "glfs.h"
 #include "glfs-handles.h"
 #include "gfapi-messages.h"
+#include "compat-errno.h"
 
 int
 glfs_listxattr_process (void *value, size_t size, dict_t *xattr);

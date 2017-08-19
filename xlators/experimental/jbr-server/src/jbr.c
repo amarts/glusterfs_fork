@@ -987,7 +987,7 @@ jbr_get_changelog_dir (xlator_t *this, char **cl_dir_p)
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         J_MSG_INIT_FAIL,
                         "failed to find changelog-dir for %s", cl_xl->name);
-                return ENODATA;
+                return GF_ERROR_CODE_NODATA;
         }
 
         return 0;
@@ -1013,7 +1013,7 @@ jbr_get_terms (call_frame_t *frame, xlator_t *this)
         if (op_errno) {
                 goto err;       /* Error was already logged. */
         }
-        op_errno = ENODATA;     /* Most common error after this. */
+        op_errno = GF_ERROR_CODE_NODATA;     /* Most common error after this. */
 
         fp = sys_opendir (cl_dir);
         if (!fp) {
@@ -1190,7 +1190,7 @@ jbr_open_term (call_frame_t *frame, xlator_t *this, dict_t *xdata)
         if (dict_get_str(xdata, "term", &term) != 0) {
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         J_MSG_NO_DATA, "missing term");
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
                 goto err;
         }
 
@@ -1249,7 +1249,7 @@ jbr_next_entry (call_frame_t *frame, xlator_t *this)
         }
 
         if (priv->term_read >= priv->term_total) {
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
                 goto err;
         }
 

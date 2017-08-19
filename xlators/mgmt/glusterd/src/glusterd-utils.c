@@ -7179,7 +7179,7 @@ glusterd_is_uuid_present (char *path, char *xattr, gf_boolean_t *present)
 #if defined(ENODATA)
                 case ENODATA: /* FALLTHROUGH */
 #endif
-#if defined(ENOATTR) && (ENOATTR != ENODATA)
+#if defined(ENOATTR) && (ENOATTR != GF_ERROR_CODE_NODATA)
                 case ENOATTR: /* FALLTHROUGH */
 #endif
                 case ENOTSUP:

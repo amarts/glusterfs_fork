@@ -816,7 +816,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
                 goto out;
         }
 
-        /* ENODATA is sent if the getxattr is on entry point directory
+        /* GF_ERROR_CODE_NODATA is sent if the getxattr is on entry point directory
            or the inode is SNAP_VIEW_ENTRY_POINT_INODE. Entry point is
            a virtual directory on which setxattr operations are not
            allowed. If getxattr has to be faked as success, then a value
@@ -824,7 +824,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
         */
         if (inode_ctx->type == SNAP_VIEW_ENTRY_POINT_INODE) {
                 op_ret = -1;
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
                 goto out;
         }
         else {

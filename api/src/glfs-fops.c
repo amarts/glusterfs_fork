@@ -3237,7 +3237,7 @@ glfs_getxattr_process (void *value, size_t size, dict_t *xattr,
 
 	data = dict_get (xattr, (char *)name);
 	if (!data) {
-		errno = ENODATA;
+		errno = GF_ERROR_CODE_NODATA;
 		ret = -1;
 		goto out;
 	}

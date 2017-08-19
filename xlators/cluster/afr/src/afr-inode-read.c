@@ -476,7 +476,7 @@ static
 gf_boolean_t
 afr_getxattr_ignorable_errnos (int32_t op_errno)
 {
-        if (op_errno == ENODATA || op_errno == ENOTSUP || op_errno == ERANGE ||
+        if (op_errno == GF_ERROR_CODE_NODATA || op_errno == ENOTSUP || op_errno == ERANGE ||
             op_errno == ENAMETOOLONG)
                 return _gf_true;
 
@@ -1635,7 +1635,7 @@ afr_getxattr (call_frame_t *frame, xlator_t *this,
 
         if (!strncmp (name, AFR_XATTR_PREFIX,
                       strlen (AFR_XATTR_PREFIX))) {
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
                 goto out;
         }
 

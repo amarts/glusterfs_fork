@@ -1613,7 +1613,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (status == BR_VXATTR_STATUS_INVALID)
                 goto delkeys;
 
-        op_errno = ENODATA;
+        op_errno = GF_ERROR_CODE_NODATA;
         if ((status == BR_VXATTR_STATUS_MISSING)
             || (status == BR_VXATTR_STATUS_UNSIGNED))
                 goto delkeys;

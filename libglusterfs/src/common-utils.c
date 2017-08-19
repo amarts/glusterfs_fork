@@ -4188,7 +4188,7 @@ fop_log_level (glusterfs_fop_t fop, int op_errno)
 
         if ((fop == GF_FOP_GETXATTR) ||
             (fop == GF_FOP_FGETXATTR)) {
-                if (op_errno == ENOTSUP || op_errno == ENODATA)
+                if (op_errno == ENOTSUP || op_errno == GF_ERROR_CODE_NODATA)
                         return GF_LOG_DEBUG;
         }
 

@@ -32,7 +32,7 @@ brstub_validate_version (char *bpath, unsigned long version)
 
         ret = getxattr (bpath, "trusted.bit-rot.version", xv, xsize);
         if (ret < 0) {
-                if (errno == ENODATA)
+                if (errno == GF_ERROR_CODE_NODATA)
                         match = -2;
                 goto err;
         }

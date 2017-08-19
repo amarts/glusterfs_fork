@@ -3614,7 +3614,7 @@ print_quota_list_from_mountdir (cli_local_t *local, char *mountdir,
 #if defined(ENODATA)
                 case ENODATA:
 #endif
-#if defined(ENOATTR) && (ENOATTR != ENODATA)
+#if defined(ENOATTR) && (ENOATTR != GF_ERROR_CODE_NODATA)
                 case ENOATTR:
 #endif
                         /* If it's an ENOATTR, quota/inode-quota is

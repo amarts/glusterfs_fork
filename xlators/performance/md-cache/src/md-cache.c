@@ -2101,7 +2101,7 @@ mdc_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *key,
               dict_t *xdata)
 {
         int           ret;
-	int           op_errno = ENODATA;
+	int           op_errno = GF_ERROR_CODE_NODATA;
         mdc_local_t  *local = NULL;
 	dict_t       *xattr = NULL;
         struct mdc_conf *conf = this->private;
@@ -2121,7 +2121,7 @@ mdc_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *key,
 
 	if (!xattr || !dict_get (xattr, (char *)key)) {
 		ret = -1;
-		op_errno = ENODATA;
+		op_errno = GF_ERROR_CODE_NODATA;
 	}
 
         GF_ATOMIC_INC (conf->mdc_counter.xattr_hit);
@@ -2168,7 +2168,7 @@ mdc_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *key,
         int           ret;
         mdc_local_t  *local = NULL;
 	dict_t       *xattr = NULL;
-	int           op_errno = ENODATA;
+	int           op_errno = GF_ERROR_CODE_NODATA;
         struct mdc_conf *conf = this->private;
 
         local = mdc_local_get (frame);
@@ -2186,7 +2186,7 @@ mdc_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *key,
 
 	if (!xattr || !dict_get (xattr, (char *)key)) {
 		ret = -1;
-		op_errno = ENODATA;
+		op_errno = GF_ERROR_CODE_NODATA;
 	}
 
         GF_ATOMIC_INC (conf->mdc_counter.xattr_hit);
@@ -2234,7 +2234,7 @@ mdc_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		 const char *name, dict_t *xdata)
 {
         mdc_local_t  *local = NULL;
-        int           op_errno = ENODATA;
+        int           op_errno = GF_ERROR_CODE_NODATA;
         int           ret = 0;
         dict_t       *xattr = NULL;
         struct mdc_conf *conf = this->private;
@@ -2254,7 +2254,7 @@ mdc_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         if (!xattr || !dict_get (xattr, (char *)name)) {
                 ret = -1;
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
         }
 
         GF_ATOMIC_INC (conf->mdc_counter.xattr_hit);
@@ -2303,7 +2303,7 @@ mdc_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		  const char *name, dict_t *xdata)
 {
         mdc_local_t  *local = NULL;
-        int           op_errno = ENODATA;
+        int           op_errno = GF_ERROR_CODE_NODATA;
         int           ret = 0;
         dict_t       *xattr = NULL;
         struct mdc_conf *conf = this->private;
@@ -2323,7 +2323,7 @@ mdc_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         if (!xattr || !dict_get (xattr, (char *)name)) {
                 ret = -1;
-                op_errno = ENODATA;
+                op_errno = GF_ERROR_CODE_NODATA;
         }
 
         GF_ATOMIC_INC (conf->mdc_counter.xattr_hit);
