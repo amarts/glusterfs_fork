@@ -24,6 +24,7 @@
 #include "compat-errno.h"
 #include "quota-common-utils.h"
 #include "glusterd-quota.h"
+#include "compat-errno.h"
 
 #include <sys/wait.h>
 #include <dlfcn.h>
@@ -751,10 +752,7 @@ glusterd_set_quota_limit (char *volname, char *path, char *hard_limit,
                                      sizeof (existing_limit));
                 if (ret < 0) {
                         switch (errno) {
-#if defined(ENOATTR) && (ENOATTR != GF_ERROR_CODE_NODATA)
-                        case ENODATA: /* FALLTHROUGH */
-#endif
-                        case ENOATTR:
+                        case GF_ERROR_CODE_NOATTR:
                                 existing_limit.sl = -1;
                             break;
                         default:

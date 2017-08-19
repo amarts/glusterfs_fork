@@ -10,6 +10,8 @@
 #ifndef _GLUSTERD_ERRNO_H
 #define _GLUSTERD_ERRNO_H
 
+#include "compat-errno.h"
+
 enum glusterd_op_errno {
         EG_INTRNL      = 30800,          /* Internal Error                    */
         EG_OPNOTSUP    = 30801,          /* Gluster Op Not Supported          */

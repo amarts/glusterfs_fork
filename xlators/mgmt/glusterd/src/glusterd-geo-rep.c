@@ -20,6 +20,7 @@
 #include "run.h"
 #include "syscall.h"
 #include "glusterd-messages.h"
+#include "compat-errno.h"
 
 #include <signal.h>
 

@@ -22,6 +22,7 @@
 #include "changelog-encoders.h"
 #include "changelog-rpc-common.h"
 #include <pthread.h>
+#include "compat-errno.h"
 
 static void
 changelog_cleanup_free_mutex (void *arg_mutex)

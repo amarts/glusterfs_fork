@@ -36,6 +36,7 @@
 #include "glusterd-svc-mgmt.h"
 #include "glusterd-svc-helper.h"
 #include "glusterd-snapd-svc-helper.h"
+#include "compat-errno.h"
 
 struct gd_validate_reconf_opts {
         dict_t *options;

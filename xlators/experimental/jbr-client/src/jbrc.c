@@ -19,6 +19,7 @@
 #include "jbr-messages.h"
 #include "jbrc.h"
 #include "statedump.h"
+#include "compat-errno.h"
 
 #define SCAR_LIMIT      20
 #define HILITE(x)       ("[1;33m"x"[0m")

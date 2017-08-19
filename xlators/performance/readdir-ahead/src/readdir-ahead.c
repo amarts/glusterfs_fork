@@ -31,6 +31,8 @@
 #include "readdir-ahead-mem-types.h"
 #include "defaults.h"
 #include "readdir-ahead-messages.h"
+#include "compat-errno.h"
+
 static int rda_fill_fd(call_frame_t *, xlator_t *, fd_t *);
 
 /*

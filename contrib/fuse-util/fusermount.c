@@ -10,6 +10,7 @@
 #include <config.h>
 
 #include "mount_util.h"
+#include "compat-errno.h"
 
 #ifndef HAVE_UMOUNT2
 #include "mount-gluster-compat.h"

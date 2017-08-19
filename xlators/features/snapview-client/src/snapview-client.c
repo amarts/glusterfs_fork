@@ -11,7 +11,7 @@
 #include "snapview-client.h"
 #include "inode.h"
 #include "byte-order.h"
-
+#include "compat-errno.h"
 
 static void
 svc_local_free (svc_local_t *local)

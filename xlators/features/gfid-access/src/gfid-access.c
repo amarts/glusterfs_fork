@@ -11,7 +11,7 @@
 #include "inode.h"
 #include "byte-order.h"
 #include "statedump.h"
-
+#include "compat-errno.h"
 
 int
 ga_valid_inode_loc_copy (loc_t *dst, loc_t *src, xlator_t *this)

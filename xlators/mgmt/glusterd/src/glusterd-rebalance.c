@@ -29,6 +29,7 @@
 #include "run.h"
 #include "glusterd-volgen.h"
 #include "glusterd-messages.h"
+#include "compat-errno.h"
 
 #include "syscall.h"
 #include "cli1-xdr.h"

@@ -17,6 +17,7 @@
 
 #include "crypt-common.h"
 #include "crypt.h"
+#include "compat-errno.h"
 
 static void init_inode_info_head(struct crypt_inode_info *info, fd_t *fd);
 static int32_t init_inode_info_tail(struct crypt_inode_info *info,

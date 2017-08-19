@@ -10,6 +10,7 @@
 #include "quiesce.h"
 #include "defaults.h"
 #include "call-stub.h"
+#include "compat-errno.h"
 
 /* TODO: */
 /* Think about 'writev/_*_lk/setattr/xattrop/' fops to do re-transmittion */

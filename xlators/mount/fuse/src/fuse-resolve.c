@@ -8,6 +8,7 @@
    cases as published by the Free Software Foundation.
 */
 #include "fuse-bridge.h"
+#include "compat-errno.h"
 
 static int
 fuse_resolve_all (fuse_state_t *state);

@@ -61,6 +61,7 @@
 #include "glusterd-server-quorum.h"
 #include "quota-common-utils.h"
 #include "common-utils.h"
+#include "compat-errno.h"
 
 #include "xdr-generic.h"
 #include <sys/resource.h>
@@ -7176,13 +7177,8 @@ glusterd_is_uuid_present (char *path, char *xattr, gf_boolean_t *present)
         }
 
         switch (errno) {
-#if defined(ENODATA)
-                case ENODATA: /* FALLTHROUGH */
-#endif
-#if defined(ENOATTR) && (ENOATTR != GF_ERROR_CODE_NODATA)
-                case ENOATTR: /* FALLTHROUGH */
-#endif
-                case ENOTSUP:
+                case GF_ERROR_CODE_NOATTR:
+                case GF_ERROR_CODE_NOTSUPP:
                         *present = _gf_false;
                         ret = 0;
                         break;

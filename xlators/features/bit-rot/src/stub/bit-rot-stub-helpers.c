@@ -9,6 +9,7 @@
 */
 
 #include "bit-rot-stub.h"
+#include "compat-errno.h"
 
 br_stub_fd_t *
 br_stub_fd_new (void)

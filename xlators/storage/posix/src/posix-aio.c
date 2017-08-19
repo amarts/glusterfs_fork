@@ -12,6 +12,7 @@
 #include "posix.h"
 #include <sys/uio.h>
 #include "posix-messages.h"
+#include "compat-errno.h"
 
 #ifdef HAVE_LIBAIO
 #include <libaio.h>

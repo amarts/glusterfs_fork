@@ -30,6 +30,7 @@
 #include "xdr-common.h"
 #include "xdr-generic.h"
 #include "rpc-common-xdr.h"
+#include "compat-errno.h"
 
 #include "syncop.h"
 #include "xlator.h"

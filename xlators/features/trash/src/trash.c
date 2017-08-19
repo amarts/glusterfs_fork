@@ -10,6 +10,7 @@
 #include "trash.h"
 #include "trash-mem-types.h"
 #include "syscall.h"
+#include "compat-errno.h"
 
 #define root_gfid        (uuid_t){0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
 #define trash_gfid       (uuid_t){0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5}

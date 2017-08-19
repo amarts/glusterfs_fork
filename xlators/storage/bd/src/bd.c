@@ -36,6 +36,7 @@
 #include "checksum.h"
 #include "syscall.h"
 #include "lvm-defaults.h"
+#include "compat-errno.h"
 
 /*
  * Call back function for setxattr and removexattr.

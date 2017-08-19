@@ -16,6 +16,7 @@
 #include "index-messages.h"
 #include <ftw.h>
 #include <signal.h>
+#include "compat-errno.h"
 
 #define XATTROP_SUBDIR "xattrop"
 #define DIRTY_SUBDIR "dirty"

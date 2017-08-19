@@ -9,6 +9,7 @@
 #include "run.h"
 #include "lvm-defaults.h"
 #include "syscall.h"
+#include "compat-errno.h"
 
 int
 bd_inode_ctx_set (inode_t *inode, xlator_t *this, bd_attr_t *ctx)

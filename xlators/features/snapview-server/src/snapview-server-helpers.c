@@ -15,6 +15,7 @@
 #include "xdr-generic.h"
 #include "protocol-common.h"
 #include <pthread.h>
+#include "compat-errno.h"
 
 
 int

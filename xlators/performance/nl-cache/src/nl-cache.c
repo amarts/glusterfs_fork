@@ -12,6 +12,7 @@
 #include "nl-cache.h"
 #include "statedump.h"
 #include "upcall-utils.h"
+#include "compat-errno.h"
 
 static void
 nlc_dentry_op (call_frame_t *frame, xlator_t *this, gf_boolean_t multilink)

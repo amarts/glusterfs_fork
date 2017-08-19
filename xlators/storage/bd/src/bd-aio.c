@@ -21,6 +21,7 @@
 #include "defaults.h"
 #include "bd.h"
 #include "bd-aio.h"
+#include "compat-errno.h"
 
 #ifdef HAVE_LIBAIO
 #include <libaio.h>

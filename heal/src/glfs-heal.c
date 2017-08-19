@@ -22,6 +22,7 @@
 #include <time.h>
 #include "glusterfs.h"
 #include <libgen.h>
+#include "compat-errno.h"
 
 #if (HAVE_LIB_XML)
 #include <libxml/encoding.h>

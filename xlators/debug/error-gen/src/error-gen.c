@@ -11,6 +11,7 @@
 #include "error-gen.h"
 #include "statedump.h"
 #include "defaults.h"
+#include "compat-errno.h"
 
 /*
  * The user can specify an error probability as a float percentage, but we

@@ -21,6 +21,7 @@
 #include "compat.h"
 #include "list.h"
 #include "syscall.h"
+#include "compat-errno.h"
 
 #define THREAD_MAX 32
 #define BUMP(name) INC(name, 1)

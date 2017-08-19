@@ -20,6 +20,7 @@
 #include "changelog-misc.h"
 #include "changelog-lib-messages.h"
 #include "changelog-mem-types.h"
+#include "compat-errno.h"
 
 /**
  * @API

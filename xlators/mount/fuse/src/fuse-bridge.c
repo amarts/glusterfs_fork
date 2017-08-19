@@ -15,6 +15,7 @@
 #include "compat-errno.h"
 #include "glusterfs-acl.h"
 #include "syscall.h"
+#include "compat-errno.h"
 
 #ifdef __NetBSD__
 #undef open /* in perfuse.h, pulled from mount-gluster-compat.h */

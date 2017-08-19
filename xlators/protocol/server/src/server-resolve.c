@@ -11,7 +11,7 @@
 #include "server.h"
 #include "server-helpers.h"
 #include "server-messages.h"
-
+#include "compat-errno.h"
 
 int
 server_resolve_all (call_frame_t *frame);

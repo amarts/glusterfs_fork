@@ -18,6 +18,8 @@
 #include "changelog-mem-types.h"
 #include "changelog-lib-messages.h"
 
+#include "compat-errno.h"
+
 int
 gf_changelog_done (char *file)
 {

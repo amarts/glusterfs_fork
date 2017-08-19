@@ -33,6 +33,7 @@
 #include "syncop.h"
 #include "xlator.h"
 #include "syscall.h"
+#include "compat-errno.h"
 
 static gf_boolean_t is_mgmt_rpc_reconnect = _gf_false;
 int need_emancipate = 0;

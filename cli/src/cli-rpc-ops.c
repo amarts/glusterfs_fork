@@ -3611,12 +3611,7 @@ print_quota_list_from_mountdir (cli_local_t *local, char *mountdir,
                         "on %s. Reason : %s", key, mountdir, strerror (errno));
 
                 switch (errno) {
-#if defined(ENODATA)
-                case ENODATA:
-#endif
-#if defined(ENOATTR) && (ENOATTR != GF_ERROR_CODE_NODATA)
-                case ENOATTR:
-#endif
+                case GF_ERROR_CODE_NOATTR:
                         /* If it's an ENOATTR, quota/inode-quota is
                          * configured(limit is set atleast for one directory).
                          * The user is trying to issue 'list/list-objects'
