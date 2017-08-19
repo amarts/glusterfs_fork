@@ -23,7 +23,7 @@ TEST mkdir $M0/a
 
 ## What to test: With Patch, Even in case of nameless lookup, if layout
 ## needs to be fixed,  the it will be fixed wherever lookup is successful
-## and it will not create any directory for subvols having ENOENT as it is
+## and it will not create any directory for subvols having GF_ERROR_CODE_NOENT as it is
 ## nameless lookup.
 
 gfid_with_hyphen=`getfattr -n glusterfs.gfid.string $M0/a 2>/dev/null \

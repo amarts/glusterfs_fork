@@ -334,7 +334,7 @@ rdd_valid_config (void)
         int fd = -1;
 
         fd = open (rdd_config.in_file.path, O_RDONLY);
-        if (fd == -1 && (errno != ENOENT)) {
+        if (fd == -1 && (errno != GF_ERROR_CODE_NOENT)) {
                 fprintf (stderr, "open: (%s)", strerror (errno));
                 ret = 0;
                 goto out;
@@ -471,7 +471,7 @@ check_and_create (void)
         total_size = rdd_config.file_size;
 
         ret = stat (rdd_config.in_file.path, &stbuf);
-        if (ret == -1 && (errno != ENOENT))
+        if (ret == -1 && (errno != GF_ERROR_CODE_NOENT))
                 goto out;
 
         fd[1] = open (rdd_config.in_file.path, O_CREAT | O_WRONLY | O_TRUNC);

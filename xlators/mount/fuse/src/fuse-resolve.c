@@ -54,7 +54,7 @@ fuse_resolve_entry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         STACK_DESTROY (frame->root);
 
         if (op_ret == -1) {
-                gf_log (this->name, (op_errno == ENOENT)
+                gf_log (this->name, (op_errno == GF_ERROR_CODE_NOENT)
                         ? GF_LOG_DEBUG : GF_LOG_WARNING,
                         "%s/%s: failed to resolve (%s)",
                         uuid_utoa (resolve_loc->pargfid), resolve_loc->name,
@@ -125,7 +125,7 @@ fuse_resolve_gfid_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         STACK_DESTROY (frame->root);
 
         if (op_ret == -1) {
-                gf_log (this->name, (op_errno == ENOENT)
+                gf_log (this->name, (op_errno == GF_ERROR_CODE_NOENT)
                         ? GF_LOG_DEBUG : GF_LOG_WARNING,
                         "%s: failed to resolve (%s)",
                         uuid_utoa (resolve->resolve_loc.gfid),

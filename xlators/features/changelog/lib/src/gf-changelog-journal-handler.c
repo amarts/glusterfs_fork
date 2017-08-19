@@ -544,7 +544,7 @@ gf_changelog_publish (xlator_t *this,
         /* handle zerob file that wont exist in current */
         ret = sys_stat (to_path, &stbuf);
         if (ret) {
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         ret = 0;
                 goto out;
         }
@@ -1004,7 +1004,7 @@ gf_changelog_journal_init (void *xl, struct gf_brick_spec *brick)
         if (!jnl)
                 goto error_return;
 
-        if (sys_stat (scratch_dir, &buf) && errno == ENOENT) {
+        if (sys_stat (scratch_dir, &buf) && errno == GF_ERROR_CODE_NOENT) {
                 ret = mkdir_p (scratch_dir, 0600, _gf_true);
                 if (ret)
                         goto dealloc_private;

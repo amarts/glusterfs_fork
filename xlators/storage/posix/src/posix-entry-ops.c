@@ -361,7 +361,7 @@ posix_lookup (call_frame_t *frame, xlator_t *this,
         op_errno = errno;
 
         if (op_ret == -1) {
-                if (op_errno != ENOENT) {
+                if (op_errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_WARNING, op_errno,
                                 P_MSG_LSTAT_FAILED,
                                 "lstat on %s failed",
@@ -411,10 +411,10 @@ parent:
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_LSTAT_FAILED, "post-operation lstat on"
                                 " parent %s failed", par_path);
-			if (op_errno == ENOENT)
+			if (op_errno == GF_ERROR_CODE_NOENT)
 				/* If parent directory is missing in a lookup,
 				   errno should be GF_ERROR_CODE_STALE (bad handle) and not
-				   ENOENT (missing entry)
+				   GF_ERROR_CODE_NOENT (missing entry)
 				*/
 				op_errno = ESTALE;
                         goto out;
@@ -510,7 +510,7 @@ posix_create (call_frame_t *frame, xlator_t *this,
         }
 
         op_ret = posix_pstat (this, NULL, real_path, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)) {
+        if ((op_ret == -1) && (errno == GF_ERROR_CODE_NOENT)) {
                 was_present = 0;
         }
 
@@ -869,7 +869,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
         }
 
         op_ret = posix_pstat (this, NULL, real_newpath, &stbuf);
-        if ((op_ret == -1) && (errno == ENOENT)) {
+        if ((op_ret == -1) && (errno == GF_ERROR_CODE_NOENT)) {
                 was_present = 0;
         } else {
                 gf_uuid_copy (victim, stbuf.ia_gfid);
@@ -939,7 +939,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
                         get_link_count = _gf_true;
                         op_ret = posix_pstat (this, newloc->gfid, real_newpath,
                                               &stbuf);
-                        if ((op_ret == -1) && (errno != ENOENT)) {
+                        if ((op_ret == -1) && (errno != GF_ERROR_CODE_NOENT)) {
                                 op_errno = errno;
                                 gf_msg (this->name, GF_LOG_ERROR, errno,
                                         P_MSG_LSTAT_FAILED,
@@ -1781,7 +1781,7 @@ posix_unlink (call_frame_t *frame, xlator_t *this,
         op_ret = dict_get_ptr (xdata, TIER_LINKFILE_GFID, &uuid);
 
         if (!op_ret && gf_uuid_compare (uuid, stbuf.ia_gfid)) {
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 op_ret = -1;
                 gf_uuid_unparse (uuid, uuid_str);
                 gf_uuid_unparse (stbuf.ia_gfid, gfid_str);

@@ -3637,7 +3637,7 @@ nfs3_fh_resolve_entry_lookup_cbk (call_frame_t *frame, void *cookie,
         cs->resolve_errno = op_errno;
 
         if (op_ret == -1) {
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_trace (GF_NFS3, 0, "Lookup failed: %s: %s",
                                         cs->resolvedloc.path,
                                         strerror (op_errno));
@@ -3681,7 +3681,7 @@ nfs3_fh_resolve_inode_lookup_cbk (call_frame_t *frame, void *cookie,
         cs->resolve_errno = op_errno;
 
         if (op_ret == -1) {
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_trace (GF_NFS3, 0, "Lookup failed: %s: %s",
                                         cs->resolvedloc.path,
                                         strerror (op_errno));

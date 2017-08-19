@@ -42,7 +42,7 @@ solaris_fsetxattr(int fd, const char* key, const char *value, size_t size,
                 ret = write (attrfd, value, size);
                 close (attrfd);
         } else {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         gf_msg ("libglusterfs", GF_LOG_ERROR, errno,
                                 LG_MSG_SET_ATTRIBUTE_FAILED, "Couldn't set "
                                 "extended attribute for %d", fd);
@@ -70,11 +70,11 @@ solaris_fgetxattr(int fd, const char* key, char *value, size_t size)
                 }
                 close (attrfd);
         } else {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         gf_msg ("libglusterfs", GF_LOG_INFO, errno,
                                 LG_MSG_READ_ATTRIBUTE_FAILED, "Couldn't read "
                                 "extended attribute for the file %d", fd);
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         errno = ENODATA;
                 return -1;
         }
@@ -221,7 +221,7 @@ solaris_setxattr(const char *path, const char* key, const char *value,
                 close (attrfd);
                 ret = 0;
         } else {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         gf_msg ("libglusterfs", GF_LOG_ERROR, errno,
                                 LG_MSG_SET_ATTRIBUTE_FAILED, "Couldn't set "
                                 "extended attribute for %s", path);
@@ -370,7 +370,7 @@ solaris_removexattr(const char *path, const char* key)
                 ret = unlinkat (attrfd, key, 0);
                 close (attrfd);
         } else {
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         errno = ENODATA;
                 ret = -1;
         }
@@ -407,11 +407,11 @@ solaris_getxattr(const char *path,
                 }
                 close (attrfd);
         } else {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         gf_msg ("libglusterfs", GF_LOG_INFO, errno,
                                 LG_MSG_READ_ATTRIBUTE_FAILED, "Couldn't read "
                                 "extended attribute for the file %s", path);
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         errno = ENODATA;
                 ret = -1;
         }

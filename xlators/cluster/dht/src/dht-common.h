@@ -713,7 +713,7 @@ typedef struct dht_fd_ctx {
 } dht_fd_ctx_t;
 
 
-#define ENTRY_MISSING(op_ret, op_errno) (op_ret == -1 && op_errno == ENOENT)
+#define ENTRY_MISSING(op_ret, op_errno) (op_ret == -1 && op_errno == GF_ERROR_CODE_NOENT)
 
 #define is_revalidate(loc) (dht_inode_ctx_layout_get (loc->inode, this, NULL) == 0)
 
@@ -741,7 +741,7 @@ typedef struct dht_fd_ctx {
                 }                                               \
         } while (0)
 
-#define dht_inode_missing(op_errno) (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE \
+#define dht_inode_missing(op_errno) (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE \
                                      || op_errno == EIO) \
 /*Bad fix. Please revert the commit after fixing the bug 1329505*/
 

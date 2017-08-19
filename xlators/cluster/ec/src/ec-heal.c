@@ -907,7 +907,7 @@ ec_delete_stale_name (dict_t *gfid_db, char *key, data_t *d, void *data)
                         continue;
                 if (replies[i].op_ret == -1) {
                         if (replies[i].op_errno == GF_ERROR_CODE_STALE ||
-                            replies[i].op_errno == ENOENT)
+                            replies[i].op_errno == GF_ERROR_CODE_NOENT)
                                 estale_count++;
                         else
                                 name_data->participants[i] = 0;
@@ -1088,7 +1088,7 @@ ec_create_name (call_frame_t *frame, ec_t *ec, inode_t *parent, char *name,
                         if (output[i]) {
                                 link[i] = 1;
                         } else {
-                                if (replies[i].op_errno == ENOENT ||
+                                if (replies[i].op_errno == GF_ERROR_CODE_NOENT ||
                                     replies[i].op_errno == GF_ERROR_CODE_STALE) {
                                         create[i] = 1;
                                 }
@@ -1221,7 +1221,7 @@ __ec_heal_name (call_frame_t *frame, ec_t *ec, inode_t *parent, char *name,
                         /*If GF_ERROR_CODE_STALE comes here, that means parent dir is not
                          * present, nothing to do there, so reset participants
                          * for that brick*/
-                        if (replies[i].op_errno == ENOENT)
+                        if (replies[i].op_errno == GF_ERROR_CODE_NOENT)
                                 enoent[i] = 1;
                         else
                                 participants[i] = 0;

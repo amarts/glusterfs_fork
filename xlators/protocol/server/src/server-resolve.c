@@ -57,7 +57,7 @@ resolve_gfid_entry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         resolve_loc = &resolve->resolve_loc;
 
         if (op_ret == -1) {
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, 0, "%s/%s: failed to resolve"
                                       " (%s)",
                                       uuid_utoa (resolve_loc->pargfid),
@@ -106,7 +106,7 @@ resolve_gfid_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         resolve_loc = &resolve->resolve_loc;
 
         if (op_ret == -1) {
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, GF_LOG_DEBUG,
                                       "%s: failed to resolve (%s)",
                                       uuid_utoa (resolve_loc->gfid),
@@ -308,7 +308,7 @@ resolve_entry_simple (call_frame_t *frame)
                         break;
                 default:
                         resolve->op_ret   = -1;
-                        resolve->op_errno = ENOENT;
+                        resolve->op_errno = GF_ERROR_CODE_NOENT;
                         ret = 1;
                         break;
                 }
@@ -443,7 +443,7 @@ resolve_anonfd_simple (call_frame_t *frame)
 
         if (!inode) {
                 resolve->op_ret   = -1;
-                resolve->op_errno = ENOENT;
+                resolve->op_errno = GF_ERROR_CODE_NOENT;
                 ret = 1;
                 goto out;
         }

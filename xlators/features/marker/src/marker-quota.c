@@ -201,7 +201,7 @@ mq_build_ancestry (xlator_t *this, loc_t *loc)
 
         ret = syncop_readdirp (this, fd, 131072, 0, &entries, xdata, NULL);
         if (ret < 0) {
-                gf_log (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                         ? GF_LOG_DEBUG:GF_LOG_ERROR, "readdirp failed "
                         "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -413,7 +413,7 @@ mq_are_xattrs_set (xlator_t *this, loc_t *loc, gf_boolean_t *contri_set,
         ret = syncop_lookup (FIRST_CHILD(this), loc, &stbuf, NULL,
                              dict, &rsp_dict);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "lookup failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -478,7 +478,7 @@ mq_create_size_xattrs (xlator_t *this, quota_inode_ctx_t *ctx, loc_t *loc)
                               NULL);
 
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "xattrop failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -511,7 +511,7 @@ mq_lock (xlator_t *this, loc_t *loc, short l_type)
         ret = syncop_inodelk (FIRST_CHILD(this), this->name, loc, F_SETLKW,
                               &lock, NULL, NULL);
         if (ret < 0)
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "inodelk failed "
                                   "for %s: %s", loc->path, strerror (-ret));
 
@@ -544,7 +544,7 @@ mq_get_dirty (xlator_t *this, loc_t *loc, int32_t *dirty)
         ret = syncop_lookup (FIRST_CHILD(this), loc, &stbuf, NULL,
                              dict, &rsp_dict);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "lookup failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -603,7 +603,7 @@ mq_get_set_dirty (xlator_t *this, loc_t *loc, int32_t dirty,
         ret = syncop_xattrop (FIRST_CHILD(this), loc, GF_XATTROP_GET_AND_SET,
                               dict, NULL, &rsp_dict);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                           ? GF_LOG_DEBUG:GF_LOG_ERROR, "xattrop failed "
                           "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -665,7 +665,7 @@ mq_mark_dirty (xlator_t *this, loc_t *loc, int32_t dirty)
 
         ret = syncop_setxattr (FIRST_CHILD(this), loc, dict, 0, NULL, NULL);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                         ? GF_LOG_DEBUG:GF_LOG_ERROR, "setxattr dirty = %d "
                         "failed for %s: %s", dirty, loc->path, strerror (-ret));
                 goto out;
@@ -729,7 +729,7 @@ _mq_get_metadata (xlator_t *this, loc_t *loc, quota_meta_t *contri,
         ret = syncop_lookup (FIRST_CHILD(this), loc, &stbuf, NULL,
                              dict, &rsp_dict);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "lookup failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -884,7 +884,7 @@ mq_remove_contri (xlator_t *this, loc_t *loc, quota_inode_ctx_t *ctx,
 
         ret = syncop_removexattr (FIRST_CHILD(this), loc, contri_key, 0, NULL);
         if (ret < 0) {
-                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE || -ret == ENODATA ||
+                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE || -ret == ENODATA ||
                     -ret == ENOATTR) {
                         /* Remove contri in done when unlink operation is
                          * performed, so return success on ENOENT/ESTSLE
@@ -958,7 +958,7 @@ mq_update_contri (xlator_t *this, loc_t *loc, inode_contribution_t *contri,
         ret = syncop_xattrop(FIRST_CHILD(this), loc, GF_XATTROP_ADD_ARRAY64,
                              dict, NULL, NULL);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "xattrop failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -1017,7 +1017,7 @@ mq_update_size (xlator_t *this, loc_t *loc, quota_meta_t *delta)
                              GF_XATTROP_ADD_ARRAY64_WITH_DEFAULT, dict, NULL,
                              NULL);
         if (ret < 0) {
-                gf_log_callingfn (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log_callingfn (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                   ? GF_LOG_DEBUG:GF_LOG_ERROR, "xattrop failed "
                                   "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -1521,7 +1521,7 @@ mq_initiate_quota_task (void *opaque)
                                  * then we may get ENOENT/ESTALE
                                  */
                                 gf_log (this->name,
-                                        (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                                        (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                         ? GF_LOG_DEBUG:GF_LOG_ERROR,
                                         "build ancestry failed for inode %s",
                                         uuid_utoa (child_loc.inode->gfid));
@@ -1837,7 +1837,7 @@ mq_update_dirty_inode_task (void *opaque)
 
         ret = syncop_opendir (this, loc, fd, NULL, NULL);
         if (ret < 0) {
-                gf_log (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                gf_log (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                         ? GF_LOG_DEBUG:GF_LOG_ERROR, "opendir failed "
                         "for %s: %s", loc->path, strerror (-ret));
                 goto out;
@@ -1847,7 +1847,7 @@ mq_update_dirty_inode_task (void *opaque)
         while ((ret = syncop_readdirp (this, fd, 131072, offset, &entries,
                                        xdata, NULL)) != 0) {
                 if (ret < 0) {
-                        gf_log (this->name, (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE)
+                        gf_log (this->name, (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE)
                                 ? GF_LOG_DEBUG:GF_LOG_ERROR, "readdirp failed "
                                 "for %s: %s", loc->path, strerror (-ret));
                         goto out;

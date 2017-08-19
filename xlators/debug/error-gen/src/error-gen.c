@@ -206,7 +206,7 @@ int
 conv_errno_to_int (char **error_no)
 {
         if (!strcmp ((*error_no), "ENOENT"))
-                return ENOENT;
+                return GF_ERROR_CODE_NOENT;
         else if (!strcmp ((*error_no), "ENOTDIR"))
                 return ENOTDIR;
         else if (!strcmp ((*error_no), "ENAMETOOLONG"))

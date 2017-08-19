@@ -171,7 +171,7 @@ posix_make_ancestryfromgfid (xlator_t *this, char *path, int pathsize,
                         len = sys_readlink (dir_handle, linkname, PATH_MAX);
                         if (len < 0) {
                                 *op_errno = errno;
-                                gf_msg (this->name, (errno == ENOENT ||
+                                gf_msg (this->name, (errno == GF_ERROR_CODE_NOENT ||
                                                       errno == GF_ERROR_CODE_STALE)
                                         ? GF_LOG_DEBUG:GF_LOG_ERROR, errno,
                                         P_MSG_READLINK_FAILED, "could not read"
@@ -521,7 +521,7 @@ posix_handle_init (xlator_t *this)
         ret = sys_stat (handle_pfx, &stbuf);
         switch (ret) {
         case -1:
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         ret = sys_mkdir (handle_pfx, 0600);
                         if (ret != 0) {
                                 gf_msg (this->name, GF_LOG_ERROR, errno,
@@ -558,7 +558,7 @@ posix_handle_init (xlator_t *this)
         ret = sys_stat (rootstr, &rootbuf);
         switch (ret) {
         case -1:
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_HANDLE_CREATE,
                                 "%s", priv->base_path);
@@ -627,7 +627,7 @@ posix_handle_new_trash_init (xlator_t *this, char *trash)
         ret = sys_lstat (trash, &stbuf);
         switch (ret) {
         case -1:
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         ret = sys_mkdir (trash, 0755);
                         if (ret != 0) {
                                 gf_msg (this->name, GF_LOG_ERROR, errno,
@@ -752,14 +752,14 @@ posix_handle_hard (xlator_t *this, const char *oldpath, uuid_t gfid, struct stat
         MAKE_HANDLE_ABSPATH (newpath, this, gfid);
 
         ret = sys_lstat (newpath, &newbuf);
-        if (ret == -1 && errno != ENOENT) {
+        if (ret == -1 && errno != GF_ERROR_CODE_NOENT) {
                 gf_msg (this->name, GF_LOG_WARNING, errno,
                         P_MSG_HANDLE_CREATE,
                         "%s", newpath);
                 return -1;
         }
 
-        if (ret == -1 && errno == ENOENT) {
+        if (ret == -1 && errno == GF_ERROR_CODE_NOENT) {
                 ret = posix_handle_mkdir_hashes (this, newpath);
                 if (ret) {
                         gf_msg (this->name, GF_LOG_WARNING, errno,
@@ -814,13 +814,13 @@ posix_handle_soft (xlator_t *this, const char *real_path, loc_t *loc,
         MAKE_HANDLE_RELPATH (oldpath, this, loc->pargfid, loc->name);
 
         ret = sys_lstat (newpath, &newbuf);
-        if (ret == -1 && errno != ENOENT) {
+        if (ret == -1 && errno != GF_ERROR_CODE_NOENT) {
                 gf_msg (this->name, GF_LOG_WARNING, errno,
                         P_MSG_HANDLE_CREATE, "%s", newpath);
                 return -1;
         }
 
-        if (ret == -1 && errno == ENOENT) {
+        if (ret == -1 && errno == GF_ERROR_CODE_NOENT) {
                 if (posix_is_malformed_link (this, newpath, oldpath,
                                              strlen (oldpath))) {
                         GF_ASSERT (!"Malformed link");
@@ -891,7 +891,7 @@ posix_handle_unset_gfid (xlator_t *this, uuid_t gfid)
         ret = sys_lstat (path, &stat);
 
         if (ret == -1) {
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_WARNING, errno,
                                 P_MSG_HANDLE_DELETE, "%s", path);
                 }

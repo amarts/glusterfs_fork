@@ -429,7 +429,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
 
 #define GF_IGNORE_IF_GSYNCD_SAFE_ERROR(frame, op_errno)                 \
         (((frame->root->pid == GF_CLIENT_PID_GSYNCD) &&                 \
-          (op_errno == EEXIST || op_errno == ENOENT))?0:1)              \
+          (op_errno == EEXIST || op_errno == GF_ERROR_CODE_NOENT))?0:1)              \
 
 union gf_sock_union {
         struct sockaddr_storage storage;

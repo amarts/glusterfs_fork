@@ -539,7 +539,7 @@ client3_3_readlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
 out:
         if (rsp.op_ret == -1) {
-                if (gf_error_to_errno(rsp.op_errno) == ENOENT) {
+                if (gf_error_to_errno(rsp.op_errno) == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, 0, "remote operation failed:"
                                       " %s", strerror
                                           (gf_error_to_errno (rsp.op_errno)));
@@ -603,7 +603,7 @@ client3_3_unlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
 out:
         if (rsp.op_ret == -1) {
-                if (gf_error_to_errno(rsp.op_errno) == ENOENT) {
+                if (gf_error_to_errno(rsp.op_errno) == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, 0, "remote operation failed:"
                                       " %s", strerror
                                       (gf_error_to_errno (rsp.op_errno)));
@@ -1064,7 +1064,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 out:
         if (rsp.op_ret == -1) {
                 if ((op_errno == ENOTSUP) || (op_errno == ENODATA) ||
-                     (op_errno == GF_ERROR_CODE_STALE) || (op_errno == ENOENT)) {
+                     (op_errno == GF_ERROR_CODE_STALE) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s. Path: %s "
                                       "(%s). Key: %s", strerror (op_errno),
@@ -1137,7 +1137,7 @@ client3_3_fgetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 out:
         if (rsp.op_ret == -1) {
                 if ((op_errno == ENOTSUP) || (op_errno == ERANGE) ||
-                     (op_errno == ENODATA) || (op_errno == ENOENT)) {
+                     (op_errno == ENODATA) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         gf_msg_debug (this->name, 0,
                                       "remote operation failed: %s",
                                       strerror (op_errno));
@@ -2856,8 +2856,8 @@ out:
         /* Restore the correct op_errno to rsp.op_errno */
         rsp.op_errno = op_errno;
         if (rsp.op_ret == -1) {
-                /* any error other than ENOENT */
-                if (!(local->loc.name && rsp.op_errno == ENOENT) &&
+                /* any error other than GF_ERROR_CODE_NOENT */
+                if (!(local->loc.name && rsp.op_errno == GF_ERROR_CODE_NOENT) &&
 		    !(rsp.op_errno == GF_ERROR_CODE_STALE))
                         gf_msg (this->name, GF_LOG_WARNING, rsp.op_errno,
                                 PC_MSG_REMOTE_OP_FAILED, "remote operation "

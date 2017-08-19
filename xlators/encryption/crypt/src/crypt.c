@@ -2027,7 +2027,7 @@ static int load_mtd_open(call_frame_t *frame,
 	mtd = dict_get(dict, CRYPTO_FORMAT_PREFIX);
 	if (!mtd) {
 		local->op_ret = -1;
-		local->op_errno = ENOENT;
+		local->op_errno = GF_ERROR_CODE_NOENT;
 		gf_log (this->name, GF_LOG_WARNING,
 			"Format string wasn't found");
 		goto exit;
@@ -2676,7 +2676,7 @@ static int32_t linkop_end(call_frame_t *frame,
 	local->op_errno = op_errno;
 
 	if (op_ret < 0 &&
-	    op_errno == ENOENT &&
+	    op_errno == GF_ERROR_CODE_NOENT &&
 	    local->loc->inode->ia_type == IA_IFLNK) {
 		local->op_ret = 0;
 		local->op_errno = 0;

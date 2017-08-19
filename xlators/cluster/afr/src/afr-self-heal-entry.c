@@ -176,14 +176,14 @@ __afr_selfheal_heal_dirent (call_frame_t *frame, xlator_t *this, fd_t *fd,
          * other than ENOENT.
          */
         if ((replies[source].op_ret < 0) &&
-            (replies[source].op_errno != ENOENT))
+            (replies[source].op_errno != GF_ERROR_CODE_NOENT))
                 return -replies[source].op_errno;
 
 	for (i = 0; i < priv->child_count; i++) {
 		if (!healed_sinks[i])
 			continue;
 		if (replies[source].op_ret == -1 &&
-		    replies[source].op_errno == ENOENT) {
+		    replies[source].op_errno == GF_ERROR_CODE_NOENT) {
 			ret = afr_selfheal_entry_delete (this, fd->inode, name,
                                                          inode, i, replies);
                 } else {
@@ -330,7 +330,7 @@ __afr_selfheal_merge_dirent (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         if (!gf_uuid_compare (replies[src].poststat.ia_gfid,
                                               replies[i].poststat.ia_gfid))
                                 continue;
-                } else if (replies[i].op_errno != ENOENT) {
+                } else if (replies[i].op_errno != GF_ERROR_CODE_NOENT) {
 			continue;
                 }
 

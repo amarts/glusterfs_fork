@@ -1296,7 +1296,7 @@ dht_rename_unlink_links_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 	local = frame->local;
 	prev = cookie;
 
-	if ((op_ret == -1) && (op_errno != ENOENT)) {
+	if ((op_ret == -1) && (op_errno != GF_ERROR_CODE_NOENT)) {
 		gf_msg_debug (this->name, 0,
 		              "unlink of %s on %s failed (%s)",
 			      local->loc2.path, prev->name,
@@ -1468,7 +1468,7 @@ dht_rename_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 local->is_linkfile = _gf_true;
                 /* Found linkto file instead of data file, passdown ENOENT
                  * based on the above comment */
-                local->op_errno = ENOENT;
+                local->op_errno = GF_ERROR_CODE_NOENT;
         }
 
         if (!local->is_linkfile &&
@@ -1484,9 +1484,9 @@ dht_rename_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         " server_gfid: %s",
                         local->loc.path, gfid_local, gfid_server);
 
-                /* Will passdown ENOENT anyway since the file we sent on
+                /* Will passdown GF_ERROR_CODE_NOENT anyway since the file we sent on
                  * rename is replaced with a different file */
-                local->op_errno = ENOENT;
+                local->op_errno = GF_ERROR_CODE_NOENT;
                 /* Since local->is_linkfile is used here to detect failure,
                  * marking this to true */
                 local->is_linkfile = _gf_true;

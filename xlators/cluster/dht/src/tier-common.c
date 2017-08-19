@@ -101,7 +101,7 @@ tier_link (call_frame_t *frame, xlator_t *this,
         if (!cached_subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s", oldloc->path);
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -477,7 +477,7 @@ tier_unlink_nonhashed_linkfile_cbk (call_frame_t *frame, void *cookie,
 
         LOCK (&frame->lock);
         {
-                if ((op_ret == -1) && (op_errno != ENOENT)) {
+                if ((op_ret == -1) && (op_errno != GF_ERROR_CODE_NOENT)) {
                         local->op_errno = op_errno;
                         local->op_ret = op_ret;
                         gf_msg_debug (this->name, op_errno,
@@ -534,7 +534,7 @@ tier_unlink_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         LOCK (&frame->lock);
         {
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         local->op_ret   = 0;
                         local->op_errno = op_errno;
                 } else {
@@ -569,7 +569,7 @@ tier_unlink_linkfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         {
                 /* Ignore EINVAL for tier to ignore error when the file
                         does not exist on the other tier  */
-                if ((op_ret == -1) && !((op_errno == ENOENT) ||
+                if ((op_ret == -1) && !((op_errno == GF_ERROR_CODE_NOENT) ||
                                         (op_errno == EINVAL))) {
                         local->op_errno = op_errno;
                         local->op_ret   = op_ret;
@@ -622,7 +622,7 @@ tier_unlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if (op_ret == -1) {
-                        if (op_errno == ENOENT) {
+                        if (op_errno == GF_ERROR_CODE_NOENT) {
                                 local->op_ret = 0;
                         } else {
                                 local->op_ret   = -1;

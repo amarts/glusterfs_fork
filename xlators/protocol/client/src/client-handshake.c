@@ -1146,7 +1146,7 @@ client_setvolume_cbk (struct rpc_req *req, struct iovec *iov, int count, void *m
                         auth_fail = _gf_true;
                         op_ret = 0;
                 }
-                if ((op_errno == ENOENT) && this->ctx->cmd_args.subdir_mount) {
+                if ((op_errno == GF_ERROR_CODE_NOENT) && this->ctx->cmd_args.subdir_mount) {
                         /* A case of subdir not being present at the moment,
                            ride on auth_fail framework to notify the error */
                         auth_fail = _gf_true;

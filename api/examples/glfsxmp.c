@@ -295,7 +295,7 @@ test_h_unlink (void)
 
         /* unlink non-existent regular file */
         ret = glfs_h_unlink (fs, dir, my_file);
-        if ((ret && errno != ENOENT) || (ret == 0)) {
+        if ((ret && errno != GF_ERROR_CODE_NOENT) || (ret == 0)) {
                 fprintf (stderr, "glfs_h_unlink: error unlinking non-existent %s: invalid errno ,%d, %s\n",
                          my_file, ret, strerror (errno));
                 printf ("glfs_h_unlink tests: FAILED\n");
@@ -304,7 +304,7 @@ test_h_unlink (void)
 
         /* unlink non-existent directory */
         ret = glfs_h_unlink (fs, dir, my_subdir);
-        if ((ret && errno != ENOENT) || (ret == 0)) {
+        if ((ret && errno != GF_ERROR_CODE_NOENT) || (ret == 0)) {
                 fprintf (stderr, "glfs_h_unlink: error unlinking non-existent %s:  invalid errno ,%d, %s\n",
                          my_subdir, ret, strerror (errno));
                 printf ("glfs_h_unlink tests: FAILED\n");
@@ -1348,7 +1348,7 @@ test_handleops (int argc, char *argv[])
         printf ("glfs_h_mkdir tests: In Progress\n");
 
         ret = glfs_rmdir (fs, full_newparent_name);
-        if (ret && errno != ENOENT) {
+        if (ret && errno != GF_ERROR_CODE_NOENT) {
                 fprintf (stderr, "glfs_rmdir: Failed for %s: %s\n",
                          full_newparent_name, strerror (errno));
                 printf ("glfs_h_mkdir tests: FAILED\n");
@@ -1392,7 +1392,7 @@ test_handleops (int argc, char *argv[])
         /* Mknod tests */
         printf ("glfs_h_mknod tests: In Progress\n");
         ret = glfs_unlink (fs, full_newnod_name);
-        if (ret && errno != ENOENT) {
+        if (ret && errno != GF_ERROR_CODE_NOENT) {
                 fprintf (stderr, "glfs_unlink: Failed for %s: %s\n",
                          full_newnod_name, strerror (errno));
                 printf ("glfs_h_mknod tests: FAILED\n");

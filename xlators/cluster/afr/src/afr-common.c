@@ -2160,11 +2160,11 @@ afr_lookup_done (call_frame_t *frame, xlator_t *this)
 			continue;
 
 		if (locked_entry && replies[i].op_ret == -1 &&
-		    replies[i].op_errno == ENOENT) {
+		    replies[i].op_errno == GF_ERROR_CODE_NOENT) {
 			/* Second, check entry is still
 			   "underway" in creation */
 			local->op_ret = -1;
-			local->op_errno = ENOENT;
+			local->op_errno = GF_ERROR_CODE_NOENT;
 			goto unwind;
 		}
 
@@ -2284,7 +2284,7 @@ unwind:
  * others in that they must be given higher priority while
  * returning to the user.
  *
- * The hierarchy is ENODATA > ENOENT > GF_ERROR_CODE_STALE > others
+ * The hierarchy is ENODATA > GF_ERROR_CODE_NOENT > GF_ERROR_CODE_STALE > others
  */
 
 int
@@ -2292,8 +2292,8 @@ afr_higher_errno (int32_t old_errno, int32_t new_errno)
 {
 	if (old_errno == ENODATA || new_errno == ENODATA)
 		return ENODATA;
-        if (old_errno == ENOENT || new_errno == ENOENT)
-                return ENOENT;
+        if (old_errno == GF_ERROR_CODE_NOENT || new_errno == GF_ERROR_CODE_NOENT)
+                return GF_ERROR_CODE_NOENT;
 	if (old_errno == GF_ERROR_CODE_STALE || new_errno == GF_ERROR_CODE_STALE)
 		return ESTALE;
 

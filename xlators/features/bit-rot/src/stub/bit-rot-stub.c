@@ -2807,7 +2807,7 @@ unref_dict:
 /* lookup() */
 
 /**
- * This function mainly handles the ENOENT error for the bad objects. Though
+ * This function mainly handles the GF_ERROR_CODE_NOENT error for the bad objects. Though
  * br_stub_forget () handles removal of the link for the bad object from the
  * quarantine directory, its better to handle it in lookup as well, where
  * a failed lookup on a bad object with ENOENT, will trigger deletion of the
@@ -2821,7 +2821,7 @@ br_stub_handle_lookup_error (xlator_t *this, inode_t *inode, int32_t op_errno)
         uint64_t   ctx_addr = 0;
         br_stub_inode_ctx_t *ctx = NULL;
 
-        if (op_errno != ENOENT)
+        if (op_errno != GF_ERROR_CODE_NOENT)
                 goto out;
 
         if (!inode_is_linked (inode))

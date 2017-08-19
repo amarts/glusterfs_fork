@@ -519,7 +519,7 @@ dht_discover_complete (xlator_t *this, call_frame_t *discover_frame)
                 for (i = 0; i < layout->cnt; i++) {
                        if (!source && !layout->list[i].err)
                                 source = layout->list[i].xlator;
-                        if (layout->list[i].err == ENOENT ||
+                        if (layout->list[i].err == GF_ERROR_CODE_NOENT ||
                             layout->list[i].err == GF_ERROR_CODE_STALE) {
                                 heal_path = 1;
                         }
@@ -1013,7 +1013,7 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         local->op_errno = op_errno;
 
                         if ((op_errno != ENOTCONN)
-                            && (op_errno != ENOENT)
+                            && (op_errno != GF_ERROR_CODE_NOENT)
                             && (op_errno != GF_ERROR_CODE_STALE)) {
                                 gf_msg (this->name, GF_LOG_INFO, op_errno,
                                         DHT_MSG_REVALIDATE_CBK_INFO,
@@ -1032,11 +1032,11 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         /* if it is ENOENT, we may have to do a
                          * 'lookup_everywhere()' to make sure
                          * the file is not migrated */
-                        if (op_errno == ENOENT) {
+                        if (op_errno == GF_ERROR_CODE_NOENT) {
                                 if (IA_ISREG (local->loc.inode->ia_type)) {
 
                                         gf_msg_debug (this->name, 0,
-                                                      "found ENOENT for %s. "
+                                                      "found GF_ERROR_CODE_NOENT for %s. "
                                                       "Setting "
                                                       "need_lookup_everywhere"
                                                       " flag to 1",
@@ -1200,7 +1200,7 @@ cont:
                 }
 
                 if (local->need_lookup_everywhere) {
-                        /* As the current layout gave ENOENT error, we would
+                        /* As the current layout gave GF_ERROR_CODE_NOENT error, we would
                            need a new layout */
                         dht_layout_unref (this, local->layout);
                         local->layout = NULL;
@@ -1880,7 +1880,7 @@ dht_lookup_everywhere_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if (op_ret == -1) {
-                        if (op_errno != ENOENT)
+                        if (op_errno != GF_ERROR_CODE_NOENT)
                                 local->op_errno = op_errno;
                         goto unlock;
                 }
@@ -2322,14 +2322,14 @@ dht_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                               (parent_layout ?
                                               parent_layout->commit_hash : -1),
                                               conf->vol_commit_hash);
-                                local->op_errno = ENOENT;
+                                local->op_errno = GF_ERROR_CODE_NOENT;
                                 dht_lookup_everywhere (frame, this, loc);
                                 return 0;
                         }
                 } else {
                         if (conf->search_unhashed ==
                             GF_DHT_LOOKUP_UNHASHED_ON) {
-                                local->op_errno = ENOENT;
+                                local->op_errno = GF_ERROR_CODE_NOENT;
                                 dht_lookup_everywhere (frame, this, loc);
                                 return 0;
                         }
@@ -2343,7 +2343,7 @@ dht_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 if (ret || !parent_layout)
                                         goto out;
                                 if (parent_layout->search_unhashed) {
-                                        local->op_errno = ENOENT;
+                                        local->op_errno = GF_ERROR_CODE_NOENT;
                                         dht_lookup_everywhere (frame, this,
                                                                loc);
                                         return 0;
@@ -2735,7 +2735,7 @@ dht_unlink_linkfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         LOCK (&frame->lock);
         {
-                if ((op_ret == -1) && !((op_errno == ENOENT) ||
+                if ((op_ret == -1) && !((op_errno == GF_ERROR_CODE_NOENT) ||
                                         (op_errno == ENOTCONN))) {
                         local->op_errno = op_errno;
                         gf_msg_debug (this->name, op_errno,
@@ -2773,7 +2773,7 @@ dht_unlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if (op_ret == -1) {
-                        if (op_errno != ENOENT) {
+                        if (op_errno != GF_ERROR_CODE_NOENT) {
                                 local->op_ret   = -1;
                                 local->op_errno = op_errno;
                         } else {
@@ -3420,7 +3420,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
                                 goto unlock;
                         }
 
-                        if (op_errno == ENOENT) {
+                        if (op_errno == GF_ERROR_CODE_NOENT) {
                                 /* Do nothing, our defaults are set to this.
                                  */
                                 goto unlock;
@@ -3493,7 +3493,7 @@ dht_getxattr_get_real_filename (call_frame_t *frame, xlator_t *this,
         cnt = local->call_cnt = layout->cnt;
 
         local->op_ret = -1;
-        local->op_errno = ENOENT;
+        local->op_errno = GF_ERROR_CODE_NOENT;
 
         for (i = 0; i < cnt; i++) {
                 subvol = layout->list[i].xlator;
@@ -3559,7 +3559,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_LAYOUT_NULL,
                         "Layout is NULL");
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -3770,7 +3770,7 @@ dht_fgetxattr (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_LAYOUT_NULL,
                         "Layout is NULL");
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -5215,7 +5215,7 @@ list:
 
 done:
         if ((count == 0) || (local && (local->filled < local->size))) {
-                if ((next_offset == 0) || (op_errno == ENOENT)) {
+                if ((next_offset == 0) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         next_offset = 0;
                         next_subvol = dht_subvol_next (this, prev);
                 } else {
@@ -5253,7 +5253,7 @@ unwind:
         /* We need to ensure that only the last subvolume's end-of-directory
          * notification is respected so that directory reading does not stop
          * before all subvolumes have been read. That could happen because the
-         * posix for each subvolume sends a ENOENT on end-of-directory but in
+         * posix for each subvolume sends a GF_ERROR_CODE_NOENT on end-of-directory but in
          * distribute we're not concerned only with a posix's view of the
          * directory but the aggregated namespace' view of the directory.
          */
@@ -5336,7 +5336,7 @@ dht_readdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
 done:
         if ((count == 0) || (local && (local->filled < local->size))) {
-                if ((op_ret <= 0) || (op_errno == ENOENT)) {
+                if ((op_ret <= 0) || (op_errno == GF_ERROR_CODE_NOENT)) {
                         next_subvol = dht_subvol_next (this, prev);
                 } else {
                         next_subvol = prev;
@@ -5356,7 +5356,7 @@ unwind:
         /* We need to ensure that only the last subvolume's end-of-directory
          * notification is respected so that directory reading does not stop
          * before all subvolumes have been read. That could happen because the
-         * posix for each subvolume sends a ENOENT on end-of-directory but in
+         * posix for each subvolume sends a GF_ERROR_CODE_NOENT on end-of-directory but in
          * distribute we're not concerned only with a posix's view of the
          * directory but the aggregated namespace' view of the directory.
          */
@@ -5780,7 +5780,7 @@ dht_mknod_do (call_frame_t *frame)
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_HASHED_SUBVOL_GET_FAILED, "no subvolume in "
                         "layout for path=%s", local->loc.path);
-                local->op_errno = ENOENT;
+                local->op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -6605,7 +6605,7 @@ dht_link (call_frame_t *frame, xlator_t *this,
         if (!cached_subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s", oldloc->path);
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -6925,7 +6925,7 @@ dht_create_do (call_frame_t *frame)
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_HASHED_SUBVOL_GET_FAILED, "no subvolume in "
                         "layout for path=%s", local->loc.path);
-                local->op_errno = ENOENT;
+                local->op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -7364,7 +7364,7 @@ dht_mkdir_helper (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "mkdir (%s/%s) (path: %s): hashed subvol not "
                               "found", pgfid, loc->name, loc->path);
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -7758,7 +7758,7 @@ dht_rmdir_hashed_subvol_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         local->op_errno = op_errno;
                         local->op_ret   = -1;
                         if (conf->subvolume_cnt != 1) {
-                                if (op_errno != ENOENT && op_errno != EACCES
+                                if (op_errno != GF_ERROR_CODE_NOENT && op_errno != EACCES
                                     && op_errno != GF_ERROR_CODE_STALE) {
                                         local->need_selfheal = 1;
                                 }
@@ -7872,7 +7872,7 @@ dht_rmdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         LOCK (&frame->lock);
         {
                 if (op_ret == -1) {
-                        if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
+                        if ((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
                                 local->op_errno = op_errno;
                                 local->op_ret = -1;
 
@@ -8200,7 +8200,7 @@ dht_rmdir_linkfile_unlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this
                               "Unlinked linkfile %s on %s, gfid = %s",
                               local->loc.path, src->name, gfid);
         } else {
-                if (op_errno != ENOENT) {
+                if (op_errno != GF_ERROR_CODE_NOENT) {
                         readdirp_local->op_ret   = -1;
                         readdirp_local->op_errno = op_errno;
                 }
@@ -8316,7 +8316,7 @@ dht_rmdir_cached_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         "%s found on cached subvol %s",
                         local->loc.path, src->name);
                 goto err;
-        } else if (op_errno != ENOENT) {
+        } else if (op_errno != GF_ERROR_CODE_NOENT) {
                 readdirp_local->op_ret  = -1;
                 readdirp_local->op_errno = op_errno;
 
@@ -8680,7 +8680,7 @@ dht_rmdir_opendir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "opendir on %s for %s failed, "
                               "gfid = %s,",
                               prev->name, local->loc.path, gfid);
-                if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
+                if ((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_STALE)) {
                         local->op_ret = -1;
                         local->op_errno = op_errno;
                 }

@@ -70,7 +70,7 @@ TEST stat_dirs $N0
 TEST $CLI volume add-brick $V0 replica 2 $H0:$B0/${V0}{5,6,7,8}
 
 # Post this dht_access was creating a mess for directories which is fixed
-# with this commit. The issues could range from getting ENOENT or
+# with this commit. The issues could range from getting GF_ERROR_CODE_NOENT or
 # GF_ERROR_CODE_STALE or entries missing to directories not having complete
 # layouts.
 TEST cd $N0

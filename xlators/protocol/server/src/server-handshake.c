@@ -222,7 +222,7 @@ int
 server_getspec (rpcsvc_request_t *req)
 {
         int32_t              ret                    = -1;
-        int32_t              op_errno               = ENOENT;
+        int32_t              op_errno               = GF_ERROR_CODE_NOENT;
         int32_t              spec_fd                = -1;
         size_t               file_len               = 0;
         char                 filename[PATH_MAX]  = {0,};
@@ -273,7 +273,7 @@ server_getspec (rpcsvc_request_t *req)
                         _volfile_update_checksum (this, key, checksum);
                 }
         } else {
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
         }
 
         if (file_len) {
@@ -551,7 +551,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto fail;
         }
 
@@ -873,7 +873,7 @@ fail:
         if (op_ret >= 0 && client->bound_xl->itable) {
                 op_ret = server_first_lookup (this, client, reply);
                 if (op_ret == -1)
-                        op_errno = ENOENT;
+                        op_errno = GF_ERROR_CODE_NOENT;
         }
 
         rsp = GF_CALLOC (1, sizeof (gf_setvolume_rsp),

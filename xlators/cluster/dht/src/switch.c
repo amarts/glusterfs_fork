@@ -123,7 +123,7 @@ switch_local_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (ENTRY_MISSING (op_ret, op_errno)) {
                 if (conf->search_unhashed) {
-                        local->op_errno = ENOENT;
+                        local->op_errno = GF_ERROR_CODE_NOENT;
                         dht_lookup_everywhere (frame, this, loc);
                         return 0;
                 }
@@ -204,7 +204,7 @@ out:
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               local->loc.path);
-                local->op_errno = ENOENT;
+                local->op_errno = GF_ERROR_CODE_NOENT;
                 dht_lookup_everywhere (frame, this, loc);
                 return 0;
         }
@@ -432,7 +432,7 @@ switch_create (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               loc->path);
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 
@@ -531,7 +531,7 @@ switch_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               loc->path);
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 

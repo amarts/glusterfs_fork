@@ -98,7 +98,7 @@ ec_fop_needs_name_heal (ec_fop_data_t *fop)
 
         list_for_each_entry(cbk, &fop->cbk_list, list)
         {
-                if (cbk->op_ret < 0 && cbk->op_errno == ENOENT) {
+                if (cbk->op_ret < 0 && cbk->op_errno == GF_ERROR_CODE_NOENT) {
                         enoent_cbk = cbk;
                         break;
                 }

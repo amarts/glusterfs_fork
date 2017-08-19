@@ -173,7 +173,7 @@ posix_discover (call_frame_t *frame, xlator_t *this,
         op_errno = errno;
 
         if (op_ret == -1) {
-                if (op_errno != ENOENT) {
+                if (op_errno != GF_ERROR_CODE_NOENT) {
                         gf_log (this->name, GF_LOG_ERROR,
                                 "lstat on %s failed: %s",
                                 real_path, strerror (op_errno));
@@ -232,7 +232,7 @@ posix_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
         if (op_ret == -1) {
                 op_errno = errno;
-                if (op_errno == ENOENT) {
+                if (op_errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug(this->name, 0, "lstat on %s failed: %s",
                                      real_path ? real_path : "<null>",
                                      strerror (op_errno));
@@ -1437,7 +1437,7 @@ posix_readv (call_frame_t *frame, xlator_t *this,
 
         /* Hack to notify higher layers of EOF. */
         if (!stbuf.ia_size || (offset + vec.iov_len) >= stbuf.ia_size)
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
 
         op_ret = vec.iov_len;
 out:
@@ -2703,7 +2703,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
 		if (ret < 0) {
 			op_ret = -1;
 			op_errno = -ret;
-                        if (op_errno == ENOENT) {
+                        if (op_errno == GF_ERROR_CODE_NOENT) {
                                 gf_msg_debug (this->name, 0, "Failed to get "
                                               "real filename (%s, %s)",
                                               loc->path, name);
@@ -3906,7 +3906,7 @@ _posix_handle_xattr_keyvalue_pair (dict_t *d, char *k, data_t *v,
                                                     this->name, GF_LOG_WARNING,
                                                     "Extended attributes not "
                                                     "supported by filesystem");
-                        } else if (op_errno != ENOENT ||
+                        } else if (op_errno != GF_ERROR_CODE_NOENT ||
                                    !posix_special_xattr (marker_xattrs,
                                                          k)) {
                                 if (filler->real_path)
@@ -4603,7 +4603,7 @@ posix_fill_readdir (fd_t *fd, DIR *dir, off_t off, size_t size,
 
         if ((!sys_readdir (dir, scratch) && (errno == 0))) {
                 /* Indicate EOF */
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 /* Remember EOF offset for later detection */
                 pfd->dir_eof = (u_long)last_off;
         }
@@ -4783,7 +4783,7 @@ posix_do_readdir (call_frame_t *frame, xlator_t *this,
 	}
 	UNLOCK (&fd->lock);
 
-        /* pick ENOENT to indicate EOF */
+        /* pick GF_ERROR_CODE_NOENT to indicate EOF */
         op_errno = errno;
         op_ret = count;
 

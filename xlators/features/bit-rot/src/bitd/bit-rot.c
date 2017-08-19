@@ -452,7 +452,7 @@ br_object_read_sign (inode_t *linked_inode, fd_t *fd, br_object_t *object,
 
 static int br_object_sign_softerror (int32_t op_errno)
 {
-        return ((op_errno == ENOENT) || (op_errno == GF_ERROR_CODE_STALE)
+        return ((op_errno == GF_ERROR_CODE_NOENT) || (op_errno == GF_ERROR_CODE_STALE)
                 || (op_errno == ENODATA));
 }
 

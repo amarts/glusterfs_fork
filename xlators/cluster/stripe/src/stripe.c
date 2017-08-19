@@ -187,14 +187,14 @@ stripe_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 callcnt = --local->call_count;
 
                 if (op_ret == -1) {
-                        if (op_errno != ENOENT)
+                        if (op_errno != GF_ERROR_CODE_NOENT)
                                 gf_log (this->name, GF_LOG_DEBUG,
                                         "%s returned error %s",
                                         prev->this->name,
                                         strerror (op_errno));
                         if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
-                        if (((op_errno != ENOENT) && (op_errno != ENOTCONN)) ||
+                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != ENOTCONN)) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -375,18 +375,18 @@ stripe_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 callcnt = --local->call_count;
 
                 if (op_ret == -1) {
-                        if ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE))
+                        if ((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_STALE))
                                 gf_log (this->name, GF_LOG_DEBUG,
                                         "%s returned error %s",
                                         prev->this->name,
                                         strerror (op_errno));
                         if (local->op_errno != GF_ERROR_CODE_STALE)
                                 local->op_errno = op_errno;
-                        if (((op_errno != ENOENT) && (op_errno != ENOTCONN)
+                        if (((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != ENOTCONN)
                               && (op_errno != GF_ERROR_CODE_STALE)) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
-                        if (op_errno == ENOENT)
+                        if (op_errno == GF_ERROR_CODE_NOENT)
                                 local->entry_self_heal_needed = 1;
                 }
 
@@ -577,7 +577,7 @@ stripe_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -781,7 +781,7 @@ stripe_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -939,7 +939,7 @@ stripe_setattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -1116,7 +1116,7 @@ stripe_stack_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -1331,7 +1331,7 @@ stripe_unlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_DEBUG, "%s returned %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if (op_errno != ENOENT) {
+                        if (op_errno != GF_ERROR_CODE_NOENT) {
                                 local->failed = 1;
                                 local->op_ret = op_ret;
                         }
@@ -1477,7 +1477,7 @@ stripe_rmdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 if (op_ret == -1) {
                         gf_log (this->name, GF_LOG_DEBUG, "%s returned %s",
                                 prev->this->name, strerror (op_errno));
-                        if (op_errno != ENOENT)
+                        if (op_errno != GF_ERROR_CODE_NOENT)
                                 local->failed = 1;
                 }
         }
@@ -1664,7 +1664,7 @@ stripe_mknod_ifreg_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_DEBUG,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                         local->op_errno = op_errno;
@@ -1968,7 +1968,7 @@ stripe_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -2146,7 +2146,7 @@ stripe_link_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -2630,7 +2630,7 @@ stripe_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_DEBUG,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                         local->op_errno = op_errno;
@@ -2822,7 +2822,7 @@ stripe_lk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -2911,7 +2911,7 @@ stripe_flush_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -3001,7 +3001,7 @@ stripe_fsync_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -3117,7 +3117,7 @@ stripe_fstat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned error %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -3307,7 +3307,7 @@ stripe_fsyncdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "%s returned %s",
                                 prev->this->name, strerror (op_errno));
                         local->op_errno = op_errno;
-                        if ((op_errno != ENOENT) ||
+                        if ((op_errno != GF_ERROR_CODE_NOENT) ||
                             (prev->this == FIRST_CHILD (this)))
                                 local->failed = 1;
                 }
@@ -3445,10 +3445,10 @@ stripe_readv_fstat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         GF_FREE (local->replies[i].vector);
                 }
 
-                /* ENOENT signals EOF to the NFS-server */
+                /* GF_ERROR_CODE_NOENT signals EOF to the NFS-server */
                 if (op_ret != -1 && op_ret < local->readv_size &&
                     (local->offset + op_ret == buf->ia_size))
-                        op_errno = ENOENT;
+                        op_errno = GF_ERROR_CODE_NOENT;
 
                 /* FIXME: notice that st_ino, and st_dev (gen) will be
                  * different than what inode will have. Make sure this doesn't

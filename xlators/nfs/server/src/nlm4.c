@@ -2658,7 +2658,7 @@ nlm4svc_init(xlator_t *nfsx)
            out. Until then NLM support is non-existent on OSX.
         */
         ret = sys_unlink (GF_SM_NOTIFY_PIDFILE);
-        if (ret == -1 && errno != ENOENT) {
+        if (ret == -1 && errno != GF_ERROR_CODE_NOENT) {
                 gf_msg (GF_NLM, GF_LOG_ERROR, errno, NFS_MSG_UNLINK_ERROR,
                         "unable to unlink %s: %d",
                         GF_SM_NOTIFY_PIDFILE, errno);
@@ -2695,7 +2695,7 @@ nlm4svc_init(xlator_t *nfsx)
         }
 
         ret = sys_unlink (GF_RPC_STATD_PIDFILE);
-        if (ret == -1 && errno != ENOENT) {
+        if (ret == -1 && errno != GF_ERROR_CODE_NOENT) {
                 gf_msg (GF_NLM, GF_LOG_ERROR, errno, NFS_MSG_UNLINK_ERROR,
                         "unable to unlink %s", pid_file);
                 goto err;

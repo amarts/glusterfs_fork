@@ -422,7 +422,7 @@ send_fuse_err (xlator_t *this, fuse_in_header_t *finh, int error)
         inode_t  *inode = NULL;
 
         if (error == GF_ERROR_CODE_STALE)
-                error = ENOENT;
+                error = GF_ERROR_CODE_NOENT;
 
         fouh.error = -error;
         iov_out.iov_base = &fouh;
@@ -430,7 +430,7 @@ send_fuse_err (xlator_t *this, fuse_in_header_t *finh, int error)
         inode = fuse_ino_to_inode (finh->nodeid, this);
 
         // filter out ENOENT
-        if (error != ENOENT) {
+        if (error != GF_ERROR_CODE_NOENT) {
                 if (inode) {
                         fuse_log_eh (this,"Sending %s for operation %d on "
                                      "inode %s", strerror (error), finh->opcode,
@@ -537,12 +537,12 @@ fuse_entry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 #endif
         } else {
                 gf_log ("glusterfs-fuse",
-                        (op_errno == ENOENT ? GF_LOG_TRACE : GF_LOG_WARNING),
+                        (op_errno == GF_ERROR_CODE_NOENT ? GF_LOG_TRACE : GF_LOG_WARNING),
                         "%"PRIu64": %s() %s => -1 (%s)", frame->root->unique,
                         gf_fop_list[frame->root->op], state->loc.path,
                         strerror (op_errno));
 
-		if ((op_errno == ENOENT) && (priv->negative_timeout != 0)) {
+		if ((op_errno == GF_ERROR_CODE_NOENT) && (priv->negative_timeout != 0)) {
 			feo.entry_valid =
 				calc_timeout_sec (priv->negative_timeout);
 			feo.entry_valid_nsec =
@@ -588,7 +588,7 @@ fuse_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 		 * A stale mapping might exist for a dentry/inode that has been
 		 * removed from another client.
 		 */
-		if (op_errno == ENOENT)
+		if (op_errno == GF_ERROR_CODE_NOENT)
 			inode_unlink(state->loc.inode, state->loc.parent,
 				     state->loc.name);
                 inode_unref (state->loc.inode);
@@ -854,7 +854,7 @@ fuse_attr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                                         "%"PRIu64": loc_fill() on / failed",
                                         finh->unique);
-                                send_fuse_err (this, finh, ENOENT);
+                                send_fuse_err (this, finh, GF_ERROR_CODE_NOENT);
                                 free_fuse_state (state);
                                 return 0;
                         }
@@ -1059,7 +1059,7 @@ fuse_fd_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         goto err;
                 }
 
-                if (send_fuse_obj (this, finh, &foo) == ENOENT) {
+                if (send_fuse_obj (this, finh, &foo) == GF_ERROR_CODE_NOENT) {
                         gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
                                 "open(%s) got EINTR", state->loc.path);
                         gf_fd_put (priv->fdtable, state->fd_no);
@@ -1574,7 +1574,7 @@ fuse_mknod_resume (fuse_state_t *state)
                 return;
         }
 
-        if (state->resolve.op_errno == ENOENT) {
+        if (state->resolve.op_errno == GF_ERROR_CODE_NOENT) {
                 state->resolve.op_ret = 0;
                 state->resolve.op_errno = 0;
         }
@@ -1645,7 +1645,7 @@ fuse_mkdir_resume (fuse_state_t *state)
                 return;
         }
 
-        if (state->resolve.op_errno == ENOENT) {
+        if (state->resolve.op_errno == GF_ERROR_CODE_NOENT) {
                 state->resolve.op_ret = 0;
                 state->resolve.op_errno = 0;
         }
@@ -1784,7 +1784,7 @@ fuse_symlink_resume (fuse_state_t *state)
                 return;
         }
 
-        if (state->resolve.op_errno == ENOENT) {
+        if (state->resolve.op_errno == GF_ERROR_CODE_NOENT) {
                 state->resolve.op_ret = 0;
                 state->resolve.op_errno = 0;
         }
@@ -1910,7 +1910,7 @@ fuse_rename_resume (fuse_state_t *state)
                         uuid_utoa_r (state->resolve2.gfid, loc2_uuid),
                         state->resolve2.bname);
 
-                send_fuse_err (state->this, state->finh, ENOENT);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOENT);
                 free_fuse_state (state);
                 return;
         }
@@ -2074,7 +2074,7 @@ fuse_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 iov_out[2].iov_base = &foo;
                 iov_out[2].iov_len = sizeof (foo);
 
-                if (send_fuse_iov (this, finh, iov_out, 3) == ENOENT) {
+                if (send_fuse_iov (this, finh, iov_out, 3) == GF_ERROR_CODE_NOENT) {
                         gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
                                 "create(%s) got EINTR", state->loc.path);
                         inode_forget (inode, 1);
@@ -2115,7 +2115,7 @@ fuse_create_resume (fuse_state_t *state)
                 return;
         }
 
-        if (state->resolve.op_errno == ENOENT) {
+        if (state->resolve.op_errno == GF_ERROR_CODE_NOENT) {
                 state->resolve.op_ret = 0;
                 state->resolve.op_errno = 0;
         }
@@ -2226,7 +2226,7 @@ fuse_open_resume (fuse_state_t *state)
         if (!fd) {
                 gf_log ("fuse", GF_LOG_ERROR,
                         "fd is NULL");
-                send_fuse_err (state->this, state->finh, ENOENT);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOENT);
                 free_fuse_state (state);
                 return;
         }
@@ -4017,7 +4017,7 @@ notify_kernel_loop (void *data)
                 if (rv == -1 && errno == EBADF)
                         break;
 
-                if (rv != len && !(rv == -1 && errno == ENOENT)) {
+                if (rv != len && !(rv == -1 && errno == GF_ERROR_CODE_NOENT)) {
                         gf_log ("glusterfs-fuse", GF_LOG_INFO,
                                 "len: %u, rv: %zd, errno: %d", len, rv, errno);
                 }
@@ -5524,7 +5524,7 @@ init (xlator_t *this_xl)
         }
 
         if (sys_stat (value_string, &stbuf) != 0) {
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         gf_log (this_xl->name, GF_LOG_ERROR,
                                 "%s %s does not exist",
                                 ZR_MOUNTPOINT_OPT, value_string);
@@ -5601,7 +5601,7 @@ init (xlator_t *this_xl)
         ret = dict_get_str (options, "dump-fuse", &value_string);
         if (ret == 0) {
                 ret = sys_unlink (value_string);
-                if (ret != -1 || errno == ENOENT)
+                if (ret != -1 || errno == GF_ERROR_CODE_NOENT)
                         ret = open (value_string, O_RDWR|O_CREAT|O_EXCL,
                                     S_IRUSR|S_IWUSR);
                 if (ret == -1) {

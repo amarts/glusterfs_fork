@@ -451,7 +451,7 @@ __svs_initialise_snapshot_volume (xlator_t *this, const char *name,
         if (!dirent) {
                 gf_log (this->name, GF_LOG_DEBUG, "snap entry for "
                         "name %s not found", name);
-                local_errno = ENOENT;
+                local_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 

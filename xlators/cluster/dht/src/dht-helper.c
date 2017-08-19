@@ -518,11 +518,11 @@ dht_check_and_open_fd_on_subvol_task (void *data)
                  * inode_ctx and the fd was opened on the new cached suvol
                  * after this fop was wound on the old cached subvol.
                  * As we do not close the fd on the old subvol (a leak)
-                 * don't treat ENOENT as an error and allow the phase1/phase2
+                 * don't treat GF_ERROR_CODE_NOENT as an error and allow the phase1/phase2
                  * checks to handle it.
                  */
 
-                if ((-ret != ENOENT) && (-ret != GF_ERROR_CODE_STALE)) {
+                if ((-ret != GF_ERROR_CODE_NOENT) && (-ret != GF_ERROR_CODE_STALE)) {
                         local->op_errno = -ret;
                         ret = -1;
                 } else {

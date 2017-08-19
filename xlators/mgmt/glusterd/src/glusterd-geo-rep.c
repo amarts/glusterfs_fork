@@ -5074,7 +5074,7 @@ glusterd_gsync_delete (glusterd_volinfo_t *volinfo, char *slave,
 
         ret = sys_rmdir (geo_rep_dir);
         if (ret) {
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         gf_msg_debug (this->name, 0, "Geo Rep Dir(%s) Not Present.",
                                       geo_rep_dir);
                 else {
@@ -5877,7 +5877,7 @@ glusterd_check_gsync_present (int *valid_state)
         runner_redir (&runner, STDOUT_FILENO, RUN_PIPE);
         ret = runner_start (&runner);
         if (ret == -1) {
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         gf_msg ("glusterd", GF_LOG_INFO, ENOENT,
                                 GD_MSG_MODULE_NOT_INSTALLED, GEOREP" module "
                                 "not installed in the system");
@@ -6434,7 +6434,7 @@ create_essentials:
                                 "new working dir %s is done! ",
                                  old_working_dir, new_working_dir);
                 } else {
-                        if (errno == ENOENT) {
+                        if (errno == GF_ERROR_CODE_NOENT) {
                                 /* log error, but proceed with directory
                                  * creation below */
                                 gf_msg_debug (this->name, 0,

@@ -611,7 +611,7 @@ glusterd_store_delete_brick (glusterd_brickinfo_t *brickinfo, char *delete_path)
 
         ret = sys_unlink (brickpath);
 
-        if ((ret < 0) && (errno != ENOENT)) {
+        if ((ret < 0) && (errno != GF_ERROR_CODE_NOENT)) {
                 gf_msg_debug (this->name, 0, "Unlink failed on %s",
                               brickpath);
                 ret = -1;
@@ -667,7 +667,7 @@ glusterd_store_remove_bricks (glusterd_volinfo_t *volinfo, char *delete_path)
                 snprintf (path, sizeof (path), "%s/%s",
                           brickdir, entry->d_name);
                 ret = sys_unlink (path);
-                if (ret && errno != ENOENT) {
+                if (ret && errno != GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, 0, "Unable to unlink %s",
                                       path);
                 }
@@ -3511,7 +3511,7 @@ glusterd_recreate_vol_brick_mounts (xlator_t  *this,
                  * If not create the brick_mount_path */
                 ret = sys_lstat (brickinfo->path, &st_buf);
                 if (ret) {
-                        if (errno == ENOENT) {
+                        if (errno == GF_ERROR_CODE_NOENT) {
                                 ret = mkdir_p (brick_mount_path, 0777,
                                                _gf_true);
                                 if (ret) {
@@ -3777,8 +3777,8 @@ glusterd_store_retrieve_missed_snaps_list (xlator_t  *this)
 
         fp = fopen (path, "r");
         if (!fp) {
-                /* If errno is ENOENT then there are no missed snaps yet */
-                if (errno != ENOENT) {
+                /* If errno is GF_ERROR_CODE_NOENT then there are no missed snaps yet */
+                if (errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 GD_MSG_FILE_OP_FAILED,
                                 "Failed to open %s. ",
@@ -3871,7 +3871,7 @@ glusterd_store_retrieve_snaps (xlator_t  *this)
         if (!dir) {
                 /* If snaps dir doesn't exists ignore the error for
                    backward compatibility */
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         ret = -1;
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 GD_MSG_DIR_OP_FAILED, "Unable to open dir %s",
@@ -4069,7 +4069,7 @@ glusterd_store_delete_peerinfo (glusterd_peerinfo_t *peerinfo)
         }
 
         ret = sys_unlink (filepath);
-        if (ret && (errno == ENOENT))
+        if (ret && (errno == GF_ERROR_CODE_NOENT))
                 ret = 0;
 
 out:

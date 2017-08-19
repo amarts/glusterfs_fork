@@ -45,7 +45,7 @@ mtab_needs_update (const char *mnt)
          */
         res = lstat (_PATH_MOUNTED, &stbuf);
         if (res == -1) {
-                if (errno == ENOENT)
+                if (errno == GF_ERROR_CODE_NOENT)
                         return 0;
         } else {
                 uid_t ruid;

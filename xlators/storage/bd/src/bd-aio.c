@@ -127,7 +127,7 @@ bd_aio_readv_complete (struct bd_aio_cb *paiocb, int res, int res2)
 
         /* Hack to notify higher layers of EOF. */
         if (!postbuf.ia_size || (offset + iov.iov_len) >= postbuf.ia_size)
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
 
 out:
         STACK_UNWIND_STRICT (readv, frame, op_ret, op_errno, &iov, 1,

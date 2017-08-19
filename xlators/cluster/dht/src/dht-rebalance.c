@@ -375,9 +375,9 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
 
         ret = syncop_lookup (this, loc, &stbuf, NULL, dict, &xattr_rsp);
         if (ret) {
-                /*Ignore ENOENT and GF_ERROR_CODE_STALE as file might have been
+                /*Ignore GF_ERROR_CODE_NOENT and GF_ERROR_CODE_STALE as file might have been
                   migrated already*/
-                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                         ret = -2;
                         goto out;
                 }
@@ -723,7 +723,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
                         goto out;
                 }
         }
-        if ((ret < 0) && (-ret != ENOENT)) {
+        if ((ret < 0) && (-ret != GF_ERROR_CODE_NOENT)) {
                 /* File exists in destination, but not accessible */
                 gf_msg (THIS->name, GF_LOG_WARNING, -ret,
                         DHT_MSG_MIGRATE_FILE_FAILED,
@@ -793,7 +793,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
 
         }
 
-        if (-ret == ENOENT) {
+        if (-ret == GF_ERROR_CODE_NOENT) {
                 gf_msg (this->name, GF_LOG_ERROR, -ret,
                         DHT_MSG_MIGRATE_FILE_FAILED, "%s: file does not exists"
                         "on %s", loc->path, to->name);
@@ -1251,7 +1251,7 @@ migrate_special_files (xlator_t *this, xlator_t *from, xlator_t *to, loc_t *loc,
 
         /* check in the destination if the file is link file */
         ret = syncop_lookup (to, loc, &stbuf, NULL, dict, &rsp_dict);
-        if ((ret < 0) && (-ret != ENOENT)) {
+        if ((ret < 0) && (-ret != GF_ERROR_CODE_NOENT)) {
                 gf_msg (this->name, GF_LOG_WARNING, -ret,
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "%s: lookup failed",
@@ -1939,7 +1939,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                         }
 
                         ret = syncop_setxattr (old_target, loc, dict, 0, NULL, NULL);
-                        if (ret && -ret != GF_ERROR_CODE_STALE && -ret != ENOENT) {
+                        if (ret && -ret != GF_ERROR_CODE_STALE && -ret != GF_ERROR_CODE_NOENT) {
                                 gf_msg (this->name, GF_LOG_ERROR, -ret,
                                         DHT_MSG_MIGRATE_FILE_FAILED,
                                         "failed to set xattr on %s in %s",
@@ -1947,7 +1947,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 *fop_errno = -ret;
                                 ret = -1;
                                 goto out;
-                        } else if (-ret == GF_ERROR_CODE_STALE || -ret == ENOENT) {
+                        } else if (-ret == GF_ERROR_CODE_STALE || -ret == GF_ERROR_CODE_NOENT) {
                                /* The failure GF_ERROR_CODE_STALE indicates that the linkto
                                 * file on the hashed subvol might have been deleted.
                                 * In this case will create a linkto file with new target
@@ -2083,7 +2083,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
          * migrating data. If lookup from any other mount-point is performed,
          * converted-linkto-cached file will be treated as a stale and will be
          * unlinked. But by this time, file is already migrated. So further
-         * failure because of ENOENT should  not be treated as error
+         * failure because of GF_ERROR_CODE_NOENT should  not be treated as error
          */
 
         ret = syncop_stat (from, loc, &empty_iatt, NULL, NULL);
@@ -2093,7 +2093,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                         "%s: failed to do a stat on %s",
                         loc->path, from->name);
 
-                if (-ret != ENOENT) {
+                if (-ret != GF_ERROR_CODE_NOENT) {
                         *fop_errno = -ret;
                         ret = -1;
                         goto metaunlock;
@@ -3564,7 +3564,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         goto out;
                 }
 
-                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                 DHT_MSG_DIR_LOOKUP_FAILED,
                                 "Dir:%s renamed or removed. Skipping",
@@ -3587,7 +3587,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                                              &perrno);
 
                 if (ret && (ret != 2)) {
-                        if (perrno == ENOENT || perrno == GF_ERROR_CODE_STALE) {
+                        if (perrno == GF_ERROR_CODE_NOENT || perrno == GF_ERROR_CODE_STALE) {
                                 ret = 0;
                                 goto out;
                         } else {
@@ -3621,7 +3621,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
 
         ret = syncop_opendir (this, loc, fd, NULL, NULL);
         if (ret) {
-                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                         ret = 0;
                         goto out;
                 }
@@ -3640,7 +3640,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
         {
 
                 if (ret < 0) {
-                        if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                        if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                                 ret = 0;
                                 goto out;
                         }
@@ -3741,7 +3741,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         ret = syncop_lookup (this, &entry_loc, &iatt, NULL,
                                              NULL, NULL);
                         if (ret) {
-                                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                                 DHT_MSG_DIR_LOOKUP_FAILED,
                                                 "Dir:%s renamed or removed. "
@@ -3769,7 +3769,7 @@ gf_defrag_fix_layout (xlator_t *this, gf_defrag_info_t *defrag, loc_t *loc,
                         ret = syncop_setxattr (this, &entry_loc, fix_layout,
                                                0, NULL, NULL);
                         if (ret) {
-                                if (-ret == ENOENT || -ret == GF_ERROR_CODE_STALE) {
+                                if (-ret == GF_ERROR_CODE_NOENT || -ret == GF_ERROR_CODE_STALE) {
                                         gf_msg (this->name, GF_LOG_INFO, -ret,
                                                 DHT_MSG_LAYOUT_FIX_FAILED,
                                                 "Setxattr failed. Dir %s "

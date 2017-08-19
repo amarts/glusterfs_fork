@@ -22,7 +22,7 @@
 #include "common-utils.h"
 #include "syscall.h"
 #include "libglusterfs-messages.h"
-
+#include "compat-errno.h"
 
 
 struct event_slot_poll {
@@ -266,7 +266,7 @@ event_unregister_poll (struct event_pool *event_pool, int fd, int idx_hint)
                         gf_msg ("poll", GF_LOG_ERROR, 0, LG_MSG_INDEX_NOT_FOUND,
                                 "index not found for fd=%d (idx_hint=%d)",
                                 fd, idx_hint);
-                        errno = ENOENT;
+                        errno = GF_ERROR_CODE_NOENT;
                         goto unlock;
                 }
 
@@ -311,7 +311,7 @@ event_select_on_poll (struct event_pool *event_pool, int fd, int idx_hint,
                         gf_msg ("poll", GF_LOG_ERROR, 0, LG_MSG_INDEX_NOT_FOUND,
                                 "index not found for fd=%d (idx_hint=%d)",
                                 fd, idx_hint);
-                        errno = ENOENT;
+                        errno = GF_ERROR_CODE_NOENT;
                         goto unlock;
                 }
 

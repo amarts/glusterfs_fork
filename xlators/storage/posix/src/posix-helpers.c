@@ -622,7 +622,7 @@ posix_istat (xlator_t *this, uuid_t gfid, const char *basename,
 
         if (ret != 0) {
                 if (ret == -1) {
-                        if (errno != ENOENT && errno != ELOOP)
+                        if (errno != GF_ERROR_CODE_NOENT && errno != ELOOP)
                                 gf_msg (this->name, GF_LOG_WARNING, errno,
                                         P_MSG_LSTAT_FAILED,
                                         "lstat failed on %s",
@@ -641,7 +641,7 @@ posix_istat (xlator_t *this, uuid_t gfid, const char *basename,
 
         if ((lstatbuf.st_ino == priv->handledir.st_ino) &&
             (lstatbuf.st_dev == priv->handledir.st_dev)) {
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 return -1;
         }
 
@@ -685,7 +685,7 @@ posix_pstat (xlator_t *this, uuid_t gfid, const char *path,
 
         ret = sys_lstat (path, &lstatbuf);
         if (ret == -1) {
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         op_errno = errno;
                         gf_msg (this->name, GF_LOG_WARNING, errno,
                                 P_MSG_LSTAT_FAILED, "lstat failed on %s", path);
@@ -696,7 +696,7 @@ posix_pstat (xlator_t *this, uuid_t gfid, const char *path,
 
         if ((lstatbuf.st_ino == priv->handledir.st_ino) &&
             (lstatbuf.st_dev == priv->handledir.st_dev)) {
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 return -1;
         }
 
@@ -1166,7 +1166,7 @@ posix_handle_pair (xlator_t *this, const char *real_path,
 #endif
                 if (sys_ret < 0) {
                         ret = -errno;
-                        if (errno == ENOENT) {
+                        if (errno == GF_ERROR_CODE_NOENT) {
                                 if (!posix_special_xattr (marker_xattrs,
                                                           key)) {
                                         gf_msg (this->name, GF_LOG_ERROR, errno,
@@ -1220,7 +1220,7 @@ posix_fhandle_pair (xlator_t *this, int fd,
 
         if (sys_ret < 0) {
                 ret = -errno;
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_XATTR_FAILED, "fsetxattr on fd=%d"
                                 " failed", fd);
@@ -1281,7 +1281,7 @@ del_stale_dir_handle (xlator_t *this, uuid_t gfid)
 
         size = posix_handle_path (this, gfid, NULL, newpath, sizeof (newpath));
         if (size <= 0) {
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         gf_msg_debug (this->name, 0, "%s: %s", newpath,
                                 strerror (ENOENT));
                         stale = _gf_true;
@@ -1290,7 +1290,7 @@ del_stale_dir_handle (xlator_t *this, uuid_t gfid)
         }
 
         size = sys_lgetxattr (newpath, GFID_XATTR_KEY, gfid_curr, 16);
-        if (size < 0 && errno == ENOENT) {
+        if (size < 0 && errno == GF_ERROR_CODE_NOENT) {
                 gf_msg_debug (this->name, 0, "%s: %s", newpath,
                         strerror (ENOENT));
                 stale = _gf_true;
@@ -1303,7 +1303,7 @@ del_stale_dir_handle (xlator_t *this, uuid_t gfid)
 out:
         if (stale) {
                 size = sys_unlink (hpath);
-                if (size < 0 && errno != ENOENT)
+                if (size < 0 && errno != GF_ERROR_CODE_NOENT)
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_STALE_HANDLE_REMOVE_FAILED, "%s: Failed"
                                 "to remove handle to %s", hpath, newpath);
@@ -1694,7 +1694,7 @@ __posix_fd_ctx_get (fd_t *fd, xlator_t *this, struct posix_fd **pfd_p,
          */
         if (fd->inode->ia_type == IA_IFREG) {
                 _fd = open (real_path, fd->flags);
-                if ((_fd == -1) && (errno == ENOENT)) {
+                if ((_fd == -1) && (errno == GF_ERROR_CODE_NOENT)) {
                         POSIX_GET_FILE_UNLINK_PATH (priv->base_path,
                                                     fd->inode->gfid,
                                                     unlink_path);

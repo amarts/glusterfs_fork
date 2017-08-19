@@ -431,7 +431,7 @@ ga_newentry_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
 
-        if ((op_ret < 0) && ((op_errno != ENOENT) && (op_errno != GF_ERROR_CODE_STALE)))
+        if ((op_ret < 0) && ((op_errno != GF_ERROR_CODE_NOENT) && (op_errno != GF_ERROR_CODE_STALE)))
                 goto err;
 
         STACK_WIND (frame, ga_newentry_cbk, FIRST_CHILD(this),
@@ -728,9 +728,9 @@ ga_virtual_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
 unwind:
         /* Lookup on non-existing gfid returns ESTALE.
-           Convert into ENOENT for virtual lookup*/
+           Convert into GF_ERROR_CODE_NOENT for virtual lookup*/
         if (op_errno == GF_ERROR_CODE_STALE)
-               op_errno = ENOENT;
+               op_errno = GF_ERROR_CODE_NOENT;
 
         STACK_UNWIND_STRICT (lookup, frame, op_ret, op_errno, cbk_inode, buf,
                              xdata, postparent);
@@ -782,7 +782,7 @@ ga_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         uint64_t      value    = 0;
         inode_t      *inode    = NULL;
         inode_t      *true_inode    = NULL;
-        int32_t       op_errno = ENOENT;
+        int32_t       op_errno = GF_ERROR_CODE_NOENT;
 
         priv = this->private;
 

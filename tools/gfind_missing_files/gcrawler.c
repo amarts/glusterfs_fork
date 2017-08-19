@@ -367,12 +367,12 @@ xworker_do_crawl (struct xwork *xwork, struct dirjob *job)
                                  slavemnt, entry->d_name);
                 ret = sys_lstat (gfid_path, &statbuf);
 
-                if (ret && errno == ENOENT) {
+                if (ret && errno == GF_ERROR_CODE_NOENT) {
                         out ("%s\n", entry->d_name);
                         BUMP (skipped_gfids);
                 }
 
-                if (ret && errno != ENOENT) {
+                if (ret && errno != GF_ERROR_CODE_NOENT) {
                         err ("stat on slave failed(%s): %s\n",
                              gfid_path, strerror (errno));
                         goto out;

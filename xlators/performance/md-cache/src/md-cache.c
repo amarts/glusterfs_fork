@@ -1033,7 +1033,7 @@ mdc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
 
         if (op_ret != 0) {
-                if (op_errno == ENOENT)
+                if (op_errno == GF_ERROR_CODE_NOENT)
                         GF_ATOMIC_INC (conf->mdc_counter.negative_lookup);
                 goto out;
         }

@@ -3198,7 +3198,7 @@ __glusterd_handle_umount (rpcsvc_request_t *req)
 
         if (dict_get_str (this->options, "mountbroker-root",
                           &mountbroker_root) != 0) {
-                rsp.op_errno = ENOENT;
+                rsp.op_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 
@@ -5263,7 +5263,7 @@ glusterd_get_state (rpcsvc_request_t *req, dict_t *dict)
         if (dp) {
                 sys_closedir (dp);
         } else {
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         snprintf (err_str, sizeof (err_str),
                                   "Output directory %s does not exist.", odir);
                         gf_msg (this->name, GF_LOG_ERROR, 0,

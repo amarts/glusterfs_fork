@@ -410,7 +410,7 @@ afr_selfheal_name_source_empty_check (xlator_t *this, struct afr_reply *replies,
                 if (!sources[i])
                         continue;
 
-                if (replies[i].op_ret == -1 && replies[i].op_errno == ENOENT)
+                if (replies[i].op_ret == -1 && replies[i].op_errno == GF_ERROR_CODE_NOENT)
                         continue;
 
                 source_is_empty = _gf_false;

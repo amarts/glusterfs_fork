@@ -460,7 +460,7 @@ changelog_rollover_changelog (xlator_t *this,
         } else {
                 ret = sys_rename (ofile, nfile);
 
-                if (ret && (errno == ENOENT)) {
+                if (ret && (errno == GF_ERROR_CODE_NOENT)) {
                         ret = 0;
                         goto out;
                 }

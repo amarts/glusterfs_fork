@@ -507,7 +507,7 @@ bd_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         }
         bd_size = bdatt->iatt.ia_size;
         if (!bd_size || (offset + vec.iov_len) >= bd_size)
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
 
         op_ret = vec.iov_len;
         bd_update_amtime (&bdatt->iatt, GF_SET_ATTR_ATIME);
@@ -2076,7 +2076,7 @@ bd_unlink_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         uuid_utoa_r (inode->gfid, gfid);
         if (bd_delete_lv (this->private, gfid, &op_errno) < 0) {
-                if (op_errno != ENOENT)
+                if (op_errno != GF_ERROR_CODE_NOENT)
                         goto out;
         }
 

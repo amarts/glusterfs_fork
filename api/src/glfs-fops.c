@@ -465,11 +465,11 @@ retry:
 
 	ESTALE_RETRY (ret, errno, reval, &loc, retry);
 
-	if (ret == -1 && errno != ENOENT)
+	if (ret == -1 && errno != GF_ERROR_CODE_NOENT)
 		/* Any other type of error is fatal */
 		goto out;
 
-	if (ret == -1 && errno == ENOENT && !loc.parent)
+	if (ret == -1 && errno == GF_ERROR_CODE_NOENT && !loc.parent)
 		/* The parent directory or an ancestor even
 		   higher does not exist
 		*/
@@ -495,7 +495,7 @@ retry:
 		}
 	}
 
-	if (ret == -1 && errno == ENOENT) {
+	if (ret == -1 && errno == GF_ERROR_CODE_NOENT) {
 		loc.inode = inode_new (loc.parent->table);
 		if (!loc.inode) {
 			ret = -1;
@@ -1799,17 +1799,17 @@ retry:
 		goto out;
 	}
 
-	if (ret == -1 && errno != ENOENT)
+	if (ret == -1 && errno != GF_ERROR_CODE_NOENT)
 		/* Any other type of error is fatal */
 		goto out;
 
-	if (ret == -1 && errno == ENOENT && !loc.parent)
+	if (ret == -1 && errno == GF_ERROR_CODE_NOENT && !loc.parent)
 		/* The parent directory or an ancestor even
 		   higher does not exist
 		*/
 		goto out;
 
-	/* ret == -1 && errno == ENOENT */
+	/* ret == -1 && errno == GF_ERROR_CODE_NOENT */
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
@@ -1942,17 +1942,17 @@ retry:
 		goto out;
 	}
 
-	if (ret == -1 && errno != ENOENT)
+	if (ret == -1 && errno != GF_ERROR_CODE_NOENT)
 		/* Any other type of error is fatal */
 		goto out;
 
-	if (ret == -1 && errno == ENOENT && !loc.parent)
+	if (ret == -1 && errno == GF_ERROR_CODE_NOENT && !loc.parent)
 		/* The parent directory or an ancestor even
 		   higher does not exist
 		*/
 		goto out;
 
-	/* ret == -1 && errno == ENOENT */
+	/* ret == -1 && errno == GF_ERROR_CODE_NOENT */
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
@@ -2030,17 +2030,17 @@ retry:
 		goto out;
 	}
 
-	if (ret == -1 && errno != ENOENT)
+	if (ret == -1 && errno != GF_ERROR_CODE_NOENT)
 		/* Any other type of error is fatal */
 		goto out;
 
-	if (ret == -1 && errno == ENOENT && !loc.parent)
+	if (ret == -1 && errno == GF_ERROR_CODE_NOENT && !loc.parent)
 		/* The parent directory or an ancestor even
 		   higher does not exist
 		*/
 		goto out;
 
-	/* ret == -1 && errno == ENOENT */
+	/* ret == -1 && errno == GF_ERROR_CODE_NOENT */
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
@@ -2210,7 +2210,7 @@ retrynew:
 
 	ESTALE_RETRY (ret, errno, reval, &newloc, retrynew);
 
-	if (ret && errno != ENOENT && newloc.parent)
+	if (ret && errno != GF_ERROR_CODE_NOENT && newloc.parent)
 		goto out;
 
 	if (newiatt.ia_type != IA_INVAL) {

@@ -800,7 +800,7 @@ glfsh_print_pending_heals_type (glfs_t *fs, xlator_t *top_subvol, loc_t *rootloc
         ret = glfsh_get_index_dir_loc (rootloc, xl, &dirloc, &op_errno,
                                        vgfid);
         if (ret < 0) {
-                if (op_errno == GF_ERROR_CODE_STALE || op_errno == ENOENT ||
+                if (op_errno == GF_ERROR_CODE_STALE || op_errno == GF_ERROR_CODE_NOENT ||
                     op_errno == ENOTSUP)
                         ret = 0;
                 else
@@ -1203,7 +1203,7 @@ glfsh_heal_from_brick_type (glfs_t *fs, xlator_t *top_subvol, loc_t *rootloc,
         ret = glfsh_get_index_dir_loc (rootloc, client, &dirloc,
                                        &op_errno, vgfid);
         if (ret < 0) {
-                if (op_errno == GF_ERROR_CODE_STALE || op_errno == ENOENT)
+                if (op_errno == GF_ERROR_CODE_STALE || op_errno == GF_ERROR_CODE_NOENT)
                         ret = 0;
                 else
                         ret = -op_errno;
@@ -1487,7 +1487,7 @@ main (int argc, char **argv)
         ret = glfs_init (fs);
         if (ret < 0) {
                 ret = -errno;
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         gf_asprintf (&op_errstr, "Volume %s does not exist",
                                      volname);
                 } else {

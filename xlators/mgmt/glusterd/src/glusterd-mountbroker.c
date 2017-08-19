@@ -542,7 +542,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
 
         if (dict_get_str (this->options, "mountbroker-root",
                           &mountbroker_root) != 0) {
-                *op_errno = ENOENT;
+                *op_errno = GF_ERROR_CODE_NOENT;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         GD_MSG_DICT_GET_FAILED, "'option mountbroker-root' "
                         "missing in glusterd vol file");
@@ -592,7 +592,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         }
         if (glusterd_volinfo_find (volname, &vol) != 0 ||
             !glusterd_is_volume_started (vol)) {
-                *op_errno = ENOENT;
+                *op_errno = GF_ERROR_CODE_NOENT;
                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                         GD_MSG_MOUNT_REQ_FAIL,
                         "Either volume is not started or volinfo not found");

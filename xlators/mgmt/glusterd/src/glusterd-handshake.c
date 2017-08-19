@@ -396,7 +396,7 @@ gotvolinfo:
 
         ret = sys_stat (path, &stbuf);
 
-        if ((ret == -1) && (errno == ENOENT)) {
+        if ((ret == -1) && (errno == GF_ERROR_CODE_NOENT)) {
                 strncpy (dup_volid, volid_ptr, (PATH_MAX - 1));
                 if (!strchr (dup_volid, '.')) {
                         switch (volinfo->transport_type) {
@@ -911,7 +911,7 @@ __server_getspec (rpcsvc_request_t *req)
                 }
                 ret = file_len = stbuf.st_size;
         } else {
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto fail;
         }
 
@@ -1343,7 +1343,7 @@ int
 __server_get_volume_info (rpcsvc_request_t *req)
 {
         int                     ret             = -1;
-        int32_t                 op_errno        = ENOENT;
+        int32_t                 op_errno        = GF_ERROR_CODE_NOENT;
         gf_get_volume_info_req  vol_info_req    = {{0,}};
         gf_get_volume_info_rsp  vol_info_rsp    = {0,};
         char                    *volname        = NULL;
@@ -1489,7 +1489,7 @@ int
 __server_get_snap_info (rpcsvc_request_t *req)
 {
         int                             ret             = -1;
-        int                             op_errno        = ENOENT;
+        int                             op_errno        = GF_ERROR_CODE_NOENT;
         gf_getsnap_name_uuid_req        snap_info_req   = {{0,}};
         gf_getsnap_name_uuid_rsp        snap_info_rsp   = {0,};
         dict_t                          *dict           = NULL;

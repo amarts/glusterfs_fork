@@ -99,7 +99,7 @@ int bd_scan_vg (xlator_t *this, bd_priv_t *priv)
         if (!brick) {
                 gf_log (this->name, GF_LOG_CRITICAL, "VG %s is not found",
                         priv->vg);
-                return ENOENT;
+                return GF_ERROR_CODE_NOENT;
         }
 
         lv_dm_list = lvm_vg_list_lvs (brick);
@@ -427,7 +427,7 @@ bd_create (uuid_t uuid, uint64_t size, char *type, bd_priv_t *priv)
         if (!vg) {
                 gf_log (THIS->name, GF_LOG_WARNING, "opening VG %s failed",
                         priv->vg);
-                return ENOENT;
+                return GF_ERROR_CODE_NOENT;
         }
 
         if (!lvm_vg_create_lv_linear (vg, gfid, size)) {
@@ -544,13 +544,13 @@ bd_delete_lv (bd_priv_t *priv, const char *lv_name, int *op_errno)
         if (!vg) {
                 gf_log (THIS->name, GF_LOG_WARNING, "opening VG %s failed",
                         priv->vg);
-                *op_errno = ENOENT;
+                *op_errno = GF_ERROR_CODE_NOENT;
                 return -1;
         }
         lv = lvm_lv_from_name (vg, lv_name);
         if (!lv) {
                 gf_log (THIS->name, GF_LOG_WARNING, "No such LV %s", lv_name);
-                *op_errno = ENOENT;
+                *op_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
         ret = lvm_vg_remove_lv (lv);
@@ -753,7 +753,7 @@ bd_get_origin (bd_priv_t *priv, loc_t *loc, fd_t *fd, dict_t *dict)
         if (!brick) {
                 gf_log (THIS->name, GF_LOG_CRITICAL, "VG %s is not found",
                         priv->vg);
-                return ENOENT;
+                return GF_ERROR_CODE_NOENT;
         }
 
         if (fd)
@@ -765,7 +765,7 @@ bd_get_origin (bd_priv_t *priv, loc_t *loc, fd_t *fd, dict_t *dict)
         lv = lvm_lv_from_name (brick, gfid);
         if (!lv) {
                 gf_log (THIS->name, GF_LOG_CRITICAL, "LV %s not found", gfid);
-                ret = ENOENT;
+                ret = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 

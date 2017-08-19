@@ -1271,9 +1271,9 @@ glusterd_brickinfo_new_from_brick (char *brick,
             !gf_uuid_compare (new_brickinfo->uuid, MY_UUID)
             && new_brickinfo->real_path[0] == '\0') {
                 if (!realpath (new_brickinfo->path, abspath)) {
-                        /* ENOENT indicates that brick path has not been created
+                        /* GF_ERROR_CODE_NOENT indicates that brick path has not been created
                          * which is a valid scenario */
-                        if (errno != ENOENT) {
+                        if (errno != GF_ERROR_CODE_NOENT) {
                                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                                         GD_MSG_BRICKINFO_CREATE_FAIL, "realpath"
                                         " () failed for brick %s. The "
@@ -1353,7 +1353,7 @@ glusterd_is_brickpath_available (uuid_t uuid, char *path)
         strncpy (tmp_path, path, PATH_MAX);
         /* path may not yet exist */
         if (!realpath (path, tmp_path)) {
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         goto out;
                 }
                 /* When realpath(3) fails, tmp_path is undefined. */
@@ -4313,7 +4313,7 @@ glusterd_volinfo_copy_brickinfo (glusterd_volinfo_t *old_volinfo,
 
                             if (old_brickinfo->real_path[0] == '\0') {
                                 if (!realpath (new_brickinfo->path, abspath)) {
-                                        /* Here an ENOENT should also be a
+                                        /* Here an GF_ERROR_CODE_NOENT should also be a
                                          * failure as the brick is expected to
                                          * be in existance
                                          */

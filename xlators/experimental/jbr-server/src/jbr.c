@@ -979,7 +979,7 @@ jbr_get_changelog_dir (xlator_t *this, char **cl_dir_p)
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         J_MSG_INIT_FAIL,
                         "failed to find changelog translator");
-                return ENOENT;
+                return GF_ERROR_CODE_NOENT;
         }
 
         /* Find the actual changelog directory. */

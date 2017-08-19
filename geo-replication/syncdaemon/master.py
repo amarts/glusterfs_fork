@@ -746,7 +746,7 @@ class GMasterChangelogMixin(GMasterCommon):
             except:
                 exc = sys.exc_info()[1]
                 if ((isinstance(exc, OSError) or
-                     isinstance(exc, IOError)) and exc.errno == ENOENT):
+                     isinstance(exc, IOError)) and exc.errno == GF_ERROR_CODE_NOENT):
                     continue
                 else:
                     tar.close()

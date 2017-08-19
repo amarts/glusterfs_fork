@@ -1053,7 +1053,7 @@ dht_selfheal_dir_xattr_for_nameless_lookup (call_frame_t *frame, loc_t *loc,
 
                 if ((j != -1) && (layout->list[j].err != -1) &&
                    (layout->list[j].err != 0) &&
-                   (layout->list[j].err != ENOENT)) {
+                   (layout->list[j].err != GF_ERROR_CODE_NOENT)) {
                         missing_xattr++;
                 }
 
@@ -1100,7 +1100,7 @@ dht_selfheal_dir_xattr_for_nameless_lookup (call_frame_t *frame, loc_t *loc,
                 j = dht_layout_index_from_conf (layout, conf->subvolumes[i]);
 
                 if ((j != -1) && (layout->list[j].err != -1) &&
-                    (layout->list[j].err != ENOENT) &&
+                    (layout->list[j].err != GF_ERROR_CODE_NOENT) &&
                     (layout->list[j].err != 0)) {
                         dht_selfheal_dir_xattr_persubvol (frame, loc, dummy, 0,
                                                           conf->subvolumes[i]);
@@ -1337,7 +1337,7 @@ dht_selfheal_dir_mkdir_lookup_done (call_frame_t *frame, xlator_t *this)
         cnt = layout->cnt;
         for (i = 0; i < cnt; i++) {
                 if (layout->list[i].err == GF_ERROR_CODE_STALE ||
-                    layout->list[i].err == ENOENT ||
+                    layout->list[i].err == GF_ERROR_CODE_NOENT ||
                     local->selfheal.force_mkdir) {
                         gf_msg_debug (this->name, 0,
                                       "Creating directory %s on subvol %s",
@@ -1390,7 +1390,7 @@ dht_selfheal_dir_mkdir_lookup_cbk (call_frame_t *frame, void *cookie,
         LOCK (&frame->lock);
         {
                 if ((op_ret < 0) &&
-                    (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)) {
+                    (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE)) {
                         local->selfheal.hole_cnt = !local->selfheal.hole_cnt ? 1
                                                 : local->selfheal.hole_cnt + 1;
                 }
@@ -1411,7 +1411,7 @@ dht_selfheal_dir_mkdir_lookup_cbk (call_frame_t *frame, void *cookie,
                         goto err;
                 } else {
                         for (i = 0; i < layout->cnt; i++) {
-                                if (layout->list[i].err == ENOENT ||
+                                if (layout->list[i].err == GF_ERROR_CODE_NOENT ||
                                     layout->list[i].err == GF_ERROR_CODE_STALE ||
                                     local->selfheal.force_mkdir)
                                         missing_dirs++;
@@ -1510,7 +1510,7 @@ dht_selfheal_dir_mkdir (call_frame_t *frame, loc_t *loc,
         local->selfheal.hole_cnt = 0;
 
         for (i = 0; i < layout->cnt; i++) {
-                if (layout->list[i].err == ENOENT || force)
+                if (layout->list[i].err == GF_ERROR_CODE_NOENT || force)
                         missing_dirs++;
         }
 
@@ -1596,7 +1596,7 @@ dht_get_layout_count (xlator_t *this, dht_layout_t *layout, int new_layout)
 
         for (i = 0; i < layout->cnt; i++) {
                 err = layout->list[i].err;
-                if (err == -1 || err == 0 || err == ENOENT) {
+                if (err == -1 || err == 0 || err == GF_ERROR_CODE_NOENT) {
                         /* Take this with a pinch of salt. The behaviour seems
                          * to be slightly different when this function is
                          * invoked from mkdir codepath. For eg., err == 0 in
@@ -1907,7 +1907,7 @@ dht_selfheal_layout_new_directory (call_frame_t *frame, loc_t *loc,
         bricks_used = 0;
         for (i = 0; i < layout->cnt; ++i) {
                 err = layout->list[i].err;
-                if ((err != -1) && (err != ENOENT)) {
+                if ((err != -1) && (err != GF_ERROR_CODE_NOENT)) {
                         continue;
                 }
                 curr_size = dht_get_chunks_from_xl (this,
@@ -1951,7 +1951,7 @@ dht_selfheal_layout_new_directory (call_frame_t *frame, loc_t *loc,
         for (real_i = 0; real_i < layout->cnt; real_i++) {
                 i = (real_i + start_subvol) % layout->cnt;
                 err = layout->list[i].err;
-                if ((err != -1) && (err != ENOENT)) {
+                if ((err != -1) && (err != GF_ERROR_CODE_NOENT)) {
                         continue;
                 }
                 if (weight_by_size) {
@@ -2009,7 +2009,7 @@ dht_selfheal_dir_getafix (call_frame_t *frame, loc_t *loc,
 
         for (i = 0; i < layout->cnt; i++) {
                 /* directory not present */
-                if (layout->list[i].err == ENOENT) {
+                if (layout->list[i].err == GF_ERROR_CODE_NOENT) {
                         ret = 0;
                         break;
                 }
@@ -2463,7 +2463,7 @@ dht_update_commit_hash_for_layout_resume (call_frame_t *frame, void *cookie,
                 ret = dht_layout_index_for_subvol (layout,
                                                    conf->local_subvols[i]);
                 if (ret < 0) {
-                        local->op_errno = ENOENT;
+                        local->op_errno = GF_ERROR_CODE_NOENT;
 
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 DHT_MSG_DIR_SELFHEAL_XATTR_FAILED,

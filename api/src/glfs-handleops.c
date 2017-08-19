@@ -1744,7 +1744,7 @@ pub_glfs_h_rename (struct glfs *fs, struct glfs_object *olddir,
         ret = glfs_resolve_at (fs, subvol, newpinode, newname, &newloc,
                                     &newiatt, 0, 0);
 
-        if (ret && errno != ENOENT && newloc.parent)
+        if (ret && errno != GF_ERROR_CODE_NOENT && newloc.parent)
                 goto out;
 
         if (newiatt.ia_type != IA_INVAL) {
@@ -2080,7 +2080,7 @@ pub_glfs_h_poll_upcall (struct glfs *fs, struct glfs_upcall **up_arg)
                                  * the same client. Irrespective of the error,
                                  * return with an error or success+ENOENT. */
                                 if ((*up_arg)->reason == GLFS_UPCALL_EVENT_NULL)
-                                        errno = ENOENT;
+                                        errno = GF_ERROR_CODE_NOENT;
 
                                 GF_FREE (*up_arg);
                                 *up_arg = NULL;
@@ -2092,7 +2092,7 @@ pub_glfs_h_poll_upcall (struct glfs *fs, struct glfs_upcall **up_arg)
                 /* fallthrough till we support leases */
                 case GF_UPCALL_EVENT_NULL:
                 /* no 'default:' label, to force handling all upcall events */
-                        errno = ENOENT;
+                        errno = GF_ERROR_CODE_NOENT;
                         break;
                 }
 
@@ -2100,7 +2100,7 @@ pub_glfs_h_poll_upcall (struct glfs *fs, struct glfs_upcall **up_arg)
                 GF_FREE (u_list);
         } else {
                 /* fs->upcall_list was empty, no upcall events cached */
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
         }
 
         ret = 0;
@@ -2153,7 +2153,7 @@ pub_glfs_h_poll_upcall370 (struct glfs *fs, struct glfs_callback_arg *up_arg)
         ret = pub_glfs_h_poll_upcall (fs, &upcall);
         if (ret == 0) {
                 up_arg->fs = fs;
-                if (errno == ENOENT || upcall->event == NULL) {
+                if (errno == GF_ERROR_CODE_NOENT || upcall->event == NULL) {
                         up_arg->reason = GLFS_UPCALL_EVENT_NULL;
                         goto out;
                 }

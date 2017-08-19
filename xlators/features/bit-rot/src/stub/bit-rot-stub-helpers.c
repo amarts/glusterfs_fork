@@ -173,7 +173,7 @@ br_stub_add (xlator_t *this, uuid_t gfid)
 
         ret = sys_link (bad_gfid_path, gfid_path);
         if (ret) {
-                if ((errno != ENOENT) && (errno != EMLINK) && (errno != EEXIST))
+                if ((errno != GF_ERROR_CODE_NOENT) && (errno != EMLINK) && (errno != EEXIST))
                         goto out;
 
                 /*
@@ -206,7 +206,7 @@ br_stub_del (xlator_t *this, uuid_t gfid)
         br_stub_linked_entry (priv, gfid_path, gfid,
                               sizeof (gfid_path));
         ret = sys_unlink (gfid_path);
-        if (ret && (errno != ENOENT)) {
+        if (ret && (errno != GF_ERROR_CODE_NOENT)) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         BRS_MSG_BAD_OBJ_UNLINK_FAIL,
                         "%s: failed to delete bad object link from quarantine "
@@ -238,7 +238,7 @@ br_stub_check_stub_directory (xlator_t *this, char *fullpath)
         if (!ret && !S_ISDIR (st.st_mode))
                 goto error_return;
         if (ret) {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         goto error_return;
                 ret =  sys_stat (oldpath, &st);
                 if (ret)
@@ -275,7 +275,7 @@ br_stub_check_stub_file (xlator_t *this, char *path)
         if (!ret && !S_ISREG (st.st_mode))
                 goto error_return;
         if (ret) {
-                if (errno != ENOENT)
+                if (errno != GF_ERROR_CODE_NOENT)
                         goto error_return;
                 fd = sys_creat (path, 0);
                 if (fd < 0)
@@ -588,7 +588,7 @@ br_stub_fill_readdir (fd_t *fd, br_stub_fd_t *fctx, DIR *dir, off_t off,
 
         if ((!sys_readdir (dir, scratch) && (errno == 0))) {
                 /* Indicate EOF */
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 /* Remember EOF offset for later detection */
                 fctx->bad_object.dir_eof = last_off;
         }
@@ -631,7 +631,7 @@ br_stub_readdir_wrapper (call_frame_t *frame, xlator_t *this,
 
         count = br_stub_fill_readdir (fd, fctx, dir, off, size, &entries);
 
-        /* pick ENOENT to indicate EOF */
+        /* pick GF_ERROR_CODE_NOENT to indicate EOF */
         op_errno = errno;
         op_ret = count;
 done:

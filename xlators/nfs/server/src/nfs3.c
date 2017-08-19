@@ -308,7 +308,7 @@ out:
                 char buf[256], gfid[256];                               \
                 rpc_transport_t *trans = NULL;                          \
                 if (((cst)->resolve_ret < 0) &&                         \
-                    ((cst)->resolve_errno != ENOENT)) {                 \
+                    ((cst)->resolve_errno != GF_ERROR_CODE_NOENT)) {                 \
                         trans = rpcsvc_request_transport (cst->req);    \
                         xlatorp = nfs3_fh_to_xlator (cst->nfs3state,    \
                                                      &cst->resolvefh);  \
@@ -2032,7 +2032,7 @@ nfs3svc_read_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         } else
                 stat = NFS3_OK;
 
-        if (op_errno == ENOENT)
+        if (op_errno == GF_ERROR_CODE_NOENT)
                 is_eof = 1;
 
 err:
@@ -2711,7 +2711,7 @@ nfs3_create_exclusive (nfs3_call_state_t *cs)
          * interrupted due to server failure or dropped packets.
          */
         if ((cs->resolve_ret == 0) ||
-            ((cs->resolve_ret == -1) && (cs->resolve_errno != ENOENT))) {
+            ((cs->resolve_ret == -1) && (cs->resolve_errno != GF_ERROR_CODE_NOENT))) {
                 ret = nfs_stat (cs->nfsx, cs->vol, &nfu, &cs->resolvedloc,
                                 nfs3svc_create_stat_cbk, cs);
                 goto nfs3err;
@@ -4296,7 +4296,7 @@ nfs3svc_readdir_fstat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         /* Check whether we encountered a end of directory stream while
          * readdir'ing.
          */
-        if (cs->operrno == ENOENT) {
+        if (cs->operrno == GF_ERROR_CODE_NOENT) {
                 gf_msg_trace (GF_NFS3, 0, "Reached end-of-directory");
                 is_eof = 1;
         }

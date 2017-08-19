@@ -564,7 +564,7 @@ index_fill_readdir (fd_t *fd, index_fd_ctx_t *fctx, DIR *dir, off_t off,
 
         if ((!sys_readdir (dir, scratch) && (errno == 0))) {
                 /* Indicate EOF */
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 /* Remember EOF offset for later detection */
                 fctx->dir_eof = last_off;
         }
@@ -589,7 +589,7 @@ index_link_to_base (xlator_t *this, char *base, size_t base_len,
         }
 
         op_errno = errno;
-        if (op_errno == ENOENT) {
+        if (op_errno == GF_ERROR_CODE_NOENT) {
                 ret = index_dir_create (this, subdir);
                 if (ret) {
                         op_errno = errno;
@@ -699,7 +699,7 @@ index_del (xlator_t *this, uuid_t gfid, const char *subdir, int type)
                 ret = sys_unlink (gfid_path);
         }
 
-        if (ret && (errno != ENOENT)) {
+        if (ret && (errno != GF_ERROR_CODE_NOENT)) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         INDEX_MSG_INDEX_DEL_FAILED, "%s: failed to delete"
                         " from index", gfid_path);
@@ -882,7 +882,7 @@ index_entry_delete (xlator_t *this, uuid_t pgfid, char *filename)
                   filename);
 
         ret = sys_unlink (entry_path);
-        if (ret && (errno != ENOENT)) {
+        if (ret && (errno != GF_ERROR_CODE_NOENT)) {
                 op_errno = errno;
                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                         INDEX_MSG_INDEX_DEL_FAILED,
@@ -968,7 +968,7 @@ index_init_state (xlator_t *this, inode_t *inode, index_inode_ctx_t *ctx,
         ret = sys_stat (pgfid_path, &st);
         if (ret == 0)
                 ctx->state[ENTRY_CHANGES] = IN;
-        else if (ret != 0 && errno == ENOENT)
+        else if (ret != 0 && errno == GF_ERROR_CODE_NOENT)
                 ctx->state[ENTRY_CHANGES] = NOTIN;
 
         return;
@@ -1706,7 +1706,7 @@ index_readdir_wrapper (call_frame_t *frame, xlator_t *this,
 
         count = index_fill_readdir (fd, fctx, dir, off, size, &entries);
 
-        /* pick ENOENT to indicate EOF */
+        /* pick GF_ERROR_CODE_NOENT to indicate EOF */
         op_errno = errno;
         op_ret = count;
         if (index_is_virtual_gfid (priv, fd->inode->gfid) &&

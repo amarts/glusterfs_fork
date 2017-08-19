@@ -222,8 +222,8 @@ out:
         }
 
         if (rsp.op_ret == -1) {
-                /* any error other than ENOENT */
-                if (rsp.op_errno != ENOENT)
+                /* any error other than GF_ERROR_CODE_NOENT */
+                if (rsp.op_errno != GF_ERROR_CODE_NOENT)
                         gf_msg (this->name, GF_LOG_WARNING, rsp.op_errno,
                                 Q_MSG_LOOKUP_FAILED,
                                 "Getting cluster-wide size of directory failed "

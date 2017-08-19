@@ -655,7 +655,7 @@ dht_layout_missing_dirs (dht_layout_t *layout)
                 goto out;
 
         for (i = 0; i < layout->cnt; i++) {
-                if ((layout->list[i].err == ENOENT)
+                if ((layout->list[i].err == GF_ERROR_CODE_NOENT)
                     || ((layout->list[i].err == -1)
                         && (layout->list[i].start == 0)
                         && (layout->list[i].stop == 0))) {

@@ -1773,7 +1773,7 @@ quota_writev_helper (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
                         vector = new_vector;
                         count = new_count;
-                } else if (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE) {
+                } else if (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE) {
                         /* We may get ENOENT/ESTALE in case of below scenario
                          *     fd = open file.txt
                          *     unlink file.txt
@@ -4782,7 +4782,7 @@ quota_fallocate_helper (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         if (local->op_ret == -1) {
                 op_errno = local->op_errno;
-                if (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE) {
+                if (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE) {
                         /* We may get ENOENT/ESTALE in case of below scenario
                          *     fd = open file.txt
                          *     unlink file.txt

@@ -2983,13 +2983,13 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
         }
 
         if (exp == NULL) {
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 return NULL;
         }
 
         nfs = (struct nfs_state *)nfsx->private;
         if (!nfs_subvolume_started (nfs, exp->vol)) {
-                errno = ENOENT;
+                errno = GF_ERROR_CODE_NOENT;
                 return NULL;
         }
 
@@ -3023,7 +3023,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
         if (inode == NULL) {
                 /* Don't over-write errno */
                 if (!errno)
-                        errno = ENOENT;
+                        errno = GF_ERROR_CODE_NOENT;
                 goto err;
         }
 

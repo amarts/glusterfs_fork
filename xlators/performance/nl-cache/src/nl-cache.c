@@ -203,7 +203,7 @@ nlc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         /* Donot add to pe, this may lead to duplicate entry and
          * requires search before adding if list of strings */
-        if (op_ret < 0 && op_errno == ENOENT) {
+        if (op_ret < 0 && op_errno == GF_ERROR_CODE_NOENT) {
                 nlc_dir_add_ne (this, local->loc.parent, local->loc.name);
                 GF_ATOMIC_INC (conf->nlc_counter.nlc_miss);
         }
@@ -291,7 +291,7 @@ nlc_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (!IS_PEC_ENABLED (conf))
                 goto out;
 
-        if (op_ret < 0 && op_errno == ENOENT) {
+        if (op_ret < 0 && op_errno == GF_ERROR_CODE_NOENT) {
                 GF_ATOMIC_INC (conf->nlc_counter.getrealfilename_miss);
         }
 

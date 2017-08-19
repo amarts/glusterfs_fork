@@ -1141,7 +1141,7 @@ nlc_get_real_file_name (xlator_t *this, loc_t *loc, const char *fname,
                 }
                 if (!found_file && (nlc_ctx->state & NLC_PE_FULL)) {
                         *op_ret = -1;
-                        *op_errno = ENOENT;
+                        *op_errno = GF_ERROR_CODE_NOENT;
                         hit = _gf_true;
                         goto unlock;
                 }

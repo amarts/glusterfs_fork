@@ -396,7 +396,7 @@ glusterd_rebalance_rpc_create (glusterd_volinfo_t *volinfo)
         /* TODO: Remove this once we don't need backward compatibility
          * with the older path
          */
-        if (ret && (errno == ENOENT)) {
+        if (ret && (errno == GF_ERROR_CODE_NOENT)) {
                 gf_msg (this->name, GF_LOG_WARNING, errno,
                         GD_MSG_FILE_OP_FAILED, "Rebalance sockfile "
                         "%s does not exist. Trying old path.",

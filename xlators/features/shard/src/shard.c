@@ -1693,7 +1693,7 @@ shard_common_lookup_shards_cbk (call_frame_t *frame, void *cookie,
                 case GF_FOP_FTRUNCATE:
                 case GF_FOP_RENAME:
                 case GF_FOP_UNLINK:
-                        if (op_errno == ENOENT)
+                        if (op_errno == GF_ERROR_CODE_NOENT)
                                 goto done;
                         break;
                 case GF_FOP_WRITE:
@@ -1702,7 +1702,7 @@ shard_common_lookup_shards_cbk (call_frame_t *frame, void *cookie,
                 case GF_FOP_DISCARD:
                 case GF_FOP_FALLOCATE:
                         if ((!local->first_lookup_done) &&
-                            (op_errno == ENOENT)) {
+                            (op_errno == GF_ERROR_CODE_NOENT)) {
                                 local->create_count++;
                                 goto done;
                         }
@@ -1879,7 +1879,7 @@ shard_post_resolve_truncate_handler (call_frame_t *frame, xlator_t *this)
         local = frame->local;
 
         if (local->op_ret < 0) {
-                if (local->op_errno == ENOENT) {
+                if (local->op_errno == GF_ERROR_CODE_NOENT) {
                         /* If lookup on /.shard fails with ENOENT, it means that
                          * the file was 0-byte in size but truncated sometime in
                          * the past to a higher size which is reflected in the
@@ -2291,7 +2291,7 @@ shard_post_lookup_shards_unlink_handler (call_frame_t *frame, xlator_t *this)
 
         local = frame->local;
 
-        if ((local->op_ret < 0) && (local->op_errno != ENOENT)) {
+        if ((local->op_ret < 0) && (local->op_errno != GF_ERROR_CODE_NOENT)) {
                 if (local->fop == GF_FOP_UNLINK)
                         SHARD_STACK_UNWIND (unlink, frame, local->op_ret,
                                             local->op_errno, NULL, NULL, NULL);
@@ -2322,7 +2322,7 @@ shard_post_resolve_unlink_handler (call_frame_t *frame, xlator_t *this)
         local = frame->local;
 
         if (local->op_ret < 0) {
-                if (local->op_errno == ENOENT) {
+                if (local->op_errno == GF_ERROR_CODE_NOENT) {
                         /* If lookup on /.shard fails with ENOENT, it probably
                          * means that the file is being unlinked before it
                          * could grow beyond its first block. In this case,
@@ -3433,7 +3433,7 @@ shard_post_resolve_readv_handler (call_frame_t *frame, xlator_t *this)
         local = frame->local;
 
         if (local->op_ret < 0) {
-                if (local->op_errno != ENOENT) {
+                if (local->op_errno != GF_ERROR_CODE_NOENT) {
                         SHARD_STACK_UNWIND (readv, frame, local->op_ret,
                                             local->op_errno, NULL, 0, NULL,
                                             NULL, NULL);

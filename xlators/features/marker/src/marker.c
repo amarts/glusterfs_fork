@@ -2368,7 +2368,7 @@ call_from_sp_client_to_reset_tmfile (call_frame_t *frame,
                         sys_close (fd);
                 }
 
-                if (fd != -1 || errno == ENOENT) {
+                if (fd != -1 || errno == GF_ERROR_CODE_NOENT) {
                         op_ret = 0;
                         op_errno = 0;
                 } else {

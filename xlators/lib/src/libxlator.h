@@ -78,7 +78,7 @@ struct volume_mark {
  *   is required.
 
  * If the requirement is not met, then i is mapped
- * to the respective errno (MCNT_ENOENT -> ENOENT),
+ * to the respective errno (MCNT_ENOENT -> GF_ERROR_CODE_NOENT),
  * or in lack of that, EINVAL.
 
  * Cf. evaluate_marker_results() and marker_idx_errno_map[]

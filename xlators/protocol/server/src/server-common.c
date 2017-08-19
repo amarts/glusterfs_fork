@@ -420,7 +420,7 @@ server_post_create (call_frame_t *frame, gfs3_create_rsp *rsp,
                                  state->loc.name, stbuf);
 
         if (!link_inode) {
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 

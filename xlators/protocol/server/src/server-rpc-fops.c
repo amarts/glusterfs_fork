@@ -128,7 +128,7 @@ server_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                     rsp.xdata.xdata_len, op_errno, out);
 
         if (op_ret) {
-                if (state->is_revalidate && op_errno == ENOENT) {
+                if (state->is_revalidate && op_errno == GF_ERROR_CODE_NOENT) {
                         if (!__is_root_gfid (state->resolve.gfid)) {
                                 inode_unlink (state->loc.inode,
                                               state->loc.parent,

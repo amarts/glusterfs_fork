@@ -212,7 +212,7 @@ svs_lookup_snapshot (xlator_t *this, loc_t *loc, struct iatt *buf,
                 gf_log (this->name, GF_LOG_DEBUG, "failed to "
                         "create the fs instance for snap %s",
                         loc->name);
-                *op_errno = ENOENT;
+                *op_errno = GF_ERROR_CODE_NOENT;
                 op_ret = -1;
                 goto out;
         }
@@ -1328,7 +1328,7 @@ svs_glfs_readdir (xlator_t *this, glfs_fd_t *glfd, gf_dirent_t *entries,
                         filled_size += this_size;
                         count++;
                 } else if (ret == 0 && dirents == NULL) {
-                        *op_errno = ENOENT;
+                        *op_errno = GF_ERROR_CODE_NOENT;
                         break;
                 } else if (ret != 0) {
                         *op_errno = errno;
@@ -2019,7 +2019,7 @@ svs_readv (call_frame_t *frame, xlator_t *this,
 
         /* Hack to notify higher layers of EOF. */
         if (!stbuf.ia_size || (offset + vec.iov_len) >= stbuf.ia_size)
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
 
         op_ret = vec.iov_len;
 

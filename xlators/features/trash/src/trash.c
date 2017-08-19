@@ -532,7 +532,7 @@ trash_internalop_dir_lookup_cbk (call_frame_t *frame, void *cookie,
         GF_VALIDATE_OR_GOTO ("trash", priv, out);
 
         local = frame->local;
-        if (op_ret != 0 && op_errno == ENOENT) {
+        if (op_ret != 0 && op_errno == GF_ERROR_CODE_NOENT) {
                 loc_wipe (&local->loc);
                 gfid_ptr = GF_CALLOC (1, sizeof(uuid_t),
                                    gf_common_mt_uuid_t);
@@ -887,7 +887,7 @@ trash_unlink_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         loop_count = local->loop_count;
 
         /* The directory is not present , need to create it */
-        if ((op_ret == -1) &&  (op_errno == ENOENT)) {
+        if ((op_ret == -1) &&  (op_errno == GF_ERROR_CODE_NOENT)) {
                 tmp_dirname = strchr (tmp_str, '/');
                 while (tmp_dirname) {
                         count = tmp_dirname - tmp_str;
@@ -1053,7 +1053,7 @@ trash_unlink_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         GF_VALIDATE_OR_GOTO ("trash", local, out);
 
-        if ((op_ret == -1) && (op_errno == ENOENT)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOENT)) {
                 /* the file path doesnot exists we want to create path
                  * for the file
                  */
@@ -1581,7 +1581,7 @@ trash_truncate_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         /* Checks whether path is present in trash directory or not */
 
-        if ((op_ret == -1) && (op_errno == ENOENT)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOENT)) {
                 /* Creating the directory structure here. */
                 tmp_str = gf_strdup (local->newpath);
                 if (!tmp_str) {
@@ -1695,7 +1695,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if ((op_ret == -1) && (op_errno == ENOENT)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOENT)) {
                 tmp_dirname = strchr (tmp_str, '/');
                 while (tmp_dirname) {
                         count = tmp_dirname - tmp_str;

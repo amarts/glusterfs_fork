@@ -267,7 +267,7 @@ gf_svc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
            regular subvolume (i.e first child of the xlator). If lookup fails
            on the regular volume, then there is a possibility that the lookup
            is happening on a virtual inode (i.e history data residing in snaps).
-           So if lookup fails with ENOENT and the inode context is not there,
+           So if lookup fails with GF_ERROR_CODE_NOENT and the inode context is not there,
            then send the lookup to the 2nd child of svc.
 
            If there are any changes in volfile/client-restarted then inode-ctx
@@ -277,20 +277,20 @@ gf_svc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (op_ret) {
                 if (subvolume == FIRST_CHILD (this)) {
                         gf_log (this->name,
-                                (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)
+                                (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE)
                                 ? GF_LOG_DEBUG:GF_LOG_ERROR,
                                 "Lookup failed on normal graph with error %s",
                                 strerror (op_errno));
                 } else {
                         gf_log (this->name,
-                                (op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE)
+                                (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE)
                                 ? GF_LOG_DEBUG:GF_LOG_ERROR,
                                 "Lookup failed on snapview graph with error %s",
                                 strerror (op_errno));
                         goto out;
                 }
 
-                if ((op_errno == ENOENT || op_errno == GF_ERROR_CODE_STALE) &&
+                if ((op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE) &&
                     !gf_uuid_is_null (local->loc.gfid)) {
                         if (inode != NULL)
                                 ret = svc_inode_ctx_get (this, inode,
@@ -1212,7 +1212,7 @@ gf_svc_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
 
         /* Another way is to STACK_WIND to normal subvolume, if inode
            type is not there in the context. If the file actually resides
-           in snapshots, then ENOENT would be returned. Needs more analysis.
+           in snapshots, then GF_ERROR_CODE_NOENT would be returned. Needs more analysis.
         */
         SVC_GET_SUBVOL_FROM_CTX (this, op_ret, op_errno, inode_type, ret,
                                  loc->inode, subvolume, out);
@@ -1584,7 +1584,7 @@ gf_svc_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         else {
                 if (svc_fd->entry_point_handled && off == svc_fd->last_offset) {
                         op_ret = 0;
-                        op_errno = ENOENT;
+                        op_errno = GF_ERROR_CODE_NOENT;
                         goto out;
                 }
         }
@@ -1672,7 +1672,7 @@ gf_svc_readdirp_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 return 0;
                 }
                 op_ret = 0;
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 
@@ -1682,7 +1682,7 @@ gf_svc_readdirp_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         "context for the inode %s",
                         uuid_utoa (local->fd->inode->gfid));
                 op_ret = 0;
-                op_errno = ENOENT;
+                op_errno = GF_ERROR_CODE_NOENT;
                 goto out;
         }
 
@@ -1841,7 +1841,7 @@ gf_svc_readdir_on_special_dir (call_frame_t *frame, void *cookie,
         if (!private->show_entry_point)
                 goto out;
 
-        if (op_ret == 0 && op_errno == ENOENT && private->special_dir &&
+        if (op_ret == 0 && op_errno == GF_ERROR_CODE_NOENT && private->special_dir &&
             strcmp (private->special_dir, "") && svc_fd->special_dir &&
             local->subvolume == FIRST_CHILD (this)) {
                 inode = inode_grep (fd->inode->table, fd->inode,
@@ -2020,7 +2020,7 @@ gf_svc_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         else {
                 if (svc_fd->entry_point_handled && off == svc_fd->last_offset) {
                         op_ret = 0;
-                        op_errno = ENOENT;
+                        op_errno = GF_ERROR_CODE_NOENT;
                         goto out;
                 }
         }

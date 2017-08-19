@@ -4995,9 +4995,9 @@ glusterd_add_brick_to_snap_volume (dict_t *dict, dict_t *rsp_dict,
         strcpy (snap_brickinfo->path, snap_brick_path);
 
         if (!realpath (snap_brick_path, abspath)) {
-                /* ENOENT indicates that brick path has not been created which
+                /* GF_ERROR_CODE_NOENT indicates that brick path has not been created which
                  * is a valid scenario */
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_CRITICAL, errno,
                                 GD_MSG_BRICKINFO_CREATE_FAIL, "realpath () "
                                 "failed for brick %s. The underlying filesystem"
@@ -8755,7 +8755,7 @@ glusterd_remove_trashpath (char *volname)
                 /* If the trash dir does not exist, return *
                  * without failure                         *
                  */
-                if (errno == ENOENT) {
+                if (errno == GF_ERROR_CODE_NOENT) {
                         ret = 0;
                         goto out;
                 } else {

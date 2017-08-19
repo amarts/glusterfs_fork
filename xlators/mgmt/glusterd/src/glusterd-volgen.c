@@ -5557,7 +5557,7 @@ generate_brick_volfiles (glusterd_volinfo_t *volinfo)
                 }
         } else {
                 ret = sys_unlink (tstamp_file);
-                if (ret == -1 && errno == ENOENT)
+                if (ret == -1 && errno == GF_ERROR_CODE_NOENT)
                         ret = 0;
                 if (ret == -1) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,

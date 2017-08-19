@@ -241,7 +241,7 @@ rda_readdirp(call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
                                             &op_errno);
                 serve = _gf_true;
 
-                if (op_errno == ENOENT && !((ctx->state & RDA_FD_EOD) &&
+                if (op_errno == GF_ERROR_CODE_NOENT && !((ctx->state & RDA_FD_EOD) &&
                                             (ctx->cur_size == 0)))
                         op_errno = 0;
         } else {
@@ -333,7 +333,7 @@ rda_fill_fd_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 	if (ctx->cur_size >= priv->rda_high_wmark)
 		ctx->state &= ~RDA_FD_PLUGGED;
 
-	if (!op_ret || op_errno == ENOENT) {
+	if (!op_ret || op_errno == GF_ERROR_CODE_NOENT) {
 		/* we've hit eod */
 		ctx->state &= ~RDA_FD_RUNNING;
 		ctx->state |= RDA_FD_EOD;
@@ -382,7 +382,7 @@ out:
 		ctx->fill_frame = NULL;
 	}
 
-        if (op_errno == ENOENT && !((ctx->state & RDA_FD_EOD) &&
+        if (op_errno == GF_ERROR_CODE_NOENT && !((ctx->state & RDA_FD_EOD) &&
                                     (ctx->cur_size == 0)))
                 op_errno = 0;
 

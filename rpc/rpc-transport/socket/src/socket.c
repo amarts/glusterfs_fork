@@ -3076,7 +3076,7 @@ connect_loop (int sockfd, const struct sockaddr *addr, socklen_t addrlen)
                 if (ret >= 0) {
                         break;
                 }
-                if ((errno != ENOENT) || (++connect_fails >= 5)) {
+                if ((errno != GF_ERROR_CODE_NOENT) || (++connect_fails >= 5)) {
                         break;
                 }
                 sleep (1);
@@ -3226,7 +3226,7 @@ socket_connect (rpc_transport_t *this, int port)
                                          &(addr->sin_addr.s_addr));
                 }
 
-                /* If client wants ENOENT to be ignored */
+                /* If client wants GF_ERROR_CODE_NOENT to be ignored */
                ign_enoent = dict_get_str_boolean (this->options,
                    "transport.socket.ignore-enoent", _gf_false);
 
@@ -3259,7 +3259,7 @@ socket_connect (rpc_transport_t *this, int port)
                                        this->peerinfo.sockaddr_len);
                 }
 
-                if (ret == -1 && errno == ENOENT && ign_enoent) {
+                if (ret == -1 && errno == GF_ERROR_CODE_NOENT && ign_enoent) {
                         gf_log (this->name, GF_LOG_WARNING,
                                "Ignore failed connection attempt on %s, (%s) ",
                                 this->peerinfo.identifier, strerror (errno));
@@ -3277,7 +3277,7 @@ socket_connect (rpc_transport_t *this, int port)
                         goto handler;
                 }
 
-                if (ret == -1 && ((errno != EINPROGRESS) && (errno != ENOENT))) {
+                if (ret == -1 && ((errno != EINPROGRESS) && (errno != GF_ERROR_CODE_NOENT))) {
                         /* For unix path based sockets, the socket path is
                          * cryptic (md5sum of path) and may not be useful for
                          * the user in debugging so log it in DEBUG

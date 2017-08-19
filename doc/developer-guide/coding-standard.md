@@ -88,13 +88,13 @@ know the precedence of operators as accurately as you do.
 *Bad:*
 
 ```
-if (op_ret == -1 && errno != ENOENT)
+if (op_ret == -1 && errno != GF_ERROR_CODE_NOENT)
 ```
 
 *Good:*
 
 ```
-if ((op_ret == -1) && (errno != ENOENT))
+if ((op_ret == -1) && (errno != GF_ERROR_CODE_NOENT))
 ```
 
 Use exactly matching types

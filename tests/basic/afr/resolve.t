@@ -30,7 +30,7 @@ mkdir $B0/${V0}0/.glusterfs/indices && chmod 600 $B0/${V0}0/.glusterfs/indices
 
 TEST $CLI volume start $V0 force
 EXPECT_WITHIN $CHILD_UP_TIMEOUT "1" afr_child_up_status_meta $M0 $V0-replicate-0 0
-#Test that the lookup returns ENOENT instead of ESTALE
+#Test that the lookup returns GF_ERROR_CODE_NOENT instead of ESTALE
 #If lookup returns GF_ERROR_CODE_STALE this command will fail with ESTALE
 TEST touch f
 

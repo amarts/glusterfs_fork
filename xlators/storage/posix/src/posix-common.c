@@ -462,7 +462,7 @@ posix_create_unlink_dir (xlator_t *this) {
         ret = sys_stat (unlink_path, &stbuf);
         switch (ret) {
         case -1:
-                if (errno != ENOENT) {
+                if (errno != GF_ERROR_CODE_NOENT) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_HANDLE_CREATE,
                                 "Checking for %s failed",

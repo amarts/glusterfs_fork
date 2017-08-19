@@ -4,7 +4,7 @@ from gluster.glupy import *
 
 # Negative-lookup-caching example.  If a file wasn't there the last time we
 # looked, it's probably still not there.  This translator keeps track of
-# those failed lookups for us, and returns ENOENT without needing to pass the
+# those failed lookups for us, and returns GF_ERROR_CODE_NOENT without needing to pass the
 # call any further for repeated requests.
 
 # If we were doing this for real, we'd need separate caches for each xlator

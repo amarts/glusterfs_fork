@@ -177,7 +177,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                 if (!xl) {                                              \
                         gf_log_callingfn (state->this->name, GF_LOG_ERROR, \
                                           "No active subvolume");       \
-                        send_fuse_err (state->this, state->finh, ENOENT); \
+                        send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOENT); \
                         free_fuse_state (state);                        \
                         break;                                          \
                 }                                                       \
@@ -213,7 +213,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
         } while (0)
 
 #define GF_SELECT_LOG_LEVEL(_errno)                     \
-        (((_errno == ENOENT) || (_errno == GF_ERROR_CODE_STALE))?    \
+        (((_errno == GF_ERROR_CODE_NOENT) || (_errno == GF_ERROR_CODE_STALE))?    \
          GF_LOG_DEBUG)
 
 #define GET_STATE(this, finh, state)                                       \
