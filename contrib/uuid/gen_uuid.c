@@ -342,7 +342,7 @@ static int get_clock(uint32_t *clock_high, uint32_t *clock_low,
 	if (state_fd >= 0) {
 		rewind(state_f);
 		while (fcntl(state_fd, F_SETLKW, &fl) < 0) {
-			if ((errno == EAGAIN) || (errno == EINTR))
+			if ((errno == GF_ERROR_CODE_AGAIN) || (errno == EINTR))
 				continue;
 			fclose(state_f);
 			close(state_fd);
@@ -433,7 +433,7 @@ static ssize_t read_all(int fd, char *buf, size_t count)
 	while (count > 0) {
 		ret = read(fd, buf, count);
 		if (ret <= 0) {
-			if ((errno == EAGAIN || errno == EINTR || ret == 0) &&
+			if ((errno == GF_ERROR_CODE_AGAIN || errno == EINTR || ret == 0) &&
 			    (tries++ < 5))
 				continue;
 			return c ? c : -1;

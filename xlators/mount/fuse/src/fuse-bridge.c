@@ -3906,9 +3906,9 @@ fuse_setlk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         "'features/posix-locks' on server side "
                                         "will add SETLK support.");
                         }
-                } else if (op_errno == EAGAIN) {
+                } else if (op_errno == GF_ERROR_CODE_AGAIN) {
                         gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
-                                "Returning EAGAIN Flock: "
+                                "Returning GF_ERROR_CODE_AGAIN Flock: "
                                 "start=%llu, len=%llu, pid=%llu, lk-owner=%s",
                                 (unsigned long long) state->lk_lock.l_start,
                                 (unsigned long long) state->lk_lock.l_len,

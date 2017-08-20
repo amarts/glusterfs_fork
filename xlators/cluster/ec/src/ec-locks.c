@@ -38,7 +38,7 @@ int32_t ec_lock_check(ec_fop_data_t *fop, uintptr_t *mask)
             locked |= ans->mask;
             cbk = ans;
         } else {
-                if (ans->op_errno == EAGAIN) {
+                if (ans->op_errno == GF_ERROR_CODE_AGAIN) {
                         switch (fop->uint32) {
                         case EC_LOCK_MODE_NONE:
                         case EC_LOCK_MODE_ALL:
@@ -64,7 +64,7 @@ int32_t ec_lock_check(ec_fop_data_t *fop, uintptr_t *mask)
             } else {
                 switch (fop->uint32) {
                 case EC_LOCK_MODE_NONE:
-                    error = EAGAIN;
+                    error = GF_ERROR_CODE_AGAIN;
                     break;
 
                 case EC_LOCK_MODE_ALL:

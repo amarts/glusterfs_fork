@@ -1102,7 +1102,7 @@ cluster_inodelk (xlator_t **subvols, unsigned char *on, int numsubvols,
                     inodelk, dom, &loc, F_SETLK, &flock, NULL);
 
         for (i = 0; i < numsubvols; i++) {
-                if (replies[i].op_ret == -1 && replies[i].op_errno == EAGAIN) {
+                if (replies[i].op_ret == -1 && replies[i].op_errno == GF_ERROR_CODE_AGAIN) {
                         fop_success_fill (replies, numsubvols, locked_on);
                         cluster_uninodelk (subvols, locked_on, numsubvols,
                                            replies, output, frame, this, dom, inode, off, size);
@@ -1176,7 +1176,7 @@ cluster_entrylk (xlator_t **subvols, unsigned char *on, int numsubvols,
                     NULL);
 
         for (i = 0; i < numsubvols; i++) {
-                if (replies[i].op_ret == -1 && replies[i].op_errno == EAGAIN) {
+                if (replies[i].op_ret == -1 && replies[i].op_errno == GF_ERROR_CODE_AGAIN) {
                         fop_success_fill (replies, numsubvols, locked_on);
                         cluster_unentrylk (subvols, locked_on, numsubvols,
                                            replies, output, frame, this, dom,

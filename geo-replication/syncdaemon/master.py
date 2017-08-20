@@ -437,7 +437,7 @@ class GMasterCommon(object):
                 return True
             except:
                 ex = sys.exc_info()[1]
-                if isinstance(ex, IOError) and ex.errno in (EACCES, EAGAIN):
+                if isinstance(ex, IOError) and ex.errno in (EACCES, GF_ERROR_CODE_AGAIN):
                     if not gconf.passive_earlier:
                         gconf.passive_earlier = True
                         logging.info(lf("Didn't get lock Becoming PASSIVE",
@@ -474,7 +474,7 @@ class GMasterCommon(object):
             gconf.mgmt_lock_fd = fd
         except:
             ex = sys.exc_info()[1]
-            if isinstance(ex, IOError) and ex.errno in (EACCES, EAGAIN):
+            if isinstance(ex, IOError) and ex.errno in (EACCES, GF_ERROR_CODE_AGAIN):
                 # cannot grab, it's taken
                 if not gconf.passive_earlier:
                     gconf.passive_earlier = True

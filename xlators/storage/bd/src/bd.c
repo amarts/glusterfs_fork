@@ -355,7 +355,7 @@ bd_statfs_cbk (call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
                 gf_log (this->name, GF_LOG_WARNING, "opening VG %s failed",
                         priv->vg);
                 op_ret = -1;
-                op_errno = EAGAIN;
+                op_errno = GF_ERROR_CODE_AGAIN;
                 goto out;
         }
         size = lvm_vg_get_size (vg);

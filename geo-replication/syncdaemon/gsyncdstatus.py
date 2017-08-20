@@ -323,7 +323,7 @@ class GeorepStatus(object):
                 # not even started once
                 if e.errno == ENOENT:
                     monitor_status = "Stopped"
-                elif e.errno in (EACCES, EAGAIN):
+                elif e.errno in (EACCES, GF_ERROR_CODE_AGAIN):
                     # cannot grab. so, monitor process still running..move on
                     pass
                 else:

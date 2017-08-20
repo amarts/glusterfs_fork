@@ -403,7 +403,7 @@ create_thin_lv (char *vg, char *pool, char *lv, uint64_t extent)
                 goto out;
         }
         if (sys_lstat (path, &stat) < 0)
-                ret = EAGAIN;
+                ret = GF_ERROR_CODE_AGAIN;
         else
                 ret = 0;
 out:
@@ -468,7 +468,7 @@ bd_resize (bd_priv_t *priv, uuid_t uuid, size_t size)
         if (!vg) {
                 gf_log (THIS->name, GF_LOG_WARNING, "opening VG %s failed",
                         priv->vg);
-                return EAGAIN;
+                return GF_ERROR_CODE_AGAIN;
         }
 
         lv = lvm_lv_from_name (vg, gfid);

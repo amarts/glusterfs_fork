@@ -257,7 +257,7 @@ conv_errno_to_int (char **error_no)
 	else if (!strcmp((*error_no), "GF_ERROR_SHORT_WRITE"))
 		return GF_ERROR_SHORT_WRITE;
         else
-                return EAGAIN;
+                return GF_ERROR_CODE_AGAIN;
 }
 
 int

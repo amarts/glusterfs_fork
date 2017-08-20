@@ -1085,7 +1085,7 @@ pl_setlk (xlator_t *this, pl_inode_t *pl_inode, posix_lock_t *lock,
                                 lkowner_utoa (&lock->owner),
                                 lock->user_flock.l_start,
                                 lock->user_flock.l_len);
-                        errno = EAGAIN;
+                        errno = GF_ERROR_CODE_AGAIN;
                         ret = -1;
                 }
         }

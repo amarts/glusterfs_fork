@@ -563,7 +563,7 @@ server_setvolume (rpcsvc_request_t *req)
                  * successfully
                  */
                 op_ret = -1;
-                op_errno = EAGAIN;
+                op_errno = GF_ERROR_CODE_AGAIN;
 
                 ret = dict_set_str (reply, "ERROR",
                                     "xlator graph in server is not initialised "

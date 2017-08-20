@@ -181,7 +181,7 @@ def grabfile(fname, content=None):
     except:
         ex = sys.exc_info()[1]
         f.close()
-        if isinstance(ex, IOError) and ex.errno in (EACCES, EAGAIN):
+        if isinstance(ex, IOError) and ex.errno in (EACCES, GF_ERROR_CODE_AGAIN):
             # cannot grab, it's taken
             return
         raise

@@ -1015,7 +1015,7 @@ gsync_status_byfd (int fd)
         GF_ASSERT (fd >= -1);
 
         if (lockf (fd, F_TEST, 0) == -1 &&
-            (errno == EAGAIN || errno == EACCES))
+            (errno == GF_ERROR_CODE_AGAIN || errno == EACCES))
                 /* gsyncd keeps the pidfile locked */
                 return 0;
 

@@ -4179,10 +4179,10 @@ fop_log_level (glusterfs_fop_t fop, int op_errno)
             (fop == GF_FOP_INODELK) ||
             (fop == GF_FOP_LK)) {
                 /*
-                 * if non-blocking lock fails EAGAIN comes
+                 * if non-blocking lock fails GF_ERROR_CODE_AGAIN comes
                  * if locks xlator is not loaded ENOSYS comes
                  */
-                if (op_errno == EAGAIN || op_errno == ENOSYS)
+                if (op_errno == GF_ERROR_CODE_AGAIN || op_errno == ENOSYS)
                         return GF_LOG_DEBUG;
         }
 

@@ -241,7 +241,7 @@ static void
 afr_print_verdict (int op_ret, int op_errno, char *str)
 {
         if (op_ret < 0) {
-                if (op_errno == EAGAIN)
+                if (op_errno == GF_ERROR_CODE_AGAIN)
                         strcpy (str, "EAGAIN");
                 else
                         strcpy (str, "FAILED");

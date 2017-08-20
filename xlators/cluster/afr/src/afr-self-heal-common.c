@@ -1742,7 +1742,7 @@ afr_selfheal_inodelk (call_frame_t *frame, xlator_t *this, inode_t *inode,
 
 	for (i = 0; i < priv->child_count; i++) {
 		if (local->replies[i].op_ret == -1 &&
-		    local->replies[i].op_errno == EAGAIN) {
+		    local->replies[i].op_errno == GF_ERROR_CODE_AGAIN) {
 			afr_locked_fill (frame, this, locked_on);
 			afr_selfheal_uninodelk (frame, this, inode, dom, off,
 						size, locked_on);
@@ -1770,7 +1770,7 @@ afr_get_lock_and_eagain_counts (afr_private_t *priv, struct afr_reply *replies,
 	        if (replies[i].op_ret == 0) {
 	                (*lock_count)++;
                 } else if (replies[i].op_ret == -1 &&
-		         replies[i].op_errno == EAGAIN) {
+		         replies[i].op_errno == GF_ERROR_CODE_AGAIN) {
 		        (*eagain_count)++;
                 }
 	}
@@ -1883,7 +1883,7 @@ afr_selfheal_entrylk (call_frame_t *frame, xlator_t *this, inode_t *inode,
 
 	for (i = 0; i < priv->child_count; i++) {
 		if (local->replies[i].op_ret == -1 &&
-		    local->replies[i].op_errno == EAGAIN) {
+		    local->replies[i].op_errno == GF_ERROR_CODE_AGAIN) {
 			afr_locked_fill (frame, this, locked_on);
 			afr_selfheal_unentrylk (frame, this, inode, dom, name,
 						locked_on, NULL);

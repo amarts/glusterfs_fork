@@ -839,7 +839,7 @@ reset_timer:
                          */
                         ctx->spb_choice = old_spb_choice;
                         ret = -1;
-                        op_errno = EAGAIN;
+                        op_errno = GF_ERROR_CODE_AGAIN;
                         goto unlock;
                 }
                 ctx->timer = NULL;
@@ -3558,7 +3558,7 @@ afr_serialized_lock_wind (call_frame_t *frame, xlator_t *this);
 static gf_boolean_t
 afr_is_conflicting_lock_present (int32_t op_ret, int32_t op_errno)
 {
-        if (op_ret == -1 && op_errno == EAGAIN)
+        if (op_ret == -1 && op_errno == GF_ERROR_CODE_AGAIN)
                 return _gf_true;
         return _gf_false;
 }
@@ -3662,7 +3662,7 @@ afr_fop_lock_proceed (call_frame_t *frame)
          * partial lock on brick-1 and may not acquire the lock on brick-2
          * because Mount2 already got the lock on brick-2, vice versa.  Since
          * both the mounts only got partial locks, afr treats them as failure in
-         * gaining the locks and unwinds with EAGAIN errno.
+         * gaining the locks and unwinds with GF_ERROR_CODE_AGAIN errno.
          */
         local->op_ret = -1;
         local->op_ret = EUCLEAN;
@@ -3809,13 +3809,13 @@ afr_fop_lock_done (call_frame_t *frame, xlator_t *this)
                         success[i] = 1;
                 }
 
-                if (local->op_ret == -1 && local->op_errno == EAGAIN)
+                if (local->op_ret == -1 && local->op_errno == GF_ERROR_CODE_AGAIN)
                         continue;
 
                 if ((local->replies[i].op_ret == -1) &&
-                    (local->replies[i].op_errno == EAGAIN)) {
+                    (local->replies[i].op_errno == GF_ERROR_CODE_AGAIN)) {
                         local->op_ret = -1;
-                        local->op_errno = EAGAIN;
+                        local->op_errno = GF_ERROR_CODE_AGAIN;
                         continue;
                 }
 
@@ -4313,9 +4313,9 @@ afr_lk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         child_index = (long) cookie;
 
         afr_common_lock_cbk (frame, cookie, this, op_ret, op_errno, xdata);
-        if (op_ret < 0 && op_errno == EAGAIN) {
+        if (op_ret < 0 && op_errno == GF_ERROR_CODE_AGAIN) {
                 local->op_ret   = -1;
-                local->op_errno = EAGAIN;
+                local->op_errno = GF_ERROR_CODE_AGAIN;
 
                 afr_lk_unlock (frame, this);
                 return 0;

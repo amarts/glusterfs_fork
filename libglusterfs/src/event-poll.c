@@ -51,7 +51,7 @@ __flush_fd (int fd, int idx, int gen, void *data,
 
         do {
                 ret = sys_read (fd, buf, 64);
-                if (ret == -1 && errno != EAGAIN) {
+                if (ret == -1 && errno != GF_ERROR_CODE_AGAIN) {
                         gf_msg ("poll", GF_LOG_ERROR, errno,
                                 LG_MSG_FILE_OP_FAILED, "read on %d returned "
                                 "error", fd);

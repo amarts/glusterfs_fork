@@ -334,7 +334,7 @@ blkd:
                 list_del_init (&elock->blocked_locks);
                 entrylk_trace_out (this, elock->frame, elock->volume, NULL, NULL,
                                    elock->basename, ENTRYLK_LOCK, elock->type,
-                                   -1, EAGAIN);
+                                   -1, GF_ERROR_CODE_AGAIN);
                 STACK_UNWIND_STRICT (entrylk, elock->frame, -1, EAGAIN, NULL);
 
 		__pl_entrylk_unref (elock);

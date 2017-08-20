@@ -1126,7 +1126,7 @@ check_lease_conflict (call_frame_t *frame, inode_t *inode,
                                               "EAGAIN",
                                               gf_fop_list[frame->root->op],
                                               lease_ctx->lease_type);
-                                errno = EAGAIN;
+                                errno = GF_ERROR_CODE_AGAIN;
                                 ret = -1;
                         }
                 }

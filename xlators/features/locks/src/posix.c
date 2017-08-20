@@ -506,7 +506,7 @@ pl_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         if (allowed == 1)
                                 goto unlock;
                         else if (!can_block) {
-                                op_errno = EAGAIN;
+                                op_errno = GF_ERROR_CODE_AGAIN;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -610,7 +610,7 @@ pl_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         if (allowed == 1)
                                 goto unlock;
                         else if (!can_block) {
-                                op_errno = EAGAIN;
+                                op_errno = GF_ERROR_CODE_AGAIN;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -753,7 +753,7 @@ truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         if (allowed == 1)
                                 goto unlock;
                         else if (!can_block) {
-                                op_errno = EAGAIN;
+                                op_errno = GF_ERROR_CODE_AGAIN;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -1679,7 +1679,7 @@ pl_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
                         {
                                 if (!list_empty (&pl_inode->ext_list)) {
                                         op_ret = -1;
-                                        op_errno = EAGAIN;
+                                        op_errno = GF_ERROR_CODE_AGAIN;
                                 }
                         }
                         pthread_mutex_unlock (&pl_inode->mutex);
@@ -1691,7 +1691,7 @@ pl_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
                                 list_for_each_entry (l, &pl_inode->ext_list, list) {
                                         if ((l->lk_flags & GF_LK_MANDATORY)) {
                                                 op_ret = -1;
-                                                op_errno = EAGAIN;
+                                                op_errno = GF_ERROR_CODE_AGAIN;
                                                 break;
                                         }
                                 }
@@ -1885,7 +1885,7 @@ pl_readv (call_frame_t *frame, xlator_t *this,
                         if (allowed == 1)
                                 goto unlock;
                         else if (!can_block) {
-                                op_errno = EAGAIN;
+                                op_errno = GF_ERROR_CODE_AGAIN;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -1985,7 +1985,7 @@ pl_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         if (allowed == 1)
                                 goto unlock;
                         else if (!can_block) {
-                                op_errno = EAGAIN;
+                                op_errno = GF_ERROR_CODE_AGAIN;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -2409,7 +2409,7 @@ pl_lk (call_frame_t *frame, xlator_t *this,
                         }
                         gf_log (this->name, GF_LOG_DEBUG, "returning EAGAIN");
                         op_ret = -1;
-                        op_errno = EAGAIN;
+                        op_errno = GF_ERROR_CODE_AGAIN;
                         __destroy_lock (reqlock);
                 } else if (ret == -2) {
                         goto out;

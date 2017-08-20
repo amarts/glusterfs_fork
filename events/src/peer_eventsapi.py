@@ -120,7 +120,7 @@ def is_active():
             fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             state = False
     except (IOError, OSError) as e:
-        if e.errno in (EACCES, EAGAIN):
+        if e.errno in (EACCES, GF_ERROR_CODE_AGAIN):
             # cannot grab. so, process still running..move on
             state = True
         else:

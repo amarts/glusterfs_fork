@@ -265,7 +265,7 @@ ssl_do (rpc_transport_t *this, void *buf, size_t len, SSL_trinary_func *func)
 		case SSL_ERROR_WANT_WRITE:
                         if ((func == (SSL_trinary_func *)SSL_read)
                             || (func == (SSL_trinary_func *) SSL_write)) {
-                                errno = EAGAIN;
+                                errno = GF_ERROR_CODE_AGAIN;
                                 return r;
                         }
 			pfd.fd = priv->sock;
@@ -550,7 +550,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
 				ret = sys_writev (sock, opvector, IOV_MIN(opcount));
 			}
 
-                        if (ret == 0 || (ret == -1 && errno == EAGAIN)) {
+                        if (ret == 0 || (ret == -1 && errno == GF_ERROR_CODE_AGAIN)) {
                                 /* done for now */
                                 break;
                         }
@@ -563,7 +563,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
 				errno = GF_ERROR_CODE_NODATA;
 				ret = -1;
 			}
-                        if (ret == -1 && errno == EAGAIN) {
+                        if (ret == -1 && errno == GF_ERROR_CODE_AGAIN) {
                                 /* done for now */
                                 break;
                         }
@@ -2035,7 +2035,7 @@ __socket_read_frag (rpc_transport_t *this)
         case SP_STATE_NOTIFYING_XID:
                 /* Another epoll thread is notifying higher layers
                  *of reply's xid. */
-                errno = EAGAIN;
+                errno = GF_ERROR_CODE_AGAIN;
                 return -1;
                 break;
 
@@ -2253,7 +2253,7 @@ __socket_proto_state_machine (rpc_transport_t *this,
         }
 
 out:
-        if ((ret == -1) && (errno == EAGAIN)) {
+        if ((ret == -1) && (errno == GF_ERROR_CODE_AGAIN)) {
                 ret = 0;
         }
 
