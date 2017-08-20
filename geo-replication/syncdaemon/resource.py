@@ -769,7 +769,7 @@ class Server(object):
                 # then delete recursively.
                 er = entry_purge(op, entry, gfid, e)
                 if isinstance(er, int):
-                    if er == ENOTEMPTY and op == 'RMDIR':
+                    if er == GF_ERROR_CODE_NOTEMPTY and op == 'RMDIR':
                         # Retry if ENOTEMPTY, ESTALE
                         er1 = errno_wrap(recursive_rmdir,
                                          [gfid, entry,

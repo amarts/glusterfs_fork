@@ -237,7 +237,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "EISDIR"))
                 return EISDIR;
         else if (!strcmp ((*error_no), "ENOTEMPTY"))
-                return ENOTEMPTY;
+                return GF_ERROR_CODE_NOTEMPTY;
         else if (!strcmp ((*error_no), "EMLINK"))
                 return EMLINK;
         else if (!strcmp ((*error_no), "ENODEV"))

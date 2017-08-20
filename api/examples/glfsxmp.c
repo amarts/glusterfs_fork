@@ -259,7 +259,7 @@ test_h_unlink (void)
 
         /* unlink non empty directory */
         ret = glfs_h_unlink (fs, dir, my_subdir);
-        if ((ret && errno != ENOTEMPTY) || (ret == 0)) {
+        if ((ret && errno != GF_ERROR_CODE_NOTEMPTY) || (ret == 0)) {
                 fprintf (stderr, "glfs_h_unlink: error unlinking %s: it is non empty: %s\n",
                          my_subdir, strerror (errno));
                 printf ("glfs_h_unlink tests: FAILED\n");

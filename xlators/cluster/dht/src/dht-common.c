@@ -8254,7 +8254,7 @@ dht_rmdir_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!check_is_linkfile (inode, stbuf, xattr, conf->link_xattr_name)) {
                 readdirp_local->op_ret  = -1;
-                readdirp_local->op_errno = ENOTEMPTY;
+                readdirp_local->op_errno = GF_ERROR_CODE_NOTEMPTY;
 
                 gf_uuid_unparse(local->loc.gfid, gfid);
 
@@ -8309,7 +8309,7 @@ dht_rmdir_cached_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (op_ret == 0) {
                 readdirp_local->op_ret  = -1;
-                readdirp_local->op_errno = ENOTEMPTY;
+                readdirp_local->op_errno = GF_ERROR_CODE_NOTEMPTY;
 
                 gf_msg (this->name, GF_LOG_WARNING, 0,
                         DHT_MSG_SUBVOL_ERROR,
@@ -8517,7 +8517,7 @@ err:
         LOCK (&frame->lock);
         {
                 local->op_ret = -1;
-                local->op_errno = ENOTEMPTY;
+                local->op_errno = GF_ERROR_CODE_NOTEMPTY;
 
                 local->call_cnt -= (count - ret);
                 if (!local->call_cnt)
@@ -8596,7 +8596,7 @@ dht_rmdir_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                       "entries", prev->name,
                                       local->loc.path, op_ret);
                         local->op_ret = -1;
-                        local->op_errno = ENOTEMPTY;
+                        local->op_errno = GF_ERROR_CODE_NOTEMPTY;
                         goto done;
                 default:
                         /* @ret number of linkfiles are getting unlinked */

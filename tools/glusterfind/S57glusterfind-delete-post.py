@@ -58,7 +58,7 @@ def main():
             shutil.rmtree(volume_session_path, onerror=handle_rm_error)
 
         # Try to Remove directory, if any other dir exists for different
-        # volume, then rmdir will fail with ENOTEMPTY which is fine
+        # volume, then rmdir will fail with GF_ERROR_CODE_NOTEMPTY which is fine
         try:
             os.rmdir(os.path.join(glusterfind_dir, session))
         except (OSError, IOError):

@@ -680,7 +680,7 @@ index_del (xlator_t *this, uuid_t gfid, const char *subdir, int type)
 
         if ((strcmp (subdir, ENTRY_CHANGES_SUBDIR)) == 0) {
                 ret = sys_rmdir (gfid_path);
-                /* rmdir above could fail with ENOTEMPTY if the indices under
+                /* rmdir above could fail with GF_ERROR_CODE_NOTEMPTY if the indices under
                  * it were created when granular-entry-heal was enabled, whereas
                  * the actual heal that happened was non-granular (or full) in
                  * nature, resulting in name indices getting left out. To
@@ -690,7 +690,7 @@ index_del (xlator_t *this, uuid_t gfid, const char *subdir, int type)
                  * during crawl and on lookup into the file system figure that
                  * the index is stale and subsequently wipe it out using rmdir().
                  */
-                if ((ret) && (errno == ENOTEMPTY)) {
+                if ((ret) && (errno == GF_ERROR_CODE_NOTEMPTY)) {
                         gf_uuid_generate (uuid);
                         make_gfid_path (priv->index_basepath, subdir, uuid,
                                         rename_dst, sizeof (rename_dst));

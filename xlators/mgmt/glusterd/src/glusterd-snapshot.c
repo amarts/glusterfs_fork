@@ -3001,7 +3001,7 @@ remove_brick_path:
         if (is_brick_dir_present == _gf_true) {
                 ret = recursive_rmdir (brick_dir);
                 if (ret) {
-                        if (errno == ENOTEMPTY) {
+                        if (errno == GF_ERROR_CODE_NOTEMPTY) {
                                 /* Will occur when multiple glusterds
                                  * are running in the same node
                                  */

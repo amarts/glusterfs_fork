@@ -220,7 +220,7 @@ __afr_dir_write_fill (call_frame_t *frame, xlator_t *this, int child_index,
 		if (fd_ctx)
 			fd_ctx->opened_on[child_index] = AFR_FD_OPENED;
 	} else {
-		if (op_errno != ENOTEMPTY)
+		if (op_errno != GF_ERROR_CODE_NOTEMPTY)
 			afr_transaction_fop_failed (frame, this, child_index);
 		if (fd_ctx)
 			fd_ctx->opened_on[child_index] = AFR_FD_NOT_OPENED;

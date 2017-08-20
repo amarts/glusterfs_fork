@@ -951,7 +951,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
                 op_ret = sys_rename (real_oldpath, real_newpath);
                 if (op_ret == -1) {
                         op_errno = errno;
-                        if (op_errno == ENOTEMPTY) {
+                        if (op_errno == GF_ERROR_CODE_NOTEMPTY) {
                                 gf_msg_debug (this->name, 0, "rename of %s to"
                                               " %s failed: %s", real_oldpath,
                                               real_newpath,
@@ -2027,17 +2027,17 @@ posix_rmdir (call_frame_t *frame, xlator_t *this,
         }
 
         if (op_errno == EEXIST)
-                /* Solaris sets errno = EEXIST instead of ENOTEMPTY */
-                op_errno = ENOTEMPTY;
+                /* Solaris sets errno = EEXIST instead of GF_ERROR_CODE_NOTEMPTY */
+                op_errno = GF_ERROR_CODE_NOTEMPTY;
 
-        /* No need to log a common error as ENOTEMPTY */
-        if (op_ret == -1 && op_errno != ENOTEMPTY) {
+        /* No need to log a common error as GF_ERROR_CODE_NOTEMPTY */
+        if (op_ret == -1 && op_errno != GF_ERROR_CODE_NOTEMPTY) {
                 gf_msg (this->name, GF_LOG_ERROR, op_errno, P_MSG_RMDIR_FAILED,
                         "rmdir of %s failed", real_path);
         }
 
         if (op_ret == -1) {
-                if (op_errno == ENOTEMPTY) {
+                if (op_errno == GF_ERROR_CODE_NOTEMPTY) {
                         gf_msg_debug (this->name, 0, "%s on %s failed", (flags)
                                       ? "rename" : "rmdir", real_path);
                 } else {

@@ -322,7 +322,7 @@ dht_rename_readdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "readdir on %s for %s returned %d entries",
                               prev->name, local->loc.path, op_ret);
                 local->op_ret = -1;
-                local->op_errno = ENOTEMPTY;
+                local->op_errno = GF_ERROR_CODE_NOTEMPTY;
         }
 
         this_call_cnt = dht_frame_return (frame);
