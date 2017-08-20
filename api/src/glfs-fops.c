@@ -190,7 +190,7 @@ retry:
 
 	if (IA_ISDIR (iatt.ia_type)) {
 		ret = -1;
-		errno = EISDIR;
+		errno = GF_ERROR_CODE_ISDIR;
 		goto out;
 	}
 
@@ -484,7 +484,7 @@ retry:
 
 		if (IA_ISDIR (iatt.ia_type)) {
 			ret = -1;
-			errno = EISDIR;
+			errno = GF_ERROR_CODE_ISDIR;
 			goto out;
 		}
 
@@ -2100,7 +2100,7 @@ retry:
 
 	if (iatt.ia_type == IA_IFDIR) {
 		ret = -1;
-		errno = EISDIR;
+		errno = GF_ERROR_CODE_ISDIR;
 		goto out;
 	}
 
@@ -2220,7 +2220,7 @@ retrynew:
                         * or both must be non-dirs. Else, fail.
                         */
                        ret = -1;
-                       errno = EISDIR;
+                       errno = GF_ERROR_CODE_ISDIR;
                        goto out;
                 }
         }
@@ -2298,7 +2298,7 @@ retrynew:
 
 	if (oldiatt.ia_type == IA_IFDIR) {
 		ret = -1;
-		errno = EISDIR;
+		errno = GF_ERROR_CODE_ISDIR;
 		goto out;
 	}
 

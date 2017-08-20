@@ -616,7 +616,7 @@ __is_file_migratable (xlator_t *this, loc_t *loc,
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "Migrate file failed:"
                         "%s: migrate-file called on directory", loc->path);
-                *fop_errno = EISDIR;
+                *fop_errno = GF_ERROR_CODE_ISDIR;
                 ret = -1;
                 goto out;
         }

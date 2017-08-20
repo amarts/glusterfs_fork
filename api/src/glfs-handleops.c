@@ -644,7 +644,7 @@ pub_glfs_h_open (struct glfs *fs, struct glfs_object *object, int flags)
         /* check types to open */
         if (IA_ISDIR (inode->ia_type)) {
                 ret = -1;
-                errno = EISDIR;
+                errno = GF_ERROR_CODE_ISDIR;
                 goto out;
         }
 
@@ -1635,7 +1635,7 @@ pub_glfs_h_link (struct glfs *fs, struct glfs_object *linksrc,
 
         if (inode->ia_type == IA_IFDIR) {
                 ret = -1;
-                errno = EISDIR;
+                errno = GF_ERROR_CODE_ISDIR;
                 goto out;
         }
 

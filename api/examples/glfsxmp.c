@@ -1268,7 +1268,7 @@ test_handleops (int argc, char *argv[])
         }
 
         tmp = glfs_h_creat (fs, root, parent_name, O_CREAT, 0644, &sb);
-        if (tmp != NULL || !(errno == EISDIR || errno == GF_ERROR_CODE_INVAL)) {
+        if (tmp != NULL || !(errno == GF_ERROR_CODE_ISDIR || errno == GF_ERROR_CODE_INVAL)) {
                 fprintf (stderr, "glfs_h_creat: dir create, tmp = (%p), errno = %s\n",
                         leaf, strerror (errno));
                 printf ("glfs_h_creat tests: FAILED\n");
