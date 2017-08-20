@@ -3864,7 +3864,7 @@ nfs3_fh_resolve_resume (nfs3_call_state_t *cs)
 err_resume_call:
         if (ret < 0) {
                 cs->resolve_ret = -1;
-                cs->resolve_errno = EFAULT;
+                cs->resolve_errno = GF_ERROR_CODE_FAULT;
                 nfs3_call_resume (cs);
                 ret = 0;
         }

@@ -1329,7 +1329,7 @@ trash_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflags,
                             FIRST_CHILD(this),
                             FIRST_CHILD(this)->fops->unlink, loc, 0,
                             xdata);
-                ret = EFAULT;
+                ret = GF_ERROR_CODE_FAULT;
                 goto out;
         }
 

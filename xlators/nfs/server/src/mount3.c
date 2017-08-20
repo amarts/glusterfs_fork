@@ -2942,7 +2942,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
         int                     ret = RPCSVC_AUTH_REJECT;
 
         if ((!req) || (!nfsx) || (!path) || (!expname)) {
-                errno = EFAULT;
+                errno = GF_ERROR_CODE_FAULT;
                 return NULL;
         }
 
@@ -2959,7 +2959,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
          */
         ms = __mnt3udp_get_mstate(nfsx);
         if (!ms) {
-                errno = EFAULT;
+                errno = GF_ERROR_CODE_FAULT;
                 return NULL;
         }
 
@@ -3016,7 +3016,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
                 /* Never reachable */
                 gf_msg (GF_MNT, GF_LOG_ERROR, EFAULT, NFS_MSG_UNKNOWN_MNT_TYPE,
                         "Unknown MOUNT3 type");
-                errno = EFAULT;
+                errno = GF_ERROR_CODE_FAULT;
                 goto err;
         }
 
