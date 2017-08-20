@@ -7876,7 +7876,7 @@ dht_rmdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 local->op_errno = op_errno;
                                 local->op_ret = -1;
 
-                                if (op_errno != EACCES)
+                                if (op_errno != GF_ERROR_CODE_ACCES)
                                         local->need_selfheal = 1;
                         }
 

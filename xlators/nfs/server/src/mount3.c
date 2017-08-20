@@ -2864,7 +2864,7 @@ __mnt3udp_get_export_subdir_inode (struct svc_req *req, char *subdir,
                         gf_msg (GF_MNT, GF_LOG_ERROR, EACCES,
                                 NFS_MSG_AUTH_VERIFY_FAILED,
                                 "AUTH(nfs.export-dir) verification failed");
-                        errno = EACCES;
+                        errno = GF_ERROR_CODE_ACCES;
                         return NULL;
                 }
         }
@@ -2973,7 +2973,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
 
                 /* Subdir export (nfs3.export-dirs) check */
                 if (!gf_mnt3_export_dirs(ms)) {
-                        errno = EACCES;
+                        errno = GF_ERROR_CODE_ACCES;
                         return NULL;
                 }
 
@@ -2996,7 +2996,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
         /* AUTH check: respect nfs.rpc-auth-allow/reject */
         ret = mnt3_check_client_net_udp (req, exp->vol->name, nfsx);
         if (ret == RPCSVC_AUTH_REJECT) {
-                errno = EACCES;
+                errno = GF_ERROR_CODE_ACCES;
                 return NULL;
         }
 

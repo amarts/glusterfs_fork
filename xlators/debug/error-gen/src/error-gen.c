@@ -213,7 +213,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "ENAMETOOLONG"))
                 return GF_ERROR_CODE_NAMETOOLONG;
         else if (!strcmp ((*error_no), "EACCES"))
-                return EACCES;
+                return GF_ERROR_CODE_ACCES;
         else if (!strcmp ((*error_no), "EBADF"))
                 return GF_ERROR_CODE_BADF;
         else if (!strcmp ((*error_no), "EFAULT"))

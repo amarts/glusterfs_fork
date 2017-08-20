@@ -1224,7 +1224,7 @@ posix_acl_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int mask,
                         op_errno = 0;
                 } else {
                         op_ret = -1;
-                        op_errno = EACCES;
+                        op_errno = GF_ERROR_CODE_ACCES;
                 }
         } else {
                 if (perm & POSIX_ACL_READ) {
@@ -1779,12 +1779,12 @@ posix_acl_link (call_frame_t *frame, xlator_t *this, loc_t *old, loc_t *new, dic
         }
 
         if (!acl_permits (frame, new->parent, POSIX_ACL_WRITE)) {
-                op_errno = EACCES;
+                op_errno = GF_ERROR_CODE_ACCES;
                 goto red;
         }
 
         if (!sticky_permits (frame, new->parent, new->inode)) {
-                op_errno = EACCES;
+                op_errno = GF_ERROR_CODE_ACCES;
                 goto red;
         }
 
@@ -1997,7 +1997,7 @@ setattr_scrutiny (call_frame_t *frame, inode_t *inode, struct iatt *buf,
 */
                 if (!frame_is_user (frame, ctx->uid) &&
                     !acl_permits (frame, inode, POSIX_ACL_WRITE))
-                        return EACCES;
+                        return GF_ERROR_CODE_ACCES;
         }
 
         if (valid & GF_SET_ATTR_UID) {
@@ -2135,7 +2135,7 @@ setxattr_scrutiny (call_frame_t *frame, inode_t *inode, dict_t *xattr)
         }
 
         if (!found && !acl_permits (frame, inode, POSIX_ACL_WRITE))
-                return EACCES;
+                return GF_ERROR_CODE_ACCES;
 
         return 0;
 }
@@ -2422,7 +2422,7 @@ posix_acl_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                        const char *name, dict_t *xdata)
 {
         struct  posix_acl_ctx  *ctx = NULL;
-        int                     op_errno = EACCES;
+        int                     op_errno = GF_ERROR_CODE_ACCES;
 
         if (frame_is_super_user (frame))
                 goto green;

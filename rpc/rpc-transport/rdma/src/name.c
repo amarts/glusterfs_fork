@@ -85,7 +85,7 @@ loop:
                 if (ret == 0)
                         break;
 
-                if (ret == -1 && errno == EACCES)
+                if (ret == -1 && errno == GF_ERROR_CODE_ACCES)
                         break;
 
                 port--;

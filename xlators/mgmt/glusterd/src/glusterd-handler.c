@@ -3218,7 +3218,7 @@ __glusterd_handle_umount (rpcsvc_request_t *req)
         }
         GF_FREE (path);
         if (!dir_ok) {
-                rsp.op_errno = EACCES;
+                rsp.op_errno = GF_ERROR_CODE_ACCES;
                 goto out;
         }
 

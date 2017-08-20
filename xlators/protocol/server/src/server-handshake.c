@@ -809,7 +809,7 @@ server_setvolume (rpcsvc_request_t *req)
                         (clnt_version) ? clnt_version : "old");
 
                 op_ret = -1;
-                op_errno = EACCES;
+                op_errno = GF_ERROR_CODE_ACCES;
                 ret = dict_set_str (reply, "ERROR", "Authentication failed");
                 if (ret < 0)
                         gf_msg_debug (this->name, 0, "failed to set error "
@@ -826,7 +826,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = EACCES;
+                op_errno = GF_ERROR_CODE_ACCES;
                 goto fail;
         }
 

@@ -640,7 +640,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         }
         if (!(S_ISDIR (st.st_mode) && (st.st_mode & ~S_IFMT) == 0700 &&
               st.st_uid == uid && st.st_gid == 0)) {
-                *op_errno = EACCES;
+                *op_errno = GF_ERROR_CODE_ACCES;
                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                         GD_MSG_MOUNT_REQ_FAIL,
                         "Incorrect mountbroker user directory attributes");
