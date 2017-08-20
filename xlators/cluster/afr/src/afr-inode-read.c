@@ -477,7 +477,7 @@ gf_boolean_t
 afr_getxattr_ignorable_errnos (int32_t op_errno)
 {
         if (op_errno == GF_ERROR_CODE_NODATA || op_errno == ENOTSUP || op_errno == ERANGE ||
-            op_errno == ENAMETOOLONG)
+            op_errno == GF_ERROR_CODE_NAMETOOLONG)
                 return _gf_true;
 
         return _gf_false;

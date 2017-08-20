@@ -335,7 +335,7 @@ glfs_h_getxattrs_common (struct glfs *fs, struct glfs_object *object,
                 }
 
                 if (strlen(name) > GF_XATTR_NAME_MAX) {
-                        errno = ENAMETOOLONG;
+                        errno = GF_ERROR_CODE_NAMETOOLONG;
                         return -1;
                 }
         }
@@ -496,7 +496,7 @@ pub_glfs_h_setxattrs (struct glfs *fs, struct glfs_object *object,
         }
 
         if (strlen(name) > GF_XATTR_NAME_MAX) {
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 return -1;
         }
 

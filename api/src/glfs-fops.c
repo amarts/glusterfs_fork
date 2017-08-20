@@ -3280,7 +3280,7 @@ glfs_getxattr_common (struct glfs *fs, const char *path, const char *name,
 
         if (strlen(name) > GF_XATTR_NAME_MAX) {
                 ret = -1;
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 goto out;
         }
 
@@ -3368,7 +3368,7 @@ pub_glfs_fgetxattr (struct glfs_fd *glfd, const char *name, void *value,
 
         if (strlen(name) > GF_XATTR_NAME_MAX) {
                 ret = -1;
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 goto out;
         }
 
@@ -3583,7 +3583,7 @@ glfs_setxattr_common (struct glfs *fs, const char *path, const char *name,
 
         if (strlen(name) > GF_XATTR_NAME_MAX) {
                 ret = -1;
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 goto out;
         }
 
@@ -3673,7 +3673,7 @@ pub_glfs_fsetxattr (struct glfs_fd *glfd, const char *name, const void *value,
 
         if (strlen(name) > GF_XATTR_NAME_MAX) {
                 ret = -1;
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 goto out;
         }
 

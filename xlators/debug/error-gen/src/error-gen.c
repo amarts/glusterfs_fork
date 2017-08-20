@@ -211,7 +211,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "ENOTDIR"))
                 return GF_ERROR_CODE_NOTDIR;
         else if (!strcmp ((*error_no), "ENAMETOOLONG"))
-                return ENAMETOOLONG;
+                return GF_ERROR_CODE_NAMETOOLONG;
         else if (!strcmp ((*error_no), "EACCES"))
                 return EACCES;
         else if (!strcmp ((*error_no), "EBADF"))

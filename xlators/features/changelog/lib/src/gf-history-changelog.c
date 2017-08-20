@@ -159,7 +159,7 @@ gf_history_changelog_next_change (char *bufptr, size_t maxlen)
         char                    buffer[PATH_MAX] = {0,};
 
         if (maxlen > PATH_MAX) {
-                errno = ENAMETOOLONG;
+                errno = GF_ERROR_CODE_NAMETOOLONG;
                 goto out;
         }
 
