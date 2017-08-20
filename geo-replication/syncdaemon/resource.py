@@ -479,7 +479,7 @@ class Server(object):
             return struct.unpack('!II', val)
         except OSError:
             ex = sys.exc_info()[1]
-            if ex.errno in (ENOENT, ENODATA, ENOTDIR):
+            if ex.errno in (ENOENT, ENODATA, GF_ERROR_CODE_NOTDIR):
                 return ex.errno
             else:
                 raise
@@ -501,7 +501,7 @@ class Server(object):
             return struct.unpack('!II', val)
         except OSError:
             ex = sys.exc_info()[1]
-            if ex.errno in (ENOENT, ENODATA, ENOTDIR):
+            if ex.errno in (ENOENT, ENODATA, GF_ERROR_CODE_NOTDIR):
                 return ex.errno
             else:
                 raise
@@ -523,7 +523,7 @@ class Server(object):
             return struct.unpack('!II', val)
         except OSError:
             ex = sys.exc_info()[1]
-            if ex.errno in (ENOENT, ENODATA, ENOTDIR):
+            if ex.errno in (ENOENT, ENODATA, GF_ERROR_CODE_NOTDIR):
                 return ex.errno
             else:
                 raise
@@ -546,7 +546,7 @@ class Server(object):
             return struct.unpack('!II', val)
         except OSError:
             ex = sys.exc_info()[1]
-            if ex.errno in (ENOENT, ENODATA, ENOTDIR):
+            if ex.errno in (ENOENT, ENODATA, GF_ERROR_CODE_NOTDIR):
                 return ex.errno
             else:
                 raise

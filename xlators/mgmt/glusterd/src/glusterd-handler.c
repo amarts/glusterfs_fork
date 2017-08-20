@@ -5268,7 +5268,7 @@ glusterd_get_state (rpcsvc_request_t *req, dict_t *dict)
                                   "Output directory %s does not exist.", odir);
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 GD_MSG_DICT_GET_FAILED, "%s", err_str);
-                } else if (errno == ENOTDIR) {
+                } else if (errno == GF_ERROR_CODE_NOTDIR) {
                         snprintf (err_str, sizeof (err_str), "Output directory "
                                   "does not exist. %s points to a file.", odir);
                         gf_msg (this->name, GF_LOG_ERROR, 0,

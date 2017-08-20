@@ -1112,7 +1112,7 @@ pub_glfs_h_opendir (struct glfs *fs, struct glfs_object *object)
 
         if (!IA_ISDIR (inode->ia_type)) {
                 ret = -1;
-                errno = ENOTDIR;
+                errno = GF_ERROR_CODE_NOTDIR;
                 goto out;
         }
 

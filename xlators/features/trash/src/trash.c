@@ -1097,7 +1097,7 @@ trash_unlink_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if ((op_ret == -1) && (op_errno == ENOTDIR)) {
+        if ((op_ret == -1) && (op_errno == GF_ERROR_CODE_NOTDIR)) {
                 /* if entry is already present in trash directory,
                  * new one is not copied*/
                 gf_log (this->name, GF_LOG_DEBUG,

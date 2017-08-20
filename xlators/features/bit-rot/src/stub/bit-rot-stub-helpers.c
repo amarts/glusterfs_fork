@@ -419,7 +419,7 @@ br_stub_lookup_wrapper (call_frame_t *frame, xlator_t *this,
         } else if (!S_ISDIR (lstatbuf.st_mode)) {
                 gf_msg_debug (this->name, errno, "bad object container is not "
                               "a directory");
-                op_errno = ENOTDIR;
+                op_errno = GF_ERROR_CODE_NOTDIR;
                 goto done;
         }
 

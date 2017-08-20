@@ -177,7 +177,7 @@ gf_lstat_dir (const char *path, struct stat *stbuf_in)
                 goto out;
 
         if (!S_ISDIR (stbuf.st_mode)) {
-                errno = ENOTDIR;
+                errno = GF_ERROR_CODE_NOTDIR;
                 ret = -1;
                 goto out;
         }

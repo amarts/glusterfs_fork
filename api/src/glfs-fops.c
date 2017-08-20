@@ -2153,7 +2153,7 @@ retry:
 
 	if (iatt.ia_type != IA_IFDIR) {
 		ret = -1;
-		errno = ENOTDIR;
+		errno = GF_ERROR_CODE_NOTDIR;
 		goto out;
 	}
 
@@ -2373,7 +2373,7 @@ retry:
 
 	if (!IA_ISDIR (iatt.ia_type)) {
 		ret = -1;
-		errno = ENOTDIR;
+		errno = GF_ERROR_CODE_NOTDIR;
 		goto out;
 	}
 
@@ -3991,7 +3991,7 @@ retry:
 
 	if (!IA_ISDIR (iatt.ia_type)) {
 		ret = -1;
-		errno = ENOTDIR;
+		errno = GF_ERROR_CODE_NOTDIR;
 		goto out;
 	}
 
@@ -4042,7 +4042,7 @@ pub_glfs_fchdir (struct glfs_fd *glfd)
 
 	if (!IA_ISDIR (inode->ia_type)) {
 		ret = -1;
-		errno = ENOTDIR;
+		errno = GF_ERROR_CODE_NOTDIR;
 		goto out;
 	}
 

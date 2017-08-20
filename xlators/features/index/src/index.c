@@ -1589,7 +1589,7 @@ index_lookup_wrapper (call_frame_t *frame, xlator_t *this,
                 op_errno = errno;
                 goto done;
         } else if (!S_ISDIR (lstatbuf.st_mode) && is_dir) {
-                op_errno = ENOTDIR;
+                op_errno = GF_ERROR_CODE_NOTDIR;
                 gf_msg_debug (this->name, op_errno, "Stat failed on %s dir, "
                         "not a directory", path);
                 goto done;

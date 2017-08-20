@@ -563,7 +563,7 @@ priv_glfs_resolve_at (struct glfs *fs, xlator_t *subvol, inode_t *at,
 			inode_unref (inode);
 			inode = NULL;
 			ret = -1;
-			errno = ENOTDIR;
+			errno = GF_ERROR_CODE_NOTDIR;
 			break;
 		}
 	}
