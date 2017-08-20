@@ -251,7 +251,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "ENOSYS"))
                 return ENOSYS;
         else if (!strcmp ((*error_no), "EINTR"))
-                return EINTR;
+                return GF_ERROR_CODE_INTR;
         else if (!strcmp ((*error_no), "EFBIG"))
                 return EFBIG;
 	else if (!strcmp((*error_no), "GF_ERROR_SHORT_WRITE"))

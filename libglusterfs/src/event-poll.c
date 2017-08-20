@@ -474,7 +474,7 @@ event_dispatch_poll (struct event_pool *event_pool)
                         /* timeout */
                         continue;
 
-                if (ret == -1 && errno == EINTR)
+                if (ret == -1 && errno == GF_ERROR_CODE_INTR)
                         /* sys call */
                         continue;
 

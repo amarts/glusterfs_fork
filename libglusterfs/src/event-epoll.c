@@ -641,7 +641,7 @@ event_dispatch_epoll_worker (void *data)
                         /* timeout */
                         continue;
 
-                if (ret == -1 && errno == EINTR)
+                if (ret == -1 && errno == GF_ERROR_CODE_INTR)
                         /* sys call */
                         continue;
 

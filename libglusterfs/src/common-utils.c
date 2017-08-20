@@ -4486,7 +4486,7 @@ gf_nread (int fd, void *buf, size_t count)
                 if (ret == 0) {
                         break;
                 } else if (ret < 0) {
-                        if (errno == EINTR)
+                        if (errno == GF_ERROR_CODE_INTR)
                                 ret = 0;
                         else
                                 goto out;
@@ -4507,7 +4507,7 @@ gf_nwrite (int fd, const void *buf, size_t count)
         for (written = 0; written != count; written += ret) {
                 ret = sys_write (fd, buf + written, count - written);
                 if (ret < 0) {
-                        if (errno == EINTR)
+                        if (errno == GF_ERROR_CODE_INTR)
                                 ret = 0;
                         else
                                 goto out;

@@ -1155,7 +1155,7 @@ static int send_fd(int sock_fd, int fd)
 	 * least one byte" (man 7 unix) */
 	vec.iov_base = &sendchar;
 	vec.iov_len = sizeof(sendchar);
-	while ((retval = sendmsg(sock_fd, &msg, 0)) == -1 && errno == EINTR);
+	while ((retval = sendmsg(sock_fd, &msg, 0)) == -1 && errno == GF_ERROR_CODE_INTR);
 	if (retval != 1) {
 		perror("sending file descriptor");
 		return -1;

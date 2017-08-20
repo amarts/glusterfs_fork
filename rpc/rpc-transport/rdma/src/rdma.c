@@ -4113,12 +4113,12 @@ gf_rdma_async_event_thread (void *context)
                         ret = ibv_get_async_event((struct ibv_context *)context,
                                                   &event);
 
-                        if (ret && errno != EINTR) {
+                        if (ret && errno != GF_ERROR_CODE_INTR) {
                                 gf_msg (GF_RDMA_LOG_NAME, GF_LOG_WARNING, errno,
                                         RDMA_MSG_EVENT_ERROR, "Error getting "
                                         "event");
                         }
-                } while (ret && errno == EINTR);
+                } while (ret && errno == GF_ERROR_CODE_INTR);
 
                 switch (event.event_type) {
                 case IBV_EVENT_SRQ_LIMIT_REACHED:

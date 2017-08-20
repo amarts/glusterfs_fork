@@ -4982,7 +4982,7 @@ fuse_thread_proc (void *data)
                                              "EBADF");
                                 break;
                         }
-                        if (errno != EINTR) {
+                        if (errno != GF_ERROR_CODE_INTR) {
                                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                                         "read from /dev/fuse returned -1 (%s)",
                                         strerror (errno));

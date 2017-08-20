@@ -580,7 +580,7 @@ __socket_rwv (rpc_transport_t *this, struct iovec *vector, int count,
                         break;
                 }
                 if (ret == -1) {
-                        if (errno == EINTR)
+                        if (errno == GF_ERROR_CODE_INTR)
                                 continue;
 
                         if (__does_socket_rwv_error_need_logging (priv,
