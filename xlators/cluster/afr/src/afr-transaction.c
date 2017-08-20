@@ -892,7 +892,7 @@ afr_changelog_post_op_now (call_frame_t *frame, xlator_t *this)
 	xattr = dict_new ();
 	if (!xattr) {
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 		afr_changelog_post_op_done (frame, this);
 		goto out;
 	}
@@ -905,7 +905,7 @@ afr_changelog_post_op_now (call_frame_t *frame, xlator_t *this)
 	ret = afr_set_pending_dict (priv, xattr, local->pending);
 	if (ret < 0) {
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 		afr_changelog_post_op_done (frame, this);
 		goto out;
 	}
@@ -919,7 +919,7 @@ afr_changelog_post_op_now (call_frame_t *frame, xlator_t *this)
 				   sizeof(int) * AFR_NUM_CHANGE_LOGS);
 	if (ret) {
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 		afr_changelog_post_op_done (frame, this);
 		goto out;
 	}
@@ -1388,7 +1388,7 @@ afr_pre_op_fop_do (call_frame_t *frame, xlator_t *this, dict_t *xattr,
         int i = 0, call_count = 0;
         afr_compound_cbk_t compound_cbk;
         int ret = 0;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         local = frame->local;
         priv = this->private;
@@ -1543,7 +1543,7 @@ afr_post_op_unlock_do (call_frame_t *frame, xlator_t *this, dict_t *xattr,
 
         if (!args) {
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 		afr_changelog_post_op_done (frame, this);
 		goto out;
 	}
@@ -1752,7 +1752,7 @@ afr_changelog_pre_op (call_frame_t *frame, xlator_t *this)
 
 	xdata_req = dict_new();
 	if (!xdata_req) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto err;
 	}
 
@@ -1769,7 +1769,7 @@ afr_changelog_pre_op (call_frame_t *frame, xlator_t *this)
 
         ret = afr_set_pending_dict (priv, xdata_req, local->pending);
 	if (ret < 0) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto err;
 	}
 
@@ -1780,7 +1780,7 @@ afr_changelog_pre_op (call_frame_t *frame, xlator_t *this)
 		ret = dict_set_static_bin (xdata_req, AFR_DIRTY, local->dirty,
 					   sizeof(int) * AFR_NUM_CHANGE_LOGS);
 		if (ret) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto err;
 		}
 

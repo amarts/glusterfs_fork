@@ -548,7 +548,7 @@ dc_compound_fop_wind (call_frame_t *frame, xlator_t *this)
         int                     counter         = local->counter;
         default_args_t          *curr_fop       = &c_req->req_list[counter];
         int                     op_ret          = 0;
-        int                     op_errno        = ENOMEM;
+        int                     op_errno        = GF_ERROR_CODE_NOMEM;
 
         if (local->counter == local->length)
                 goto done;
@@ -848,7 +848,7 @@ dc_compound (call_frame_t *frame, xlator_t *this, void *data, dict_t *xdata)
         compound_args_t         *compound_req = NULL;
         compound_args_cbk_t     *compound_rsp = NULL;
         int                     ret           = 0;
-        int                     op_errno      = ENOMEM;
+        int                     op_errno      = GF_ERROR_CODE_NOMEM;
         dc_local_t              *local        = NULL;
 
         compound_req = data;

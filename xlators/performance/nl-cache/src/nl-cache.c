@@ -81,7 +81,7 @@ disabled:                                                               \
         default_##_name##_resume (frame, this, args);                   \
         break;                                                          \
 err:                                                                    \
-        default_##_name##_failure_cbk (frame, ENOMEM);                  \
+        default_##_name##_failure_cbk (frame, GF_ERROR_CODE_NOMEM);                  \
         break;                                                          \
 } while (0)
 

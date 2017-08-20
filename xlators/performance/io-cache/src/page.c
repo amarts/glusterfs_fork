@@ -310,7 +310,7 @@ __ioc_wait_on_page (ioc_page_t *page, call_frame_t *frame, off_t offset,
 
         if (page == NULL) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (frame->this->name, GF_LOG_WARNING,
                         0, IO_CACHE_MSG_NO_MEMORY,
                         "asked to wait on a NULL page");
@@ -320,7 +320,7 @@ __ioc_wait_on_page (ioc_page_t *page, call_frame_t *frame, off_t offset,
         waitq = GF_CALLOC (1, sizeof (*waitq), gf_ioc_mt_ioc_waitq_t);
         if (waitq == NULL) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -488,7 +488,7 @@ ioc_fault_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         if (page != NULL)
                                                 waitq = __ioc_page_error (page,
                                                                           -1,
-                                                                          ENOMEM);
+                                                                          GF_ERROR_CODE_NOMEM);
                                         goto unlock;
                                 }
 
@@ -597,14 +597,14 @@ ioc_page_fault (ioc_inode_t *ioc_inode, call_frame_t *frame, fd_t *fd,
         fault_frame = copy_frame (frame);
         if (fault_frame == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
         fault_local = mem_get0 (THIS->local_pool);
         if (fault_local == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 STACK_DESTROY (fault_frame->root);
                 goto err;
         }
@@ -724,7 +724,7 @@ __ioc_frame_fill (ioc_page_t *page, call_frame_t *frame, off_t offset,
                                          gf_ioc_mt_ioc_fill_t);
                         if (new == NULL) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
 
@@ -741,7 +741,7 @@ __ioc_frame_fill (ioc_page_t *page, call_frame_t *frame, off_t offset,
                                                  gf_ioc_mt_iovec);
                         if (new->vector == NULL) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
 
                                 iobref_unref (new->iobref);
                                 GF_FREE (new);
@@ -818,7 +818,7 @@ ioc_frame_unwind (call_frame_t *frame)
                 gf_msg (frame->this->name, GF_LOG_WARNING, ENOMEM,
                         IO_CACHE_MSG_NO_MEMORY, "local is NULL");
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -832,7 +832,7 @@ ioc_frame_unwind (call_frame_t *frame)
         iobref = iobref_new ();
         if (iobref == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
         }
 
         if (list_empty (&local->fill_list)) {
@@ -849,7 +849,7 @@ ioc_frame_unwind (call_frame_t *frame)
         vector = GF_CALLOC (count, sizeof (*vector), gf_ioc_mt_iovec);
         if (vector == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
         }
 
         list_for_each_entry_safe (fill, next, &local->fill_list, list) {
@@ -862,7 +862,7 @@ ioc_frame_unwind (call_frame_t *frame)
 
                         if (iobref_merge (iobref, fill->iobref)) {
 				op_ret = -1;
-				op_errno = ENOMEM;
+				op_errno = GF_ERROR_CODE_NOMEM;
 			}
                 }
 

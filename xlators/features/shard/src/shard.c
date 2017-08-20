@@ -694,7 +694,7 @@ shard_update_file_size_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (shard_modify_size_and_block_count (&local->postbuf, dict)) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 err:
@@ -747,7 +747,7 @@ shard_update_file_size (call_frame_t *frame, xlator_t *this, fd_t *fd,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -770,7 +770,7 @@ shard_update_file_size (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         "Failed to set size attrs for %s",
                         uuid_utoa (inode->gfid));
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -782,7 +782,7 @@ shard_update_file_size (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         GF_XATTR_SHARD_FILE_SIZE, uuid_utoa (inode->gfid));
                 GF_FREE (size_attr);
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -943,7 +943,7 @@ shard_lookup_dot_shard (call_frame_t *frame, xlator_t *this,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -953,7 +953,7 @@ shard_lookup_dot_shard (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_ERROR, 0, SHARD_MSG_DICT_SET_FAILED,
                         "Failed to set gfid of /.shard into dict");
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1041,7 +1041,7 @@ shard_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
               dict_t *xattr_req)
 {
         int             ret        = -1;
-        int32_t         op_errno   = ENOMEM;
+        int32_t         op_errno   = GF_ERROR_CODE_NOMEM;
         uint64_t        block_size = 0;
         shard_local_t  *local      = NULL;
 
@@ -1141,7 +1141,7 @@ shard_lookup_base_file_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         " write params into inode ctx for %s",
                         uuid_utoa (buf->ia_gfid));
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1178,7 +1178,7 @@ shard_lookup_base_file (call_frame_t *frame, xlator_t *this, loc_t *loc,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1566,7 +1566,7 @@ shard_truncate_htol (call_frame_t *frame, xlator_t *this, inode_t *inode)
                                 " on %s. Base file gfid = %s", bname,
                                 uuid_utoa (inode->gfid));
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         loc_wipe (&loc);
                         wind_failed = _gf_true;
                         shard_unlink_shards_do_cbk (frame,
@@ -1826,7 +1826,7 @@ shard_common_lookup_shards (call_frame_t *frame, xlator_t *this, inode_t *inode,
                                 " on %s, base file gfid = %s", bname,
                                 uuid_utoa (inode->gfid));
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         loc_wipe (&loc);
                         wind_failed = _gf_true;
                         shard_common_lookup_shards_cbk (frame,
@@ -1843,7 +1843,7 @@ shard_common_lookup_shards (call_frame_t *frame, xlator_t *this, inode_t *inode,
                 xattr_req = shard_create_gfid_dict (local->xattr_req);
                 if (!xattr_req) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         wind_failed = _gf_true;
                         loc_wipe (&loc);
                         shard_common_lookup_shards_cbk (frame,
@@ -2620,7 +2620,7 @@ shard_unlink_shards_do (call_frame_t *frame, xlator_t *this, inode_t *inode)
                                 " on %s, base file gfid = %s", bname,
                                 uuid_utoa (inode->gfid));
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         loc_wipe (&loc);
                         wind_failed = _gf_true;
                         shard_unlink_shards_do_cbk (frame,
@@ -3175,7 +3175,7 @@ shard_readv_do (call_frame_t *frame, xlator_t *this)
                         anon_fd = fd_anonymous (local->inode_list[i]);
                         if (!anon_fd) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 wind_failed = _gf_true;
                                 shard_readv_do_cbk (frame,
                                                     (void *) (long) anon_fd,
@@ -3193,7 +3193,7 @@ shard_readv_do (call_frame_t *frame, xlator_t *this)
                                 cur_block,
                                 uuid_utoa (local->inode_list[i]->gfid));
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         wind_failed = _gf_true;
                         shard_readv_do_cbk (frame, (void *) (long) anon_fd,
                                             this, -1, ENOMEM, NULL, 0, NULL,
@@ -3289,7 +3289,7 @@ shard_common_resume_mknod (call_frame_t *frame, xlator_t *this,
                         SHARD_MSG_INODE_CTX_GET_FAILED, "Failed to get inode "
                         "ctx for %s", uuid_utoa (fd->inode->gfid));
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         mode = st_mode_from_ia (ctx_tmp.stat.ia_prot, ctx_tmp.stat.ia_type);
@@ -3315,7 +3315,7 @@ shard_common_resume_mknod (call_frame_t *frame, xlator_t *this,
                 xattr_req = shard_create_gfid_dict (local->xattr_req);
                 if (!xattr_req) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         wind_failed = _gf_true;
                         shard_common_mknod_cbk (frame,
                                                 (void *) (long) shard_idx_iter,
@@ -3335,7 +3335,7 @@ shard_common_resume_mknod (call_frame_t *frame, xlator_t *this,
                                 "on %s, base file gfid = %s", bname,
                                 uuid_utoa (fd->inode->gfid));
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         wind_failed = _gf_true;
                         loc_wipe (&loc);
                         dict_unref (xattr_req);
@@ -3823,7 +3823,7 @@ shard_common_inode_write_do (call_frame_t *frame, xlator_t *this)
                         "Failed to set "GLUSTERFS_WRITE_UPDATE_ATOMIC" into "
                         "dict: %s", uuid_utoa (fd->inode->gfid));
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 local->call_count = 1;
                 shard_common_inode_write_do_cbk (frame, (void *)(long)0, this,
                                                  -1, ENOMEM, NULL, NULL, NULL);
@@ -3859,7 +3859,7 @@ shard_common_inode_write_do (call_frame_t *frame, xlator_t *this)
                                          gf_shard_mt_iovec);
                         if (!vec) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 wind_failed = _gf_true;
                                 GF_FREE (vec);
                                 shard_common_inode_write_do_cbk (frame,
@@ -3880,7 +3880,7 @@ shard_common_inode_write_do (call_frame_t *frame, xlator_t *this)
                         anon_fd = fd_anonymous (local->inode_list[i]);
                         if (!anon_fd) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 wind_failed = _gf_true;
                                 GF_FREE (vec);
                                 shard_common_inode_write_do_cbk (frame,
@@ -4028,7 +4028,7 @@ shard_common_inode_write_post_lookup_handler (call_frame_t *frame,
                                        gf_shard_mt_inode_list);
         if (!local->inode_list) {
                 shard_common_inode_write_failure_unwind (local->fop, frame,
-                                                         -1, ENOMEM);
+                                                         -1, GF_ERROR_CODE_NOMEM);
                 return 0;
         }
 
@@ -4140,7 +4140,7 @@ err:
         if (xattr_req)
                 dict_unref (xattr_req);
         local->op_ret = -1;
-        local->op_errno = ENOMEM;
+        local->op_errno = GF_ERROR_CODE_NOMEM;
         handler (frame, this);
         return 0;
 }
@@ -4835,7 +4835,7 @@ shard_common_inode_write_begin (call_frame_t *frame, xlator_t *this,
                                 shard_common_inode_write_post_lookup_handler);
         return 0;
 out:
-        shard_common_inode_write_failure_unwind (fop, frame, -1, ENOMEM);
+        shard_common_inode_write_failure_unwind (fop, frame, -1, GF_ERROR_CODE_NOMEM);
         return 0;
 }
 

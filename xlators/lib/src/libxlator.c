@@ -154,7 +154,7 @@ cluster_marker_unwind (call_frame_t *frame, char *key, void *value, size_t size,
                                 unref = _gf_true;
                         } else {
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                 }
@@ -162,7 +162,7 @@ cluster_marker_unwind (call_frame_t *frame, char *key, void *value, size_t size,
                 ret = dict_set_static_bin (dict, key, value, size);
                 if (ret) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -507,6 +507,6 @@ fail:
         if (unwind)
                 unwind (frame, -1, ENOMEM, NULL, NULL);
         else
-                default_getxattr_failure_cbk (frame, ENOMEM);
+                default_getxattr_failure_cbk (frame, GF_ERROR_CODE_NOMEM);
         return 0;
 }

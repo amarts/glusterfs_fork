@@ -272,7 +272,7 @@ create_filetable (sqlite3 *sqlite3_db_conn)
 
         sql_stmt = sql_stmt_init ();
         if (!sql_stmt) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

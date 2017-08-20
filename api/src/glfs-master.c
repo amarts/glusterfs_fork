@@ -50,7 +50,7 @@ graph_setup (struct glfs *fs, glusterfs_graph_t *graph)
 		if (!new_subvol->itable) {
 			itable = inode_table_new (131072, new_subvol);
 			if (!itable) {
-				errno = ENOMEM;
+				errno = GF_ERROR_CODE_NOMEM;
 				ret = -1;
 				goto unlock;
 			}

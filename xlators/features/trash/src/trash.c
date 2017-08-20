@@ -75,14 +75,14 @@ extract_trash_directory (char *priv_value, const char **trash_directory)
 
         tmp = gf_strdup (priv_value + 1);
         if (!tmp) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         if (tmp[strlen(tmp)-1] == '/')
                 tmp[strlen(tmp)-1] = '\0';
         *trash_directory = gf_strdup (tmp);
         if (!(*trash_directory)) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 out:
@@ -167,7 +167,7 @@ store_eliminate_path (char *str, trash_elim_path **eliminate)
                 trav = GF_CALLOC (1, sizeof (*trav),
                                  gf_trash_mt_trash_elim_path);
                 if (!trav) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 if (component[0] == '/')
@@ -180,7 +180,7 @@ store_eliminate_path (char *str, trash_elim_path **eliminate)
 
                 trav->path = gf_strdup(elm_path);
                 if (!trav->path) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 gf_log ("trash", GF_LOG_DEBUG, "out of memory");
                                 goto out;
                 }
@@ -305,7 +305,7 @@ trash_dir_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         priv->oldtrash_dir = gf_strdup(priv->newtrash_dir);
         if (!priv->oldtrash_dir) {
-                op_ret = ENOMEM;
+                op_ret = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_DEBUG,
                                 "out of memory");
         }
@@ -333,14 +333,14 @@ rename_trash_directory (xlator_t *this)
         if (frame == NULL) {
                 gf_log (this->name, GF_LOG_ERROR,
                                 "failed to create frame");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         local = mem_get0 (this->local_pool);
         if (!local) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         frame->local = local;
@@ -357,7 +357,7 @@ rename_trash_directory (xlator_t *this)
         }
         loc.path = gf_strdup (priv->newtrash_dir);
         if (!loc.path) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_DEBUG,
                                 "out of memory");
                 goto out;
@@ -375,7 +375,7 @@ rename_trash_directory (xlator_t *this)
         }
         old_loc.path = gf_strdup (priv->oldtrash_dir);
         if (!old_loc.path) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_DEBUG,
                                 "out of memory");
                 goto out;
@@ -444,7 +444,7 @@ trash_dir_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 priv->oldtrash_dir = gf_strdup (priv->newtrash_dir);
                 if (!priv->oldtrash_dir) {
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                        op_ret = ENOMEM;
+                        op_ret = GF_ERROR_CODE_NOMEM;
                 }
         } else if (op_ret != 0 && errno != EEXIST)
                 gf_log (this->name, GF_LOG_ERROR, "mkdir failed for trash"
@@ -483,7 +483,7 @@ trash_dir_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         gf_common_mt_char);
         if (!priv->oldtrash_dir) {
                 gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                 ret = ENOMEM;
+                 ret = GF_ERROR_CODE_NOMEM;
                  goto out;
         }
         /* appending '/' if it is not present */
@@ -538,7 +538,7 @@ trash_internalop_dir_lookup_cbk (call_frame_t *frame, void *cookie,
                 gfid_ptr = GF_CALLOC (1, sizeof(uuid_t),
                                    gf_common_mt_uuid_t);
                 if (!gfid_ptr) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -546,7 +546,7 @@ trash_internalop_dir_lookup_cbk (call_frame_t *frame, void *cookie,
 
                 dict = dict_new ();
                 if (!dict) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 ret = dict_set_dynptr (dict, "gfid-req", gfid_ptr,
@@ -566,7 +566,7 @@ trash_internalop_dir_lookup_cbk (call_frame_t *frame, void *cookie,
                 if (!loc.name) {
                         gf_log (this->name, GF_LOG_DEBUG,
                                  "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 sprintf (internal_op_path, "%s%s/",
@@ -576,7 +576,7 @@ trash_internalop_dir_lookup_cbk (call_frame_t *frame, void *cookie,
                 if (!loc.path) {
                         gf_log (this->name, GF_LOG_DEBUG,
                                  "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -655,7 +655,7 @@ trash_dir_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 gfid_ptr = GF_CALLOC (1, sizeof(uuid_t),
                                           gf_common_mt_uuid_t);
                 if (!gfid_ptr) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 gf_uuid_copy (*gfid_ptr, trash_gfid);
@@ -673,7 +673,7 @@ trash_dir_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 if (!loc.path) {
                         gf_log (this->name, GF_LOG_DEBUG,
                                         "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -682,7 +682,7 @@ trash_dir_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 loc.inode = inode_ref (priv->trash_inode);
                 dict = dict_new ();
                 if (!dict) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 /* Fixed gfid is set for trash directory with
@@ -731,14 +731,14 @@ create_or_rename_trash_directory (xlator_t *this)
         if (frame == NULL) {
                 gf_log (this->name, GF_LOG_ERROR,
                                 "failed to create frame");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         local = mem_get0 (this->local_pool);
         if (!local) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         frame->local = local;
@@ -771,14 +771,14 @@ create_internalop_directory (xlator_t *this)
         if (frame == NULL) {
                 gf_log (this->name, GF_LOG_ERROR,
                                 "failed to create frame");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         local = mem_get0 (this->local_pool);
         if (!local) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         frame->local = local;
@@ -902,7 +902,7 @@ trash_unlink_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_path = gf_memdup (local->newpath, count + 1);
                 if (!tmp_path) {
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 tmp_path[count] = '\0';
@@ -911,7 +911,7 @@ trash_unlink_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_loc.path = gf_strdup (tmp_path);
                 if (!tmp_loc.path) {
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -919,7 +919,7 @@ trash_unlink_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_loc.name = gf_strdup (strrchr(tmp_path, '/') + 1);
                 if (!tmp_loc.name) {
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 strcpy (real_path, priv->brick_path);
@@ -1061,7 +1061,7 @@ trash_unlink_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_str = gf_strdup (local->newpath);
                 if (!tmp_str) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 dir_name = dirname (tmp_str); /* stores directory name */
@@ -1070,14 +1070,14 @@ trash_unlink_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_loc.path = gf_strdup (dir_name);
                 if (!tmp_loc.path) {
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
                 tmp_cookie = gf_strdup (dir_name);
                 if (!tmp_cookie) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 strcpy (real_path, priv->brick_path);
@@ -1262,7 +1262,7 @@ trash_unlink_stat_cbk (call_frame_t *frame,  void *cookie, xlator_t *this,
         new_loc.path = gf_strdup (local->newpath);
         if (!new_loc.path) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1363,7 +1363,7 @@ trash_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflags,
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
                 TRASH_STACK_UNWIND (unlink, frame, -1, ENOMEM, NULL, NULL,
                                     xdata);
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         frame->local = local;
@@ -1692,7 +1692,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         tmp_str = gf_strdup (local->newpath);
         if (!tmp_str) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1710,7 +1710,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_path = gf_memdup (local->newpath, count + 1);
                 if (!tmp_path) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 tmp_path[count] = '\0';
@@ -1719,7 +1719,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_loc.path = gf_strdup (tmp_path);
                 if (!tmp_loc.path) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -1727,7 +1727,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 tmp_loc.name = gf_strdup (strrchr(tmp_path, '/') + 1);
                 if (!tmp_loc.name) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 strcpy (real_path, priv->brick_path);
@@ -1795,7 +1795,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         tmp_path = gf_memdup (local->newpath, count + 1);
         if (!tmp_path) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         tmp_path[count] = '\0';
@@ -1804,7 +1804,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         tmp_loc.path = gf_strdup (tmp_path);
         if (!tmp_loc.path) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1932,13 +1932,13 @@ trash_truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local->newloc.name = gf_strdup (loc_newname);
         if (!local->newloc.name) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         local->newloc.path = gf_strdup (local->newpath);
         if (!local->newloc.path) {
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         local->newloc.inode = inode_new (local->loc.inode->table);
@@ -2040,7 +2040,7 @@ trash_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
                 TRASH_STACK_UNWIND (truncate, frame, -1, ENOMEM, NULL, NULL,
                                     xdata);
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2305,7 +2305,7 @@ reconfigure (xlator_t *this, dict_t *options)
 
                         priv->newtrash_dir = gf_strdup (trash_dir);
                         if (!priv->newtrash_dir) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 gf_log (this->name, GF_LOG_DEBUG,
                                                 "out of memory");
                                 goto out;
@@ -2317,7 +2317,7 @@ reconfigure (xlator_t *this, dict_t *options)
                         if (!priv->newtrash_dir) {
                                 gf_log (this->name, GF_LOG_DEBUG,
                                                 "out of memory");
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         ret = rename_trash_directory (this);
@@ -2349,7 +2349,7 @@ reconfigure (xlator_t *this, dict_t *options)
                 tmp_str = gf_strdup (tmp);
                 if (!tmp_str) {
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 ret = store_eliminate_path (tmp_str, &priv->eliminate);
@@ -2456,7 +2456,7 @@ init (xlator_t *this)
         priv = GF_CALLOC (1, sizeof (*priv), gf_trash_mt_trash_private_t);
         if (!priv) {
                 gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2474,7 +2474,7 @@ init (xlator_t *this)
                         "using \"/.trashcan/\"");
                 priv->newtrash_dir = gf_strdup ("/.trashcan/");
                 if (!priv->newtrash_dir) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
                         goto out;
                 }
@@ -2482,7 +2482,7 @@ init (xlator_t *this)
                 sprintf(trash_dir, "/%s/", tmp);
                 priv->newtrash_dir = gf_strdup (trash_dir);
                 if (!priv->newtrash_dir) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         gf_log (this->name, GF_LOG_DEBUG, "out of memory");
                         goto out;
                 }
@@ -2498,7 +2498,7 @@ init (xlator_t *this)
                 if (!tmp_str) {
                         gf_log (this->name, GF_LOG_ERROR,
                                         "out of memory");
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 ret = store_eliminate_path (tmp_str, &priv->eliminate);
@@ -2526,7 +2526,7 @@ init (xlator_t *this)
         if (!this->local_pool) {
                 gf_log (this->name, GF_LOG_ERROR,
                         "failed to create local_t's memory pool");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2538,12 +2538,12 @@ init (xlator_t *this)
         if (!data) {
                 gf_log (this->name, GF_LOG_ERROR,
                         "no option specified for 'brick-path'");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         priv->brick_path = gf_strdup (data->data);
         if (!priv->brick_path) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_DEBUG, "out of memory");
                 goto out;
         }

@@ -368,19 +368,19 @@ glfs_resolve_component (struct glfs *fs, xlator_t *subvol, inode_t *parent,
 		gf_uuid_generate (gfid);
 		loc.inode = inode_new (parent->table);
                 if (!loc.inode) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
                 xattr_req = dict_new ();
                 if (!xattr_req) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
                 ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
                 if (ret) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -405,13 +405,13 @@ glfs_resolve_component (struct glfs *fs, xlator_t *subvol, inode_t *parent,
 	        gf_uuid_clear (loc.gfid);
 		loc.inode = inode_new (parent->table);
 		if (!loc.inode) {
-			errno = ENOMEM;
+			errno = GF_ERROR_CODE_NOMEM;
 			goto out;
 		}
 
 		xattr_req = dict_new ();
 		if (!xattr_req) {
-			errno = ENOMEM;
+			errno = GF_ERROR_CODE_NOMEM;
 			goto out;
 		}
 
@@ -419,7 +419,7 @@ glfs_resolve_component (struct glfs *fs, xlator_t *subvol, inode_t *parent,
 
 		ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
 		if (ret) {
-			errno = ENOMEM;
+			errno = GF_ERROR_CODE_NOMEM;
 			goto out;
 		}
 
@@ -475,7 +475,7 @@ priv_glfs_resolve_at (struct glfs *fs, xlator_t *subvol, inode_t *at,
 
 	path = gf_strdup (origpath);
 	if (!path) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		return -1;
 	}
 
@@ -1150,7 +1150,7 @@ glfs_create_object (loc_t *loc, struct glfs_object **retobject)
 	object = GF_CALLOC (1, sizeof(struct glfs_object),
 			    glfs_mt_glfs_object_t);
 	if (object == NULL) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		return -1;
 	}
 

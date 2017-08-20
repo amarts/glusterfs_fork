@@ -481,7 +481,7 @@ pl_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         pl_inode = pl_inode_get (this, fd->inode);
         if (!pl_inode) {
                 op_ret   = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -514,7 +514,7 @@ pl_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         rw = GF_CALLOC (1, sizeof (*rw),
                                         gf_locks_mt_pl_rw_req_t);
                         if (!rw) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -522,7 +522,7 @@ pl_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         rw->stub = fop_discard_stub (frame, pl_discard_cont,
                                                      fd, offset, len, xdata);
                         if (!rw->stub) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 GF_FREE (rw);
                                 goto unlock;
@@ -585,7 +585,7 @@ pl_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         pl_inode = pl_inode_get (this, fd->inode);
         if (!pl_inode) {
                 op_ret   = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -618,7 +618,7 @@ pl_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         rw = GF_CALLOC (1, sizeof (*rw),
                                         gf_locks_mt_pl_rw_req_t);
                         if (!rw) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -626,7 +626,7 @@ pl_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                         rw->stub = fop_zerofill_stub (frame, pl_zerofill_cont,
                                                       fd, offset, len, xdata);
                         if (!rw->stub) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 GF_FREE (rw);
                                 goto unlock;
@@ -728,7 +728,7 @@ truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         pl_inode = pl_inode_get (this, inode);
         if (!pl_inode) {
                 op_ret   = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -761,7 +761,7 @@ truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         rw = GF_CALLOC (1, sizeof (*rw),
                                         gf_locks_mt_pl_rw_req_t);
                         if (!rw) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -775,7 +775,7 @@ truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                                 pl_ftruncate_cont, local->fd,
                                                 local->offset, local->xdata);
                         if (!rw->stub) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 GF_FREE (rw);
                                 goto unlock;
@@ -1029,13 +1029,13 @@ pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         dict = dict_new ();
         if (!dict) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         pl_inode = pl_inode_get (this, loc->inode);
         if (!pl_inode) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1078,7 +1078,7 @@ pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         if (!gcount && !bcount) {
                 if (gf_asprintf (&lk_summary, "No locks cleared.") == -1) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         } else if (gf_asprintf (&lk_summary, "%s: %s blocked locks=%d "
@@ -1089,14 +1089,14 @@ pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                                 (args.type == CLRLK_POSIX)? "posix": " ",
                                 bcount, gcount) == -1) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         strncpy (key, name, strlen (name));
         if (dict_set_dynstr (dict, key, lk_summary)) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1287,7 +1287,7 @@ pl_fgetxattr_handle_lockinfo (xlator_t *this, fd_t *fd,
         tmp = dict_new ();
         if (tmp == NULL) {
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1316,7 +1316,7 @@ pl_fgetxattr_handle_lockinfo (xlator_t *this, fd_t *fd,
         buf = GF_CALLOC (1, len, gf_common_mt_char);
         if (buf == NULL) {
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1371,7 +1371,7 @@ pl_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 dict = dict_new ();
                 if (dict == NULL) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -1449,7 +1449,7 @@ pl_fsetxattr_handle_lockinfo (call_frame_t *frame, fd_t *fd, char *lockinfo_buf,
         lockinfo = dict_new ();
         if (lockinfo == NULL) {
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1538,7 +1538,7 @@ pl_opendir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         fdctx = pl_check_n_create_fdctx (this, fd);
         if (!fdctx) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 op_ret   = -1;
                 goto unwind;
         }
@@ -1637,7 +1637,7 @@ pl_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         fdctx = pl_check_n_create_fdctx (this, fd);
         if (!fdctx) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 op_ret   = -1;
                 goto unwind;
         }
@@ -1725,7 +1725,7 @@ pl_create_cbk (call_frame_t *frame, void *cookie,
 
         fdctx = pl_check_n_create_fdctx (this, fd);
         if (!fdctx) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 op_ret   = -1;
                 goto unwind;
         }
@@ -1860,7 +1860,7 @@ pl_readv (call_frame_t *frame, xlator_t *this,
         pl_inode = pl_inode_get (this, fd->inode);
         if (!pl_inode) {
                 op_ret   = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1893,7 +1893,7 @@ pl_readv (call_frame_t *frame, xlator_t *this,
                         rw = GF_CALLOC (1, sizeof (*rw),
                                         gf_locks_mt_pl_rw_req_t);
                         if (!rw) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -1902,7 +1902,7 @@ pl_readv (call_frame_t *frame, xlator_t *this,
                                                    fd, size, offset, flags,
                                                    xdata);
                         if (!rw->stub) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 GF_FREE (rw);
                                 goto unlock;
@@ -1960,7 +1960,7 @@ pl_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         pl_inode = pl_inode_get (this, fd->inode);
         if (!pl_inode) {
                 op_ret   = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1993,7 +1993,7 @@ pl_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         rw = GF_CALLOC (1, sizeof (*rw),
                                         gf_locks_mt_pl_rw_req_t);
                         if (!rw) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 goto unlock;
                         }
@@ -2002,7 +2002,7 @@ pl_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                                                     fd, vector, count, offset,
                                                     flags, iobref, xdata);
                         if (!rw->stub) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 op_ret = -1;
                                 GF_FREE (rw);
                                 goto unlock;
@@ -2271,7 +2271,7 @@ pl_lk (call_frame_t *frame, xlator_t *this,
         pl_inode = pl_inode_get (this, fd->inode);
         if (!pl_inode) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -2281,7 +2281,7 @@ pl_lk (call_frame_t *frame, xlator_t *this,
 
         if (!reqlock) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -2784,7 +2784,7 @@ pl_getactivelk (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                         "pl_inode_get failed");
 
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -3892,7 +3892,7 @@ pl_setactivelk (call_frame_t *frame, xlator_t *this, loc_t *loc,
                         "pl_inode_get failed");
 
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         ret = pl_write_active_locks (frame, pl_inode, locklist);

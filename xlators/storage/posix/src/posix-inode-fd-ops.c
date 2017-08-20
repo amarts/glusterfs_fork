@@ -1393,7 +1393,7 @@ posix_readv (call_frame_t *frame, xlator_t *this,
         iobuf = iobuf_get_page_aligned (this->ctx->iobuf_pool, size,
                                         ALIGN_SIZE);
         if (!iobuf) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1646,7 +1646,7 @@ posix_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         op_ret = posix_inode_ctx_get_all (fd->inode, this, &ctx);
         if (op_ret < 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2390,7 +2390,7 @@ posix_links_in_same_directory (char *dirpath, int count, inode_t *leaf_inode,
                         }
                         if (!*path) {
                                 op_ret = -1;
-                                *op_errno = ENOMEM;
+                                *op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                 }
@@ -2439,7 +2439,7 @@ posix_get_ancestry_non_directory (xlator_t *this, inode_t *leaf_inode,
         loc = GF_CALLOC (1, sizeof (*loc), gf_posix_mt_char);
         if (loc == NULL) {
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2665,7 +2665,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
 
         dict = dict_new ();
         if (!dict) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2775,7 +2775,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
 
                 dyn_rpath = gf_strdup (host_buf);
                 if (!dyn_rpath) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -2808,7 +2808,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
                 size = ret;
                 ret = dict_set_dynstr (dict, GFID_TO_PATH_KEY, path);
                 if (ret < 0) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         GF_FREE (path);
                         goto out;
                 }
@@ -2925,7 +2925,7 @@ posix_getxattr (call_frame_t *frame, xlator_t *this,
                 value = GF_CALLOC (size + 1, sizeof(char), gf_posix_mt_char);
                 if (!value) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 if (have_val) {
@@ -3150,7 +3150,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
         dict = dict_new ();
         if (!dict) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -3159,7 +3159,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
                 if (ret < 0) {
                         op_ret = -1;
                         size = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 P_MSG_DICT_SET_FAILED, "Failed to set "
                                 "dictionary value for %s", name);
@@ -3222,7 +3222,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
                 value = GF_CALLOC (size + 1, sizeof(char), gf_posix_mt_char);
                 if (!value) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 if (have_val) {
@@ -3289,7 +3289,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
         list = alloca (size + 1);
         if (!list) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         if (have_val)
@@ -3884,7 +3884,7 @@ _posix_handle_xattr_keyvalue_pair (dict_t *d, char *k, data_t *v,
 #endif
         op_ret = posix_inode_ctx_get_all (inode, this, &ctx);
         if (op_ret < 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -4112,7 +4112,7 @@ do_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
         xattr_rsp = dict_new ();
         if (xattr_rsp == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -4146,7 +4146,7 @@ do_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
                                               xdata, &stbuf);
         if (!xdata_rsp) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
         }
 out:
 
@@ -4873,13 +4873,13 @@ posix_rchecksum (call_frame_t *frame, xlator_t *this,
 
         alloc_buf = _page_aligned_alloc (len, &buf);
         if (!alloc_buf) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         rsp_xdata = dict_new();
         if (!rsp_xdata) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

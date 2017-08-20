@@ -115,7 +115,7 @@ qd_nameless_lookup (xlator_t *this, call_frame_t *frame, gfs3_lookup_req *req,
 
         loc.inode = inode_new (state->itable);
         if (loc.inode == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

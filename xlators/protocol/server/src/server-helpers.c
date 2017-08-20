@@ -883,7 +883,7 @@ serialize_rsp_direntp (gf_dirent_t *entries, gfs3_readdirp_rsp *rsp)
                         trav->dict.dict_val = GF_CALLOC (1, trav->dict.dict_len,
                                                          gf_server_mt_rsp_buf_t);
                         if (!trav->dict.dict_val) {
-                                errno = ENOMEM;
+                                errno = GF_ERROR_CODE_NOMEM;
                                 trav->dict.dict_len = 0;
                                 goto out;
                         }
@@ -2810,7 +2810,7 @@ server_populate_compound_response (xlator_t *this, gfs3_compound_rsp *rsp,
                                                    &this_args_cbk->entries);
                         if (ret < 0) {
                                 rsp_args->op_ret = ret;
-                                rsp_args->op_errno = ENOMEM;
+                                rsp_args->op_errno = GF_ERROR_CODE_NOMEM;
                         }
                 }
                 break;
@@ -3036,7 +3036,7 @@ server_populate_compound_response (xlator_t *this, gfs3_compound_rsp *rsp,
                                                    &this_args_cbk->entries);
                         if (ret < 0) {
                                 rsp_args->op_ret = ret;
-                                rsp_args->op_errno = ENOMEM;
+                                rsp_args->op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         gf_link_inodes_from_dirent (this, state->fd->inode,

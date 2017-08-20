@@ -2787,7 +2787,7 @@ rpcsvc_match_subnet_v4 (const char *addrtok, const char *ipaddr)
 
         /* Copy the input */
         netaddr = gf_strdup (addrtok);
-        if (netaddr == NULL) /* ENOMEM */
+        if (netaddr == NULL) /* GF_ERROR_CODE_NOMEM */
                 goto out;
 
         /* Find the network socket addr of target */

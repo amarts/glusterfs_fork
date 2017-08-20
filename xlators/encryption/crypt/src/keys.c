@@ -78,13 +78,13 @@ static int32_t kderive_init(struct kderive_context *ctx,
 
 	ctx->fid = GF_CALLOC(ctx->fid_len, 1, gf_crypt_mt_key);
 	if (!ctx->fid)
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	ctx->out_len = round_up(crypt_keys[type].len >> 3,
 				PRF_OUTPUT_SIZE);
 	ctx->out = GF_CALLOC(ctx->out_len, 1, gf_crypt_mt_key);
 	if (!ctx->out) {
 		GF_FREE(ctx->fid);
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	}
 	ctx->pkey = pkey;
 	ctx->pkey_len = pkey_size;

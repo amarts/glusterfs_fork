@@ -872,7 +872,7 @@ quota_build_ancestry (inode_t *inode, quota_ancestry_built_t ancestry_cbk,
         fd_t          *fd        = NULL;
         quota_local_t *local     = NULL;
         call_frame_t  *new_frame = NULL;
-        int            op_errno  = ENOMEM;
+        int            op_errno  = GF_ERROR_CODE_NOMEM;
         int            op_ret    = -1;
         xlator_t      *this      = NULL;
         dict_t        *xdata_req = NULL;
@@ -1431,7 +1431,7 @@ out:
                         /* Caller should decrement link_count, in case parent is
                          * NULL
                          */
-                        quota_handle_validate_error (frame, -1, ENOMEM);
+                        quota_handle_validate_error (frame, -1, GF_ERROR_CODE_NOMEM);
                 }
 
                 if (new_frame) {
@@ -1535,7 +1535,7 @@ quota_fill_inodectx (xlator_t *this, inode_t *inode, dict_t *dict,
                         Q_MSG_INODE_CTX_GET_FAILED, "cannot create quota "
                         "context in inode(gfid:%s)", uuid_utoa (inode->gfid));
                 ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1579,7 +1579,7 @@ quota_fill_inodectx (xlator_t *this, inode_t *inode, dict_t *dict,
 -                                          uuid_utoa (local->loc.inode->gfid));
                                 */
                                 ret = -1;
-                                *op_errno = ENOMEM;
+                                *op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                 }
@@ -1608,7 +1608,7 @@ quota_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 op_ret = quota_fill_inodectx (this, inode, dict, &local->loc,
                                               buf, &op_errno);
                 if (op_ret < 0)
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
         }
 
         QUOTA_STACK_UNWIND (lookup, frame, op_ret, op_errno, inode, buf,
@@ -1763,7 +1763,7 @@ quota_writev_helper (call_frame_t *frame, xlator_t *this, fd_t *fd,
                                                 gf_common_mt_iovec);
                         if (new_vector == NULL) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unwind;
                         }
 
@@ -1853,7 +1853,7 @@ quota_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         stub = fop_writev_stub (frame, quota_writev_helper, fd, vector, count,
                                 off, flags, iobref, xdata);
         if (stub == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1981,7 +1981,7 @@ quota_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         local = quota_local_new ();
         if (local == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1989,7 +1989,7 @@ quota_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         ret = loc_copy (&local->loc, loc);
         if (ret) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_WARNING, ENOMEM,
 			Q_MSG_ENOMEM, "loc_copy failed");
                 goto err;
@@ -1998,7 +1998,7 @@ quota_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         stub = fop_mkdir_stub (frame, quota_mkdir_helper, loc, mode, umask,
                                xdata);
         if (stub == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2051,7 +2051,7 @@ quota_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         Q_MSG_INODE_CTX_GET_FAILED, "cannot create quota "
                         "context in inode(gfid:%s)", uuid_utoa (inode->gfid));
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -2067,7 +2067,7 @@ quota_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "(name:%s) for inode(gfid:%s)", local->loc.name,
                                 uuid_utoa (local->loc.inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
         }
@@ -2128,7 +2128,7 @@ quota_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
 
         local = quota_local_new ();
         if (local == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2138,7 +2138,7 @@ quota_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         if (ret) {
                 gf_msg (this->name, GF_LOG_WARNING, ENOMEM,
 			Q_MSG_ENOMEM, "loc_copy failed");
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2309,7 +2309,7 @@ quota_link_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 					"for inode(gfid:%s)", local->loc.name,
                                         uuid_utoa (local->loc.inode->gfid));
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                 }
@@ -2453,7 +2453,7 @@ quota_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc,
 {
         quota_priv_t      *priv     = NULL;
         int32_t            ret      = -1;
-        int32_t            op_errno = ENOMEM;
+        int32_t            op_errno = GF_ERROR_CODE_NOMEM;
         quota_local_t     *local    = NULL;
         call_stub_t       *stub     = NULL;
 
@@ -2619,7 +2619,7 @@ quota_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 					local->newloc.name,
                                         uuid_utoa (local->newloc.inode->gfid));
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                 }
@@ -2801,7 +2801,7 @@ quota_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
 {
         quota_priv_t      *priv              = NULL;
         int32_t            ret               = -1;
-        int32_t            op_errno          = ENOMEM;
+        int32_t            op_errno          = GF_ERROR_CODE_NOMEM;
         quota_local_t     *local             = NULL;
         call_stub_t       *stub              = NULL;
 
@@ -2918,7 +2918,7 @@ quota_symlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 				local->loc.name,
 				uuid_utoa (local->loc.inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
         UNLOCK (&ctx->lock);
@@ -2965,7 +2965,7 @@ quota_symlink (call_frame_t *frame, xlator_t *this, const char *linkpath,
 {
         quota_priv_t  *priv     = NULL;
         int32_t        ret      = -1;
-        int32_t        op_errno = ENOMEM;
+        int32_t        op_errno = GF_ERROR_CODE_NOMEM;
         quota_local_t *local    = NULL;
         call_stub_t   *stub     = NULL;
 
@@ -3840,7 +3840,7 @@ quota_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         "cannot create quota context in "
                         "inode(gfid:%s)", uuid_utoa (inode->gfid));
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -3856,7 +3856,7 @@ quota_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "(name:%s) for inode(gfid:%s)", local->loc.name,
 				uuid_utoa (local->loc.inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
         }
@@ -4031,7 +4031,7 @@ quota_setxattr (call_frame_t *frame, xlator_t *this,
         if (hard_lim > 0 || object_hard_limit > 0) {
                 local = quota_local_new ();
                 if (local == NULL) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 frame->local = local;
@@ -4079,7 +4079,7 @@ quota_fsetxattr_cbk (call_frame_t *frame, void *cookie,
 
         op_ret = quota_inode_ctx_get (local->loc.inode, this, &ctx, 1);
         if ((op_ret < 0) || (ctx == NULL)) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -4131,7 +4131,7 @@ quota_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         if (hard_lim > 0 || object_hard_limit > 0) {
                 local = quota_local_new ();
                 if (local == NULL) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 frame->local = local;
@@ -4552,14 +4552,14 @@ quota_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 	if (priv->consider_statfs && loc->inode) {
                 local = quota_local_new ();
                 if (!local) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 frame->local = local;
 
                 ret = loc_copy (&local->loc, loc);
                 if (-1 == ret) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
 
@@ -4569,7 +4569,7 @@ quota_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                 stub = fop_statfs_stub (frame, quota_statfs_helper,
                                         &local->loc, local->xdata);
                 if (!stub) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
 
@@ -4859,7 +4859,7 @@ quota_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
         stub = fop_fallocate_stub(frame, quota_fallocate_helper, fd, mode,
                                   offset, len, xdata);
         if (stub == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 

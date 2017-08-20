@@ -91,7 +91,7 @@ tier_link (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, oldloc, NULL, GF_FOP_LINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->call_cnt = 1;
@@ -109,7 +109,7 @@ tier_link (call_frame_t *frame, xlator_t *this,
 
         ret = loc_copy (&local->loc2, newloc);
         if (ret == -1) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -332,16 +332,16 @@ tier_create_linkfile_create_cbk (call_frame_t *frame, void *cookie,
         if (!local->xattr_req) {
                 local->xattr_req = dict_new ();
                 if (!local->xattr_req) {
-                        local->op_errno = ENOMEM;
-                        op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
         }
 
         gfid = GF_CALLOC (1, sizeof (uuid_t), gf_common_mt_char);
         if (!gfid) {
-                local->op_errno = ENOMEM;
-                op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -410,7 +410,7 @@ tier_create (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, fd, GF_FOP_CREATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -706,7 +706,7 @@ tier_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_UNLINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -985,7 +985,7 @@ tier_do_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
 
         local = dht_local_init (frame, NULL, NULL, whichop);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1239,7 +1239,7 @@ tier_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
         local = dht_local_init (frame, NULL, NULL, GF_FOP_STATFS);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

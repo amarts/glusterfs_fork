@@ -65,7 +65,7 @@ static int32_t set_private_aes_xts(struct crypt_inode_info *info,
 
 	data_key = GF_CALLOC(1, object->o_dkey_size, gf_crypt_mt_key);
 	if (!data_key)
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 
 	/*
 	 * retrieve data keying meterial
@@ -469,7 +469,7 @@ int32_t set_config_avec_data(xlator_t *this,
 			     struct iovec *vec,
 			     int32_t vec_count)
 {
-	int32_t ret = ENOMEM;
+	int32_t ret = GF_ERROR_CODE_NOMEM;
 	struct iovec *avec;
 	char **pool;
 	uint32_t blocks_in_pool = 0;
@@ -557,11 +557,11 @@ int32_t set_config_avec_hole(xlator_t *this,
 	}
 	avec = GF_CALLOC(num_blocks, sizeof(*avec), gf_crypt_mt_iovec);
 	if (!avec)
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	pool = GF_CALLOC(num_blocks, sizeof(pool), gf_crypt_mt_char);
 	if (!pool) {
 		GF_FREE(avec);
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	}
 	for (i = 0; i < num_blocks; i++) {
 		pool[i] = data_alloc_block(this, local, get_atom_size(object));
@@ -603,7 +603,7 @@ int32_t set_config_avec_hole(xlator_t *this,
  free:
 	GF_FREE(avec);
 	GF_FREE(pool);
-	return ENOMEM;
+	return GF_ERROR_CODE_NOMEM;
 }
 
 /* A helper for setting up config of partial atoms (which

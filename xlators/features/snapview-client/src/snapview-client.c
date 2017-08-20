@@ -373,7 +373,7 @@ gf_svc_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         if (!local) {
                 gf_log (this->name, GF_LOG_ERROR, "failed to allocate local");
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -687,7 +687,7 @@ gf_svc_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
                 gf_log (this->name, GF_LOG_ERROR, "failed to allocate memory "
                         "for local (path: %s, gfid: %s)", loc->path,
                         uuid_utoa (fd->inode->gfid));
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -840,7 +840,7 @@ gf_svc_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 if (!strcasecmp (attrval, priv->path)) {
                         dict = dict_new ();
                         if (NULL == dict) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
 
@@ -849,7 +849,7 @@ gf_svc_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                                         priv->path);
 
                         if (ret) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
 
@@ -1691,7 +1691,7 @@ gf_svc_readdirp_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 gf_log (this->name, GF_LOG_ERROR, "failed to allocate memory "
                         "for the entry %s", private->path);
                 op_ret = 0;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1999,7 +1999,7 @@ gf_svc_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         local = mem_get0 (this->local_pool);
         if (!local) {
                 gf_log (this->name, GF_LOG_ERROR, "failed to allocate local");
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

@@ -1293,7 +1293,7 @@ dht_protect_namespace (call_frame_t *frame, loc_t *loc,
         inodelk->locks = GF_CALLOC (count, sizeof (*lk_array),
                                     gf_common_mt_pointer);
         if (inodelk->locks == NULL) {
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_NO_MEMORY,
                         "%s (%s/%s) (path: %s): "
@@ -1305,7 +1305,7 @@ dht_protect_namespace (call_frame_t *frame, loc_t *loc,
         inodelk->locks[0] = dht_lock_new (this, subvol, &parent, F_RDLCK,
                                         DHT_LAYOUT_HEAL_DOMAIN, NULL);
         if (inodelk->locks[0] == NULL) {
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_NO_MEMORY,
                         "%s (%s/%s) (path: %s): "
@@ -1319,7 +1319,7 @@ dht_protect_namespace (call_frame_t *frame, loc_t *loc,
         entrylk->locks = GF_CALLOC (count, sizeof (*lk_array),
                                     gf_common_mt_pointer);
         if (entrylk->locks == NULL) {
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_NO_MEMORY,
                         "%s (%s/%s) (path: %s): "
@@ -1332,7 +1332,7 @@ dht_protect_namespace (call_frame_t *frame, loc_t *loc,
         entrylk->locks[0] = dht_lock_new (this, subvol, &parent, F_WRLCK,
                                           DHT_ENTRY_SYNC_DOMAIN, loc->name);
         if (entrylk->locks[0] == NULL) {
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_NO_MEMORY,
                         "%s (%s/%s) (path: %s): "

@@ -727,7 +727,7 @@ main (int argc, char *argv[])
 
         ctx = glusterfs_ctx_new ();
         if (!ctx)
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
 
 #ifdef DEBUG
         gf_mem_acct_enable_set (ctx);

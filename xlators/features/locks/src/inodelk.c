@@ -790,7 +790,7 @@ _pl_convert_volume (const char *volume, char **res)
 
         ret = gf_asprintf (res, "%s:metadata", volume);
         if (ret <= 0)
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
         return 0;
 }
 
@@ -850,7 +850,7 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
 	if (frame->root->client) {
 		ctx = pl_ctx_get (frame->root->client, this);
 		if (!ctx) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			gf_log (this->name, GF_LOG_INFO, "pl_ctx_get() failed");
 			goto unwind;
 		}
@@ -858,13 +858,13 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
 
         pinode = pl_inode_get (this, inode);
         if (!pinode) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         dom = get_domain (pinode, volume);
         if (!dom) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -873,7 +873,7 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
 
         if (!reqlock) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 

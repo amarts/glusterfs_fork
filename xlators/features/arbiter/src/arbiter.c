@@ -69,7 +69,7 @@ arbiter_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ctx = arbiter_inode_ctx_get (inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         memcpy (&ctx->iattbuf, buf, sizeof (ctx->iattbuf));
@@ -109,7 +109,7 @@ arbiter_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
         ctx = arbiter_inode_ctx_get (loc->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;
@@ -131,7 +131,7 @@ arbiter_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         ctx = arbiter_inode_ctx_get (fd->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;
@@ -193,7 +193,7 @@ arbiter_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         ctx = arbiter_inode_ctx_get (fd->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;
@@ -219,7 +219,7 @@ arbiter_fallocate (call_frame_t *frame, xlator_t *this, fd_t *fd,
         ctx = arbiter_inode_ctx_get (fd->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;
@@ -240,7 +240,7 @@ arbiter_discard (call_frame_t *frame, xlator_t *this, fd_t *fd,
         ctx = arbiter_inode_ctx_get (fd->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;
@@ -261,7 +261,7 @@ arbiter_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd,
         ctx = arbiter_inode_ctx_get (fd->inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         buf = &ctx->iattbuf;

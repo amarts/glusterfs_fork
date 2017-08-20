@@ -646,14 +646,14 @@ pl_common_entrylk (call_frame_t *frame, xlator_t *this,
 
         pinode = pl_inode_get (this, inode);
         if (!pinode) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
 	if (frame->root->client) {
 		ctx = pl_ctx_get (frame->root->client, this);
 		if (!ctx) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			gf_log (this->name, GF_LOG_INFO, "pl_ctx_get() failed");
 			goto unwind;
 		}
@@ -661,7 +661,7 @@ pl_common_entrylk (call_frame_t *frame, xlator_t *this,
 
         dom = get_domain (pinode, volume);
         if (!dom){
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -671,7 +671,7 @@ pl_common_entrylk (call_frame_t *frame, xlator_t *this,
 				    conn_id);
         if (!reqlock) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 

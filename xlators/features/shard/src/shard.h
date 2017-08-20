@@ -132,7 +132,7 @@
         __ret = dict_set_uint64 (dict, GF_XATTR_SHARD_FILE_SIZE, 8 * 4);      \
         if (__ret) {                                                          \
                 local->op_ret = -1;                                           \
-                local->op_errno = ENOMEM;                                     \
+                local->op_errno = GF_ERROR_CODE_NOMEM;                                     \
                 gf_msg (this->name, GF_LOG_WARNING, 0,                        \
                         SHARD_MSG_DICT_SET_FAILED, "Failed to set dict value:"\
                         " key:%s for %s.", GF_XATTR_SHARD_FILE_SIZE,          \

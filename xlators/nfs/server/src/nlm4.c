@@ -952,7 +952,7 @@ nlm4_notify_init (nfs3_call_state_t *cs)
         ncf = GF_CALLOC (1, sizeof (struct nlm4_notify_args),
                          gf_nfs_mt_nlm4_notify);
         if (!ncf)
-                /* GF_CALLOW will log the ENOMEM error */
+                /* GF_CALLOW will log the GF_ERROR_CODE_NOMEM error */
                 goto out;
 
         GF_REF_INIT (ncf, nlm4_notify_free);

@@ -2134,7 +2134,7 @@ fuse_create_resume (fuse_state_t *state)
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64" CREATE cannot create a new fd",
                         state->finh->unique);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -2145,7 +2145,7 @@ fuse_create_resume (fuse_state_t *state)
                         "%"PRIu64" CREATE creation of fdctx failed",
                         state->finh->unique);
                 fd_unref (fd);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -2238,7 +2238,7 @@ fuse_open_resume (fuse_state_t *state)
                         "%"PRIu64": OPEN creation of fdctx failed",
                         state->finh->unique);
                 fd_unref (fd);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -2305,7 +2305,7 @@ fuse_readv_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         send_fuse_iov (this, finh, iov_out, count + 1);
                         GF_FREE (iov_out);
                 } else
-                        send_fuse_err (this, finh, ENOMEM);
+                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);
         } else {
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": READ => %d gfid=%s fd=%p (%s)",
@@ -2419,7 +2419,7 @@ fuse_write_resume (fuse_state_t *state)
                 gf_log ("glusterfs-fuse", GF_LOG_ERROR,
                         "%"PRIu64": WRITE iobref allocation failed",
                         state->finh->unique);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
 
                 free_fuse_state (state);
                 return;
@@ -2680,7 +2680,7 @@ fuse_opendir_resume (fuse_state_t *state)
                 gf_log ("glusterfs-fuse", GF_LOG_WARNING,
                         "%"PRIu64": OPENDIR fd creation failed",
                         state->finh->unique);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -2691,7 +2691,7 @@ fuse_opendir_resume (fuse_state_t *state)
                         "%"PRIu64": OPENDIR creation of fdctx failed",
                         state->finh->unique);
                 fd_unref (fd);
-                send_fuse_err (state->this, state->finh, ENOMEM);
+                send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -2811,7 +2811,7 @@ fuse_readdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
                         "%"PRIu64": READDIR => -1 (%s)", frame->root->unique,
                         strerror (ENOMEM));
-                send_fuse_err (this, finh, ENOMEM);
+                send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);
                 goto out;
         }
 
@@ -2923,7 +2923,7 @@ fuse_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 		gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
 			"%"PRIu64": READDIRP => -1 (%s)", frame->root->unique,
 			strerror (ENOMEM));
-		send_fuse_err (this, finh, ENOMEM);
+		send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);
 		goto out;
 	}
 
@@ -3337,13 +3337,13 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 gf_log ("glusterfs-fuse", GF_LOG_ERROR,
                         "%"PRIu64": SETXATTR dict allocation failed",
                         finh->unique);
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto done;
         }
 
         ret = fuse_flip_xattr_ns (priv, name, &newkey);
         if (ret) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto done;
         }
 
@@ -3539,7 +3539,7 @@ fuse_getxattr_resume (fuse_state_t *state)
                 value = GF_CALLOC (16 + 1, sizeof(char),
                                    gf_common_mt_char);
                 if (!value) {
-                        send_fuse_err (state->this, state->finh, ENOMEM);
+                        send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                         goto internal_out;
                 }
                 memcpy (value, state->loc.inode->gfid, 16);
@@ -3558,7 +3558,7 @@ fuse_getxattr_resume (fuse_state_t *state)
                 value = GF_CALLOC (UUID_CANONICAL_FORM_LEN + 1, sizeof(char),
                                    gf_common_mt_char);
                 if (!value) {
-                        send_fuse_err (state->this, state->finh, ENOMEM);
+                        send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM);
                         goto internal_out1;
                 }
                 uuid_utoa_r (state->loc.inode->gfid, value);
@@ -3642,7 +3642,7 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         rv = fuse_flip_xattr_ns (priv, name, &newkey);
         if (rv) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -3776,7 +3776,7 @@ fuse_removexattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
 
         ret = fuse_flip_xattr_ns (priv, name, &newkey);
         if (ret) {
-                send_fuse_err (this, finh, ENOMEM);
+                send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);
                 free_fuse_state (state);
                 return;
         }
@@ -5046,7 +5046,7 @@ fuse_thread_proc (void *data)
                                 else {
                                         gf_log ("glusterfs-fuse", GF_LOG_ERROR,
                                                 "Out of memory");
-                                        send_fuse_err (this, finh, ENOMEM);
+                                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);
 
                                         goto cont_err;
                                 }

@@ -46,7 +46,7 @@ typedef struct __svc_local svc_local_t;
                                 gf_log (this->name, GF_LOG_ERROR,       \
                                         "failed to allocate new dict"); \
                                 op_ret = -1;                            \
-                                op_errno = ENOMEM;                      \
+                                op_errno = GF_ERROR_CODE_NOMEM;                      \
                                 goto label;                             \
                         }                                               \
                 }                                                       \
@@ -55,7 +55,7 @@ typedef struct __svc_local svc_local_t;
                         gf_log (this->name, GF_LOG_ERROR,               \
                                 "failed to set dict");                  \
                         op_ret = -1;                                    \
-                        op_errno = ENOMEM;                              \
+                        op_errno = GF_ERROR_CODE_NOMEM;                              \
                         goto label;                                     \
                 }                                                       \
         } while (0);

@@ -965,7 +965,7 @@ posix_acl_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ctx = posix_acl_ctx_new (inode, this);
         if (!ctx) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1853,7 +1853,7 @@ posix_acl_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ctx = posix_acl_ctx_new (entry->inode, this);
                 if (!ctx) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 

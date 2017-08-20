@@ -248,7 +248,7 @@ init (xlator_t *this)
         priv = GF_CALLOC (1, sizeof (*priv), gf_selinux_mt_selinux_priv_t);
         if (!priv) {
                 gf_log (this->name, GF_LOG_ERROR, "out of memory");
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

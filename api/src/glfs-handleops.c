@@ -521,7 +521,7 @@ pub_glfs_h_setxattrs (struct glfs *fs, struct glfs_object *object,
         xattr = dict_for_key_value (name, value, size);
         if (!xattr) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -657,14 +657,14 @@ pub_glfs_h_open (struct glfs *fs, struct glfs_object *object, int flags)
         glfd = glfs_fd_new (fs);
         if (!glfd) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         glfd->fd = fd_create (inode, getpid());
         if (!glfd->fd) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         glfd->fd->flags = flags;
@@ -746,7 +746,7 @@ pub_glfs_h_creat (struct glfs *fs, struct glfs_object *parent, const char *path,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -754,7 +754,7 @@ pub_glfs_h_creat (struct glfs *fs, struct glfs_object *parent, const char *path,
         ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
         if (ret) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -763,7 +763,7 @@ pub_glfs_h_creat (struct glfs *fs, struct glfs_object *parent, const char *path,
         fd = fd_create (loc.inode, getpid());
         if (!fd) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         fd->flags = flags;
@@ -855,7 +855,7 @@ pub_glfs_h_mkdir (struct glfs *fs, struct glfs_object *parent, const char *path,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -863,7 +863,7 @@ pub_glfs_h_mkdir (struct glfs *fs, struct glfs_object *parent, const char *path,
         ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
         if (ret) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -951,7 +951,7 @@ pub_glfs_h_mknod (struct glfs *fs, struct glfs_object *parent, const char *path,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -959,7 +959,7 @@ pub_glfs_h_mknod (struct glfs *fs, struct glfs_object *parent, const char *path,
         ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
         if (ret) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1125,7 +1125,7 @@ pub_glfs_h_opendir (struct glfs *fs, struct glfs_object *object)
         glfd->fd = fd_create (inode, getpid());
         if (!glfd->fd) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1297,7 +1297,7 @@ pub_glfs_h_create_from_handle (struct glfs *fs, unsigned char *handle, int len,
         } else {
                 loc.inode = inode_new (subvol->itable);
                 if (!loc.inode) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -1333,7 +1333,7 @@ found:
         object = GF_CALLOC (1, sizeof(struct glfs_object),
                             glfs_mt_glfs_object_t);
         if (object == NULL) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1474,7 +1474,7 @@ pub_glfs_h_symlink (struct glfs *fs, struct glfs_object *parent,
         xattr_req = dict_new ();
         if (!xattr_req) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1482,7 +1482,7 @@ pub_glfs_h_symlink (struct glfs *fs, struct glfs_object *parent,
         ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
         if (ret) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1832,7 +1832,7 @@ glfs_h_find_handle (struct glfs *fs, unsigned char *handle, int len)
         object = GF_CALLOC (1, sizeof(struct glfs_object),
                             glfs_mt_glfs_object_t);
         if (object == NULL) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2066,7 +2066,7 @@ pub_glfs_h_poll_upcall (struct glfs *fs, struct glfs_upcall **up_arg)
                         *up_arg = GF_CALLOC (1, sizeof (struct gf_upcall),
                                              glfs_mt_upcall_entry_t);
                         if (!*up_arg) {
-                                errno = ENOMEM;
+                                errno = GF_ERROR_CODE_NOMEM;
                                 break; /* goto free u_list */
                         }
 
@@ -2169,7 +2169,7 @@ pub_glfs_h_poll_upcall370 (struct glfs *fs, struct glfs_callback_arg *up_arg)
                                               sizeof (struct glfs_callback_inode_arg),
                                               glfs_mt_upcall_inode_t);
                         if (!cb_inode) {
-                                errno = ENOMEM;
+                                errno = GF_ERROR_CODE_NOMEM;
                                 ret = -1;
                                 goto out;
                         }
@@ -2392,7 +2392,7 @@ pub_glfs_object_copy (struct glfs_object *src)
         object = GF_CALLOC (1, sizeof(struct glfs_object),
                             glfs_mt_glfs_object_t);
         if (object == NULL) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (THIS->name, GF_LOG_WARNING, errno,
                          API_MSG_CREATE_HANDLE_FAILED,
                         "glfs_dup_object for gfid-%s failed",

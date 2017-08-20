@@ -278,7 +278,7 @@ ioc_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = mem_get0 (this->local_pool);
         if (local == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         IO_CACHE_MSG_NO_MEMORY, "out of memory");
                 goto unwind;
@@ -286,7 +286,7 @@ ioc_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         ret = loc_copy (&local->file_loc, loc);
         if (ret != 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         IO_CACHE_MSG_NO_MEMORY, "out of memory");
                 goto unwind;
@@ -401,14 +401,14 @@ ioc_discover (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = mem_get0 (this->local_pool);
         if (local == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_ERROR, "out of memory");
                 goto unwind;
         }
 
         ret = loc_copy (&local->file_loc, loc);
         if (ret != 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_log (this->name, GF_LOG_ERROR, "out of memory");
                 goto unwind;
         }
@@ -598,7 +598,7 @@ ioc_cache_validate (call_frame_t *frame, ioc_inode_t *ioc_inode, fd_t *fd,
         if (validate_local == NULL) {
                 ret = -1;
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (ioc_inode->table->xl->name, GF_LOG_ERROR,
                         0, IO_CACHE_MSG_NO_MEMORY, "out of memory");
                 goto out;
@@ -608,7 +608,7 @@ ioc_cache_validate (call_frame_t *frame, ioc_inode_t *ioc_inode, fd_t *fd,
         if (validate_frame == NULL) {
                 ret = -1;
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 mem_put (validate_local);
                 gf_msg (ioc_inode->table->xl->name, GF_LOG_ERROR,
                         0, IO_CACHE_MSG_NO_MEMORY, "out of memory");
@@ -902,7 +902,7 @@ ioc_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         local = mem_get0 (this->local_pool);
         if (local == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR,
                         0, IO_CACHE_MSG_NO_MEMORY, "out of memory");
                 goto unwind;
@@ -910,7 +910,7 @@ ioc_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         ret = loc_copy (&local->file_loc, loc);
         if (ret != 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR,
                         0, IO_CACHE_MSG_NO_MEMORY, "out of memory");
                 goto unwind;
@@ -1113,7 +1113,7 @@ ioc_dispatch_requests (call_frame_t *frame, ioc_inode_t *ioc_inode, fd_t *fd,
                                                 ENOMEM, IO_CACHE_MSG_NO_MEMORY,
                                                 "out of memory");
                                         local->op_ret = -1;
-                                        local->op_errno = ENOMEM;
+                                        local->op_errno = GF_ERROR_CODE_NOMEM;
                                         ioc_inode_unlock (ioc_inode);
                                         goto out;
                                 }
@@ -1272,7 +1272,7 @@ ioc_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
                                  table->mem_pool);
 
                         if (ioc_inode->cache.page_table == NULL) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 ioc_inode_unlock (ioc_inode);
                                 goto out;
                         }
@@ -1292,7 +1292,7 @@ ioc_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
         if (local == NULL) {
                 gf_msg (this->name, GF_LOG_ERROR,
                         ENOMEM, IO_CACHE_MSG_NO_MEMORY, "out of memory");
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

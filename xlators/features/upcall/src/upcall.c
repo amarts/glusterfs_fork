@@ -67,7 +67,7 @@ up_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -123,7 +123,7 @@ up_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -182,7 +182,7 @@ up_readv (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -238,7 +238,7 @@ up_lk (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -293,7 +293,7 @@ up_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -363,7 +363,7 @@ up_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -435,7 +435,7 @@ up_rename (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, newloc, NULL, oldloc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -498,7 +498,7 @@ up_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -558,7 +558,7 @@ up_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
 
         local = upcall_local_init (frame, this, newloc, NULL, oldloc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -620,7 +620,7 @@ up_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -683,7 +683,7 @@ up_mkdir (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->parent, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -751,7 +751,7 @@ up_create (call_frame_t *frame, xlator_t *this,
         local = upcall_local_init (frame, this, loc, NULL, loc->parent, NULL);
 
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -809,7 +809,7 @@ up_lookup (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -865,7 +865,7 @@ up_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -893,7 +893,7 @@ up_fstat (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -921,7 +921,7 @@ up_ftruncate (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -976,7 +976,7 @@ up_access (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1032,7 +1032,7 @@ up_readlink (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1096,7 +1096,7 @@ up_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->parent, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1161,7 +1161,7 @@ up_symlink (call_frame_t   *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->parent, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1217,7 +1217,7 @@ up_opendir (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1272,7 +1272,7 @@ up_statfs (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1327,7 +1327,7 @@ up_readdir (call_frame_t  *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1392,7 +1392,7 @@ up_readdirp (call_frame_t *frame, xlator_t *this,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1420,7 +1420,7 @@ up_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1477,7 +1477,7 @@ up_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1534,7 +1534,7 @@ up_discard(call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1591,7 +1591,7 @@ up_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1648,7 +1648,7 @@ up_seek (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1724,7 +1724,7 @@ up_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->inode, dict);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1801,7 +1801,7 @@ up_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
 
         local = upcall_local_init (frame, this, NULL, fd, fd->inode, dict);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1878,13 +1878,13 @@ up_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         xattr = dict_for_key_value (name, "", 1);
         if (!xattr) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
         local = upcall_local_init (frame, this, NULL, fd, fd->inode, xattr);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1966,13 +1966,13 @@ up_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         xattr = dict_for_key_value (name, "", 1);
         if (!xattr) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
         local = upcall_local_init (frame, this, loc, NULL, loc->inode, xattr);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2035,7 +2035,7 @@ up_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, NULL, fd->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2090,7 +2090,7 @@ up_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = upcall_local_init (frame, this, NULL, NULL, loc->inode, NULL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2185,7 +2185,7 @@ up_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = upcall_local_init (frame, this, loc, NULL, loc->inode, xattr);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2221,7 +2221,7 @@ up_fxattrop (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = upcall_local_init (frame, this, NULL, fd, fd->inode, xattr);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

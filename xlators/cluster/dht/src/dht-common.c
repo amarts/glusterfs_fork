@@ -731,7 +731,7 @@ dht_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
         if (!local) {
                 local = dht_local_init (frame, loc, NULL, GF_FOP_DISCOVER);
                 if (!local) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
         }
@@ -761,7 +761,7 @@ dht_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
 
         local->layout = dht_layout_new (this, conf->subvolume_cnt);
         if (!local->layout) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -769,7 +769,7 @@ dht_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
 
         discover_frame = copy_frame (frame);
         if (!discover_frame) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2500,7 +2500,7 @@ dht_lookup (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_LOOKUP);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2687,7 +2687,7 @@ dht_lookup (call_frame_t *frame, xlator_t *this,
                         local->layout = dht_layout_new (this,
                                                         conf->subvolume_cnt);
                         if (!local->layout) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto err;
                         }
 
@@ -3549,7 +3549,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_GETXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -3566,7 +3566,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
         if (key) {
                 local->key = gf_strdup (key);
                 if (!local->key) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
         }
@@ -3587,7 +3587,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 DHT_MSG_NO_MEMORY,
                                 "Failed to copy key");
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 (void) strncpy (local->xsel, node_uuid_key, 256);
@@ -3612,7 +3612,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 DHT_MSG_NO_MEMORY,
                                 "Failed to copy key");
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 (void) strncpy (local->xsel, node_uuid_key, 256);
@@ -3760,7 +3760,7 @@ dht_fgetxattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FGETXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -3777,7 +3777,7 @@ dht_fgetxattr (call_frame_t *frame, xlator_t *this,
         if (key) {
                 local->key = gf_strdup (key);
                 if (!local->key) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
         }
@@ -3907,7 +3907,7 @@ dht_fsetxattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FSETXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4148,7 +4148,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_SETXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4560,7 +4560,7 @@ dht_removexattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_REMOVEXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4643,7 +4643,7 @@ dht_fremovexattr (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FREMOVEXATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4902,7 +4902,7 @@ dht_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
         local = dht_local_init (frame, NULL, NULL, GF_FOP_STATFS);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4966,14 +4966,14 @@ dht_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
 
         local = dht_local_init (frame, loc, fd, GF_FOP_OPENDIR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
         if (!xdata) {
                 xdata = dict_new ();
                 if (!xdata) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 new_xdata = _gf_true;
@@ -5390,7 +5390,7 @@ dht_do_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
 
         local = dht_local_init (frame, NULL, NULL, whichop);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -5541,7 +5541,7 @@ dht_fsyncdir (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = dht_local_init (frame, NULL, NULL, GF_FOP_FSYNCDIR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -6067,7 +6067,7 @@ dht_guard_parent_layout_and_namespace (xlator_t *subvol, call_stub_t *stub)
         if (local->params == NULL) {
                 local->params = dict_new ();
                 if (local->params == NULL) {
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                                 DHT_MSG_PARENT_LAYOUT_CHANGED,
                                 "%s (%s/%s) (path: %s): "
@@ -6178,7 +6178,7 @@ dht_mknod (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_MKNOD);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -6287,7 +6287,7 @@ dht_symlink (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_SYMLINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -6332,7 +6332,7 @@ dht_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_UNLINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -6595,7 +6595,7 @@ dht_link (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, oldloc, NULL, GF_FOP_LINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -6620,7 +6620,7 @@ dht_link (call_frame_t *frame, xlator_t *this,
 
         ret = loc_copy (&local->loc2, newloc);
         if (ret == -1) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         if (xdata)
@@ -7097,7 +7097,7 @@ dht_create (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, fd, GF_FOP_CREATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -7640,7 +7640,7 @@ dht_mkdir (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_MKDIR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -7664,7 +7664,7 @@ dht_mkdir (call_frame_t *frame, xlator_t *this,
 
         local->layout = dht_layout_new (this, conf->subvolume_cnt);
         if (!local->layout) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -7686,7 +7686,7 @@ dht_mkdir (call_frame_t *frame, xlator_t *this,
                         DHT_MSG_PARENT_LAYOUT_CHANGED,
                         "mkdir (%s/%s) (path: %s): "
                         "creating stub failed.", pgfid, loc->name, loc->path);
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -8698,7 +8698,7 @@ dht_rmdir_opendir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         dict = dict_new ();
         if (!dict) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -8790,7 +8790,7 @@ dht_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_RMDIR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -8803,7 +8803,7 @@ dht_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
         local->fd = fd_create (local->loc.inode, frame->root->pid);
         if (!local->fd) {
 
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -8858,7 +8858,7 @@ dht_entrylk (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_ENTRYLK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -8995,7 +8995,7 @@ dht_ipc (call_frame_t *frame, xlator_t *this, int32_t op, dict_t *xdata)
 
         local = dht_local_init (frame, NULL, NULL, GF_FOP_IPC);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

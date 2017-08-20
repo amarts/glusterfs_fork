@@ -137,7 +137,7 @@ bd_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
         /* BD file, update buf */
         bdatt = GF_CALLOC (1, sizeof (bd_attr_t), gf_bd_attr);
         if (!bdatt) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         memcpy (&bdatt->iatt, buf, sizeof (struct iatt));
@@ -482,7 +482,7 @@ bd_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         }
         iobuf = iobuf_get2 (this->ctx->iobuf_pool, size);
         if (!iobuf) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         _fd = bd_fd->fd;
@@ -949,7 +949,7 @@ out:
         bdatt = GF_CALLOC (1, sizeof (bd_attr_t), gf_bd_attr);
         if (!bdatt) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto next;
         }
 
@@ -2004,7 +2004,7 @@ bd_handle_special_xattrs (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         dict_t *xattr   = NULL;
         int op_ret      = -1;
-        int op_errno    = ENOMEM;;
+        int op_errno    = GF_ERROR_CODE_NOMEM;;
         bd_priv_t *priv = this->private;
 
         xattr = dict_new ();
@@ -2167,7 +2167,7 @@ bd_rchecksum (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         alloc_buf = page_aligned_alloc (len, &buf);
         if (!alloc_buf) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

@@ -919,7 +919,7 @@ __server_getspec (rpcsvc_request_t *req)
                 rsp.spec = CALLOC (file_len+1, sizeof (char));
                 if (!rsp.spec) {
                         ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto fail;
                 }
                 ret = sys_read (spec_fd, rsp.spec, file_len);
@@ -1369,7 +1369,7 @@ __server_get_volume_info (rpcsvc_request_t *req)
                 if (!dict) {
                         gf_msg ("glusterd", GF_LOG_WARNING, ENOMEM,
                                 GD_MSG_NO_MEMORY, "Out of Memory");
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1424,7 +1424,7 @@ __server_get_volume_info (rpcsvc_request_t *req)
         if (flags & (int32_t)GF_GET_VOLUME_UUID) {
                 volume_id_str = gf_strdup (uuid_utoa (volinfo->volume_id));
                 if (!volume_id_str) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1433,7 +1433,7 @@ __server_get_volume_info (rpcsvc_request_t *req)
                 if (!dict_rsp) {
                         gf_msg ("glusterd", GF_LOG_WARNING, ENOMEM,
                                 GD_MSG_NO_MEMORY, "Out of Memory");
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1511,7 +1511,7 @@ __server_get_snap_info (rpcsvc_request_t *req)
         if (snap_info_req.dict.dict_len) {
                 dict = dict_new ();
                 if (!dict) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1543,7 +1543,7 @@ __server_get_snap_info (rpcsvc_request_t *req)
 
         dict_rsp = dict_new ();
         if (!dict_rsp) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }

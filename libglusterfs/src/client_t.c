@@ -200,7 +200,7 @@ gf_client_get (xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
 
                 client = GF_CALLOC (1, sizeof(client_t), gf_common_mt_client_t);
                 if (client == NULL) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
 
@@ -214,7 +214,7 @@ gf_client_get (xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
                 if (client->client_uid == NULL) {
                         GF_FREE (client);
                         client = NULL;
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
                 client->scratch_ctx.count = GF_CLIENTCTX_INITIAL_SIZE;
@@ -226,7 +226,7 @@ gf_client_get (xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
                         GF_FREE (client->client_uid);
                         GF_FREE (client);
                         client = NULL;
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
 
@@ -243,7 +243,7 @@ gf_client_get (xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
                                 GF_FREE (client->client_uid);
                                 GF_FREE (client);
                                 client = NULL;
-                                errno = ENOMEM;
+                                errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                         memcpy (client->auth.data, cred->authdata,

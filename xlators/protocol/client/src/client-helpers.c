@@ -1019,7 +1019,7 @@ client_handle_fop_requirements (xlator_t *this, call_frame_t *frame,
                                 int fop_enum, int index)
 {
         int             ret           = 0;
-        int             op_errno      = ENOMEM;
+        int             op_errno      = GF_ERROR_CODE_NOMEM;
         struct iobuf   *rsp_iobuf     = NULL;
         int64_t         remote_fd     = -1;
         compound_req    *this_req     = &req->compound_req_array.compound_req_array_val[index];
@@ -1121,14 +1121,14 @@ client_handle_fop_requirements (xlator_t *this, call_frame_t *frame,
                                         (args->fd, this, remote_fd);
                 rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, args->size);
                 if (rsp_iobuf == NULL) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
                 if (!*rsp_iobref) {
                         *rsp_iobref = iobref_new ();
                         if (*rsp_iobref == NULL) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                 }
@@ -1137,7 +1137,7 @@ client_handle_fop_requirements (xlator_t *this, call_frame_t *frame,
                 iobuf_unref (rsp_iobuf);
 
                 if (*rsp_count + 1 >= MAX_IOVEC) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 rsp_vector[*rsp_count].iov_base = iobuf_ptr (rsp_iobuf);
@@ -1172,7 +1172,7 @@ client_handle_fop_requirements (xlator_t *this, call_frame_t *frame,
                                         (args->fd, this, remote_fd);
 
                 if (*req_count + args->count >= MAX_IOVEC) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 memcpy (&req_vector[*req_count], args->vector,

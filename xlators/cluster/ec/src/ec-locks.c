@@ -298,7 +298,7 @@ void ec_entrylk(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .entrylk = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(ENTRYLK) %p", frame);
 
@@ -433,7 +433,7 @@ void ec_fentrylk(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fentrylk = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FENTRYLK) %p", frame);
 
@@ -701,7 +701,7 @@ void ec_inodelk (call_frame_t *frame, xlator_t *this, gf_lkowner_t *owner,
 {
     ec_cbk_t callback = { .inodelk = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(INODELK) %p", frame);
 
@@ -838,7 +838,7 @@ void ec_finodelk(call_frame_t *frame, xlator_t *this, gf_lkowner_t *owner,
 {
     ec_cbk_t callback = { .finodelk = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FINODELK) %p", frame);
 
@@ -1106,7 +1106,7 @@ void ec_lk(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .lk = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(LK) %p", frame);
 

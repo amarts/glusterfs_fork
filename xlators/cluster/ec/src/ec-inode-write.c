@@ -197,7 +197,7 @@ ec_removexattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .removexattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(REMOVEXATTR) %p", frame);
 
@@ -279,7 +279,7 @@ ec_fremovexattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .fremovexattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FREMOVEXATTR) %p", frame);
 
@@ -483,7 +483,7 @@ void ec_setattr(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .setattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(SETATTR) %p", frame);
 
@@ -560,7 +560,7 @@ void ec_fsetattr(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fsetattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FSETATTR) %p", frame);
 
@@ -640,7 +640,7 @@ ec_setxattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .setxattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(SETXATTR) %p", frame);
 
@@ -765,7 +765,7 @@ ec_fsetxattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .fsetxattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FSETXATTR) %p", frame);
 
@@ -973,7 +973,7 @@ void ec_fallocate(call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .fallocate = func };
     ec_fop_data_t *fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FALLOCATE) %p", frame);
 
@@ -1276,7 +1276,7 @@ void ec_truncate(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .truncate = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(TRUNCATE) %p", frame);
 
@@ -1350,7 +1350,7 @@ void ec_ftruncate(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .ftruncate = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FTRUNCATE) %p", frame);
 
@@ -1812,7 +1812,7 @@ void ec_writev(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .writev = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(WRITE) %p", frame);
 

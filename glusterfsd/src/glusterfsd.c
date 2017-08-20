@@ -2453,7 +2453,7 @@ main (int argc, char *argv[])
 	ctx = glusterfs_ctx_new ();
         if (!ctx) {
                 gf_msg ("glusterfs", GF_LOG_CRITICAL, 0, glusterfsd_msg_29);
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
         }
 	glusterfsd_ctx = ctx;
 

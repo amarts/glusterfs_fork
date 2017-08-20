@@ -590,7 +590,7 @@ unlock:
                 xattr = dict_new ();
                 if (!xattr) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 ret = dict_serialize_value_with_delim (local->dict,
@@ -598,7 +598,7 @@ unlock:
                                                        &serz_len, '\n');
                 if (ret) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 if (serz_len == -1)
@@ -608,7 +608,7 @@ unlock:
                                        gf_strdup (lk_summary));
                 if (ret) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         gf_msg (this->name, GF_LOG_ERROR,
                                 ENOMEM, AFR_MSG_DICT_SET_FAILED,
                                 "Error setting dictionary");
@@ -676,7 +676,7 @@ unlock:
                 xattr = dict_new ();
                 if (!xattr) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 ret = dict_serialize_value_with_delim (local->dict,
@@ -684,7 +684,7 @@ unlock:
                                                        &serz_len, '\n');
                 if (ret) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 if (serz_len == -1)
@@ -694,7 +694,7 @@ unlock:
                                        gf_strdup (lk_summary));
                 if (ret) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         gf_msg (this->name, GF_LOG_ERROR,
                                 ENOMEM, AFR_MSG_DICT_SET_FAILED,
                                 "Error setting dictionary");
@@ -822,7 +822,7 @@ unlock:
                         local->dict = dict_new ();
                 if (!local->dict) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -831,7 +831,7 @@ unlock:
 
                 if (!xattr_serz) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -841,7 +841,7 @@ unlock:
                                                            ' ');
                 if (ret) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 ret = dict_set_dynstr (local->dict,
@@ -852,7 +852,7 @@ unlock:
                                 -ret, AFR_MSG_DICT_SET_FAILED,
                                 "Cannot set node_uuid key in dict");
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                 } else {
                         local->op_ret = local->cont.getxattr.xattr_len - 1;
                         local->op_errno = 0;
@@ -924,7 +924,7 @@ afr_getxattr_lockinfo_cbk (call_frame_t *frame, void *cookie,
                                 local->xdata_rsp = dict_new ();
                                 if (!local->xdata_rsp) {
                                         local->op_ret = -1;
-                                        local->op_errno = ENOMEM;
+                                        local->op_errno = GF_ERROR_CODE_NOMEM;
                                         goto unlock;
                                 }
                         }
@@ -945,7 +945,7 @@ afr_getxattr_lockinfo_cbk (call_frame_t *frame, void *cookie,
                         local->dict = dict_new ();
                         if (!local->dict) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                 }
@@ -957,7 +957,7 @@ unlock:
                 lockinfo = dict_new ();
                 if (lockinfo == NULL) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                 } else {
                         op_ret = dict_unserialize (lockinfo_buf, len,
                                                    &lockinfo);
@@ -976,7 +976,7 @@ unlock:
                 newdict = dict_new ();
                 if (!newdict) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -988,7 +988,7 @@ unlock:
                 lockinfo_buf = GF_CALLOC (1, len, gf_common_mt_char);
                 if (!lockinfo_buf) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -1042,7 +1042,7 @@ afr_fgetxattr_lockinfo_cbk (call_frame_t *frame, void *cookie,
                                 local->xdata_rsp = dict_new ();
                                 if (!local->xdata_rsp) {
                                         local->op_ret = -1;
-                                        local->op_errno = ENOMEM;
+                                        local->op_errno = GF_ERROR_CODE_NOMEM;
                                         goto unlock;
                                 }
                         }
@@ -1063,7 +1063,7 @@ afr_fgetxattr_lockinfo_cbk (call_frame_t *frame, void *cookie,
                         local->dict = dict_new ();
                         if (!local->dict) {
                                 local->op_ret = -1;
-                                local->op_errno = ENOMEM;
+                                local->op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unlock;
                         }
                 }
@@ -1075,7 +1075,7 @@ unlock:
                 lockinfo = dict_new ();
                 if (lockinfo == NULL) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                 } else {
                         op_ret = dict_unserialize (lockinfo_buf, len,
                                                    &lockinfo);
@@ -1094,7 +1094,7 @@ unlock:
                 newdict = dict_new ();
                 if (!newdict) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -1106,7 +1106,7 @@ unlock:
                 lockinfo_buf = GF_CALLOC (1, len, gf_common_mt_char);
                 if (!lockinfo_buf) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -1629,7 +1629,7 @@ afr_getxattr (call_frame_t *frame, xlator_t *this,
         local->cont.getxattr.name = gf_strdup (name);
 
 	if (!local->cont.getxattr.name) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1782,7 +1782,7 @@ afr_fgetxattr (call_frame_t *frame, xlator_t *this,
         if (name) {
                 local->cont.getxattr.name = gf_strdup (name);
 		if (!local->cont.getxattr.name) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto out;
 		}
 	}

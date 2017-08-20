@@ -442,7 +442,7 @@ marker_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = marker_key_set_ver (this, dict);
         if (ret < 0) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -733,7 +733,7 @@ marker_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_WARNING, "mq_inode_ctx_new "
                                 "failed for %s", uuid_utoa (inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -818,7 +818,7 @@ marker_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_WARNING, "mq_inode_ctx_new "
                                 "failed for %s", uuid_utoa (inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -1449,7 +1449,7 @@ marker_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                             postoldparent, prenewparent,
                                             postnewparent, xdata);
                 if (stub == NULL) {
-                        local->err = ENOMEM;
+                        local->err = GF_ERROR_CODE_NOMEM;
                         goto quota_err;
                 }
 
@@ -1458,7 +1458,7 @@ marker_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 GET_CONTRI_KEY (this, contri_key, oplocal->loc.parent->gfid,
                                 ret);
                 if (ret < 0) {
-                        local->err = ENOMEM;
+                        local->err = GF_ERROR_CODE_NOMEM;
                         goto quota_err;
                 }
 
@@ -1545,7 +1545,7 @@ marker_do_rename (call_frame_t *frame, void *cookie, xlator_t *this,
 
         GET_CONTRI_KEY (this, contri_key, oplocal->loc.parent->gfid, ret);
         if (ret < 0) {
-                local->err = errno ? errno : ENOMEM;
+                local->err = errno ? errno : GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         quota_dict_get_meta (dict, contri_key, &contribution);
@@ -1591,7 +1591,7 @@ marker_get_oldpath_contribution (call_frame_t *lk_frame, void *cookie,
 
         GET_CONTRI_KEY (this, contri_key, oplocal->loc.parent->gfid, ret);
         if (ret < 0) {
-                local->err = errno ? errno : ENOMEM;
+                local->err = errno ? errno : GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1975,7 +1975,7 @@ marker_symlink_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_WARNING, "mq_inode_ctx_new "
                                 "failed for %s", uuid_utoa (inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -2060,7 +2060,7 @@ marker_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_WARNING, "mq_inode_ctx_new "
                                 "failed for %s", uuid_utoa (inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -2556,7 +2556,7 @@ marker_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
         int32_t          ret            = 0;
         marker_local_t  *local          = NULL;
         marker_conf_t   *priv           = NULL;
-        int              op_errno       = ENOMEM;
+        int              op_errno       = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -2917,7 +2917,7 @@ marker_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = marker_key_set_ver (this, dict);
         if (ret < 0) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -2925,7 +2925,7 @@ marker_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 xattrs = dict_copy_with_ref (dict, NULL);
                 if (!xattrs) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 } else {
                         marker_filter_internal_xattrs (this, xattrs);
                 }
@@ -2939,7 +2939,7 @@ marker_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_WARNING, "mq_inode_ctx_new "
                                 "failed for %s", uuid_utoa (inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -3042,7 +3042,7 @@ marker_build_ancestry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ret = marker_key_set_ver (this, entry->dict);
                 if (ret < 0) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         break;
                 }
 
@@ -3111,7 +3111,7 @@ marker_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ret = marker_key_set_ver (this, entry->dict);
                 if (ret < 0) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
         }

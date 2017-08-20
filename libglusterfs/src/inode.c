@@ -1057,7 +1057,7 @@ __inode_link (inode_t *inode, inode_t *parent, const char *name,
                                                   "inode %s with parent %s",
                                                   uuid_utoa (link_inode->gfid),
                                                   uuid_utoa (parent->gfid));
-                                errno = ENOMEM;
+                                errno = GF_ERROR_CODE_NOMEM;
                                 return NULL;
                         }
                         if (old_inode && __is_dentry_cyclic (dentry)) {

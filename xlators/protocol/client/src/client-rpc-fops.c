@@ -3126,7 +3126,7 @@ client3_3_compound_cbk (struct rpc_req *req, struct iovec *iov, int count,
         args_cbk = compound_args_cbk_alloc (length, xdata);
         if (!args_cbk) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = ENOMEM;
+                rsp.op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -3354,7 +3354,7 @@ client3_3_lookup (call_frame_t *frame, xlator_t *this,
         args = data;
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -3636,7 +3636,7 @@ client3_3_readlink (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -3800,7 +3800,7 @@ client3_3_symlink (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -3906,7 +3906,7 @@ client3_3_link (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -3964,7 +3964,7 @@ client3_3_mknod (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -4029,7 +4029,7 @@ client3_3_mkdir (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -4086,7 +4086,7 @@ client3_3_create (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -4147,7 +4147,7 @@ client3_3_open (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -4222,13 +4222,13 @@ client3_3_readv (call_frame_t *frame, xlator_t *this,
 
         rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, args->size);
         if (rsp_iobuf == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         rsp_iobref = iobref_new ();
         if (rsp_iobref == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -4354,7 +4354,7 @@ client3_3_flush (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -4499,7 +4499,7 @@ client3_3_opendir (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -4740,21 +4740,21 @@ client3_3_fgetxattr (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
 
         rsp_iobref = iobref_new ();
         if (rsp_iobref == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         /* TODO: what is the size we should send ? */
         rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, 8 * GF_UNIT_KB);
         if (rsp_iobuf == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -4831,7 +4831,7 @@ client3_3_getxattr (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -4845,14 +4845,14 @@ client3_3_getxattr (call_frame_t *frame, xlator_t *this,
 
         rsp_iobref = iobref_new ();
         if (rsp_iobref == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         /* TODO: what is the size we should send ? */
         rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, 8 * GF_UNIT_KB);
         if (rsp_iobuf == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -4951,21 +4951,21 @@ client3_3_xattrop (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
 
         rsp_iobref = iobref_new ();
         if (rsp_iobref == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         /* TODO: what is the size we should send ? */
         rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, 8 * GF_UNIT_KB);
         if (rsp_iobuf == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -5062,14 +5062,14 @@ client3_3_fxattrop (call_frame_t *frame, xlator_t *this,
 
         rsp_iobref = iobref_new ();
         if (rsp_iobref == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
         /* TODO: what is the size we should send ? */
         rsp_iobuf = iobuf_get2 (this->ctx->iobuf_pool, 8 * GF_UNIT_KB);
         if (rsp_iobuf == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -5262,7 +5262,7 @@ client3_3_lk (call_frame_t *frame, xlator_t *this,
         conf = this->private;
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -5563,7 +5563,7 @@ client3_3_readdir (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -5660,7 +5660,7 @@ client3_3_readdirp (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -6047,7 +6047,7 @@ client3_3_compound (call_frame_t *frame, xlator_t *this, void *data)
         compound_args_t         *c_args            = data;
         gfs3_compound_req       req                = {0,};
         clnt_local_t            *local             = NULL;
-        int                     op_errno           = ENOMEM;
+        int                     op_errno           = GF_ERROR_CODE_NOMEM;
         int                     ret                = 0;
         int                     i                  = 0;
         int                     rsp_count          = 0;
@@ -6075,7 +6075,7 @@ client3_3_compound (call_frame_t *frame, xlator_t *this, void *data)
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
         frame->local = local;
@@ -6117,7 +6117,7 @@ client3_3_compound (call_frame_t *frame, xlator_t *this, void *data)
                                                         gf_client_mt_compound_req_t);
 
         if (!req.compound_req_array.compound_req_array_val) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 

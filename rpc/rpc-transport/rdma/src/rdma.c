@@ -3676,14 +3676,14 @@ gf_rdma_do_reads (gf_rdma_peer_t *peer, gf_rdma_post_t *post,
                                 sizeof (struct ibv_sge), gf_common_mt_sge);
 
                 if (list == NULL) {
-                       errno =  ENOMEM;
+                       errno =  GF_ERROR_CODE_NOMEM;
                        ret = -1;
                        goto unlock;
                 }
                 wr   = GF_CALLOC (post->ctx.gf_rdma_reads,
                                 sizeof (struct ibv_send_wr), gf_common_mt_wr);
                 if (wr == NULL) {
-                       errno =  ENOMEM;
+                       errno =  GF_ERROR_CODE_NOMEM;
                        ret = -1;
                        goto unlock;
                 }

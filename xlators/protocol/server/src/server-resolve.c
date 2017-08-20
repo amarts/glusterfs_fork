@@ -518,7 +518,7 @@ server_resolve_fd (call_frame_t *frame)
                 gf_msg ("", GF_LOG_INFO, ENOMEM, PS_MSG_NO_MEMORY,
                         "server_ctx_get() failed");
                 resolve->op_ret   = -1;
-                resolve->op_errno = ENOMEM;
+                resolve->op_errno = GF_ERROR_CODE_NOMEM;
                 return 0;
         }
 

@@ -52,14 +52,14 @@ afr_build_parent_loc (loc_t *parent, loc_t *child, int32_t *op_errno)
         child_path = gf_strdup (child->path);
         if (!child_path) {
                 if (op_errno)
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         parent->path = gf_strdup (dirname (child_path));
         if (!parent->path) {
                 if (op_errno)
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -300,7 +300,7 @@ afr_mark_new_entry_changelog (call_frame_t *frame, xlator_t *this)
         dict_t        *xattr      = NULL;
         int32_t       **changelog = NULL;
         int           i           = 0;
-        int           op_errno    = ENOMEM;
+        int           op_errno    = GF_ERROR_CODE_NOMEM;
 	unsigned char *pending    = NULL;
 	int           call_count   = 0;
 
@@ -459,7 +459,7 @@ afr_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -596,7 +596,7 @@ afr_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -727,7 +727,7 @@ afr_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -756,7 +756,7 @@ afr_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         local->xdata_req = dict_copy_with_ref (xdata, NULL);
         if (!local->xdata_req) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -862,7 +862,7 @@ afr_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -992,7 +992,7 @@ afr_symlink (call_frame_t *frame, xlator_t *this, const char *linkpath,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -1124,14 +1124,14 @@ afr_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
         int                     nlockee                 = 0;
 
         priv = this->private;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1280,7 +1280,7 @@ afr_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -1406,7 +1406,7 @@ afr_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
         afr_internal_lock_t     *int_lock               = NULL;
         call_frame_t            *transaction_frame      = NULL;
         int                     ret                     = -1;
-        int                     op_errno                = ENOMEM;
+        int                     op_errno                = GF_ERROR_CODE_NOMEM;
         int                     nlockee                 = 0;
 
         priv = this->private;

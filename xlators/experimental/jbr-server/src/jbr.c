@@ -1197,7 +1197,7 @@ jbr_open_term (call_frame_t *frame, xlator_t *this, dict_t *xdata)
         if (gf_asprintf(&path, "%s/TERM.%s", cl_dir, term) < 0) {
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         J_MSG_MEM_ERR, "failed to construct path");
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1238,7 +1238,7 @@ err:
 void
 jbr_next_entry (call_frame_t *frame, xlator_t *this)
 {
-        int32_t         op_errno        = ENOMEM;
+        int32_t         op_errno        = GF_ERROR_CODE_NOMEM;
         jbr_private_t   *priv           = this->private;
         ssize_t          nbytes;
         dict_t          *my_xdata;

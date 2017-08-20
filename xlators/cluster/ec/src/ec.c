@@ -116,7 +116,7 @@ int32_t ec_prepare_childs(xlator_t * this)
         gf_msg (this->name, GF_LOG_ERROR, ENOMEM,
                 EC_MSG_NO_MEMORY, "Allocation of xlator list failed");
 
-        return ENOMEM;
+        return GF_ERROR_CODE_NOMEM;
     }
     ec->xl_up = 0;
     ec->xl_up_count = 0;
@@ -818,7 +818,7 @@ ec_handle_heal_commands (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         dict_t  *dict_rsp = NULL;
         int     op_ret = -1;
-        int     op_errno = ENOMEM;
+        int     op_errno = GF_ERROR_CODE_NOMEM;
 
         if (!name || strcmp (name, GF_HEAL_INFO))
                 return -1;

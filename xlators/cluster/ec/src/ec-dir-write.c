@@ -116,7 +116,7 @@ int32_t ec_manager_create(ec_fop_data_t * fop, int32_t state)
             if (ctx == NULL) {
                 UNLOCK(&fop->fd->lock);
 
-                fop->error = ENOMEM;
+                fop->error = GF_ERROR_CODE_NOMEM;
 
                 return EC_STATE_REPORT;
             }
@@ -136,7 +136,7 @@ int32_t ec_manager_create(ec_fop_data_t * fop, int32_t state)
             if (fop->xdata == NULL) {
                 fop->xdata = dict_new();
                 if (fop->xdata == NULL) {
-                    fop->error = ENOMEM;
+                    fop->error = GF_ERROR_CODE_NOMEM;
 
                     return EC_STATE_REPORT;
                 }
@@ -270,7 +270,7 @@ void ec_create(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .create = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(CREATE) %p", frame);
 
@@ -442,7 +442,7 @@ void ec_link(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .link = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(LINK) %p", frame);
 
@@ -525,7 +525,7 @@ int32_t ec_manager_mkdir(ec_fop_data_t * fop, int32_t state)
             if (fop->xdata == NULL) {
                 fop->xdata = dict_new();
                 if (fop->xdata == NULL) {
-                    fop->error = ENOMEM;
+                    fop->error = GF_ERROR_CODE_NOMEM;
 
                     return EC_STATE_REPORT;
                 }
@@ -624,7 +624,7 @@ void ec_mkdir(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .mkdir = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(MKDIR) %p", frame);
 
@@ -708,7 +708,7 @@ int32_t ec_manager_mknod(ec_fop_data_t * fop, int32_t state)
                 if (fop->xdata == NULL) {
                     fop->xdata = dict_new();
                     if (fop->xdata == NULL) {
-                        fop->error = ENOMEM;
+                        fop->error = GF_ERROR_CODE_NOMEM;
 
                         return EC_STATE_REPORT;
                     }
@@ -828,7 +828,7 @@ void ec_mknod(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .mknod = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(MKNOD) %p", frame);
 
@@ -989,7 +989,7 @@ void ec_rename(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .rename = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(RENAME) %p", frame);
 
@@ -1140,7 +1140,7 @@ void ec_rmdir(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .rmdir = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(RMDIR) %p", frame);
 
@@ -1297,7 +1297,7 @@ void ec_symlink(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .symlink = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(SYMLINK) %p", frame);
 
@@ -1452,7 +1452,7 @@ void ec_unlink(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .unlink = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(UNLINK) %p", frame);
 

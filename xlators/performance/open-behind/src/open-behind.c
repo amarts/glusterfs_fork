@@ -324,7 +324,7 @@ ob_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 		stub = fop_open_stub (frame, default_open_resume,
 				      loc, flags, fd, xdata);
 		if (!stub) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			fd_unref (old_fd);
 			goto err;
 		}
@@ -338,7 +338,7 @@ ob_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 
 	ret = ob_open_behind (frame, this, loc, flags, fd, xdata);
 	if (ret) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto err;
 	}
 

@@ -539,14 +539,14 @@ rda_opendir(call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
         if (xdata) {
                 xdata_from_req = dict_new();
                 if (!xdata_from_req) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
                 local = mem_get0(this->local_pool);
                 if (!local) {
                         dict_unref(xdata_from_req);
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 

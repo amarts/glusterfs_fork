@@ -280,7 +280,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
         dict = dict_new ();
         if (!dict) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -308,7 +308,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
                 if (!dirents) {
                         gf_log (frame->this->name, GF_LOG_ERROR,
                                 "Unable to allocate memory");
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }

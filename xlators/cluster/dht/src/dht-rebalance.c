@@ -325,7 +325,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
         link_xattr = dict_new ();
         if (!link_xattr) {
                 ret = -1;
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -356,7 +356,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
         dict = dict_new ();
         if (!dict) {
                 ret = -1;
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM, DHT_MSG_NO_MEMORY,
                         "could not allocate memory for dict");
                 goto out;
@@ -364,7 +364,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
 
         ret = dict_set_int32 (dict, conf->link_xattr_name, 256);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_MIGRATE_FILE_FAILED,
@@ -439,7 +439,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                                 "Failed to set dictionary value:"
                                 " key = %s for %s",
                                 conf->link_xattr_name, loc->name);
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -670,7 +670,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
 
         dict = dict_new ();
         if (!dict) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM,
                         DHT_MSG_NO_MEMORY, "dictionary allocation failed for"
@@ -679,7 +679,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
         }
         ret = dict_set_static_bin (dict, "gfid-req", stbuf->ia_gfid, 16);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_DICT_SET_FAILED,
@@ -690,7 +690,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
 
         ret = dict_set_str (dict, conf->link_xattr_name, from->name);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_DICT_SET_FAILED,
@@ -701,7 +701,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
 
         fd = fd_create (loc->inode, DHT_REBALANCE_PID);
         if (!fd) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM,
                         DHT_MSG_MIGRATE_FILE_FAILED,
@@ -885,7 +885,7 @@ __dht_check_free_space (xlator_t *this, xlator_t *to, xlator_t *from, loc_t *loc
 
         xdata = dict_new ();
         if (!xdata) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM,
                         DHT_MSG_NO_MEMORY,
@@ -899,7 +899,7 @@ __dht_check_free_space (xlator_t *this, xlator_t *to, xlator_t *from, loc_t *loc
                         "Failed to set "
                         GF_INTERNAL_IGNORE_DEEM_STATFS" in dict");
                 ret = -1;
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1138,7 +1138,7 @@ __dht_rebalance_open_src_file (xlator_t *this, xlator_t *from, xlator_t *to, loc
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "%s: fd create failed (source)", loc->path);
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1165,7 +1165,7 @@ __dht_rebalance_open_src_file (xlator_t *this, xlator_t *from, xlator_t *to, loc
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "%s: Could not allocate memory for dict", loc->path);
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1175,7 +1175,7 @@ __dht_rebalance_open_src_file (xlator_t *this, xlator_t *from, xlator_t *to, loc
                 gf_log (this->name, GF_LOG_ERROR,
                         "failed to set xattr in dict for %s (linkto:%s)",
                         loc->path, to->name);
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1236,13 +1236,13 @@ migrate_special_files (xlator_t *this, xlator_t *from, xlator_t *to, loc_t *loc,
 
         dict = dict_new ();
         if (!dict) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
         ret = dict_set_int32 (dict, conf->link_xattr_name, 256);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_log (this->name, GF_LOG_ERROR,
                         "%s: failed to set 'linkto' key in dict", loc->path);
@@ -1293,7 +1293,7 @@ migrate_special_files (xlator_t *this, xlator_t *from, xlator_t *to, loc_t *loc,
         /* Set the gfid of the source file in dict */
         ret = dict_set_static_bin (dict, "gfid-req", buf->ia_gfid, 16);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_log (this->name, GF_LOG_ERROR,
                         "%s: failed to set gfid in dict for create", loc->path);
@@ -1515,14 +1515,14 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
         dict = dict_new ();
         if (!dict) {
                 ret = -1;
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM, DHT_MSG_NO_MEMORY,
                         "Could not allocate memory for dict");
                 goto out;
         }
         ret = dict_set_int32 (dict, conf->link_xattr_name, 256);
         if (ret) {
-                *fop_errno = ENOMEM;
+                *fop_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         DHT_MSG_MIGRATE_FILE_FAILED,
@@ -1538,7 +1538,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                 ret = dict_set_int32 (dict,
                                  GLUSTERFS_POSIXLK_COUNT, sizeof(int32_t));
                 if (ret) {
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 DHT_MSG_MIGRATE_FILE_FAILED,
@@ -1787,7 +1787,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "dict_new failed");
 
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1799,7 +1799,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 "Failed to set dictionary value: key = %s,"
                                 " path = %s", GLUSTERFS_INTERNAL_FOP_KEY,
                                  loc->path);
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1809,7 +1809,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "Trace dict_set failed");
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -1921,7 +1921,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                if (!dict) {
                         dict = dict_new ();
                         if (!dict) {
-                                *fop_errno = ENOMEM;
+                                *fop_errno = GF_ERROR_CODE_NOMEM;
                                 ret = -1;
                                 goto out;
                         }
@@ -1933,7 +1933,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 gf_log (this->name, GF_LOG_ERROR,
                                         "failed to set xattr in dict for %s (linkto:%s)",
                                         loc->path, to->name);
-                                *fop_errno = ENOMEM;
+                                *fop_errno = GF_ERROR_CODE_NOMEM;
                                 ret = -1;
                                 goto out;
                         }
@@ -1958,7 +1958,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                                 "%s: fd create failed",
                                                 loc->path);
-                                        *fop_errno = ENOMEM;
+                                        *fop_errno = GF_ERROR_CODE_NOMEM;
                                         ret = -1;
                                         goto out;
                                 }
@@ -2146,7 +2146,7 @@ metaunlock:
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "Trace dict_set failed");
 
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }
@@ -2161,7 +2161,7 @@ metaunlock:
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "Trace dict_set failed");
 
-                        *fop_errno = ENOMEM;
+                        *fop_errno = GF_ERROR_CODE_NOMEM;
                         ret = -1;
                         goto out;
                 }

@@ -471,7 +471,7 @@ __svs_initialise_snapshot_volume (xlator_t *this, const char *name,
                 gf_log (this->name, GF_LOG_ERROR,
                         "glfs instance for snap volume %s "
                         "failed", dirent->name);
-                local_errno = ENOMEM;
+                local_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

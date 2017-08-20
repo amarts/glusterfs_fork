@@ -2428,7 +2428,7 @@ valid_ipv4_subnetwork (const char *address)
         }
 
         paddr = gf_strdup (address);
-        if (paddr == NULL) /* ENOMEM */
+        if (paddr == NULL) /* GF_ERROR_CODE_NOMEM */
                 return _gf_false;
 
         /*

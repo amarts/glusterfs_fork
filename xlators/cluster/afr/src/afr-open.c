@@ -133,7 +133,7 @@ afr_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         local->op = GF_FOP_OPEN;
 	fd_ctx = afr_fd_ctx_get (fd, this);
 	if (!fd_ctx) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 

@@ -224,7 +224,7 @@ quotad_aggregator_getlimit (rpcsvc_request_t *req)
 
         frame = quotad_aggregator_get_frame_from_req (req);
         if (frame == NULL) {
-                cli_rsp.op_errno = ENOMEM;
+                cli_rsp.op_errno = GF_ERROR_CODE_NOMEM;
                 goto errx;
         }
         state = frame->root->state;
@@ -313,7 +313,7 @@ quotad_aggregator_lookup (rpcsvc_request_t *req)
 
         frame = quotad_aggregator_get_frame_from_req (req);
         if (frame == NULL) {
-                rsp.op_errno = ENOMEM;
+                rsp.op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

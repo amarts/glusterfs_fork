@@ -1596,7 +1596,7 @@ index_lookup_wrapper (call_frame_t *frame, xlator_t *this,
         }
         xattr = dict_new ();
         if (!xattr) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto done;
         }
 

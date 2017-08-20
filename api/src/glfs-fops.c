@@ -211,7 +211,7 @@ retry:
 	glfd->fd = fd_create (loc.inode, getpid());
 	if (!glfd->fd) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
         glfd->fd->flags = flags;
@@ -439,7 +439,7 @@ pub_glfs_creat (struct glfs *fs, const char *path, int flags, mode_t mode)
 	xattr_req = dict_new ();
 	if (!xattr_req) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -447,7 +447,7 @@ pub_glfs_creat (struct glfs *fs, const char *path, int flags, mode_t mode)
 	ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
 	if (ret) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -499,7 +499,7 @@ retry:
 		loc.inode = inode_new (loc.parent->table);
 		if (!loc.inode) {
 			ret = -1;
-			errno = ENOMEM;
+			errno = GF_ERROR_CODE_NOMEM;
 			goto out;
 		}
 	}
@@ -515,7 +515,7 @@ retry:
 	glfd->fd = fd_create (loc.inode, getpid());
 	if (!glfd->fd) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
         glfd->fd->flags = flags;
@@ -901,21 +901,21 @@ pub_glfs_preadv_async (struct glfs_fd *glfd, const struct iovec *iovec,
 	frame = syncop_create_frame (THIS);
 	if (!frame) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
 	gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
 	if (!gio) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
 	gio->iov = iov_dup (iovec, count);
 	if (!gio->iov) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1023,14 +1023,14 @@ glfs_buf_copy (xlator_t *subvol, const struct iovec *iovec_src, int iovcnt,
         *iobuf = iobuf_get2 (subvol->ctx->iobuf_pool, size);
         if (!(*iobuf)) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         *iobref = iobref_new ();
         if (!(*iobref)) {
                 iobuf_unref (*iobuf);
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1039,7 +1039,7 @@ glfs_buf_copy (xlator_t *subvol, const struct iovec *iovec_src, int iovcnt,
         if (ret) {
                 iobuf_unref (*iobuf);
                 iobref_unref (*iobref);
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1215,7 +1215,7 @@ pub_glfs_pwritev_async (struct glfs_fd *glfd, const struct iovec *iovec,
 
         gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
         if (!gio) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1229,7 +1229,7 @@ pub_glfs_pwritev_async (struct glfs_fd *glfd, const struct iovec *iovec,
         gio->iov = GF_CALLOC (gio->count, sizeof (*(gio->iov)),
                               gf_common_mt_iovec);
         if (!gio->iov) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1239,7 +1239,7 @@ pub_glfs_pwritev_async (struct glfs_fd *glfd, const struct iovec *iovec,
 
         frame = syncop_create_frame (THIS);
         if (!frame) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1414,13 +1414,13 @@ glfs_fsync_async_common (struct glfs_fd *glfd, glfs_io_cbk fn, void *data,
         frame = syncop_create_frame (THIS);
         if (!frame) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
         if (!gio) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -1665,13 +1665,13 @@ pub_glfs_ftruncate_async (struct glfs_fd *glfd, off_t offset, glfs_io_cbk fn,
 
         frame = syncop_create_frame (THIS);
         if (!frame) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
 	gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
 	if (!gio) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1777,7 +1777,7 @@ pub_glfs_symlink (struct glfs *fs, const char *data, const char *path)
 	xattr_req = dict_new ();
 	if (!xattr_req) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1785,7 +1785,7 @@ pub_glfs_symlink (struct glfs *fs, const char *data, const char *path)
 	ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
 	if (ret) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 retry:
@@ -1813,7 +1813,7 @@ retry:
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1920,7 +1920,7 @@ pub_glfs_mknod (struct glfs *fs, const char *path, mode_t mode, dev_t dev)
 	xattr_req = dict_new ();
 	if (!xattr_req) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -1928,7 +1928,7 @@ pub_glfs_mknod (struct glfs *fs, const char *path, mode_t mode, dev_t dev)
 	ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
 	if (ret) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 retry:
@@ -1956,7 +1956,7 @@ retry:
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -2008,7 +2008,7 @@ pub_glfs_mkdir (struct glfs *fs, const char *path, mode_t mode)
 	xattr_req = dict_new ();
 	if (!xattr_req) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -2016,7 +2016,7 @@ pub_glfs_mkdir (struct glfs *fs, const char *path, mode_t mode)
 	ret = dict_set_static_bin (xattr_req, "gfid-req", gfid, 16);
 	if (ret) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 retry:
@@ -2044,7 +2044,7 @@ retry:
 	loc.inode = inode_new (loc.parent->table);
 	if (!loc.inode) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -2388,7 +2388,7 @@ retry:
 	glfd->fd = fd_create (loc.inode, getpid());
 	if (!glfd->fd) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -2523,13 +2523,13 @@ pub_glfs_discard_async (struct glfs_fd *glfd, off_t offset, size_t len,
 
         frame = syncop_create_frame (THIS);
         if (!frame) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
 	gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
 	if (!gio) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -2611,13 +2611,13 @@ pub_glfs_zerofill_async (struct glfs_fd *glfd, off_t offset, off_t len,
 
         frame = syncop_create_frame (THIS);
         if (!frame) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         gio = GF_CALLOC (1, sizeof (*gio), glfs_mt_glfs_io_t);
         if (!gio) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -2807,7 +2807,7 @@ glfs_readdirbuf_get (struct glfs_fd *glfd)
 
                 buf = GF_CALLOC (1, READDIRBUF_SIZE, glfs_mt_readdirbuf_t);
                 if (!buf) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto unlock;
                 }
 
@@ -2841,7 +2841,7 @@ pub_glfs_readdirplus_r (struct glfs_fd *glfd, struct stat *stat,
 		buf = glfs_readdirbuf_get (glfd);
 
 	if (!buf) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
 	}
@@ -3608,7 +3608,7 @@ retry:
 	xattr = dict_for_key_value (name, value, size);
 	if (!xattr) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -3694,7 +3694,7 @@ pub_glfs_fsetxattr (struct glfs_fd *glfd, const char *name, const void *value,
 	xattr = dict_for_key_value (name, value, size);
 	if (!xattr) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -4100,7 +4100,7 @@ glfs_realpath_common (struct glfs *fs, const char *path, char *resolved_path,
 
 	if (!retpath) {
 		ret = -1;
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -4313,7 +4313,7 @@ pub_glfs_dup (struct glfs_fd *glfd)
 
 	dupfd = glfs_fd_new (fs);
 	if (!dupfd) {
-		errno = ENOMEM;
+		errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -4477,7 +4477,7 @@ glfs_anonymous_pwritev (struct glfs *fs, struct glfs_object *object,
                 ret = -1;
                 gf_msg ("gfapi", GF_LOG_ERROR, ENOMEM, API_MSG_FDCREATE_FAILED,
                         "Allocating anonymous fd failed");
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -4486,14 +4486,14 @@ glfs_anonymous_pwritev (struct glfs *fs, struct glfs_object *object,
         iobuf = iobuf_get2 (subvol->ctx->iobuf_pool, size);
         if (!iobuf) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
         iobref = iobref_new ();
         if (!iobref) {
                 iobuf_unref (iobuf);
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -4502,7 +4502,7 @@ glfs_anonymous_pwritev (struct glfs *fs, struct glfs_object *object,
         if (ret) {
                 iobuf_unref (iobuf);
                 iobref_unref (iobref);
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -4575,7 +4575,7 @@ glfs_anonymous_preadv (struct glfs *fs,  struct glfs_object *object,
                 ret = -1;
                 gf_msg ("gfapi", GF_LOG_ERROR, ENOMEM, API_MSG_FDCREATE_FAILED,
                         "Allocating anonymous fd failed");
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

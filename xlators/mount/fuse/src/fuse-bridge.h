@@ -190,7 +190,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                           * better than trying to go on with a NULL     \
                           * frame ...                                   \
                           */                                            \
-                        send_fuse_err (state->this, state->finh, ENOMEM); \
+                        send_fuse_err (state->this, state->finh, GF_ERROR_CODE_NOMEM); \
                         free_fuse_state (state);                        \
                         /* ideally, need to 'return', but let the */    \
                         /* calling function take care of it */          \
@@ -226,7 +226,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                                 " state allocation failed",                \
                                 finh->unique, finh->opcode);               \
                                                                            \
-                        send_fuse_err (this, finh, ENOMEM);                \
+                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM);                \
                         GF_FREE (finh);                                    \
                                                                            \
                         return;                                            \
@@ -244,7 +244,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                                                 GF_LOG_WARNING,         \
                                                 "%s failed to allocate " \
                                                 "a param dictionary", op); \
-                                        send_fuse_err (this, finh, ENOMEM); \
+                                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM); \
                                         free_fuse_state (state);        \
                                         return;                         \
                                 }                                       \
@@ -260,7 +260,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                                                 GF_LOG_WARNING,         \
                                                 "%s Failed adding umask"\
                                                 " to request", op);     \
-                                        send_fuse_err (this, finh, ENOMEM); \
+                                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM); \
                                         free_fuse_state (state);        \
                                         return;                         \
                                 }                                       \
@@ -271,7 +271,7 @@ typedef struct fuse_graph_switch_args fuse_graph_switch_args_t;
                                                 GF_LOG_WARNING,         \
                                                 "%s Failed adding mode " \
                                                 "to request", op);         \
-                                        send_fuse_err (this, finh, ENOMEM); \
+                                        send_fuse_err (this, finh, GF_ERROR_CODE_NOMEM); \
                                         free_fuse_state (state);        \
                                         return;                         \
                                 }                                       \

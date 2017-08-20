@@ -2061,7 +2061,7 @@ dht_selfheal_new_directory (call_frame_t *frame,
         dht_layout_sort_volname (layout);
         dht_selfheal_layout_new_directory (frame, &local->loc, layout);
 
-        op_errno = ENOMEM;
+        op_errno = GF_ERROR_CODE_NOMEM;
         ret = dht_selfheal_layout_lock (frame, layout, _gf_true,
                                         dht_selfheal_dir_xattr,
                                         dht_should_heal_layout);
@@ -2508,7 +2508,7 @@ dht_update_commit_hash_for_layout_resume (call_frame_t *frame, void *cookie,
                 ret = dict_set_bin (xattr[i], conf->xattr_name,
                                     disk_layout, 4 * 4);
                 if (ret != 0) {
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
 
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 DHT_MSG_DIR_SELFHEAL_XATTR_FAILED,

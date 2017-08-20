@@ -140,7 +140,7 @@ void ec_access(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .access = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(ACCESS) %p", frame);
 
@@ -408,7 +408,7 @@ int32_t ec_getxattr_heal_cbk(call_frame_t *frame, void *cookie, xlator_t *xl,
         dict = dict_new();
         if (dict == NULL) {
             op_ret = -1;
-            op_errno = ENOMEM;
+            op_errno = GF_ERROR_CODE_NOMEM;
         } else {
             if (gf_asprintf(&str, "Good: %s, Bad: %s",
                             ec_bin(bin1, sizeof(bin1), good, ec->nodes),
@@ -418,7 +418,7 @@ int32_t ec_getxattr_heal_cbk(call_frame_t *frame, void *cookie, xlator_t *xl,
                 dict = NULL;
 
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto out;
             }
@@ -429,7 +429,7 @@ int32_t ec_getxattr_heal_cbk(call_frame_t *frame, void *cookie, xlator_t *xl,
                 dict = NULL;
 
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto out;
             }
@@ -453,7 +453,7 @@ ec_getxattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .getxattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(GETXATTR) %p", frame);
 
@@ -608,7 +608,7 @@ ec_fgetxattr (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .fgetxattr = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FGETXATTR) %p", frame);
 
@@ -791,7 +791,7 @@ int32_t ec_manager_open(ec_fop_data_t * fop, int32_t state)
             if (ctx == NULL) {
                 UNLOCK(&fop->fd->lock);
 
-                fop->error = ENOMEM;
+                fop->error = GF_ERROR_CODE_NOMEM;
 
                 return EC_STATE_REPORT;
             }
@@ -898,7 +898,7 @@ void ec_open(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .open = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(OPEN) %p", frame);
 
@@ -1097,7 +1097,7 @@ void ec_readlink(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .readlink = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(READLINK) %p", frame);
 
@@ -1445,7 +1445,7 @@ void ec_readv(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .readv = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(READ) %p", frame);
 
@@ -1892,7 +1892,7 @@ void ec_stat(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .stat = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(STAT) %p", frame);
 
@@ -2007,7 +2007,7 @@ void ec_fstat(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fstat = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FSTAT) %p", frame);
 

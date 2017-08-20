@@ -41,7 +41,7 @@ leases_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
 
         fd_ctx->client_uid = gf_strdup (frame->root->client->client_uid);
         if (!fd_ctx->client_uid) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -54,7 +54,7 @@ leases_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
 
         ret = fd_ctx_set (fd, this, (uint64_t)fd_ctx);
         if (ret) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

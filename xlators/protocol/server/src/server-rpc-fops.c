@@ -690,7 +690,7 @@ server_readdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ret = server_post_readdir (&rsp, entries);
                 if (ret == -1) {
                         op_ret   = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -1924,7 +1924,7 @@ server_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ret = server_post_readdirp (&rsp, entries);
                 if (ret == -1) {
                         op_ret   = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -2217,7 +2217,7 @@ server_compound_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!rsp.compound_rsp_array.compound_rsp_array_val) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         rsp.compound_rsp_array.compound_rsp_array_len = args_cbk->fop_length;
@@ -3100,7 +3100,7 @@ server_create_resume (call_frame_t *frame, xlator_t *bound_xl)
                         state->loc.inode ?
                         uuid_utoa (state->loc.inode->gfid):NULL);
                 state->resolve.op_ret = -1;
-                state->resolve.op_errno = ENOMEM;
+                state->resolve.op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         state->fd->flags = state->flags;
@@ -3401,7 +3401,7 @@ server_getactivelk_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ret = serialize_rsp_locklist (locklist, &rsp);
                 if (ret == -1) {
                         op_ret   = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -3473,7 +3473,7 @@ server_compound_resume (call_frame_t *frame, xlator_t *bound_xl)
         int                     i       = 0;
         int                     ret     = -1;
         int                     length  = 0;
-        int                     op_errno = ENOMEM;
+        int                     op_errno = GF_ERROR_CODE_NOMEM;
         compound_req            *c_req  = NULL;
 
         state = CALL_STATE (frame);

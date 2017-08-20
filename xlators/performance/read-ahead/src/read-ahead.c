@@ -49,7 +49,7 @@ ra_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         file = GF_CALLOC (1, sizeof (*file), gf_ra_mt_ra_file_t);
         if (!file) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -92,7 +92,7 @@ ra_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         fd);
                 ra_file_destroy (file);
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
         }
 
 unwind:
@@ -126,7 +126,7 @@ ra_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         file = GF_CALLOC (1, sizeof (*file), gf_ra_mt_ra_file_t);
         if (!file) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -166,7 +166,7 @@ ra_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         fd);
                 ra_file_destroy (file);
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
         }
 
 unwind:
@@ -387,7 +387,7 @@ dispatch_requests (call_frame_t *frame, ra_file_t *file)
                                 trav = ra_page_create (file, trav_offset);
                                 if (!trav) {
                                         local->op_ret = -1;
-                                        local->op_errno = ENOMEM;
+                                        local->op_errno = GF_ERROR_CODE_NOMEM;
                                         goto unlock;
                                 }
                                 fault = 1;
@@ -514,7 +514,7 @@ ra_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 

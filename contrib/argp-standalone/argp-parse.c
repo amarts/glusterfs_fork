@@ -586,7 +586,7 @@ parser_init (struct parser *parser, const struct argp *argp,
 
   parser->storage = malloc (GLEN + CLEN + SLEN);
   if (! parser->storage)
-    return ENOMEM;
+    return GF_ERROR_CODE_NOMEM;
 
   parser->groups = parser->storage;
 

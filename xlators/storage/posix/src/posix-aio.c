@@ -121,7 +121,7 @@ posix_aio_readv_complete (struct posix_aio_cb *paiocb, int res, int res2)
         iobref = iobref_new ();
         if (!iobref) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -192,13 +192,13 @@ posix_aio_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         iobuf = iobuf_get2 (this->ctx->iobuf_pool, size);
         if (!iobuf) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
         paiocb = GF_CALLOC (1, sizeof (*paiocb), gf_posix_mt_paiocb);
         if (!paiocb) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -343,7 +343,7 @@ posix_aio_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         paiocb = GF_CALLOC (1, sizeof (*paiocb), gf_posix_mt_paiocb);
         if (!paiocb) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

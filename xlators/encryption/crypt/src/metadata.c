@@ -18,7 +18,7 @@ int32_t alloc_format(crypt_local_t *local, size_t size)
 	if (size > 0) {
 		local->format = GF_CALLOC(1, size, gf_crypt_mt_mtd);
 		if (!local->format)
-			return ENOMEM;
+			return GF_ERROR_CODE_NOMEM;
 	}
 	local->format_size = size;
 	return 0;
@@ -485,7 +485,7 @@ static int32_t open_format_v1(unsigned char *wire,
 
 	fmt = GF_CALLOC(1, len, gf_crypt_mt_mtd);
 	if (!fmt)
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	memcpy(fmt, wire, len);
 
 	object = &info->cinfo;
@@ -507,7 +507,7 @@ static int32_t open_format_v1(unsigned char *wire,
 	gctx = CRYPTO_gcm128_new(&EMTD_KEY, (block128_f)AES_encrypt);
 	if (!gctx) {
 		gf_log("crypt", GF_LOG_ERROR, "Can not alloc gcm context");
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 	CRYPTO_gcm128_setiv(gctx, info->oid, sizeof(uuid_t));

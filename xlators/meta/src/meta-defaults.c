@@ -134,18 +134,18 @@ meta_default_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
 
 	iobuf = iobuf_get2 (this->ctx->iobuf_pool, size);
 	if (!iobuf)
-		return default_readv_failure_cbk (frame, ENOMEM);
+		return default_readv_failure_cbk (frame, GF_ERROR_CODE_NOMEM);
 
 	iobref = iobref_new ();
 	if (!iobref) {
 		iobuf_unref (iobuf);
-		return default_readv_failure_cbk (frame, ENOMEM);
+		return default_readv_failure_cbk (frame, GF_ERROR_CODE_NOMEM);
 	}
 
 	if (iobref_add (iobref, iobuf) != 0) {
 		iobref_unref (iobref);
 		iobuf_unref (iobuf);
-		return default_readv_failure_cbk (frame, ENOMEM);
+		return default_readv_failure_cbk (frame, GF_ERROR_CODE_NOMEM);
 	}
 
         /* iobref would have taken a ref */

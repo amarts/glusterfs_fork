@@ -1838,7 +1838,7 @@ ec_heal_block (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .heal = func };
     ec_fop_data_t *fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace("ec", 0, "EC(HEAL) %p", frame);
 
@@ -2499,7 +2499,7 @@ ec_launch_heal (ec_t *ec, ec_fop_data_t *fop)
         ret = synctask_new (ec->xl->ctx->env, ec_synctask_heal_wrap,
                             ec_heal_done, NULL, fop);
         if (ret < 0) {
-                ec_fop_set_error(fop, ENOMEM);
+                ec_fop_set_error(fop, GF_ERROR_CODE_NOMEM);
                 ec_heal_fail (ec, fop);
         }
 }
@@ -2582,7 +2582,7 @@ ec_heal (call_frame_t *frame, xlator_t *this, uintptr_t target,
     fop = ec_fop_data_allocate (frame, this, EC_FOP_HEAL, 0, target, minimum,
                                 NULL, NULL, callback, data);
 
-    err = ENOMEM;
+    err = GF_ERROR_CODE_NOMEM;
 
     if (fop == NULL)
         goto fail;

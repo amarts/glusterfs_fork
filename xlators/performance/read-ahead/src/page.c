@@ -88,7 +88,7 @@ ra_wait_on_page (ra_page_t *page, call_frame_t *frame)
         waitq = GF_CALLOC (1, sizeof (*waitq), gf_ra_mt_ra_waitq_t);
         if (!waitq) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -212,7 +212,7 @@ ra_fault_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
                 page->vector = iov_dup (vector, count);
                 if (page->vector == NULL) {
-                        waitq = ra_page_error (page, -1, ENOMEM);
+                        waitq = ra_page_error (page, -1, GF_ERROR_CODE_NOMEM);
                         goto unlock;
                 }
 
@@ -265,7 +265,7 @@ ra_page_fault (ra_file_t *file, call_frame_t *frame, off_t offset)
         fault_frame = copy_frame (frame);
         if (fault_frame == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -273,7 +273,7 @@ ra_page_fault (ra_file_t *file, call_frame_t *frame, off_t offset)
         if (fault_local == NULL) {
                 STACK_DESTROY (fault_frame->root);
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -351,7 +351,7 @@ ra_frame_fill (ra_page_t *page, call_frame_t *frame)
                 new = GF_CALLOC (1, sizeof (*new), gf_ra_mt_ra_fill_t);
                 if (new == NULL) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -365,7 +365,7 @@ ra_frame_fill (ra_page_t *page, call_frame_t *frame)
                                          gf_ra_mt_iovec);
                 if (new->vector == NULL) {
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         GF_FREE (new);
                         goto out;
                 }
@@ -409,7 +409,7 @@ ra_frame_unwind (call_frame_t *frame)
         iobref  = iobref_new ();
         if (iobref == NULL) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
         }
 
         frame->local = NULL;
@@ -422,7 +422,7 @@ ra_frame_unwind (call_frame_t *frame)
         vector = GF_CALLOC (count, sizeof (*vector), gf_ra_mt_iovec);
         if (vector == NULL) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 iobref_unref (iobref);
                 iobref = NULL;
         }
@@ -439,7 +439,7 @@ ra_frame_unwind (call_frame_t *frame)
                         copied += (fill->count * sizeof (*vector));
                         if (iobref_merge (iobref, fill->iobref)) {
 				local->op_ret = -1;
-				local->op_errno = ENOMEM;
+				local->op_errno = GF_ERROR_CODE_NOMEM;
 				iobref_unref (iobref);
 				iobref = NULL;
 			}

@@ -1281,7 +1281,7 @@ syncop_readdirp_cbk (call_frame_t *frame,
                         tmp = entry_copy (entry);
                         if (!tmp) {
                                 args->op_ret = -1;
-                                args->op_errno = ENOMEM;
+                                args->op_errno = GF_ERROR_CODE_NOMEM;
                                 gf_dirent_free (&(args->entries));
                                 break;
                         }
@@ -1356,7 +1356,7 @@ syncop_readdir_cbk (call_frame_t *frame,
                         tmp = entry_copy (entry);
                         if (!tmp) {
                                 args->op_ret = -1;
-                                args->op_errno = ENOMEM;
+                                args->op_errno = GF_ERROR_CODE_NOMEM;
                                 gf_dirent_free (&(args->entries));
                                 break;
                         }

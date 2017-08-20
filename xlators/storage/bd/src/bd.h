@@ -60,7 +60,7 @@
 
 #define BD_VALIDATE_MEM_ALLOC(buff, op_errno, label)                \
         if (!buff) {                                                \
-                op_errno = ENOMEM;                                  \
+                op_errno = GF_ERROR_CODE_NOMEM;                                  \
                 gf_log (this->name, GF_LOG_ERROR, "out of memory"); \
                 goto label;                                         \
         }

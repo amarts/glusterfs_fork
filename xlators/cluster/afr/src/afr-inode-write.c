@@ -446,7 +446,7 @@ afr_do_writev (call_frame_t *frame, xlator_t *this)
         call_frame_t    *transaction_frame = NULL;
         afr_local_t     *local             = NULL;
         int             ret   = -1;
-        int             op_errno = ENOMEM;
+        int             op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -506,7 +506,7 @@ afr_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
             uint32_t flags, struct iobref *iobref, dict_t *xdata)
 {
         afr_local_t *local = NULL;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
 	local = AFR_FRAME_INIT (frame, op_errno);
 	if (!local)
@@ -532,12 +532,12 @@ afr_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 	local->inode = inode_ref (fd->inode);
 
 	if (dict_set_uint32 (local->xdata_req, GLUSTERFS_OPEN_FD_COUNT, 4)) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
 	if (dict_set_uint32 (local->xdata_req, GLUSTERFS_WRITE_IS_APPEND, 4)) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -629,7 +629,7 @@ afr_truncate (call_frame_t *frame, xlator_t *this,
         afr_local_t   * local = NULL;
         call_frame_t   *transaction_frame = NULL;
 	int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -748,7 +748,7 @@ afr_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         afr_local_t *local = NULL;
 	call_frame_t *transaction_frame = NULL;
 	int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
 	transaction_frame = copy_frame (frame);
 	if (!transaction_frame)
@@ -860,7 +860,7 @@ afr_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc, struct iatt *buf,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -965,7 +965,7 @@ afr_fsetattr (call_frame_t *frame, xlator_t *this,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -1237,7 +1237,7 @@ _afr_handle_empty_brick (void *opaque)
         afr_private_t   *priv           = NULL;
         int              empty_index       = -1;
         int              ret            = -1;
-        int              op_errno       = ENOMEM;
+        int              op_errno       = GF_ERROR_CODE_NOMEM;
         call_frame_t    *frame          = NULL;
         xlator_t        *this           = NULL;
         char            *op_type        = NULL;
@@ -1300,7 +1300,7 @@ afr_split_brain_resolve_do (call_frame_t *frame, xlator_t *this, loc_t *loc,
         local->xdata_req = dict_new ();
 
         if (!local->xdata_req) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1445,7 +1445,7 @@ afr_handle_split_brain_commands (xlator_t *this, call_frame_t *frame,
                                 " synctask. Aborting split-brain choice set"
                                 " for %s", loc->name);
                         ret = 1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 ret = 0;
@@ -1540,7 +1540,7 @@ afr_handle_empty_brick (xlator_t *this, call_frame_t *frame, loc_t *loc,
                                   gf_afr_mt_empty_brick_t);
                 if (!data) {
                         ret = 1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 data->frame = frame;
@@ -1556,7 +1556,7 @@ afr_handle_empty_brick (xlator_t *this, call_frame_t *frame, loc_t *loc,
                                 afr_get_msg_id (op_type),
                                 "Failed to create synctask.");
                         ret = 1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         afr_brick_args_cleanup (data);
                         goto out;
                 }
@@ -1712,7 +1712,7 @@ afr_fsetxattr (call_frame_t *frame, xlator_t *this,
         afr_local_t      *local             = NULL;
         call_frame_t     *transaction_frame = NULL;
         int               ret               = -1;
-        int               op_errno          = ENOMEM;
+        int               op_errno          = GF_ERROR_CODE_NOMEM;
 
         GF_IF_INTERNAL_XATTR_GOTO ("trusted.afr.*", dict,
                                    op_errno, out);
@@ -1826,7 +1826,7 @@ afr_removexattr (call_frame_t *frame, xlator_t *this,
         afr_local_t     *local             = NULL;
         call_frame_t    *transaction_frame = NULL;
         int              ret               = -1;
-        int              op_errno          = ENOMEM;
+        int              op_errno          = GF_ERROR_CODE_NOMEM;
 
         GF_IF_NATIVE_XATTR_GOTO ("trusted.afr.*",
                                  name, op_errno, out);
@@ -1934,7 +1934,7 @@ afr_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GF_IF_NATIVE_XATTR_GOTO ("trusted.afr.*",
                                  name, op_errno, out);
@@ -2045,7 +2045,7 @@ afr_fallocate (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
         call_frame_t *transaction_frame = NULL;
         afr_local_t *local = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -2158,7 +2158,7 @@ afr_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
 	transaction_frame = copy_frame (frame);
 	if (!transaction_frame)
@@ -2267,7 +2267,7 @@ afr_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
 	transaction_frame = copy_frame (frame);
 	if (!transaction_frame)
@@ -2372,7 +2372,7 @@ afr_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)
@@ -2466,7 +2466,7 @@ afr_fxattrop (call_frame_t *frame, xlator_t *this, fd_t *fd,
         afr_local_t *local = NULL;
         call_frame_t *transaction_frame = NULL;
         int ret = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         transaction_frame = copy_frame (frame);
         if (!transaction_frame)

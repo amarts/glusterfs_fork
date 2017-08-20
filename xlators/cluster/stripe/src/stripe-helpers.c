@@ -342,7 +342,7 @@ stripe_ctx_handle (xlator_t *this, call_frame_t *prev, stripe_local_t *local,
                 local->fctx =  GF_CALLOC (1, sizeof (stripe_fd_ctx_t),
                                          gf_stripe_mt_stripe_fd_ctx_t);
                 if (!local->fctx) {
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         local->op_ret = -1;
                         goto out;
                 }
@@ -395,7 +395,7 @@ stripe_ctx_handle (xlator_t *this, call_frame_t *prev, stripe_local_t *local,
                                                    gf_stripe_mt_xlator_t);
 
                 if (!local->fctx->xl_array) {
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                         local->op_ret   = -1;
                         goto out;
                 }

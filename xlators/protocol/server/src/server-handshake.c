@@ -281,7 +281,7 @@ server_getspec (rpcsvc_request_t *req)
                                       gf_server_mt_rsp_buf_t);
                 if (!rsp.spec) {
                         ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto fail;
                 }
                 ret = sys_read (spec_fd, rsp.spec, file_len);
@@ -496,7 +496,7 @@ server_setvolume (rpcsvc_request_t *req)
         buf = memdup (args.dict.dict_val, args.dict.dict_len);
         if (buf == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto fail;
         }
 
@@ -627,7 +627,7 @@ server_setvolume (rpcsvc_request_t *req)
         client = gf_client_get (this, &req->cred, client_uid, subdir_mount);
         if (client == NULL) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto fail;
         }
 

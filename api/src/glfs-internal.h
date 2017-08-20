@@ -127,7 +127,7 @@
 	loc.inode = inode_new (pinode->table);                            \
 	if (!loc.inode) {                                                 \
 		ret = -1;                                                 \
-		errno = ENOMEM;                                           \
+		errno = GF_ERROR_CODE_NOMEM;                                           \
 		goto label;                                               \
 	}                                                                 \
 	loc.parent = inode_ref (pinode);                                  \

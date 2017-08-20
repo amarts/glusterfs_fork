@@ -8308,7 +8308,7 @@ xml_end:
 
         status.brick = GF_CALLOC (1, PATH_MAX + 256, gf_common_mt_strdup);
         if (!status.brick) {
-                errno   = ENOMEM;
+                errno   = GF_ERROR_CODE_NOMEM;
                 ret     = -1;
                 goto out;
         }

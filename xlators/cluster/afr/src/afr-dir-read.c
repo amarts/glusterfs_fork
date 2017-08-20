@@ -79,7 +79,7 @@ afr_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd)
         afr_local_t   * local       = NULL;
         int             i           = 0;
         int             call_count  = -1;
-        int32_t         op_errno    = ENOMEM;
+        int32_t         op_errno    = GF_ERROR_CODE_NOMEM;
 	afr_fd_ctx_t *fd_ctx = NULL;
 
         priv = this->private;

@@ -1668,7 +1668,7 @@ __posix_fd_ctx_get (fd_t *fd, xlator_t *this, struct posix_fd **pfd_p,
         }
         pfd = GF_CALLOC (1, sizeof (*pfd), gf_posix_mt_posix_fd);
         if (!pfd) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         pfd->fd = -1;
@@ -1718,7 +1718,7 @@ __posix_fd_ctx_get (fd_t *fd, xlator_t *this, struct posix_fd **pfd_p,
 
         ret = __fd_ctx_set (fd, this, (uint64_t) (long) pfd);
         if (ret != 0) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 if (_fd != -1)
                         sys_close (_fd);
                 if (dir)

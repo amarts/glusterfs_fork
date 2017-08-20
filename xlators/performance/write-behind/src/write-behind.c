@@ -1116,9 +1116,9 @@ wb_fulfill_head (wb_inode_t *wb_inode, wb_request_t *head)
 	return 0;
 err:
         /* frame creation failure */
-        wb_fulfill_err (head, ENOMEM);
+        wb_fulfill_err (head, GF_ERROR_CODE_NOMEM);
 
-	return ENOMEM;
+	return GF_ERROR_CODE_NOMEM;
 }
 
 
@@ -1788,7 +1788,7 @@ wb_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
 
         wb_inode = wb_inode_create (this, fd->inode);
 	if (!wb_inode) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
 	}
 
@@ -1808,7 +1808,7 @@ wb_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
 		stub = fop_writev_stub (frame, NULL, fd, vector, count, offset,
                                         flags, iobref, xdata);
         if (!stub) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1818,7 +1818,7 @@ wb_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
 		ret = wb_enqueue_tempted (wb_inode, stub);
 
 	if (!ret) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
 	}
 
@@ -1922,7 +1922,7 @@ flushbehind:
 	bg_frame = copy_frame (frame);
 	if (!bg_frame) {
 		op_ret = -1;
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
 	}
 
@@ -2206,7 +2206,7 @@ wb_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         wb_inode = wb_inode_create (this, fd->inode);
 	if (!wb_inode) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
         }
 
@@ -2215,12 +2215,12 @@ wb_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 	stub = fop_ftruncate_stub (frame, wb_ftruncate_helper, fd,
 				   offset, xdata);
 	if (!stub) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
         }
 
 	if (!wb_enqueue (wb_inode, stub)) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 		goto unwind;
         }
 

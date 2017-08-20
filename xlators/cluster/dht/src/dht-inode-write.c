@@ -177,7 +177,7 @@ dht_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         local = dht_local_init (frame, NULL, fd, GF_FOP_WRITE);
         if (!local) {
 
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -375,7 +375,7 @@ dht_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_TRUNCATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -420,7 +420,7 @@ dht_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FTRUNCATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -592,7 +592,7 @@ dht_fallocate (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FALLOCATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -771,7 +771,7 @@ dht_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_DISCARD);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -949,7 +949,7 @@ dht_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_ZEROFILL);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1161,7 +1161,7 @@ dht_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_SETATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1234,7 +1234,7 @@ dht_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iatt *stbuf,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FSETATTR);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

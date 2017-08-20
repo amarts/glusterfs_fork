@@ -66,7 +66,7 @@ rio_create_subvol_list (xlator_t *this, char *subvol_str,
 
         svstr_copy = gf_strdup (subvol_str);
         if (!svstr_copy) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 return -1;
         }
 

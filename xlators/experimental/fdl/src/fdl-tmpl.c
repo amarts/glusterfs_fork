@@ -376,7 +376,7 @@ fdl_ipc (call_frame_t *frame, xlator_t *this, int32_t op, dict_t *xdata)
                 gf_log (this->name, GF_LOG_INFO, "got GET_TERMS op");
                 tdict = dict_new ();
                 if (!tdict) {
-                        gt_err = ENOMEM;
+                        gt_err = GF_ERROR_CODE_NOMEM;
                         goto gt_done;
                 }
                 if (dict_set_int32(tdict,"first",priv->first_term) != 0) {

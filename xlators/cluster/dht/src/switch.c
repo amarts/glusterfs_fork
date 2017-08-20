@@ -166,7 +166,7 @@ switch_local_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 local->layout = dht_layout_new (this, conf->subvolume_cnt);
                 if (!local->layout) {
                         op_ret   = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         gf_msg_debug (this->name, 0,
                                       "memory allocation failed :(");
                         goto err;
@@ -248,7 +248,7 @@ switch_lookup (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_LOOKUP);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -336,7 +336,7 @@ switch_lookup (call_frame_t *frame, xlator_t *this,
                         local->layout = dht_layout_new (this,
                                                         conf->subvolume_cnt);
                         if (!local->layout) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto err;
                         }
 
@@ -423,7 +423,7 @@ switch_create (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, fd, GF_FOP_CREATE);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -522,7 +522,7 @@ switch_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_MKNOD);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

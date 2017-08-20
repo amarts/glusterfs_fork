@@ -571,7 +571,7 @@ glusterd_add_volume_detail_to_dict (glusterd_volinfo_t *volinfo,
                 snprintf (key, 256, "volume%d.xlator0", count);
                 buf = GF_MALLOC (256, gf_common_mt_char);
                 if (!buf) {
-                        ret = ENOMEM;
+                        ret = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 if (volinfo->caps & CAPS_BD)
@@ -587,7 +587,7 @@ glusterd_add_volume_detail_to_dict (glusterd_volinfo_t *volinfo,
                                   caps++);
                         buf = GF_MALLOC (256, gf_common_mt_char);
                         if (!buf) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         snprintf (buf, 256, "thin");
@@ -603,7 +603,7 @@ glusterd_add_volume_detail_to_dict (glusterd_volinfo_t *volinfo,
                                   caps++);
                         buf = GF_MALLOC (256, gf_common_mt_char);
                         if (!buf) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         snprintf (buf, 256, "offload_copy");
@@ -619,7 +619,7 @@ glusterd_add_volume_detail_to_dict (glusterd_volinfo_t *volinfo,
                                   caps++);
                         buf = GF_MALLOC (256, gf_common_mt_char);
                         if (!buf) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         snprintf (buf, 256, "offload_snapshot");
@@ -635,7 +635,7 @@ glusterd_add_volume_detail_to_dict (glusterd_volinfo_t *volinfo,
                                   caps++);
                         buf = GF_MALLOC (256, gf_common_mt_char);
                         if (!buf) {
-                                ret = ENOMEM;
+                                ret = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         snprintf (buf, 256, "offload_zerofill");
@@ -3205,7 +3205,7 @@ __glusterd_handle_umount (rpcsvc_request_t *req)
         /* check if it is allowed to umount path */
         path = gf_strdup (umnt_req.path);
         if (!path) {
-                rsp.op_errno = ENOMEM;
+                rsp.op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         dir_ok = _gf_false;

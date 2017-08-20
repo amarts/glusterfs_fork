@@ -736,13 +736,13 @@ void ec_lock_insert(ec_fop_data_t *fop, ec_lock_t *lock, uint32_t flags,
         if (fop->xdata == NULL) {
             fop->xdata = dict_new();
             if (fop->xdata == NULL) {
-                ec_fop_set_error(fop, ENOMEM);
+                ec_fop_set_error(fop, GF_ERROR_CODE_NOMEM);
                 return;
             }
         }
         if (dict_set_str(fop->xdata, GLUSTERFS_INODELK_DOM_COUNT,
                          fop->xl->name) != 0) {
-            ec_fop_set_error(fop, ENOMEM);
+            ec_fop_set_error(fop, GF_ERROR_CODE_NOMEM);
             return;
         }
     }
@@ -772,7 +772,7 @@ void ec_lock_prepare_inode_internal(ec_fop_data_t *fop, loc_t *loc,
 
     ctx = __ec_inode_get(loc->inode, fop->xl);
     if (ctx == NULL) {
-        __ec_fop_set_error(fop, ENOMEM);
+        __ec_fop_set_error(fop, GF_ERROR_CODE_NOMEM);
 
         goto unlock;
     }

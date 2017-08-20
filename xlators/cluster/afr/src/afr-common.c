@@ -735,7 +735,7 @@ afr_set_split_brain_choice_cbk (void *data)
 int
 afr_set_split_brain_choice (int ret, call_frame_t *frame, void *opaque)
 {
-        int                 op_errno         = ENOMEM;
+        int                 op_errno         = GF_ERROR_CODE_NOMEM;
         afr_private_t      *priv             = NULL;
         afr_inode_ctx_t    *ctx              = NULL;
         inode_t            *inode            = NULL;
@@ -852,7 +852,7 @@ set_timer:
                 if (!ctx->timer) {
                         ctx->spb_choice = old_spb_choice;
                         ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                 }
                 if (!timer_reset && ctx->timer)
                         timer_set = _gf_true;
@@ -1091,7 +1091,7 @@ afr_txn_refresh_done (call_frame_t *frame, xlator_t *this, int err)
         inode_t *inode = NULL;
         int event_generation = 0;
         int read_subvol = -1;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
         int ret = 0;
 
         local = frame->local;
@@ -1162,7 +1162,7 @@ afr_inode_refresh_done (call_frame_t *frame, xlator_t *this, int error)
 	afr_local_t *local = NULL;
         gf_boolean_t start_heal = _gf_false;
         afr_local_t *heal_local = NULL;
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 	int ret = 0;
 	int err = 0;
 
@@ -1332,7 +1332,7 @@ afr_inode_refresh_do (call_frame_t *frame, xlator_t *this)
 
 	xdata = dict_new ();
 	if (!xdata) {
-		afr_inode_refresh_done (frame, this, ENOMEM);
+		afr_inode_refresh_done (frame, this, GF_ERROR_CODE_NOMEM);
 		return 0;
 	}
 
@@ -2269,7 +2269,7 @@ unwind:
                                 AFR_MSG_DICT_SET_FAILED,
                                 "Error setting gfid-heal-msg dict");
                         local->op_ret = -1;
-                        local->op_errno = ENOMEM;
+                        local->op_errno = GF_ERROR_CODE_NOMEM;
                 }
         }
 
@@ -2823,7 +2823,7 @@ out:
 int
 afr_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req)
 {
-	int op_errno = ENOMEM;
+	int op_errno = GF_ERROR_CODE_NOMEM;
 	afr_private_t *priv = NULL;
 	afr_local_t *local = NULL;
 	int event = 0;
@@ -3012,7 +3012,7 @@ afr_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req)
 		   allocate one for us */
 		local->xattr_req = dict_copy_with_ref (xattr_req, NULL);
 		if (!local->xattr_req) {
-		        op_errno = ENOMEM;
+		        op_errno = GF_ERROR_CODE_NOMEM;
 		        goto out;
                 }
                 ret = dict_get_ptr (local->xattr_req, "gfid-req", &gfid_req);
@@ -3292,7 +3292,7 @@ afr_flush (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 {
         afr_local_t   *local = NULL;
         call_stub_t   *stub = NULL;
-        int            op_errno   = ENOMEM;
+        int            op_errno   = GF_ERROR_CODE_NOMEM;
 
 	local = AFR_FRAME_INIT (frame, op_errno);
 	if (!local)
@@ -3436,7 +3436,7 @@ afr_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t datasync,
         afr_local_t *local = NULL;
         int i = 0;
         int32_t call_count = 0;
-        int32_t op_errno = ENOMEM;
+        int32_t op_errno = GF_ERROR_CODE_NOMEM;
 
 	priv = this->private;
 
@@ -3519,7 +3519,7 @@ afr_fsyncdir (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t datasync,
         afr_local_t *local = NULL;
         int i = 0;
         int32_t call_count = 0;
-        int32_t op_errno = ENOMEM;
+        int32_t op_errno = GF_ERROR_CODE_NOMEM;
 
 	priv = this->private;
 
@@ -4014,7 +4014,7 @@ afr_handle_inodelk (call_frame_t *frame, glusterfs_fop_t fop,
                     struct gf_flock *flock, dict_t *xdata)
 {
         afr_local_t *local  = NULL;
-        int32_t op_errno = ENOMEM;
+        int32_t op_errno = GF_ERROR_CODE_NOMEM;
 
         local = AFR_FRAME_INIT (frame, op_errno);
         if (!local)
@@ -4028,7 +4028,7 @@ afr_handle_inodelk (call_frame_t *frame, glusterfs_fop_t fop,
 
         local->cont.inodelk.volume = gf_strdup (volume);
         if (!local->cont.inodelk.volume) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -4075,7 +4075,7 @@ afr_handle_entrylk (call_frame_t *frame, glusterfs_fop_t fop,
                     entrylk_type type, dict_t *xdata)
 {
         afr_local_t *local  = NULL;
-        int32_t op_errno = ENOMEM;
+        int32_t op_errno = GF_ERROR_CODE_NOMEM;
 
         local = AFR_FRAME_INIT (frame, op_errno);
         if (!local)
@@ -4092,7 +4092,7 @@ afr_handle_entrylk (call_frame_t *frame, glusterfs_fop_t fop,
         local->cont.entrylk.volume = gf_strdup (volume);
         local->cont.entrylk.basename = gf_strdup (basename);
         if (!local->cont.entrylk.volume || !local->cont.entrylk.basename) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         if (xdata)
@@ -4184,7 +4184,7 @@ afr_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 	afr_private_t   *priv        = NULL;
         int              i           = 0;
         int              call_count = 0;
-        int32_t          op_errno    = ENOMEM;
+        int32_t          op_errno    = GF_ERROR_CODE_NOMEM;
 
 	priv = this->private;
 
@@ -4361,7 +4361,7 @@ afr_lk (call_frame_t *frame, xlator_t *this,
         afr_private_t *priv = NULL;
         afr_local_t *local = NULL;
         int i = 0;
-        int32_t op_errno = ENOMEM;
+        int32_t op_errno = GF_ERROR_CODE_NOMEM;
 
         priv = this->private;
 
@@ -4379,7 +4379,7 @@ afr_lk (call_frame_t *frame, xlator_t *this,
                                                  gf_afr_mt_char);
 
         if (!local->cont.lk.locked_nodes) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -5237,7 +5237,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
                                      gf_afr_mt_char);
         if (!local->child_up) {
                 if (op_errno)
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -5258,7 +5258,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
 					   gf_afr_mt_char);
 	if (!local->read_attempted) {
 		if (op_errno)
-			*op_errno = ENOMEM;
+			*op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -5266,7 +5266,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
 				     gf_afr_mt_char);
 	if (!local->readable) {
 		if (op_errno)
-			*op_errno = ENOMEM;
+			*op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -5274,7 +5274,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
                                       gf_afr_mt_char);
         if (!local->readable2) {
                 if (op_errno)
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -5282,7 +5282,7 @@ afr_local_init (afr_local_t *local, afr_private_t *priv, int32_t *op_errno)
 				   gf_afr_mt_reply_t);
 	if (!local->replies) {
 		if (op_errno)
-			*op_errno = ENOMEM;
+			*op_errno = GF_ERROR_CODE_NOMEM;
 		goto out;
 	}
 
@@ -6000,7 +6000,7 @@ afr_get_split_brain_status (void *opaque)
 
         dict = dict_new ();
         if (!dict) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }
@@ -6039,7 +6039,7 @@ afr_get_split_brain_status (void *opaque)
                                     (m_spb) ? "yes" : "no", choices);
 
                 if (-1 == ret) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 ret = dict_set_dynstr (dict, GF_AFR_SBRAIN_STATUS, status);
@@ -6080,7 +6080,7 @@ afr_heal_splitbrain_file(call_frame_t *frame, xlator_t *this, loc_t *loc)
         local = frame->local;
         dict = dict_new ();
         if (!dict) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 ret = -1;
                 goto out;
         }

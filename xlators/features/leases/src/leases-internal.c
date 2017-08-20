@@ -513,7 +513,7 @@ __add_lease (call_frame_t *frame, inode_t *inode, lease_inode_ctx_t *lease_ctx,
 
         lease_entry = __get_or_new_lease_entry (frame, lease->lease_id, lease_ctx);
         if (!lease_entry) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -839,7 +839,7 @@ recall_lease_timer_handler (struct gf_tw_timer_list *timer,
         {
                 lease_inode = new_lease_inode (inode);
                 if (!lease_inode) {
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 list_add_tail (&lease_inode->list, &priv->recall_list);
@@ -956,7 +956,7 @@ process_lease_req (call_frame_t *frame, xlator_t *this,
                         LEASE_MSG_NO_MEM, "Unable to create/get inode ctx, "
                         "inode:%p", inode);
                 ret = -ENOMEM;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1093,7 +1093,7 @@ check_lease_conflict (call_frame_t *frame, inode_t *inode,
                         LEASE_MSG_NO_MEM,
                         "Unable to create/get inode ctx");
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1153,7 +1153,7 @@ remove_clnt_leases (const char *client_uid, inode_t *inode, xlator_t *this)
                         LEASE_MSG_INVAL_INODE_CTX,
                         "Unable to create/get inode ctx");
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -1277,7 +1277,7 @@ remove_all_leases (xlator_t *this, inode_t *inode)
                         LEASE_MSG_INVAL_INODE_CTX,
                         "Unable to create/get inode ctx");
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

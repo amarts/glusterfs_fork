@@ -1951,7 +1951,7 @@ br_init_children (xlator_t *this, br_private_t *priv)
                         gf_msg (this->name, GF_LOG_ERROR,
                                 ENOMEM, BRB_MSG_NO_MEMORY,
                                 "failed to allocate mem-pool for timer");
-                        errno = ENOMEM;
+                        errno = GF_ERROR_CODE_NOMEM;
                         goto freechild;
                 }
 

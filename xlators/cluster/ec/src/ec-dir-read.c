@@ -123,7 +123,7 @@ int32_t ec_manager_opendir(ec_fop_data_t * fop, int32_t state)
             if (ctx == NULL) {
                 UNLOCK(&fop->fd->lock);
 
-                fop->error = ENOMEM;
+                fop->error = GF_ERROR_CODE_NOMEM;
 
                 return EC_STATE_REPORT;
             }
@@ -225,7 +225,7 @@ void ec_opendir(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .opendir = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(OPENDIR) %p", frame);
 
@@ -404,7 +404,7 @@ int32_t ec_manager_readdir(ec_fop_data_t * fop, int32_t state)
                     if (fop->xdata == NULL) {
                         fop->xdata = dict_new();
                         if (fop->xdata == NULL) {
-                            fop->error = ENOMEM;
+                            fop->error = GF_ERROR_CODE_NOMEM;
 
                             return EC_STATE_REPORT;
                         }
@@ -524,7 +524,7 @@ void ec_readdir(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .readdir = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(READDIR) %p", frame);
 
@@ -593,7 +593,7 @@ void ec_readdirp(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .readdirp = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(READDIRP) %p", frame);
 

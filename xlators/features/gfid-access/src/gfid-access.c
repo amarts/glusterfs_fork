@@ -610,7 +610,7 @@ ga_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
              int32_t flags, dict_t *xdata)
 {
         data_t  *data     = NULL;
-        int      op_errno = ENOMEM;
+        int      op_errno = GF_ERROR_CODE_NOMEM;
         int      ret      = 0;
         loc_t   ga_loc    = {0, };
 
@@ -687,7 +687,7 @@ ga_virtual_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
                         if (!cbk_inode) {
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto unwind;
                         }
                         /* the inode is not present in itable, ie, the actual
@@ -938,7 +938,7 @@ int
 ga_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
           mode_t umask, dict_t *xdata)
 {
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GFID_ACCESS_ENTRY_OP_CHECK (loc, op_errno, err);
 
@@ -959,7 +959,7 @@ int
 ga_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
            mode_t mode, mode_t umask, fd_t *fd, dict_t *xdata)
 {
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GFID_ACCESS_ENTRY_OP_CHECK (loc, op_errno, err);
 
@@ -979,7 +979,7 @@ int
 ga_symlink (call_frame_t *frame, xlator_t *this, const char *linkname,
             loc_t *loc, mode_t umask, dict_t *xdata)
 {
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GFID_ACCESS_ENTRY_OP_CHECK (loc, op_errno, err);
 
@@ -998,7 +998,7 @@ int
 ga_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
           dev_t rdev, mode_t umask, dict_t *xdata)
 {
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GFID_ACCESS_ENTRY_OP_CHECK (loc, op_errno, err);
 
@@ -1018,7 +1018,7 @@ int
 ga_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flag,
           dict_t *xdata)
 {
-        int   op_errno = ENOMEM;
+        int   op_errno = GF_ERROR_CODE_NOMEM;
         int   ret      = -1;
         loc_t ga_loc   = {0, };
 
@@ -1045,7 +1045,7 @@ int
 ga_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t xflag,
            dict_t *xdata)
 {
-        int   op_errno = ENOMEM;
+        int   op_errno = GF_ERROR_CODE_NOMEM;
         int   ret      = -1;
         loc_t ga_loc   = {0, };
 
@@ -1072,7 +1072,7 @@ int
 ga_rename (call_frame_t *frame, xlator_t *this,
            loc_t *oldloc, loc_t *newloc, dict_t *xdata)
 {
-        int   op_errno  = ENOMEM;
+        int   op_errno  = GF_ERROR_CODE_NOMEM;
         int   ret       = 0;
         loc_t ga_oldloc = {0, };
         loc_t ga_newloc = {0, };
@@ -1109,7 +1109,7 @@ int
 ga_link (call_frame_t *frame, xlator_t *this,
          loc_t *oldloc, loc_t *newloc, dict_t *xdata)
 {
-        int   op_errno  = ENOMEM;
+        int   op_errno  = GF_ERROR_CODE_NOMEM;
         int   ret       = 0;
         loc_t ga_oldloc = {0, };
         loc_t ga_newloc = {0, };
@@ -1146,7 +1146,7 @@ int32_t
 ga_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc,
             fd_t *fd, dict_t *xdata)
 {
-        int op_errno = ENOMEM;
+        int op_errno = GF_ERROR_CODE_NOMEM;
 
         GFID_ACCESS_INODE_OP_CHECK (loc, op_errno, err);
 
@@ -1172,7 +1172,7 @@ int32_t
 ga_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
              const char *name, dict_t *xdata)
 {
-        int   op_errno = ENOMEM;
+        int   op_errno = GF_ERROR_CODE_NOMEM;
         int   ret      = -1;
         loc_t ga_loc   = {0, };
 
@@ -1197,7 +1197,7 @@ int32_t
 ga_stat (call_frame_t *frame, xlator_t *this, loc_t *loc,
          dict_t *xdata)
 {
-        int          op_errno = ENOMEM;
+        int          op_errno = GF_ERROR_CODE_NOMEM;
         int          ret      = -1;
         loc_t        ga_loc   = {0, };
         ga_private_t *priv    = NULL;
@@ -1234,7 +1234,7 @@ ga_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
             struct iatt *stbuf, int32_t valid,
             dict_t *xdata)
 {
-        int   op_errno = ENOMEM;
+        int   op_errno = GF_ERROR_CODE_NOMEM;
         int   ret      = -1;
         loc_t ga_loc   = {0, };
 
@@ -1259,7 +1259,7 @@ int32_t
 ga_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 const char *name, dict_t *xdata)
 {
-        int   op_errno = ENOMEM;
+        int   op_errno = GF_ERROR_CODE_NOMEM;
         int   ret      = -1;
         loc_t ga_loc   = {0, };
 

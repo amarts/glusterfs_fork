@@ -386,7 +386,7 @@ posix_lookup (call_frame_t *frame, xlator_t *this,
                         op_ret = posix_inode_ctx_get_all (loc->inode, this,
                                                           &ctx);
                         if (op_ret < 0) {
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
 
@@ -846,7 +846,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
         unwind_dict = dict_new ();
         if (!unwind_dict) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -902,7 +902,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
         op_ret = posix_inode_ctx_get_all (oldloc->inode, this, &ctx_old);
         if (op_ret < 0) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -910,7 +910,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
                 op_ret = posix_inode_ctx_get_all (newloc->inode, this, &ctx_new);
                 if (op_ret < 0) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -1168,7 +1168,7 @@ posix_link (call_frame_t *frame, xlator_t *this,
 
                 op_ret = posix_inode_ctx_get_all (newloc->inode, this, &ctx);
                 if (op_ret < 0) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -1632,7 +1632,7 @@ posix_mkdir (call_frame_t *frame, xlator_t *this,
                                                 "mkdir (%s/%s):  "
                                                 "dict allocation failed", pgfid,
                                                 loc->name);
-                                        op_errno = ENOMEM;
+                                        op_errno = GF_ERROR_CODE_NOMEM;
                                         goto out;
                                 }
 
@@ -1857,7 +1857,7 @@ posix_unlink (call_frame_t *frame, xlator_t *this,
                                       loc->pargfid);
                 op_ret = posix_inode_ctx_get_all (loc->inode, this, &ctx);
                 if (op_ret < 0) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 pthread_mutex_lock (&ctx->pgfid_lock);

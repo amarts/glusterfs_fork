@@ -3030,7 +3030,7 @@ nfs3_rootfh (struct svc_req *req, xlator_t *nfsx,
         /* Build the inode from FH */
         fh = GF_CALLOC (1, sizeof(*fh), gf_nfs_mt_nfs3_fh);
         if (fh == NULL) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

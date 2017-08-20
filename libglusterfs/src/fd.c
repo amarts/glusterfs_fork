@@ -72,7 +72,7 @@ gf_fd_fdtable_expand (fdtable_t *fdtable, uint32_t nr)
         fdtable->fdentries = GF_CALLOC (nr, sizeof (fdentry_t),
                                         gf_common_mt_fdentry_t);
         if (!fdtable->fdentries) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         fdtable->max_fds = nr;

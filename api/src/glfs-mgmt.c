@@ -341,7 +341,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (!dict) {
                 ret = -1;
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -350,7 +350,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
                                 &dict);
 
         if (ret) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

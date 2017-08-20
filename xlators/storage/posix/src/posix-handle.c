@@ -222,7 +222,7 @@ posix_make_ancestryfromgfid (xlator_t *this, char *path, int pathsize,
                                                  dir_stack[top], &iabuf,
                                                  inode, type, xdata);
                 if (ret < 0) {
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 

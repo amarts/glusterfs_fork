@@ -295,7 +295,7 @@ stripe_discover (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -495,7 +495,7 @@ stripe_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -641,7 +641,7 @@ stripe_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -733,7 +733,7 @@ stripe_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -853,7 +853,7 @@ stripe_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset, 
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -1013,7 +1013,7 @@ stripe_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -1069,7 +1069,7 @@ stripe_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -1239,7 +1239,7 @@ stripe_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1387,7 +1387,7 @@ stripe_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -1522,7 +1522,7 @@ stripe_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags, dict_t
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -1882,7 +1882,7 @@ stripe_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                 /* Initialization */
                 local = mem_get0 (this->local_pool);
                 if (!local) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 local->op_ret = -1;
@@ -2095,7 +2095,7 @@ stripe_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -2233,7 +2233,7 @@ stripe_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc, 
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -2548,7 +2548,7 @@ stripe_create (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -2682,7 +2682,7 @@ stripe_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -2779,7 +2779,7 @@ stripe_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd, dict_
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -2866,7 +2866,7 @@ stripe_lk (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t cmd,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -2954,7 +2954,7 @@ stripe_flush (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -3065,7 +3065,7 @@ stripe_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t flags, dict
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -3177,7 +3177,7 @@ stripe_fstat (call_frame_t *frame,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -3224,7 +3224,7 @@ stripe_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset, d
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -3346,7 +3346,7 @@ stripe_fsyncdir (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t flags, d
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -3430,7 +3430,7 @@ stripe_readv_fstat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         gf_log (this->name, GF_LOG_ERROR,
                                                 "Out of memory.");
                                         op_ret = -1;
-                                        op_errno = ENOMEM;
+                                        op_errno = GF_ERROR_CODE_NOMEM;
                                         goto done;
                                 }
                                 memset (iobuf->ptr, 0, vec[count].iov_len);
@@ -3671,7 +3671,7 @@ stripe_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -3680,7 +3680,7 @@ stripe_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
         local->replies = GF_CALLOC (num_stripe, sizeof (struct stripe_replies),
                                     gf_stripe_mt_stripe_replies);
         if (!local->replies) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -3695,7 +3695,7 @@ stripe_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 rframe = copy_frame (frame);
                 rlocal = mem_get0 (this->local_pool);
                 if (!rlocal) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
 
@@ -3868,7 +3868,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -3888,7 +3888,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 	local->replies = GF_CALLOC(total_chunks, sizeof(struct stripe_replies),
 				gf_stripe_mt_stripe_replies);
 	if (!local->replies) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto err;
 	}
 
@@ -3897,7 +3897,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		wframe = copy_frame(frame);
 		wlocal = mem_get0(this->local_pool);
 		if (!wlocal) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto err;
 		}
 		wlocal->orig_frame = frame;
@@ -3920,7 +3920,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 tmp_vec = GF_CALLOC (tmp_count, sizeof (struct iovec),
                                      gf_stripe_mt_iovec);
                 if (!tmp_vec) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 tmp_count = iov_subset (vector, count, offset_offset,
@@ -4066,7 +4066,7 @@ stripe_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -4084,7 +4084,7 @@ stripe_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 		fframe = copy_frame(frame);
 		flocal = mem_get0(this->local_pool);
 		if (!flocal) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto err;
 		}
 		flocal->orig_frame = frame;
@@ -4233,7 +4233,7 @@ stripe_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -4251,7 +4251,7 @@ stripe_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 		fframe = copy_frame(frame);
 		flocal = mem_get0(this->local_pool);
 		if (!flocal) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto err;
 		}
 		flocal->orig_frame = frame;
@@ -4401,7 +4401,7 @@ stripe_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         frame->local = local;
@@ -4419,7 +4419,7 @@ stripe_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                 fframe = copy_frame(frame);
                 flocal = mem_get0(this->local_pool);
                 if (!flocal) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
                 flocal->orig_frame = frame;
@@ -4702,7 +4702,7 @@ stripe_setxattr (call_frame_t *frame, xlator_t *this,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -4865,7 +4865,7 @@ stripe_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 ret = stripe_fsetxattr_to_everyone (frame, this, fd, dict,
                                                     flags, xdata);
                 if (ret < 0) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto err;
                 }
 
@@ -5099,14 +5099,14 @@ stripe_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 local_frame = copy_frame (frame);
 
                 if (!local_frame) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         op_ret = -1;
                         goto out;
                 }
 
                 local_ent = mem_get0 (this->local_pool);
                 if (!local_ent) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         op_ret = -1;
                         goto out;
                 }
@@ -5174,7 +5174,7 @@ stripe_readdirp (call_frame_t *frame, xlator_t *this,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -5705,7 +5705,7 @@ stripe_getxattr (call_frame_t *frame, xlator_t *this,
         /* Initialization */
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         local->op_ret = -1;
@@ -5803,7 +5803,7 @@ stripe_fgetxattr_from_everyone (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         local = mem_get0 (this->local_pool);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

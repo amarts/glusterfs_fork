@@ -71,7 +71,7 @@ jbr_@NAME@ (call_frame_t *frame, xlator_t *this,
         jbr_local_t     *local         = NULL;
         jbr_private_t   *priv          = NULL;
         int32_t          ret           = -1;
-        int              op_errno      = ENOMEM;
+        int              op_errno      = GF_ERROR_CODE_NOMEM;
 
         GF_VALIDATE_OR_GOTO ("jbr", this, err);
         priv = this->private;

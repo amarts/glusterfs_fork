@@ -363,7 +363,7 @@ main (int argc, char **argv)
 
         ctx = glusterfs_ctx_new ();
         if (!ctx)
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
 
         if (glusterfs_globals_init (ctx))
                 return 1;

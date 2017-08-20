@@ -408,7 +408,7 @@ dht_rename_dir_lock2_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local->fd = fd_create (local->loc.inode, frame->root->pid);
         if (!local->fd) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -544,7 +544,7 @@ dht_rename_dir (call_frame_t *frame, xlator_t *this)
                                       gf_dht_ret_cache_t);
 
         if (local->ret_cache == NULL) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1547,7 +1547,7 @@ dht_rename_lock_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         xattr_req = dict_new ();
         if (xattr_req == NULL) {
                 local->op_ret = -1;
-                local->op_errno = ENOMEM;
+                local->op_errno = GF_ERROR_CODE_NOMEM;
                 goto done;
         }
 
@@ -1713,7 +1713,7 @@ dht_rename (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, oldloc, NULL, GF_FOP_RENAME);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
         /* cached_subvol will be set from dht_local_init, reset it to NULL,
@@ -1722,7 +1722,7 @@ dht_rename (call_frame_t *frame, xlator_t *this,
 
         ret = loc_copy (&local->loc2, newloc);
         if (ret == -1) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

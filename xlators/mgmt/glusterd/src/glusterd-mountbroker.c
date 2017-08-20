@@ -609,7 +609,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
                            mountbroker_root, uid, label);
         if (ret == -1) {
                 mtptemp = NULL;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         /*** hide cookie part */
@@ -663,7 +663,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
                            mountbroker_root);
         if (ret == -1) {
                 cookie = NULL;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         orig_umask = umask(S_IRWXG | S_IRWXO);
@@ -683,7 +683,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         GF_ASSERT (sla);
         ret = gf_asprintf (&mntlink, "../user%d%s", uid, sla);
         if (ret == -1) {
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

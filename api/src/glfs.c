@@ -322,7 +322,7 @@ pub_glfs_set_xlator_option (struct glfs *fs, const char *xlator,
 
 	return 0;
 enomem:
-	errno = ENOMEM;
+	errno = GF_ERROR_CODE_NOMEM;
 
 	if (!option) {
                 __GLFS_EXIT_FS;
@@ -371,7 +371,7 @@ pub_glfs_unset_volfile_server (struct glfs *fs, const char *transport,
         }
 
         if (!transport_val) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -429,7 +429,7 @@ pub_glfs_set_volfile_server (struct glfs *fs, const char *transport,
                             glfs_mt_server_cmdline_t);
 
         if (!server) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -437,7 +437,7 @@ pub_glfs_set_volfile_server (struct glfs *fs, const char *transport,
 
         server->volfile_server = gf_strdup (host);
         if (!server->volfile_server) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -465,7 +465,7 @@ pub_glfs_set_volfile_server (struct glfs *fs, const char *transport,
         }
 
         if (!server->transport) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

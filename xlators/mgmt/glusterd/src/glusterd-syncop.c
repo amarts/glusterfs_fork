@@ -911,7 +911,7 @@ _gd_syncop_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
                 args->dict  = dict_new ();
                 if (!args->dict) {
                         ret = -1;
-                        args->op_errno = ENOMEM;
+                        args->op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 

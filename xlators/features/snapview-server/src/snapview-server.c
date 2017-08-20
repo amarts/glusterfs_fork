@@ -55,7 +55,7 @@ svs_lookup_entry_point (xlator_t *this, loc_t *loc, inode_t *parent,
                                 "allocate inode context for entry point "
                                 "directory");
                         op_ret = -1;
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
                 gf_uuid_copy (inode_ctx->pargfid, loc->pargfid);
@@ -157,7 +157,7 @@ svs_lookup_gfid (xlator_t *this, loc_t *loc, struct iatt *buf,
                 gf_log (this->name, GF_LOG_ERROR, "failed to allocate inode "
                         "context");
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -234,7 +234,7 @@ svs_lookup_snapshot (xlator_t *this, loc_t *loc, struct iatt *buf,
                 gf_log (this->name, GF_LOG_ERROR, "failed to "
                         "allocate inode context");
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -259,7 +259,7 @@ svs_lookup_snapshot (xlator_t *this, loc_t *loc, struct iatt *buf,
         SVS_STRDUP (inode_ctx->snapname, loc->name);
         if (!inode_ctx->snapname) {
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         op_ret = 0;
@@ -325,7 +325,7 @@ svs_lookup_entry (xlator_t *this, loc_t *loc, struct iatt *buf,
                 gf_log (this->name, GF_LOG_ERROR, "failed to "
                         "allocate inode context");
                 op_ret = -1;
-                *op_errno = ENOMEM;
+                *op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 
@@ -352,7 +352,7 @@ svs_lookup_entry (xlator_t *this, loc_t *loc, struct iatt *buf,
                 SVS_STRDUP (inode_ctx->snapname, parent_ctx->snapname);
                 if (!inode_ctx->snapname) {
                         op_ret = -1;
-                        *op_errno = ENOMEM;
+                        *op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
         }
@@ -718,7 +718,7 @@ svs_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
                                 "fd context %s (gfid: %s)", loc->name,
                                 uuid_utoa (fd->inode->gfid));
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         glfs_closedir (glfd);
                         goto out;
                 }
@@ -837,7 +837,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
                         gf_log (this->name, GF_LOG_ERROR, "failed to "
                                 "allocate dict");
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -858,7 +858,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
                                 "allocate memory for getxattr on %s "
                                 "(key: %s)", loc->name, name);
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -891,7 +891,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
                         if (op_ret == -1) {
                                 gf_log (this->name, GF_LOG_ERROR, "failed to "
                                         "add the xattrs from the list to dict");
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         GF_FREE (value);
@@ -964,7 +964,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
                         gf_log (this->name, GF_LOG_ERROR, "failed to "
                                 "allocate  dict");
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto out;
                 }
 
@@ -986,7 +986,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
                                         "(key: %s)",
                                         uuid_utoa (fd->inode->gfid), name);
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
 
@@ -1024,7 +1024,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
                                            gf_common_mt_char);
                         if (!value) {
                                 op_ret = -1;
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 gf_log (this->name, GF_LOG_ERROR, "failed to "
                                         "allocate buffer for xattr list (%s)",
                                         uuid_utoa (fd->inode->gfid));
@@ -1046,7 +1046,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
                         if (op_ret == -1) {
                                 gf_log (this->name, GF_LOG_ERROR, "failed to "
                                         "add the xattrs from the list to dict");
-                                op_errno = ENOMEM;
+                                op_errno = GF_ERROR_CODE_NOMEM;
                                 goto out;
                         }
                         GF_FREE (value);
@@ -1933,7 +1933,7 @@ svs_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
                         "context for %s (gfid: %s)", loc->name,
                         uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 glfs_close (glfd);
                 goto out;
         }
@@ -1984,7 +1984,7 @@ svs_readv (call_frame_t *frame, xlator_t *this,
         iobuf = iobuf_get2 (this->ctx->iobuf_pool, size);
         if (!iobuf) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

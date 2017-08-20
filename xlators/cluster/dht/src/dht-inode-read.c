@@ -117,7 +117,7 @@ dht_open (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, loc, fd, GF_FOP_OPEN);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -331,7 +331,7 @@ dht_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_STAT);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -391,7 +391,7 @@ dht_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FSTAT);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -555,7 +555,7 @@ dht_readv (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_READ);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -692,7 +692,7 @@ dht_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t mask,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_ACCESS);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -811,7 +811,7 @@ dht_flush (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FLUSH);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -977,7 +977,7 @@ dht_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int datasync,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_FSYNC);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
 
                 goto err;
         }
@@ -1096,7 +1096,7 @@ dht_lk (call_frame_t *frame, xlator_t *this,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_LK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1217,7 +1217,7 @@ dht_readlink (call_frame_t *frame, xlator_t *this, loc_t *loc, size_t size,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_READLINK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1270,7 +1270,7 @@ dht_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_XATTROP);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1369,7 +1369,7 @@ dht_inodelk (call_frame_t *frame, xlator_t *this, const char *volume,
 
         local = dht_local_init (frame, loc, NULL, GF_FOP_INODELK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 
@@ -1424,7 +1424,7 @@ dht_finodelk (call_frame_t *frame, xlator_t *this, const char *volume,
 
         local = dht_local_init (frame, NULL, fd, GF_FOP_INODELK);
         if (!local) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto err;
         }
 

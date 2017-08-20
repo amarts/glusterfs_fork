@@ -96,7 +96,7 @@ static struct crypt_inode_info *alloc_inode_info(crypt_local_t *local,
 	info = GF_CALLOC(1, sizeof(*info), gf_crypt_mt_inode);
 	if (!info) {
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 		gf_log ("crypt", GF_LOG_WARNING,
 			"Can not allocate inode info");
 		return NULL;
@@ -512,7 +512,7 @@ int32_t crypt_readv(call_frame_t *frame,
 #endif
 	local = crypt_alloc_local(frame, this, GF_FOP_READ);
 	if (!local) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	if (size == 0)
@@ -1088,7 +1088,7 @@ int crypt_writev(call_frame_t *frame,
 #endif
 	local = crypt_alloc_local(frame, this, GF_FOP_WRITE);
 	if (!local) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	local->fd = fd_ref(fd);
@@ -1100,7 +1100,7 @@ int crypt_writev(call_frame_t *frame,
 	 */
 	local->xattr = dict_new();
 	if (!local->xattr) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	local->flags = flags;
@@ -1273,7 +1273,7 @@ static int32_t prune_submit_file_tail(call_frame_t *frame,
 
 	dict = dict_new();
 	if (!dict) {
-		op_errno = ENOMEM;
+		op_errno = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 
@@ -1419,7 +1419,7 @@ static int32_t prune_write(call_frame_t *frame,
 	        gf_log(this->name, GF_LOG_WARNING,
                        "Failed to calloc head block for prune");
 		local->op_ret = -1;
-		local->op_errno = ENOMEM;
+		local->op_errno = GF_ERROR_CODE_NOMEM;
 	        goto put_one_call;
 	}
 	for (i = 0; i < count; i++) {
@@ -1500,7 +1500,7 @@ int32_t read_prune_write(call_frame_t *frame, xlator_t *this)
 	dict = dict_new();
 	if (!dict) {
 		gf_log("crypt", GF_LOG_WARNING, "Can not alloc dict");
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto exit;
 	}
 	ret = dict_set(dict,
@@ -1712,12 +1712,12 @@ static int32_t crypt_ftruncate(call_frame_t *frame,
 
 	local = crypt_alloc_local(frame, this, GF_FOP_FTRUNCATE);
 	if (!local) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	local->xattr = dict_new();
 	if (!local->xattr) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	local->fd = fd_ref(fd);
@@ -2016,7 +2016,7 @@ static int load_mtd_open(call_frame_t *frame,
 		info = alloc_inode_info(local, local->loc);
 		if (!info) {
 			local->op_ret = -1;
-			local->op_errno = ENOMEM;
+			local->op_errno = GF_ERROR_CODE_NOMEM;
 			goto exit;
 		}
 		init_inode_info_head(info, local->fd);
@@ -2141,7 +2141,7 @@ static int32_t crypt_open_cbk(call_frame_t *frame,
 		local->xdata = dict_new();
 		if (!local->xdata) {
 			local->op_ret = -1;
-			local->op_errno = ENOMEM;
+			local->op_errno = GF_ERROR_CODE_NOMEM;
 			gf_log ("crypt", GF_LOG_ERROR,
 				"Can not get new dict for mtd string");
 			goto exit;
@@ -2174,7 +2174,7 @@ static int32_t crypt_open(call_frame_t *frame,
 			  fd_t *fd,
 			  dict_t *xdata)
 {
-	int32_t ret = ENOMEM;
+	int32_t ret = GF_ERROR_CODE_NOMEM;
 	crypt_local_t *local;
 
 	local = crypt_alloc_local(frame, this, GF_FOP_OPEN);
@@ -2182,7 +2182,7 @@ static int32_t crypt_open(call_frame_t *frame,
 		goto error;
 	local->loc = GF_CALLOC(1, sizeof(*loc), gf_crypt_mt_loc);
 	if (!local->loc) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	memset(local->loc, 0, sizeof(*local->loc));
@@ -2520,7 +2520,7 @@ static int32_t crypt_create(call_frame_t *frame,
 	}
 	local = crypt_alloc_local(frame, this, GF_FOP_CREATE);
 	if (!local) {
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	data = dict_get(xdata, "gfid-req");
@@ -2538,7 +2538,7 @@ static int32_t crypt_create(call_frame_t *frame,
 	}
 	info = alloc_inode_info(local, loc);
 	if (!info){
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	/*
@@ -2991,7 +2991,7 @@ static int32_t rename_flush(call_frame_t *frame,
 		local->prenewparent = GF_CALLOC(1, sizeof(*prenewparent),
 						gf_crypt_mt_iatt);
 		if (!local->prenewparent) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto error;
 		}
 		*local->prenewparent = *prenewparent;
@@ -3000,7 +3000,7 @@ static int32_t rename_flush(call_frame_t *frame,
 		local->postnewparent = GF_CALLOC(1, sizeof(*postnewparent),
 						 gf_crypt_mt_iatt);
 		if (!local->postnewparent) {
-			op_errno = ENOMEM;
+			op_errno = GF_ERROR_CODE_NOMEM;
 			goto error;
 		}
 		*local->postnewparent = *postnewparent;
@@ -3240,7 +3240,7 @@ static int32_t linkop_grab_local(call_frame_t *frame,
 				 int flags, dict_t *xdata,
 				 glusterfs_fop_t op)
 {
-	int32_t ret = ENOMEM;
+	int32_t ret = GF_ERROR_CODE_NOMEM;
 	fd_t *fd;
 	crypt_local_t *local;
 
@@ -3286,7 +3286,7 @@ static int32_t linkop_grab_local(call_frame_t *frame,
 	local->xattr = dict_new();
 	if (!local->xattr) {
 		gf_log(this->name, GF_LOG_ERROR, "Can not create dict");
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	return 0;
@@ -3341,7 +3341,7 @@ static int32_t linkop(call_frame_t *frame,
 	dict = dict_new();
 	if (!dict) {
 		gf_log(this->name, GF_LOG_ERROR, "Can not create dict");
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
 		goto error;
 	}
 	/*
@@ -4122,7 +4122,7 @@ static int32_t crypt_readdirp(call_frame_t *frame, xlator_t *this,
 			      fd_t *fd, size_t size, off_t offset,
 			      dict_t *xdata)
 {
-	int32_t ret = ENOMEM;
+	int32_t ret = GF_ERROR_CODE_NOMEM;
 
 	if (!xdata) {
 		xdata = dict_new();
@@ -4370,7 +4370,7 @@ static int32_t crypt_alloc_private(xlator_t *this)
 	if (!this->private) {
 		gf_log("crypt", GF_LOG_ERROR,
 		       "Can not allocate memory for private data");
-		return ENOMEM;
+		return GF_ERROR_CODE_NOMEM;
 	}
 	return 0;
 }
@@ -4454,7 +4454,7 @@ int32_t init(xlator_t *this)
         if (!this->local_pool) {
 		gf_log(this->name, GF_LOG_ERROR,
 		       "failed to create local_t's memory pool");
-		ret = ENOMEM;
+		ret = GF_ERROR_CODE_NOMEM;
                 goto error;
         }
 	gf_log ("crypt", GF_LOG_INFO, "crypt xlator loaded");

@@ -804,7 +804,7 @@ br_stub_perform_incversioning (xlator_t *this,
 
         writeback_version = __br_stub_writeback_version (ctx);
 
-        op_errno = ENOMEM;
+        op_errno = GF_ERROR_CODE_NOMEM;
         dict = dict_new ();
         if (!dict)
                 goto done;
@@ -1256,7 +1256,7 @@ br_stub_handle_bad_object_key (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         "failed to allocate memory for fsetxattr on %s",
                         uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1634,7 +1634,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         signaturelen -= sizeof (br_signature_t);
         totallen = sizeof (br_isignature_out_t) + signaturelen;
 
-        op_errno = ENOMEM;
+        op_errno = GF_ERROR_CODE_NOMEM;
         sign = GF_CALLOC (1, totallen, gf_br_stub_mt_signature_t);
         if (!sign)
                 goto delkeys;
@@ -1687,7 +1687,7 @@ br_stub_send_stub_init_time (call_frame_t *frame, xlator_t *this)
         xattr = dict_new ();
         if (!xattr) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -1776,7 +1776,7 @@ br_stub_getxattr (call_frame_t *frame, xlator_t *this,
                 local = br_stub_alloc_local (this);
                 if (!local) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -1854,7 +1854,7 @@ br_stub_fgetxattr (call_frame_t *frame, xlator_t *this,
                 local = br_stub_alloc_local (this);
                 if (!local) {
                         op_ret = -1;
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
 
@@ -2634,7 +2634,7 @@ br_stub_opendir (call_frame_t *frame, xlator_t *this,
 
         fd_ctx = br_stub_fd_new ();
         if (!fd_ctx) {
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 goto unwind;
         }
 
@@ -2759,7 +2759,7 @@ br_stub_readdirp (call_frame_t *frame, xlator_t *this,
         priv = this->private;
         BR_STUB_VER_NOT_ACTIVE_THEN_GOTO (frame, priv, wind);
 
-        op_errno = ENOMEM;
+        op_errno = GF_ERROR_CODE_NOMEM;
         if (!dict) {
                 dict = dict_new ();
                 if (!dict)
@@ -2953,7 +2953,7 @@ br_stub_lookup (call_frame_t *frame,
                 stub = fop_lookup_stub (frame, br_stub_lookup_wrapper, loc,
                                         xdata);
                 if (!stub) {
-                        op_errno = ENOMEM;
+                        op_errno = GF_ERROR_CODE_NOMEM;
                         goto unwind;
                 }
                 br_stub_worker_enqueue (this, stub);
@@ -2969,7 +2969,7 @@ br_stub_lookup (call_frame_t *frame,
         /**
          * fresh lookup: request version keys from POSIX
          */
-        op_errno = ENOMEM;
+        op_errno = GF_ERROR_CODE_NOMEM;
         if (!xdata) {
                 xdata = dict_new ();
                 if (!xdata)
@@ -3169,7 +3169,7 @@ br_stub_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int flag,
         local = br_stub_alloc_local (this);
         if (!local) {
                 op_ret = -1;
-                op_errno = ENOMEM;
+                op_errno = GF_ERROR_CODE_NOMEM;
                 gf_msg (this->name, GF_LOG_ERROR, ENOMEM, BRS_MSG_NO_MEMORY,
                         "failed to allocate memory for local (path: %s, gfid: %s)",
                         loc->path, uuid_utoa (loc->inode->gfid));

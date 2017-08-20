@@ -635,7 +635,7 @@ afr_shd_entry_changes_index_inode (xlator_t *this, xlator_t *subvol,
 
         loc.inode = inode_new (this->itable);
         if (!loc.inode) {
-                errno = ENOMEM;
+                errno = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
 

@@ -161,7 +161,7 @@ void ec_flush(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .flush = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FLUSH) %p", frame);
 
@@ -386,7 +386,7 @@ void ec_fsync(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fsync = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FSYNC) %p", frame);
 
@@ -577,7 +577,7 @@ void ec_fsyncdir(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fsyncdir = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FSYNCDIR) %p", frame);
 
@@ -786,7 +786,7 @@ int32_t ec_manager_lookup(ec_fop_data_t * fop, int32_t state)
                             EC_MSG_LOOKUP_REQ_PREP_FAIL, "Unable to prepare "
                             "lookup request");
 
-                    fop->error = ENOMEM;
+                    fop->error = GF_ERROR_CODE_NOMEM;
 
                     return EC_STATE_REPORT;
                 }
@@ -883,7 +883,7 @@ void ec_lookup(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .lookup = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(LOOKUP) %p", frame);
 
@@ -1075,7 +1075,7 @@ void ec_statfs(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .statfs = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(STATFS) %p", frame);
 
@@ -1324,7 +1324,7 @@ void ec_xattrop(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .xattrop = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(XATTROP) %p", frame);
 
@@ -1396,7 +1396,7 @@ void ec_fxattrop(call_frame_t * frame, xlator_t * this, uintptr_t target,
 {
     ec_cbk_t callback = { .fxattrop = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(FXATTROP) %p", frame);
 
@@ -1564,7 +1564,7 @@ void ec_ipc(call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .ipc = func };
     ec_fop_data_t * fop = NULL;
-    int32_t error = ENOMEM;
+    int32_t error = GF_ERROR_CODE_NOMEM;
 
     gf_msg_trace ("ec", 0, "EC(IPC) %p", frame);
 

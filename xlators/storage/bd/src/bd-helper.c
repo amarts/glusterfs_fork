@@ -399,7 +399,7 @@ create_thin_lv (char *vg, char *pool, char *lv, uint64_t extent)
 
         gf_asprintf (&path, "/dev/%s/%s", vg, lv);
         if (!path) {
-                ret = ENOMEM;
+                ret = GF_ERROR_CODE_NOMEM;
                 goto out;
         }
         if (sys_lstat (path, &stat) < 0)
@@ -600,7 +600,7 @@ bd_snapshot_create (bd_local_t *local, bd_priv_t *priv)
         if (!path) {
                 gf_log (THIS->name, GF_LOG_WARNING,
                         "Insufficient memory");
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
         }
 
         runinit (&runner);
@@ -624,7 +624,7 @@ bd_snapshot_create (bd_local_t *local, bd_priv_t *priv)
 int
 bd_clone (bd_local_t *local, bd_priv_t *priv)
 {
-        int           ret          = ENOMEM;
+        int           ret          = GF_ERROR_CODE_NOMEM;
         int           fd1          = -1;
         int           fd2          = -1;
         int           i            = 0;
@@ -639,7 +639,7 @@ bd_clone (bd_local_t *local, bd_priv_t *priv)
 
         vec = GF_CALLOC (IOV_NR, sizeof (struct iovec), gf_common_mt_iovec);
         if (!vec)
-                return ENOMEM;
+                return GF_ERROR_CODE_NOMEM;
 
         for (i = 0; i < IOV_NR; i++) {
                 bufp[i] = page_aligned_alloc (IOV_SIZE, &buff);
