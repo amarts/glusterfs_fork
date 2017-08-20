@@ -98,7 +98,7 @@ gf_mkostemp (char *tmpl, int suffixlen, int flags)
 
                 if (fd >= 0)
                         return fd;
-                else if (errno != EEXIST)
+                else if (errno != GF_ERROR_CODE_EXIST)
                         return -1;
         }
 

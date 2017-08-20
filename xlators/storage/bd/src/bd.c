@@ -1205,7 +1205,7 @@ bd_offload_dest_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         ret = dict_get_str (xattr, BD_XATTR, &bd);
         if (bd) {
-                op_errno = EEXIST;
+                op_errno = GF_ERROR_CODE_EXIST;
                 goto out;
         }
 
@@ -1399,7 +1399,7 @@ bd_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
                 if (bdatt) {
                         gf_log (this->name, GF_LOG_WARNING,
                                 "%s already mapped to BD", loc->path);
-                        op_errno = EEXIST;
+                        op_errno = GF_ERROR_CODE_EXIST;
                         goto out;
                 }
                 STACK_WIND (frame, bd_setx_stat_cbk, FIRST_CHILD (this),
@@ -1485,7 +1485,7 @@ bd_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
                 if (bdatt) {
                         gf_log (this->name, GF_LOG_WARNING,
                                 "fd %p already mapped to BD", fd);
-                        op_errno = EEXIST;
+                        op_errno = GF_ERROR_CODE_EXIST;
                         goto out;
                 }
                 STACK_WIND(frame, bd_setx_stat_cbk, FIRST_CHILD(this),

@@ -1139,7 +1139,7 @@ posix_handle_pair (xlator_t *this, const char *real_path,
 #ifdef GF_DARWIN_HOST_OS
         const int error_code = GF_ERROR_CODE_INVAL;
 #else
-        const int error_code = EEXIST;
+        const int error_code = GF_ERROR_CODE_EXIST;
 #endif
 
         if (XATTR_IS_PATHINFO (key)) {

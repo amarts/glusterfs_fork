@@ -3780,7 +3780,7 @@ nfs3_fh_resolve_entry_hard (nfs3_call_state_t *cs)
 		/* If the NFS op is lookup, let the resume callback
 		 * handle the sending of the lookup fop. Similarly,
 		 * if the NFS op is create, let the create call
-		 * go ahead in the resume callback so that an EEXIST gets
+		 * go ahead in the resume callback so that an GF_ERROR_CODE_EXIST gets
 		 * handled at posix without an extra fop at this point.
 		 */
                 if (freshlookup && (nfs3_lookup_op (cs) ||

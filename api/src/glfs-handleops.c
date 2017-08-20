@@ -1755,7 +1755,7 @@ pub_glfs_h_rename (struct glfs *fs, struct glfs_object *olddir,
                          * or both must be non-dirs. Else, fail.
                          */
                         ret = -1;
-                        errno = EEXIST;
+                        errno = GF_ERROR_CODE_EXIST;
                         goto out;
                 }
         }

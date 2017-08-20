@@ -812,7 +812,7 @@ int generic_open_read_write (char *filename, int flag)
 
         fd = open (filename, flag);
         if (fd < 0) {
-                if (flag == O_CREAT|O_EXCL && errno == EEXIST) {
+                if (flag == O_CREAT|O_EXCL && errno == GF_ERROR_CODE_EXIST) {
                         unlink (filename);
                         return 0;
                 }

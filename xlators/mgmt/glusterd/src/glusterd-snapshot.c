@@ -624,7 +624,7 @@ glusterd_snapshot_backup_vol (glusterd_volinfo_t *volinfo)
 
         /* Create trash folder if it is not there */
         ret = sys_mkdir (trashdir, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         GD_MSG_DIR_OP_FAILED,
                         "Failed to create trash directory, reason : %s",
@@ -646,7 +646,7 @@ glusterd_snapshot_backup_vol (glusterd_volinfo_t *volinfo)
         /* Re-create an empty origin volume folder so that restore can
          * happen. */
         ret = sys_mkdir (pathname, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         GD_MSG_DIR_OP_FAILED,
                         "Failed to create origin "

@@ -3135,7 +3135,7 @@ _ios_dump_thread (xlator_t *this) {
                 instance_name = this->prev->instance_name;
         }
         if (sys_mkdir (_IOS_DUMP_DIR, S_IRWXU | S_IRWXO | S_IRWXG) == (-1)) {
-                if (errno != EEXIST) {
+                if (errno != GF_ERROR_CODE_EXIST) {
                         gf_log (this->name, GF_LOG_ERROR,
                                 "could not create stats-dump directory %s",
                                 _IOS_DUMP_DIR);
@@ -3143,7 +3143,7 @@ _ios_dump_thread (xlator_t *this) {
                 }
         }
         if (sys_mkdir (_IOS_SAMP_DIR, S_IRWXU | S_IRWXO | S_IRWXG) == (-1)) {
-                if (errno != EEXIST) {
+                if (errno != GF_ERROR_CODE_EXIST) {
                         gf_log (this->name, GF_LOG_ERROR,
                                 "could not create stats-sample directory %s",
                                 _IOS_SAMP_DIR);

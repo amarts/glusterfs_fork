@@ -621,7 +621,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         ret = sys_mkdir (mtptemp, 0700);
         if (ret == 0)
                 ret = sys_chown (mtptemp, uid, 0);
-        else if (errno == EEXIST)
+        else if (errno == GF_ERROR_CODE_EXIST)
                 ret = 0;
         if (ret == -1) {
                 *op_errno = errno;

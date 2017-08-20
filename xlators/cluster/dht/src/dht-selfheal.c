@@ -1214,7 +1214,7 @@ dht_selfheal_dir_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         prev   = cookie;
         subvol = prev;
 
-        if ((op_ret == 0) || ((op_ret == -1) && (op_errno == EEXIST))) {
+        if ((op_ret == 0) || ((op_ret == -1) && (op_errno == GF_ERROR_CODE_EXIST))) {
                 for (i = 0; i < layout->cnt; i++) {
                         if (layout->list[i].xlator == subvol) {
                                 layout->list[i].err = -1;
@@ -1225,7 +1225,7 @@ dht_selfheal_dir_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (op_ret) {
                 gf_uuid_unparse(local->loc.gfid, gfid);
-                gf_msg (this->name, ((op_errno == EEXIST) ? GF_LOG_DEBUG :
+                gf_msg (this->name, ((op_errno == GF_ERROR_CODE_EXIST) ? GF_LOG_DEBUG :
                                      GF_LOG_WARNING),
                         op_errno, DHT_MSG_DIR_SELFHEAL_FAILED,
                         "Directory selfheal failed: path = %s, gfid = %s",

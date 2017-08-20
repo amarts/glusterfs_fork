@@ -478,7 +478,7 @@ retry:
 	if (loc.inode) {
 		if (flags & O_EXCL) {
 			ret = -1;
-			errno = EEXIST;
+			errno = GF_ERROR_CODE_EXIST;
 			goto out;
 		}
 
@@ -1794,7 +1794,7 @@ retry:
 	ESTALE_RETRY (ret, errno, reval, &loc, retry);
 
 	if (loc.inode) {
-		errno = EEXIST;
+		errno = GF_ERROR_CODE_EXIST;
 		ret = -1;
 		goto out;
 	}
@@ -1937,7 +1937,7 @@ retry:
 	ESTALE_RETRY (ret, errno, reval, &loc, retry);
 
 	if (loc.inode) {
-		errno = EEXIST;
+		errno = GF_ERROR_CODE_EXIST;
 		ret = -1;
 		goto out;
 	}
@@ -2025,7 +2025,7 @@ retry:
 	ESTALE_RETRY (ret, errno, reval, &loc, retry);
 
 	if (loc.inode) {
-		errno = EEXIST;
+		errno = GF_ERROR_CODE_EXIST;
 		ret = -1;
 		goto out;
 	}
@@ -2292,7 +2292,7 @@ retrynew:
 
 	if (ret == 0) {
 		ret = -1;
-		errno = EEXIST;
+		errno = GF_ERROR_CODE_EXIST;
 		goto out;
 	}
 

@@ -984,7 +984,7 @@ check_prepare_mountbroker_root (char *mountbroker_root)
         }
 
         ret = sys_mkdirat (dfd0, MB_HIVE, 0711);
-        if (ret == -1 && errno == EEXIST)
+        if (ret == -1 && errno == GF_ERROR_CODE_EXIST)
                 ret = 0;
         if (ret != -1)
                 ret = sys_fstatat (dfd0, MB_HIVE, &st, AT_SYMLINK_NOFOLLOW);
@@ -1510,7 +1510,7 @@ init (xlator_t *this)
 
         ret = sys_mkdir (storedir, 0777);
 
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create volume directory %s"
@@ -1522,7 +1522,7 @@ init (xlator_t *this)
 
         ret = sys_mkdir (storedir, 0777);
 
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create snaps directory %s"
@@ -1534,7 +1534,7 @@ init (xlator_t *this)
 
         ret = sys_mkdir (storedir, 0777);
 
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create peers directory %s"
@@ -1544,7 +1544,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/bricks", DEFAULT_LOG_FILE_DIRECTORY);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create logs directory %s"
@@ -1554,7 +1554,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/nfs", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create nfs directory %s"
@@ -1564,7 +1564,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/bitd", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create bitrot directory %s",
@@ -1574,7 +1574,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/scrub", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create scrub directory %s",
@@ -1584,7 +1584,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/glustershd", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create glustershd directory %s"
@@ -1594,7 +1594,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/quotad", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create quotad directory %s"
@@ -1604,7 +1604,7 @@ init (xlator_t *this)
 
         snprintf (storedir, PATH_MAX, "%s/groups", workdir);
         ret = sys_mkdir (storedir, 0777);
-        if ((-1 == ret) && (errno != EEXIST)) {
+        if ((-1 == ret) && (errno != GF_ERROR_CODE_EXIST)) {
                 gf_msg (this->name, GF_LOG_CRITICAL, errno,
                         GD_MSG_CREATE_DIR_FAILED,
                         "Unable to create glustershd directory %s"

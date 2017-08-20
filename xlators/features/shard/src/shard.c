@@ -3229,7 +3229,7 @@ shard_common_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
 
         if (op_ret < 0) {
-                if (op_errno == EEXIST) {
+                if (op_errno == GF_ERROR_CODE_EXIST) {
                         local->eexist_count++;
                 } else {
                         local->op_ret = op_ret;
@@ -4071,7 +4071,7 @@ shard_mkdir_dot_shard_cbk (call_frame_t *frame, void *cookie,
         SHARD_UNSET_ROOT_FS_ID (frame, local);
 
         if (op_ret == -1) {
-                if (op_errno != EEXIST) {
+                if (op_errno != GF_ERROR_CODE_EXIST) {
                         local->op_ret = op_ret;
                         local->op_errno = op_errno;
                         goto unwind;

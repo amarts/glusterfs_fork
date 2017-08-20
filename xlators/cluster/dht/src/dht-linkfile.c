@@ -70,7 +70,7 @@ dht_linkfile_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         FRAME_SU_UNDO (frame, dht_local_t);
 
-        if (op_ret && (op_errno == EEXIST)) {
+        if (op_ret && (op_errno == GF_ERROR_CODE_EXIST)) {
                 conf = this->private;
                 subvol = cookie;
                 if (!subvol)

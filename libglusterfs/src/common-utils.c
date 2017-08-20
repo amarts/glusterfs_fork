@@ -121,13 +121,13 @@ mkdir_p (char *path, mode_t mode, gf_boolean_t allow_symlinks)
 
                 dir[i] = '\0';
                 ret = sys_mkdir (dir, mode);
-                if (ret && errno != EEXIST) {
+                if (ret && errno != GF_ERROR_CODE_EXIST) {
                         gf_msg ("", GF_LOG_ERROR, errno, LG_MSG_DIR_OP_FAILED,
                                 "Failed due to reason");
                         goto out;
                 }
 
-                if (ret && errno == EEXIST && !allow_symlinks) {
+                if (ret && errno == GF_ERROR_CODE_EXIST && !allow_symlinks) {
                         ret = sys_lstat (dir, &stbuf);
                         if (ret)
                                 goto out;
@@ -4201,7 +4201,7 @@ fop_log_level (glusterfs_fop_t fop, int op_errno)
         }
 
         if (fop == GF_FOP_MKNOD || fop == GF_FOP_MKDIR)
-                if (op_errno == EEXIST)
+                if (op_errno == GF_ERROR_CODE_EXIST)
                         return GF_LOG_DEBUG;
 
         return GF_LOG_ERROR;

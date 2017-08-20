@@ -103,13 +103,13 @@ def boolify(value):
 def mkdirp(path, exit_on_err=False, logger=None):
     """
     Try creating required directory structure
-    ignore EEXIST and raise exception for rest of the errors.
+    ignore GF_ERROR_CODE_EXIST and raise exception for rest of the errors.
     Print error in stderr and exit
     """
     try:
         os.makedirs(path)
     except OSError as e:
-        if e.errno != EEXIST or not os.path.isdir(path):
+        if e.errno != GF_ERROR_CODE_EXIST or not os.path.isdir(path):
             raise
 
 

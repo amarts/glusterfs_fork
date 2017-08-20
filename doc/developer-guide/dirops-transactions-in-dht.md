@@ -238,7 +238,7 @@ And the examples are:
    *  rmdir (gfid1) deletes directory from all subvols.
    *  A new mkdir ("dir", gfid2) is issued. It is successful on s1 associating "dir" with gfid2.
    *  mkdir ("dir", gfid1) resumes and creates directory on s2 and s3 associating "dir" with gfid1.
-   *  mkdir ("dir", gfid2) fails with EEXIST on s2 and s3. Since, EEXIST errors are ignored, mkdir is considered successful to application.
+   *  mkdir ("dir", gfid2) fails with GF_ERROR_CODE_EXIST on s2 and s3. Since, GF_ERROR_CODE_EXIST errors are ignored, mkdir is considered successful to application.
    *  In this example we have multiple inconsitencies
       *  "dir" is associated with gfid1 on s2, s3 and with gfid2 on s1
       *  Even if mkdir ("dir", gfid2) was not issued, we would've a case of a directory magically reappearing after a successful rmdir.

@@ -410,7 +410,7 @@ trash_internal_op_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
        trash_local_t          *local   = NULL;
        local = frame->local;
 
-        if (op_ret != 0 && !(op_errno == EEXIST))
+        if (op_ret != 0 && !(op_errno == GF_ERROR_CODE_EXIST))
                 gf_log (this->name, GF_LOG_ERROR, "mkdir failed for "
                         "internal op directory : %s", strerror (op_errno));
 
@@ -446,7 +446,7 @@ trash_dir_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_log (this->name, GF_LOG_ERROR, "out of memory");
                         op_ret = GF_ERROR_CODE_NOMEM;
                 }
-        } else if (op_ret != 0 && errno != EEXIST)
+        } else if (op_ret != 0 && errno != GF_ERROR_CODE_EXIST)
                 gf_log (this->name, GF_LOG_ERROR, "mkdir failed for trash"
                                 " directory : %s", strerror (op_errno));
 
@@ -953,7 +953,7 @@ trash_unlink_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 }
         }
 
-        if ((op_ret == -1) && (op_errno != EEXIST)) {
+        if ((op_ret == -1) && (op_errno != GF_ERROR_CODE_EXIST)) {
                 gf_log (this->name, GF_LOG_ERROR, "Directory creation failed [%s]. "
                                 "Therefore unlinking %s without moving to trash "
                                 "directory", strerror(op_errno), local->loc.name);
@@ -1764,7 +1764,7 @@ trash_truncate_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 }
         }
 
-        if ((op_ret == -1) && (op_errno != EEXIST)) {
+        if ((op_ret == -1) && (op_errno != GF_ERROR_CODE_EXIST)) {
                 gf_log (this->name, GF_LOG_ERROR, "Directory creation failed [%s]. "
                                 "Therefore truncating %s without moving the "
                                 "original copy to trash directory",

@@ -5522,7 +5522,7 @@ generate_brick_volfiles (glusterd_volinfo_t *volinfo)
 
         if (ret) {
                 ret = open (tstamp_file, O_WRONLY|O_CREAT|O_EXCL, 0600);
-                if (ret == -1 && errno == EEXIST) {
+                if (ret == -1 && errno == GF_ERROR_CODE_EXIST) {
                         gf_msg_debug (this->name, 0,
                                 "timestamp file exist");
                         ret = -2;

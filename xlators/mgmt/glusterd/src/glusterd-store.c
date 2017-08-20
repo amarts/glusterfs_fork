@@ -1832,7 +1832,7 @@ glusterd_store_delete_volume (glusterd_volinfo_t *volinfo)
                   priv->workdir);
 
         ret = sys_mkdir (trashdir, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         GD_MSG_CREATE_DIR_FAILED, "Failed to create trash "
                         "directory");
@@ -1899,7 +1899,7 @@ glusterd_store_delete_snap (glusterd_snap_t *snap)
                   priv->workdir);
 
         ret = sys_mkdir (trashdir, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         GD_MSG_CREATE_DIR_FAILED, "Failed to create trash "
                         "directory");

@@ -174,7 +174,7 @@ br_stub_add (xlator_t *this, uuid_t gfid)
 
         ret = sys_link (bad_gfid_path, gfid_path);
         if (ret) {
-                if ((errno != GF_ERROR_CODE_NOENT) && (errno != EMLINK) && (errno != EEXIST))
+                if ((errno != GF_ERROR_CODE_NOENT) && (errno != EMLINK) && (errno != GF_ERROR_CODE_EXIST))
                         goto out;
 
                 /*

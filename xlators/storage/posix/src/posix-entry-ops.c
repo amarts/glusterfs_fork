@@ -883,7 +883,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
                         "found directory at %s while expecting ENOENT",
                         real_newpath);
                 op_ret = -1;
-                op_errno = EEXIST;
+                op_errno = GF_ERROR_CODE_EXIST;
                 goto out;
         }
 
@@ -895,7 +895,7 @@ posix_rename (call_frame_t *frame, xlator_t *this,
                         real_newpath,
                         uuid_utoa_r (stbuf.ia_gfid, newdirid));
                 op_ret = -1;
-                op_errno = EEXIST;
+                op_errno = GF_ERROR_CODE_EXIST;
                 goto out;
         }
 
@@ -1324,7 +1324,7 @@ real_op:
                         }
                         sys_close (tmp_fd);
                 } else {
-                        if (op_errno == EEXIST)
+                        if (op_errno == GF_ERROR_CODE_EXIST)
                                 level = GF_LOG_DEBUG;
                         else
                                 level = GF_LOG_ERROR;
@@ -1370,7 +1370,7 @@ post_op:
 ignore:
         op_ret = posix_entry_create_xattr_set (this, real_path, xdata);
         if (op_ret) {
-                if (errno != EEXIST)
+                if (errno != GF_ERROR_CODE_EXIST)
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_XATTR_FAILED,
                                 "setting xattrs on %s failed", real_path);
@@ -1497,7 +1497,7 @@ posix_mkdir (call_frame_t *frame, xlator_t *this,
                 op_ret = dict_get_ptr (xdata, "gfid-req", &uuid_req);
                 if (!op_ret && !gf_uuid_compare (stbuf.ia_gfid, uuid_req)) {
                         op_ret = -1;
-                        op_errno = EEXIST;
+                        op_errno = GF_ERROR_CODE_EXIST;
                         goto out;
                 }
         }
@@ -2007,7 +2007,7 @@ posix_rmdir (call_frame_t *frame, xlator_t *this,
                 gfid_str = uuid_utoa (stbuf.ia_gfid);
 
                 op_ret = sys_mkdir (priv->trash_path, 0755);
-                if (errno != EEXIST && op_ret == -1) {
+                if (errno != GF_ERROR_CODE_EXIST && op_ret == -1) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_MKDIR_FAILED,
                                 "mkdir of %s failed", priv->trash_path);
@@ -2026,8 +2026,8 @@ posix_rmdir (call_frame_t *frame, xlator_t *this,
                 posix_handle_unset (this, stbuf.ia_gfid, NULL);
         }
 
-        if (op_errno == EEXIST)
-                /* Solaris sets errno = EEXIST instead of GF_ERROR_CODE_NOTEMPTY */
+        if (op_errno == GF_ERROR_CODE_EXIST)
+                /* Solaris sets errno = GF_ERROR_CODE_EXIST instead of GF_ERROR_CODE_NOTEMPTY */
                 op_errno = GF_ERROR_CODE_NOTEMPTY;
 
         /* No need to log a common error as GF_ERROR_CODE_NOTEMPTY */

@@ -255,7 +255,7 @@ _glusterd_quota_initiate_fs_crawl (glusterd_conf_t *priv,
 
         GLUSTERD_GET_TMP_PATH (mountdir, "/");
         ret = sys_mkdir (mountdir, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (THIS->name, GF_LOG_WARNING, errno,
                         GD_MSG_MOUNT_REQ_FAIL, "failed to create temporary "
                         "directory %s", mountdir);
@@ -1900,7 +1900,7 @@ glusterd_create_quota_auxiliary_mount (xlator_t *this, char *volname, int type)
         }
 
         ret = sys_mkdir (mountdir, 0777);
-        if (ret && errno != EEXIST) {
+        if (ret && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         GD_MSG_MOUNT_REQ_FAIL, "Failed to create auxiliary "
                         "mount directory %s", mountdir);

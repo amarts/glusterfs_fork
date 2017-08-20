@@ -279,7 +279,7 @@ index_dir_create (xlator_t *this, const char *subdir)
                 strncpy (path, fullpath, len);
                 path[len] = '\0';
                 ret = sys_mkdir (path, 0600);
-                if (ret && (errno != EEXIST))
+                if (ret && (errno != GF_ERROR_CODE_EXIST))
                         goto out;
         }
         ret = 0;
@@ -584,7 +584,7 @@ index_link_to_base (xlator_t *this, char *base, size_t base_len,
         index_priv_t *priv = this->private;
 
         ret = sys_link (base, fpath);
-        if (!ret || (errno == EEXIST))  {
+        if (!ret || (errno == GF_ERROR_CODE_EXIST))  {
                 ret = 0;
                 goto out;
         }
@@ -606,7 +606,7 @@ index_link_to_base (xlator_t *this, char *base, size_t base_len,
 
         op_errno = 0;
         fd = sys_creat (base, 0);
-        if ((fd < 0) && (errno != EEXIST)) {
+        if ((fd < 0) && (errno != GF_ERROR_CODE_EXIST)) {
                 op_errno = errno;
                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                         INDEX_MSG_INDEX_ADD_FAILED, "%s: Not able to "
@@ -618,7 +618,7 @@ index_link_to_base (xlator_t *this, char *base, size_t base_len,
                 sys_close (fd);
 
         ret = sys_link (base, fpath);
-        if (ret && (errno != EEXIST)) {
+        if (ret && (errno != GF_ERROR_CODE_EXIST)) {
                 op_errno = errno;
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         INDEX_MSG_INDEX_ADD_FAILED, "%s: Not able to "
@@ -838,7 +838,7 @@ index_entry_create (xlator_t *this, inode_t *inode, char *filename)
 
         if (ctx->state[ENTRY_CHANGES] != IN) {
                 ret = sys_mkdir (pgfid_path, 0600);
-                if (ret != 0 && errno != EEXIST) {
+                if (ret != 0 && errno != GF_ERROR_CODE_EXIST) {
                         op_errno = errno;
                         goto out;
                 }

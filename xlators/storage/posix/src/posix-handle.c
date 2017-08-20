@@ -719,7 +719,7 @@ posix_handle_mkdir_hashes (xlator_t *this, const char *newpath)
         parpath = dirname (duppath);
 
         ret = sys_mkdir (parpath, 0700);
-        if (ret == -1 && errno != EEXIST) {
+        if (ret == -1 && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         P_MSG_HANDLE_CREATE,
                         "error mkdir hash-1 %s ", parpath);
@@ -730,7 +730,7 @@ posix_handle_mkdir_hashes (xlator_t *this, const char *newpath)
         parpath = dirname (duppath);
 
         ret = sys_mkdir (parpath, 0700);
-        if (ret == -1 && errno != EEXIST) {
+        if (ret == -1 && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, errno,
                         P_MSG_HANDLE_CREATE,
                         "error mkdir hash-2 %s ", parpath);

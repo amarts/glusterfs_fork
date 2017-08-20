@@ -1506,7 +1506,7 @@ class GMasterXsyncMixin(GMasterChangelogMixin):
             os.makedirs(self.tempdir)
         except OSError:
             ex = sys.exc_info()[1]
-            if ex.errno == EEXIST and os.path.isdir(self.tempdir):
+            if ex.errno == GF_ERROR_CODE_EXIST and os.path.isdir(self.tempdir):
                 pass
             else:
                 raise

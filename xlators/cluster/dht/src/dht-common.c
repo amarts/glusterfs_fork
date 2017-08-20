@@ -4223,7 +4223,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                 local->rebalance.from_subvol = local->cached_subvol;
 
                 if (local->rebalance.target_node == local->rebalance.from_subvol) {
-                        op_errno = EEXIST;
+                        op_errno = GF_ERROR_CODE_EXIST;
                         goto err;
                 }
                 if (local->rebalance.target_node) {
@@ -6519,7 +6519,7 @@ dht_link2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
                 goto err;
         }
 
-        /* Second call to create link file could result in EEXIST as the
+        /* Second call to create link file could result in GF_ERROR_CODE_EXIST as the
          * first call created the linkto in the currently
          * migrating subvol, which could be the new hashed subvol */
         if (local->link_subvol == subvol) {
@@ -7268,7 +7268,7 @@ dht_mkdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         ret = dht_layout_merge (this, layout, prev,
                                                 -1, ENOSPC, NULL);
                 } else {
-                        if (op_ret == -1 && op_errno == EEXIST) {
+                        if (op_ret == -1 && op_errno == GF_ERROR_CODE_EXIST) {
                                 /* Very likely just a race between mkdir and
                                    self-heal (from lookup of a concurrent mkdir
                                    attempt).

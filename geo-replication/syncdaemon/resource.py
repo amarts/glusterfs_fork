@@ -649,7 +649,7 @@ class Server(object):
             # (a stat(changelog_gfid) would also be valid here)
             # The race here is between the GFID check and the purge.
             if not matching_disk_gfid(gfid, entry):
-                collect_failure(e, EEXIST)
+                collect_failure(e, GF_ERROR_CODE_EXIST)
                 return
 
             if op == 'UNLINK':

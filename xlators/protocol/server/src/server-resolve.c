@@ -321,7 +321,7 @@ resolve_entry_simple (call_frame_t *frame)
                               " for path (%s) while type is RESOLVE_NOT",
                               inode, uuid_utoa (inode->gfid), resolve->path);
                 resolve->op_ret   = -1;
-                resolve->op_errno = EEXIST;
+                resolve->op_errno = GF_ERROR_CODE_EXIST;
                 ret = -1;
                 goto out;
         }

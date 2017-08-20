@@ -490,7 +490,7 @@ pub_glfs_set_volfile_server (struct glfs *fs, const char *transport,
                 if ((!strcmp(tmp->volfile_server, server->volfile_server) &&
                      !strcmp(tmp->transport, server->transport) &&
                      (tmp->port == server->port))) {
-                        errno = EEXIST;
+                        errno = GF_ERROR_CODE_EXIST;
                         ret = -1;
                         goto out;
                 }

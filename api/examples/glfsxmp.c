@@ -1085,7 +1085,7 @@ test_handleops (int argc, char *argv[])
 
         /* Initialize test area */
         ret = glfs_mkdir (fs, full_parent_name, 0644);
-        if (ret != 0 && errno != EEXIST) {
+        if (ret != 0 && errno != GF_ERROR_CODE_EXIST) {
                 fprintf (stderr, "%s: (%p) %s\n", full_parent_name, fd,
                         strerror (errno));
                 printf ("Test initialization failed on volume %s\n", argv[1]);
@@ -1258,7 +1258,7 @@ test_handleops (int argc, char *argv[])
 
         leaf = glfs_h_creat (fs, parent, leaf_name1, O_CREAT | O_EXCL, 0644,
                             &sb);
-        if (leaf != NULL || errno != EEXIST) {
+        if (leaf != NULL || errno != GF_ERROR_CODE_EXIST) {
                 fprintf (stderr, "glfs_h_creat: existing file, leaf = (%p), errno = %s\n",
                         leaf, strerror (errno));
                 printf ("glfs_h_creat tests: FAILED\n");
@@ -1376,7 +1376,7 @@ test_handleops (int argc, char *argv[])
         glfs_h_close (leaf); leaf = NULL;
 
         leaf = glfs_h_mkdir (fs, parent, newparent_name, 0644, &sb);
-        if (leaf != NULL || errno != EEXIST) {
+        if (leaf != NULL || errno != GF_ERROR_CODE_EXIST) {
                 fprintf (stderr, "glfs_h_mkdir: existing directory, leaf = (%p), errno = %s\n",
                          leaf, strerror (errno));
                 printf ("glfs_h_mkdir tests: FAILED\n");
@@ -1431,7 +1431,7 @@ test_handleops (int argc, char *argv[])
         glfs_h_close (leaf); leaf = NULL;
 
         leaf = glfs_h_mknod (fs, parent, newnod_name, 0644, 0, &sb);
-        if (leaf != NULL || errno != EEXIST) {
+        if (leaf != NULL || errno != GF_ERROR_CODE_EXIST) {
                 fprintf (stderr, "glfs_h_mknod: existing node, leaf = (%p), errno = %s\n",
                          leaf, strerror (errno));
                 printf ("glfs_h_mknod tests: FAILED\n");

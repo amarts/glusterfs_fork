@@ -480,7 +480,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                         op_errno = -ret;
                         ret = -1;
 
-                        loglevel = (op_errno == EEXIST) ? GF_LOG_DEBUG : \
+                        loglevel = (op_errno == GF_ERROR_CODE_EXIST) ? GF_LOG_DEBUG : \
                                     GF_LOG_ERROR;
                         gf_msg (this->name, loglevel, op_errno,
                                 DHT_MSG_MIGRATE_HARDLINK_FILE_FAILED,
@@ -488,7 +488,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                                 " failed on  subvol %s", loc->name,
                                 uuid_utoa(loc->gfid),
                                 hashed_subvol->name);
-                        if (op_errno != EEXIST) {
+                        if (op_errno != GF_ERROR_CODE_EXIST) {
                                 *fop_errno = op_errno;
                                 goto out;
                         }
@@ -1965,7 +1965,7 @@ dht_migrate_file (xlator_t *this, loc_t *loc, xlator_t *from, xlator_t *to,
                                 ret = syncop_create (old_target, loc, O_RDWR,
                                                      DHT_LINKFILE_MODE, linkto_fd,
                                                      NULL, dict, NULL);
-                                if (ret != 0 && -ret != EEXIST && -ret != GF_ERROR_CODE_STALE) {
+                                if (ret != 0 && -ret != GF_ERROR_CODE_EXIST && -ret != GF_ERROR_CODE_STALE) {
                                         *fop_errno = -ret;
                                         ret = -1;
                                         gf_msg (this->name, GF_LOG_ERROR, -ret,
@@ -2684,7 +2684,7 @@ gf_defrag_migrate_single_file (void *opaque)
                                 defrag->skipped += 1;
                         }
                         UNLOCK (&defrag->lock);
-                } else if (fop_errno != EEXIST) {
+                } else if (fop_errno != GF_ERROR_CODE_EXIST) {
                         gf_msg (this->name, GF_LOG_ERROR, fop_errno,
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "migrate-data failed for %s", entry_loc.path);

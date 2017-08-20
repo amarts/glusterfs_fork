@@ -1449,7 +1449,7 @@ glusterd_validate_and_create_brickpath (glusterd_brickinfo_t *brickinfo,
 
         ret = sys_mkdir (brickinfo->path, 0777);
         if (ret) {
-                if (errno != EEXIST) {
+                if (errno != GF_ERROR_CODE_EXIST) {
                         snprintf (msg, sizeof (msg), "Failed to create brick "
                                   "directory for brick %s:%s. Reason : %s ",
                                   brickinfo->hostname, brickinfo->path,
@@ -1464,7 +1464,7 @@ glusterd_validate_and_create_brickpath (glusterd_brickinfo_t *brickinfo,
                                      sizeof(index_basepath));
 
         ret = mkdir_p (index_basepath, 0600, _gf_true);
-        if (ret && (errno != EEXIST)) {
+        if (ret && (errno != GF_ERROR_CODE_EXIST)) {
                 snprintf (msg, sizeof (msg), "Failed to create index "
                           "basepath (%s) for brick %s:%s. Reason : %s ",
                           index_basepath, brickinfo->hostname,

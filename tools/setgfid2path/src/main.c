@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         /* Set the Xattr, ignore if same key xattr already exists */
         ret = sys_lsetxattr (file_path, key, val, strlen(val), XATTR_CREATE);
         if (ret == -1) {
-                if (errno == EEXIST) {
+                if (errno == GF_ERROR_CODE_EXIST) {
                         printf ("Xattr already exists, ignoring..\n");
                         ret = 0;
                         goto out;

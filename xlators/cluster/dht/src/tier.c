@@ -3061,7 +3061,7 @@ tier_init (xlator_t *this)
                 goto out;
 
         ret = mkdir_p(voldir, 0777, _gf_true);
-        if (ret == -1 && errno != EEXIST) {
+        if (ret == -1 && errno != GF_ERROR_CODE_EXIST) {
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                        DHT_MSG_LOG_TIER_ERROR,
                        "tier_init failed");

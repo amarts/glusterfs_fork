@@ -134,14 +134,14 @@ def create_file(path, exit_on_err=False, logger=None):
 def mkdirp(path, exit_on_err=False, logger=None):
     """
     Try creating required directory structure
-    ignore EEXIST and raise exception for rest of the errors.
+    ignore GF_ERROR_CODE_EXIST and raise exception for rest of the errors.
     Print error in stderr and exit if exit_on_err is set, else
     raise exception.
     """
     try:
         os.makedirs(path)
     except (OSError, IOError) as e:
-        if e.errno == EEXIST and os.path.isdir(path):
+        if e.errno == GF_ERROR_CODE_EXIST and os.path.isdir(path):
             pass
         else:
             if exit_on_err:

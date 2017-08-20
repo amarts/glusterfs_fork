@@ -1442,7 +1442,7 @@ dht_migration_complete_check_task (void *data)
                 UNLOCK(&inode->lock);
 
                 /* flags for open are stripped down to allow following the
-                 * new location of the file, otherwise we can get EEXIST or
+                 * new location of the file, otherwise we can get GF_ERROR_CODE_EXIST or
                  * truncate the file again as rebalance is moving the data */
                 ret = syncop_open (dst_node, &tmp_loc,
                                    (iter_fd->flags &
@@ -1704,7 +1704,7 @@ dht_rebalance_inprogress_task (void *data)
                 UNLOCK(&inode->lock);
 
                 /* flags for open are stripped down to allow following the
-                 * new location of the file, otherwise we can get EEXIST or
+                 * new location of the file, otherwise we can get GF_ERROR_CODE_EXIST or
                  * truncate the file again as rebalance is moving the data */
                 ret = syncop_open (dst_node, &tmp_loc,
                                   (iter_fd->flags &

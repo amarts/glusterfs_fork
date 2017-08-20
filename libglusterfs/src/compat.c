@@ -169,7 +169,7 @@ solaris_xattr_resolve_path (const char *real_path, char **path)
                 strcat (export_path, "/"GF_SOLARIS_XATTR_DIR);
                 if (lstat (export_path, &statbuf)) {
                         ret = mkdir (export_path, 0777);
-                        if (ret && (errno != EEXIST)) {
+                        if (ret && (errno != GF_ERROR_CODE_EXIST)) {
                                 gf_msg_debug (THIS->name, 0, "mkdir failed,"
                                         " errno: %d", errno);
                                 goto out;
@@ -183,7 +183,7 @@ solaris_xattr_resolve_path (const char *real_path, char **path)
 
                 if (ret) {
                         ret = mknod (xattr_path, S_IFREG|O_WRONLY, 0);
-                        if (ret && (errno != EEXIST)) {
+                        if (ret && (errno != GF_ERROR_CODE_EXIST)) {
                                 gf_msg (THIS->name, GF_LOG_WARNING, errno,
                                         LG_MSG_FILE_OP_FAILED, "Failed to "
                                         "create mapped file %s", xattr_path);
