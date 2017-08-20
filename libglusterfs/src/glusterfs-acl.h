@@ -140,7 +140,7 @@ gf_posix_acl_get_key (const acl_type_t type)
                 acl_key = GF_POSIX_ACL_DEFAULT;
                 break;
         default:
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
         }
 
         return acl_key;
@@ -157,7 +157,7 @@ gf_posix_acl_get_type (const char *key)
                            strlen (GF_POSIX_ACL_DEFAULT)))
                 type = ACL_TYPE_DEFAULT;
         else
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
         return type;
 }

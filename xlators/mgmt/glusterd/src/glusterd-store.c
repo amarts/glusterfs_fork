@@ -4713,7 +4713,7 @@ glusterd_store_retrieve_quota_version (glusterd_volinfo_t *volinfo)
         }
 
         version = strtoul (version_str, &tmp, 10);
-	if ((errno == ERANGE) || (errno == EINVAL)) {
+	if ((errno == ERANGE) || (errno == GF_ERROR_CODE_INVAL)) {
                 gf_msg_debug (this->name, 0, "Invalid version number");
                 goto out;
         }

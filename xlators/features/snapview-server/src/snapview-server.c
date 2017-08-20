@@ -136,7 +136,7 @@ svs_lookup_gfid (xlator_t *this, loc_t *loc, struct iatt *buf,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the latest "
                         "snapshot");
                 op_ret = -1;
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -503,7 +503,7 @@ svs_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
         struct iatt    buf                            = {0, };
         int32_t        op_ret                         = -1;
-        int32_t        op_errno                       = EINVAL;
+        int32_t        op_errno                       = GF_ERROR_CODE_INVAL;
         struct iatt    postparent                     = {0,};
         svs_inode_t   *inode_ctx                      = NULL;
         svs_inode_t   *parent_ctx                     = NULL;
@@ -669,7 +669,7 @@ svs_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
 {
         svs_inode_t   *inode_ctx  = NULL;
         int32_t        op_ret     = -1;
-        int32_t        op_errno   = EINVAL;
+        int32_t        op_errno   = GF_ERROR_CODE_INVAL;
         svs_fd_t      *svs_fd     = NULL;
         glfs_fd_t     *glfd       = NULL;
         glfs_t        *fs         = NULL;
@@ -795,7 +795,7 @@ svs_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, const char *name,
 {
         svs_inode_t   *inode_ctx        = NULL;
         int32_t        op_ret           = -1;
-        int32_t        op_errno         = EINVAL;
+        int32_t        op_errno         = GF_ERROR_CODE_INVAL;
         glfs_t        *fs               = NULL;
         glfs_object_t *object           = NULL;
         char          *value            = 0;
@@ -916,7 +916,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
 {
         svs_inode_t *inode_ctx  = NULL;
         int32_t      op_ret     = -1;
-        int32_t      op_errno   = EINVAL;
+        int32_t      op_errno   = GF_ERROR_CODE_INVAL;
         char        *value      = 0;
         ssize_t      size       = 0;
         dict_t      *dict       = NULL;
@@ -947,7 +947,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
         }
 
         glfd = sfd->fd;
-        /* EINVAL is sent if the getxattr is on entry point directory
+        /* GF_ERROR_CODE_INVAL is sent if the getxattr is on entry point directory
            or the inode is SNAP_VIEW_ENTRY_POINT_INODE. Entry point is
            a virtual directory on which setxattr operations are not
            allowed. If getxattr has to be faked as success, then a value
@@ -955,7 +955,7 @@ svs_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, const char *name,
         */
         if (inode_ctx->type == SNAP_VIEW_ENTRY_POINT_INODE) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         else {
@@ -1119,13 +1119,13 @@ svs_flush (call_frame_t *frame, xlator_t *this,
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found for"
                         " the inode %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         ret = fd_ctx_get (fd, this, &value);
         if (ret < 0 && inode_ctx->type != SNAP_VIEW_ENTRY_POINT_INODE) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING,
                         "pfd is NULL on fd=%p", fd);
                 goto out;
@@ -1460,7 +1460,7 @@ svs_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         struct  iatt            buf                             = {0, };
         int                     count                           = 0;
         int                     op_ret                          = -1;
-        int                     op_errno                        = EINVAL;
+        int                     op_errno                        = GF_ERROR_CODE_INVAL;
         svs_inode_t            *parent_ctx                      = NULL;
         svs_fd_t               *svs_fd                          = NULL;
 
@@ -1476,7 +1476,7 @@ svs_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1538,7 +1538,7 @@ svs_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         gf_dirent_t    entries   = {{{0, }, }, };
         int            count     = 0;
         svs_inode_t   *inode_ctx = NULL;
-        int            op_errno  = EINVAL;
+        int            op_errno  = GF_ERROR_CODE_INVAL;
         int            op_ret    = -1;
         svs_fd_t      *svs_fd    = NULL;
         glfs_fd_t     *glfd      = NULL;
@@ -1555,7 +1555,7 @@ svs_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found in "
                         "the inode %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1686,7 +1686,7 @@ svs_get_handle (xlator_t *this, loc_t *loc, svs_inode_t *inode_ctx,
                 gf_log (this->name, GF_LOG_WARNING, "failed to get the parent "
                         "context for %s (%s)", loc->path,
                         uuid_utoa_r (loc->inode->gfid, uuid1));
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1712,7 +1712,7 @@ int32_t
 svs_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
         struct iatt    buf          = {0, };
-        int32_t        op_errno     = EINVAL;
+        int32_t        op_errno     = GF_ERROR_CODE_INVAL;
         int32_t        op_ret       = -1;
         svs_inode_t   *inode_ctx    = NULL;
         glfs_t        *fs           = NULL;
@@ -1735,7 +1735,7 @@ svs_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found for"
                         " %s", uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1773,7 +1773,7 @@ int32_t
 svs_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 {
         struct iatt    buf         = {0, };
-        int32_t        op_errno    = EINVAL;
+        int32_t        op_errno    = GF_ERROR_CODE_INVAL;
         int32_t        op_ret      = -1;
         svs_inode_t   *inode_ctx   = NULL;
         struct stat    stat        = {0, };
@@ -1796,7 +1796,7 @@ svs_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found for"
                         " the inode %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1840,7 +1840,7 @@ int32_t
 svs_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
         struct statvfs buf          = {0, };
-        int32_t        op_errno     = EINVAL;
+        int32_t        op_errno     = GF_ERROR_CODE_INVAL;
         int32_t        op_ret       = -1;
         svs_inode_t   *inode_ctx    = NULL;
         glfs_t        *fs           = NULL;
@@ -1861,7 +1861,7 @@ svs_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found for"
                         " %s", uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1892,7 +1892,7 @@ svs_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         svs_inode_t   *inode_ctx = NULL;
         svs_fd_t      *sfd       = NULL;
         int32_t        op_ret    = -1;
-        int32_t        op_errno  = EINVAL;
+        int32_t        op_errno  = GF_ERROR_CODE_INVAL;
         glfs_fd_t     *glfd      = NULL;
         glfs_t        *fs        = NULL;
         glfs_object_t *object    = NULL;
@@ -2044,7 +2044,7 @@ svs_readlink (call_frame_t *frame, xlator_t *this,
         glfs_t          *fs        = NULL;
         glfs_object_t   *object    = NULL;
         int              op_ret    = -1;
-        int              op_errno  = EINVAL;
+        int              op_errno  = GF_ERROR_CODE_INVAL;
         char            *buf       = NULL;
         struct iatt      stbuf     = {0, };
         int              ret       = -1;
@@ -2061,7 +2061,7 @@ svs_readlink (call_frame_t *frame, xlator_t *this,
                         "for %s (gfid: %s)", loc->name,
                         uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2106,7 +2106,7 @@ svs_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int mask,
 {
         int             ret          = -1;
         int32_t         op_ret       = -1;
-        int32_t         op_errno     = EINVAL;
+        int32_t         op_errno     = GF_ERROR_CODE_INVAL;
         glfs_t         *fs           = NULL;
         glfs_object_t  *object       = NULL;
         svs_inode_t    *inode_ctx    = NULL;
@@ -2123,7 +2123,7 @@ svs_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int mask,
                 gf_log (this->name, GF_LOG_ERROR, "inode context not found for"
                         " %s", uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

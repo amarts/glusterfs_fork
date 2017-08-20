@@ -20,7 +20,7 @@ syncopctx_setfsuid (void *uid)
 	/* In args check */
 	if (!uid) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -60,7 +60,7 @@ syncopctx_setfsgid (void *gid)
 	/* In args check */
 	if (!gid) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -101,7 +101,7 @@ syncopctx_setfsgroups (int count, const void *groups)
 	/* In args check */
 	if (count != 0 && !groups) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -174,7 +174,7 @@ syncopctx_setfspid (void *pid)
 	/* In args check */
 	if (!pid) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -214,7 +214,7 @@ syncopctx_setfslkowner (gf_lkowner_t *lk_owner)
         /* In args check */
         if (!lk_owner) {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1088,7 +1088,7 @@ int
 syncbarrier_init (struct syncbarrier *barrier)
 {
 	if (!barrier) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return -1;
 	}
 
@@ -1105,7 +1105,7 @@ int
 syncbarrier_destroy (struct syncbarrier *barrier)
 {
 	if (!barrier) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return -1;
 	}
 
@@ -1120,7 +1120,7 @@ __syncbarrier_wait (struct syncbarrier *barrier, int waitfor)
 	struct synctask *task = NULL;
 
 	if (!barrier) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return -1;
 	}
 
@@ -1166,7 +1166,7 @@ __syncbarrier_wake (struct syncbarrier *barrier)
 	struct synctask *task = NULL;
 
 	if (!barrier) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return -1;
 	}
 

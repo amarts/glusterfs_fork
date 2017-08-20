@@ -771,7 +771,7 @@ mnt3svc_lookup_mount_cbk (call_frame_t *frame, void  *cookie,
                         NFS_MSG_MNT_STATE_NOT_FOUND,
                         "mount state not found");
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
         if (op_ret == -1) {

@@ -40,7 +40,7 @@ dht_writev_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!local) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -120,7 +120,7 @@ int
 dht_writev2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if ((frame == NULL) || (frame->local == NULL))
                 goto out;
@@ -185,7 +185,7 @@ dht_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -320,7 +320,7 @@ int
 dht_truncate2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto out;
@@ -386,7 +386,7 @@ dht_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for gfid=%s",
                               uuid_utoa (loc->inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -430,7 +430,7 @@ dht_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -540,7 +540,7 @@ int
 dht_fallocate2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto out;
@@ -605,7 +605,7 @@ dht_fallocate (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -719,7 +719,7 @@ int
 dht_discard2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto out;
@@ -783,7 +783,7 @@ dht_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -894,7 +894,7 @@ int
 dht_zerofill2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto out;
@@ -961,7 +961,7 @@ dht_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1051,7 +1051,7 @@ int
 dht_setattr2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local    = NULL;
-        int32_t      op_errno = EINVAL;
+        int32_t      op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto out;
@@ -1169,14 +1169,14 @@ dht_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         if (!layout) {
                 gf_msg_debug (this->name, 0,
                               "no layout for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
         if (!layout_is_sane (layout)) {
                 gf_msg_debug (this->name, 0,
                               "layout is not sane for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         if (xdata)
@@ -1242,14 +1242,14 @@ dht_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iatt *stbuf,
         if (!layout) {
                 gf_msg_debug (this->name, 0,
                               "no layout for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
         if (!layout_is_sane (layout)) {
                 gf_msg_debug (this->name, 0,
                               "layout is not sane for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         if (xdata)

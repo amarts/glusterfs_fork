@@ -3102,7 +3102,7 @@ __glusterd_handle_mount (rpcsvc_request_t *req)
                         "request received");
                 req->rpc_err = GARBAGE_ARGS;
                 rsp.op_ret = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

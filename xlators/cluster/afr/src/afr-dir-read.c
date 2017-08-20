@@ -297,7 +297,7 @@ afr_do_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
 
 	fd_ctx = afr_fd_ctx_get (fd, this);
 	if (!fd_ctx) {
-	        op_errno = EINVAL;
+	        op_errno = GF_ERROR_CODE_INVAL;
 		goto out;
         }
 

@@ -27,7 +27,7 @@ ec_code_x64_prolog(ec_code_builder_t *builder)
         ec_code_intel_op_push_r(builder, REG_BX);
     }
     if (builder->regs > 11) {
-        ec_code_error(builder, EINVAL);
+        ec_code_error(builder, GF_ERROR_CODE_INVAL);
         return;
     }
     for (i = 7; i < builder->regs; i++) {
@@ -48,7 +48,7 @@ ec_code_x64_epilog(ec_code_builder_t *builder)
     ec_code_intel_op_jne(builder, builder->loop);
 
     if (builder->regs > 11) {
-        ec_code_error(builder, EINVAL);
+        ec_code_error(builder, GF_ERROR_CODE_INVAL);
     }
     for (i = builder->regs; i > 7; i--) {
         ec_code_intel_op_pop_r(builder, ec_code_x64_regmap[i - 1]);

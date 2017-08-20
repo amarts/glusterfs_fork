@@ -46,7 +46,7 @@ gf_history_changelog_done (char *file)
         gf_changelog_journal_t *hist_jnl          = NULL;
         char                    to_path[PATH_MAX] = {0,};
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
         if (!this)
@@ -114,7 +114,7 @@ gf_history_changelog_start_fresh ()
         if (!this)
                 goto out;
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         jnl = (gf_changelog_journal_t *) GF_CHANGELOG_GET_API_PTR (this);
         if (!jnl)
@@ -163,7 +163,7 @@ gf_history_changelog_next_change (char *bufptr, size_t maxlen)
                 goto out;
         }
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
         if (!this)
@@ -248,7 +248,7 @@ gf_history_changelog_scan ()
         if (hist_jnl->hist_done == 0)
                 is_last_scan = 1;
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
         if (hist_jnl->hist_done == -1)
                 goto out;
 

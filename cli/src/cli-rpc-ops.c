@@ -122,7 +122,7 @@ gf_cli_probe_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_log (((call_frame_t *) myframe)->this->name, GF_LOG_ERROR,
                         "Failed to decode xdr response");
                 //rsp.op_ret   = -1;
-                //rsp.op_errno = EINVAL;
+                //rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -176,7 +176,7 @@ gf_cli_deprobe_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_log (((call_frame_t *) myframe)->this->name, GF_LOG_ERROR,
                         "Failed to decode xdr response");
                 //rsp.op_ret   = -1;
-                //rsp.op_errno = EINVAL;
+                //rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -406,7 +406,7 @@ gf_cli_list_friends_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_log (frame->this->name, GF_LOG_ERROR,
                         "Failed to decode xdr response");
                 //rsp.op_ret   = -1;
-                //rsp.op_errno = EINVAL;
+                //rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

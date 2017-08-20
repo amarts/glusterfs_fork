@@ -1280,7 +1280,7 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 GD_MSG_HARD_LIMIT_SET_FAIL,
                                 "snap-max-hard-limit validation failed.");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         }
@@ -1293,7 +1293,7 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                                  "snap-max-soft-limit ""%"
                                  PRIu64 ". Expected range 1 - %"PRIu64,
                                  soft_limit, max_limit);
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         }
@@ -1311,7 +1311,7 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                         ret = -1;
                         snprintf (err_str, sizeof (err_str), "Please enter a "
                                   "valid boolean value for auto-delete");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
 
@@ -1329,7 +1329,7 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                         else
                                 snprintf (err_str, sizeof (err_str),
                                           "auto-delete is already disabled");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         } else if (dict_get(dict, GLUSTERD_STORE_KEY_SNAP_ACTIVATE)) {
@@ -1340,7 +1340,7 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                         ret = -1;
                         snprintf (err_str, sizeof (err_str), "Please enter a "
                                   "valid boolean value for activate-on-create");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
 
@@ -1358,13 +1358,13 @@ glusterd_snapshot_config_prevalidate (dict_t *dict, char **op_errstr,
                         else
                                 snprintf (err_str, sizeof (err_str),
                                       "activate-on-create is already disabled");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         } else {
                 ret = -1;
                 snprintf (err_str, sizeof (err_str), "Invalid option");
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -5574,13 +5574,13 @@ glusterd_snapshot_activate_deactivate_prevalidate (dict_t *dict,
                                 snprintf (err_str, sizeof (err_str),
                                           "Snapshot %s is already activated.",
                                           snapname);
-                                *op_errno = EINVAL;
+                                *op_errno = GF_ERROR_CODE_INVAL;
                                 ret = -1;
                         }
                 } else {
                         snprintf (err_str, sizeof (err_str),
                                "Snapshot %s is already deactivated.", snapname);
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                 }
                 goto out;
@@ -5852,7 +5852,7 @@ glusterd_handle_snapshot_delete (rpcsvc_request_t *req, glusterd_op_t op,
                 break;
 
         default:
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         GD_MSG_INVALID_ENTRY, "Wrong snapshot delete type");
                 break;
@@ -6022,7 +6022,7 @@ glusterd_snapshot_status_prevalidate (dict_t *dict, char **op_errstr,
                 {
                         gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                                 GD_MSG_COMMAND_NOT_FOUND, "Invalid command");
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                         break;
                 }
         }
@@ -8713,7 +8713,7 @@ glusterd_snapshot_prevalidate (dict_t *dict, char **op_errstr,
         default:
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         GD_MSG_COMMAND_NOT_FOUND, "invalid snap command");
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -10035,11 +10035,11 @@ glusterd_snapshot_get_volnames_uuids (dict_t *dict,
         GF_ASSERT (this);
         GF_ASSERT (volname);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, dict, out,
-                                        op_errno, EINVAL);
+                                        op_errno, GF_ERROR_CODE_INVAL);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, volname, out,
-                                        op_errno, EINVAL);
+                                        op_errno, GF_ERROR_CODE_INVAL);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, snap_info_rsp, out,
-                                        op_errno, EINVAL);
+                                        op_errno, GF_ERROR_CODE_INVAL);
 
         ret = glusterd_volinfo_find (volname, &volinfo);
         if (ret) {
@@ -10047,7 +10047,7 @@ glusterd_snapshot_get_volnames_uuids (dict_t *dict,
                         GD_MSG_VOL_NOT_FOUND,
                         "Failed to get volinfo of volume %s",
                         volname);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

@@ -472,7 +472,7 @@ index_fill_readdir (fd_t *fd, index_fd_ctx_t *fctx, DIR *dir, off_t off,
                                 "seekdir(0x%llx) failed on dir=%p: "
 				"Invalid argument (offset reused from "
 				"another DIR * structure?)", off, dir);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         count = -1;
                         goto out;
                 }
@@ -528,7 +528,7 @@ index_fill_readdir (fd_t *fd, index_fd_ctx_t *fctx, DIR *dir, off_t off,
 					"Invalid argument (offset reused from "
 					"another DIR * structure?)",
 					in_case, dir);
-				errno = EINVAL;
+				errno = GF_ERROR_CODE_INVAL;
 				count = -1;
 				goto out;
                         }
@@ -674,7 +674,7 @@ index_del (xlator_t *this, uuid_t gfid, const char *subdir, int type)
 
         priv = this->private;
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, !gf_uuid_is_null (gfid),
-                                       out, op_errno, EINVAL);
+                                       out, op_errno, GF_ERROR_CODE_INVAL);
         make_gfid_path (priv->index_basepath, subdir, gfid,
                         gfid_path, sizeof (gfid_path));
 
@@ -819,13 +819,13 @@ index_entry_create (xlator_t *this, inode_t *inode, char *filename)
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                        !gf_uuid_is_null (inode->gfid), out,
-                                       op_errno, EINVAL);
+                                       op_errno, GF_ERROR_CODE_INVAL);
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, filename, out, op_errno,
-                                       EINVAL);
+                                       GF_ERROR_CODE_INVAL);
 
         ret = index_inode_ctx_get (inode, this, &ctx);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_ERROR, op_errno,
                         INDEX_MSG_INODE_CTX_GET_SET_FAILED,
                         "Not able to get inode ctx for %s",
@@ -873,9 +873,9 @@ index_entry_delete (xlator_t *this, uuid_t pgfid, char *filename)
         priv = this->private;
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, !gf_uuid_is_null (pgfid),
-                                       out, op_errno, EINVAL);
+                                       out, op_errno, GF_ERROR_CODE_INVAL);
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, filename, out, op_errno,
-                                       EINVAL);
+                                       GF_ERROR_CODE_INVAL);
 
         make_gfid_path (priv->index_basepath, ENTRY_CHANGES_SUBDIR, pgfid,
                         pgfid_path, sizeof (pgfid_path));
@@ -1532,7 +1532,7 @@ index_lookup_wrapper (call_frame_t *frame, xlator_t *this,
         index_priv_t    *priv = NULL;
         struct stat     lstatbuf = {0};
         int             ret = 0;
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
         int32_t         op_ret = -1;
         uint64_t        val = IA_INVAL;
         char            path[PATH_MAX] = {0};
@@ -1698,7 +1698,7 @@ index_readdir_wrapper (call_frame_t *frame, xlator_t *this,
 
         dir = fctx->dir;
         if (!dir) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, op_errno,
                         INDEX_MSG_INDEX_READDIR_FAILED,
                         "dir is NULL for fd=%p", fd);
@@ -2330,7 +2330,7 @@ init (xlator_t *this)
         attr_inited = _gf_true;
 
         ret = pthread_attr_setstacksize (&w_attr, INDEX_THREAD_STACK_SIZE);
-        if (ret == EINVAL) {
+        if (ret == GF_ERROR_CODE_INVAL) {
                 gf_msg (this->name, GF_LOG_WARNING, ret,
                         INDEX_MSG_INVALID_ARGS,
                         "Using default thread stack size");

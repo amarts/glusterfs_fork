@@ -148,7 +148,7 @@ client3_3_symlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -215,7 +215,7 @@ client3_3_mknod_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -277,7 +277,7 @@ client3_3_mkdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -410,7 +410,7 @@ client3_3_open_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -472,7 +472,7 @@ client3_3_stat_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -531,7 +531,7 @@ client3_3_readlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -594,7 +594,7 @@ client3_3_unlink_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -654,7 +654,7 @@ client3_3_rmdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -710,7 +710,7 @@ client3_3_truncate_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -763,7 +763,7 @@ client3_3_statfs_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -818,7 +818,7 @@ client3_3_writev_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -873,7 +873,7 @@ client3_3_flush_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -935,7 +935,7 @@ client3_3_fsync_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -972,7 +972,7 @@ client3_3_setxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
         int            ret      = 0;
         xlator_t      *this     = NULL;
         dict_t        *xdata    = NULL;
-        int            op_errno = EINVAL;
+        int            op_errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
 
@@ -989,7 +989,7 @@ client3_3_setxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1026,7 +1026,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
 {
         call_frame_t      *frame    = NULL;
         dict_t            *dict     = NULL;
-        int                op_errno = EINVAL;
+        int                op_errno = GF_ERROR_CODE_INVAL;
         gfs3_getxattr_rsp  rsp      = {0,};
         int                ret      = 0;
         clnt_local_t    *local    = NULL;
@@ -1050,7 +1050,7 @@ client3_3_getxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1105,7 +1105,7 @@ client3_3_fgetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
         dict_t             *dict     = NULL;
         gfs3_fgetxattr_rsp  rsp      = {0,};
         int                 ret      = 0;
-        int                 op_errno = EINVAL;
+        int                 op_errno = GF_ERROR_CODE_INVAL;
         xlator_t *this       = NULL;
         dict_t  *xdata       = NULL;
 
@@ -1124,7 +1124,7 @@ client3_3_fgetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1189,7 +1189,7 @@ client3_3_removexattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1244,7 +1244,7 @@ client3_3_fremovexattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1292,7 +1292,7 @@ client3_3_fsyncdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1341,7 +1341,7 @@ client3_3_access_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1393,7 +1393,7 @@ client3_3_ftruncate_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1445,7 +1445,7 @@ client3_3_fstat_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1495,7 +1495,7 @@ client3_3_inodelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1544,7 +1544,7 @@ client3_3_finodelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1595,7 +1595,7 @@ client3_3_entrylk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1644,7 +1644,7 @@ client3_3_fentrylk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1678,7 +1678,7 @@ client3_3_xattrop_cbk (struct rpc_req *req, struct iovec *iov, int count,
         dict_t           *dict     = NULL;
         gfs3_xattrop_rsp  rsp      = {0,};
         int               ret      = 0;
-        int               op_errno = EINVAL;
+        int               op_errno = GF_ERROR_CODE_INVAL;
         clnt_local_t   *local    = NULL;
         xlator_t *this       = NULL;
         dict_t  *xdata       = NULL;
@@ -1699,7 +1699,7 @@ client3_3_xattrop_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1761,7 +1761,7 @@ client3_3_fxattrop_cbk (struct rpc_req *req, struct iovec *iov, int count,
         ret = xdr_to_generic (*iov, &rsp, (xdrproc_t)xdr_gfs3_fxattrop_rsp);
         if (ret < 0) {
                 rsp.op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 goto out;
@@ -1809,7 +1809,7 @@ client3_3_fsetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
         int            ret      = 0;
         xlator_t      *this     = NULL;
         dict_t        *xdata    = NULL;
-        int            op_errno = EINVAL;
+        int            op_errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
 
@@ -1825,7 +1825,7 @@ client3_3_fsetxattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1881,7 +1881,7 @@ client3_3_fsetattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1932,7 +1932,7 @@ client3_3_fallocate_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1989,7 +1989,7 @@ client3_3_discard_cbk(struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2040,7 +2040,7 @@ client3_3_zerofill_cbk(struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2088,7 +2088,7 @@ client3_3_ipc_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2137,7 +2137,7 @@ client3_3_seek_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2190,7 +2190,7 @@ client3_3_setattr_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2249,7 +2249,7 @@ client3_3_create_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2316,7 +2316,7 @@ client3_3_rchecksum_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2377,7 +2377,7 @@ client3_3_lease_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2428,7 +2428,7 @@ client3_3_lk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2504,7 +2504,7 @@ client3_3_readdir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2565,7 +2565,7 @@ client3_3_readdirp_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2623,7 +2623,7 @@ client3_3_rename_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2685,7 +2685,7 @@ client3_3_link_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2744,7 +2744,7 @@ client3_3_opendir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2790,7 +2790,7 @@ client3_3_lookup_cbk (struct rpc_req *req, struct iovec *iov, int count,
         gfs3_lookup_rsp  rsp        = {0,};
         struct iatt      stbuf      = {0,};
         struct iatt      postparent = {0,};
-        int              op_errno   = EINVAL;
+        int              op_errno   = GF_ERROR_CODE_INVAL;
         dict_t          *xdata      = NULL;
         inode_t         *inode      = NULL;
         xlator_t        *this       = NULL;
@@ -2818,7 +2818,7 @@ client3_3_lookup_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2919,7 +2919,7 @@ client3_3_readv_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2995,7 +2995,7 @@ client3_3_getactivelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3056,7 +3056,7 @@ client3_3_setactivelk_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3113,7 +3113,7 @@ client3_3_compound_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3530,7 +3530,7 @@ client3_3_ftruncate (call_frame_t *frame, xlator_t *this,
         clnt_args_t        *args     = NULL;
         clnt_conf_t        *conf     = NULL;
         gfs3_ftruncate_req  req      = {{0,},};
-        int                 op_errno = EINVAL;
+        int                 op_errno = GF_ERROR_CODE_INVAL;
         int                 ret      = 0;
 
         if (!frame || !this || !data)
@@ -4245,7 +4245,7 @@ client3_3_readv (call_frame_t *frame, xlator_t *this,
                         "read-size (%lu) is bigger than iobuf size (%lu)",
                         (unsigned long)args->size,
                         (unsigned long)rsp_vec.iov_len);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -4879,7 +4879,7 @@ client3_3_getxattr (call_frame_t *frame, xlator_t *this,
                                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                                         PC_MSG_INVALID_ENTRY, "Client dump "
                                         "locks failed");
-                                op_errno = EINVAL;
+                                op_errno = GF_ERROR_CODE_INVAL;
                         }
 
                         GF_ASSERT (dict);
@@ -5269,7 +5269,7 @@ client3_3_lk (call_frame_t *frame, xlator_t *this,
 
         ret = client_cmd_to_gf_cmd (args->cmd, &gf_cmd);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         PC_MSG_INVALID_ENTRY, "Unknown cmd (%d)!", gf_cmd);
                 goto unwind;
@@ -6193,7 +6193,7 @@ client3_3_getactivelk (call_frame_t *frame, xlator_t *this,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                        !gf_uuid_is_null (*((uuid_t *)req.gfid)),
-                                       unwind, op_errno, EINVAL);
+                                       unwind, op_errno, GF_ERROR_CODE_INVAL);
         conf = this->private;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, args->xdata, (&req.xdata.xdata_val),
@@ -6244,7 +6244,7 @@ client3_3_setactivelk (call_frame_t *frame, xlator_t *this,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                        !gf_uuid_is_null (*((uuid_t *)req.gfid)),
-                                       unwind, op_errno, EINVAL);
+                                       unwind, op_errno, GF_ERROR_CODE_INVAL);
         conf = this->private;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, args->xdata, (&req.xdata.xdata_val),

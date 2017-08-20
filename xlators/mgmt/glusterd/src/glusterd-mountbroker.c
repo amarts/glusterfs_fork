@@ -551,7 +551,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
 
         GF_ASSERT (label);
         if (!*label) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                         GD_MSG_MNTBROKER_LABEL_NULL,
                         "label is NULL (%s)",
@@ -584,7 +584,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         /* some sanity check on arguments */
         seq_dict_foreach (argdict, _volname_get, &volname);
         if (!volname) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         GD_MSG_DICT_GET_FAILED,
                         "Dict get failed for the key 'volname'");

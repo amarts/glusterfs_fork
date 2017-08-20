@@ -647,7 +647,7 @@ __remove_lease (xlator_t *this, inode_t *inode, lease_inode_ctx_t *lease_ctx,
                         "Got unlock lease request from client:%s, but has no "
                         "corresponding lock", client_uid);
                 ret = -EINVAL;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -946,7 +946,7 @@ process_lease_req (call_frame_t *frame, xlator_t *this,
                         LEASE_MSG_INVAL_LEASE_ID, "Invalid lease id, from"
                         "client:%s", client_uid);
                 ret = -EINVAL;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1199,7 +1199,7 @@ cleanup_client_leases (xlator_t *this, const char *client_uid)
         priv = this->private;
         if (!priv) {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

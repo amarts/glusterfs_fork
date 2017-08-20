@@ -476,7 +476,7 @@ fuse_resolve_fd (fuse_state_t *state)
                         "resolver erroring out with errno EINVAL",
                         basefd, uuid_utoa (basefd->inode->gfid));
                 resolve->op_ret = -1;
-                resolve->op_errno = EINVAL;
+                resolve->op_errno = GF_ERROR_CODE_INVAL;
                 goto resolve_continue;
         }
 

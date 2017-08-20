@@ -61,7 +61,7 @@ nufa_local_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                       "could not set pre-set layout for subvol"
                                       " %s", prev->name);
                         op_ret   = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -180,7 +180,7 @@ nufa_lookup (call_frame_t *frame, xlator_t *this,
                         gf_msg_debug (this->name, 0,
                                       "revalidate lookup without cache. "
                                       "path=%s", loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -367,7 +367,7 @@ nufa_mknod_linkfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         local = frame->local;
         if (!local || !local->cached_subvol) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 op_ret = -1;
                 goto err;
         }

@@ -2069,7 +2069,7 @@ rpcsvc_dump (rpcsvc_request_t *req)
         char         rsp_buf[8 * 1024] = {0,};
         gf_dump_rsp  rsp               = {0,};
         struct iovec iov               = {0,};
-        int          op_errno          = EINVAL;
+        int          op_errno          = GF_ERROR_CODE_INVAL;
         int          ret               = -1;
         uint32_t     dump_rsp_len      = 0;
 

@@ -44,25 +44,25 @@ static int32_t check_file_metadata(struct crypt_inode_info *info)
 	if (info->nr_minor != CRYPT_XLATOR_ID) {
 		gf_log("crypt", GF_LOG_WARNING,
 		       "unsupported minor subversion %d", info->nr_minor);
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	if (object->o_alg > LAST_CIPHER_ALG) {
 		gf_log("crypt", GF_LOG_WARNING,
 		       "unsupported cipher algorithm %d",
 		       object->o_alg);
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	if (object->o_mode > LAST_CIPHER_MODE) {
 		gf_log("crypt", GF_LOG_WARNING,
 		       "unsupported cipher mode %d",
 		       object->o_mode);
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	if (object->o_block_bits < CRYPT_MIN_BLOCK_BITS ||
 	    object->o_block_bits > CRYPT_MAX_BLOCK_BITS) {
 		gf_log("crypt", GF_LOG_WARNING, "unsupported block bits %d",
 		       object->o_block_bits);
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	/* TBD: check data key size */
 	return 0;
@@ -475,7 +475,7 @@ static int32_t open_format_v1(unsigned char *wire,
 				 num_nmtd_macs, loc, info, master);
 	if (ret < 0) {
 		gf_log("crypt", GF_LOG_ERROR, "NMTD verification failed");
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 
 	local->mac_idx = ret;
@@ -537,7 +537,7 @@ static int32_t open_format_v1(unsigned char *wire,
 	CRYPTO_gcm128_release(gctx);
 	if (memcmp(gmac, get_EMTD_V1_MAC(fmt), SIZE_OF_EMTD_V1_MAC)) {
 		gf_log("crypt", GF_LOG_ERROR, "EMTD verification failed");
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 	/*
@@ -579,7 +579,7 @@ int32_t open_format(unsigned char *str,
 	if (fmt->loader_id >= LAST_MTD_LOADER) {
 		gf_log("crypt", GF_LOG_ERROR,
 		       "Unsupported loader id %d", fmt->loader_id);
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	str += sizeof(*fmt);
 	len -= sizeof(*fmt);

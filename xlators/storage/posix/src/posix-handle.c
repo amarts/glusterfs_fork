@@ -144,7 +144,7 @@ posix_make_ancestryfromgfid (xlator_t *this, char *path, int pathsize,
         int          top = -1;
 
         if (!path || !parent || !priv_base_path || gf_uuid_is_null (gfid)) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -197,7 +197,7 @@ posix_make_ancestryfromgfid (xlator_t *this, char *path, int pathsize,
                         P_MSG_ANCESTORY_FAILED,
                         0, "build ancestory failed due to "
                         "deep directory hierarchy, depth: %d.", top);
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -824,7 +824,7 @@ posix_handle_soft (xlator_t *this, const char *real_path, loc_t *loc,
                 if (posix_is_malformed_link (this, newpath, oldpath,
                                              strlen (oldpath))) {
                         GF_ASSERT (!"Malformed link");
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         return -1;
                 }
                 ret = posix_handle_mkdir_hashes (this, newpath);

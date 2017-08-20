@@ -151,7 +151,7 @@ clrlk_clear_posixlk (xlator_t *this, pl_inode_t *pl_inode, clrlk_args *args,
         gf_boolean_t            chk_range       = _gf_false;
 
         if (clrlk_get_lock_range (args->opts, &ulock, &chk_range)) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -212,7 +212,7 @@ clrlk_clear_inodelk (xlator_t *this, pl_inode_t *pl_inode, pl_dom_list_t *dom,
 
         INIT_LIST_HEAD (&released);
         if (clrlk_get_lock_range (args->opts, &ulock, &chk_range)) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

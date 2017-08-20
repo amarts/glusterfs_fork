@@ -77,7 +77,7 @@ ioc_inode_wakeup (call_frame_t *frame, ioc_inode_t *ioc_inode,
 
         if (ioc_inode == NULL) {
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (frame->this->name, GF_LOG_WARNING, 0,
                         IO_CACHE_MSG_INODE_NULL, "ioc_inode is NULL");
                 goto out;

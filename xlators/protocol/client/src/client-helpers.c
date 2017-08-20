@@ -1150,7 +1150,7 @@ client_handle_fop_requirements (xlator_t *this, call_frame_t *frame,
                                 "(%lu)",
                                 (unsigned long)args->size,
                                 (unsigned long)rsp_vector[*rsp_count].iov_len);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
                 *rsp_count += 1;

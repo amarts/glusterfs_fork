@@ -32,7 +32,7 @@ client_pre_stat (xlator_t *this, gfs3_stat_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
                                     req->xdata.xdata_len, op_errno, out);
@@ -58,7 +58,7 @@ client_pre_readlink (xlator_t *this, gfs3_readlink_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->size = size;
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
                                     req->xdata.xdata_len, op_errno, out);
@@ -83,7 +83,7 @@ client_pre_mknod (xlator_t *this, gfs3_mknod_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->bname  = (char *)loc->name;
         req->mode   = mode;
         req->dev    = rdev;
@@ -114,7 +114,7 @@ client_pre_mkdir (xlator_t *this, gfs3_mkdir_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
 
         req->bname = (char *)loc->name;
         req->mode  = mode;
@@ -144,7 +144,7 @@ client_pre_unlink (xlator_t *this, gfs3_unlink_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->bname = (char *)loc->name;
         req->xflags = flags;
 
@@ -172,7 +172,7 @@ client_pre_rmdir (xlator_t *this, gfs3_rmdir_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->bname = (char *)loc->name;
         req->xflags = flags;
 
@@ -200,7 +200,7 @@ client_pre_symlink (xlator_t *this, gfs3_symlink_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->linkname = (char *)linkname;
         req->bname    = (char *)loc->name;
         req->umask = umask;
@@ -234,10 +234,10 @@ client_pre_rename (xlator_t *this, gfs3_rename_req *req, loc_t *oldloc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->oldgfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->newgfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->oldbname =  (char *)oldloc->name;
         req->newbname = (char *)newloc->name;
 
@@ -272,10 +272,10 @@ client_pre_link (xlator_t *this,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->oldgfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->newgfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->newbname = (char *)newloc->name;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
@@ -302,7 +302,7 @@ client_pre_truncate (xlator_t *this, gfs3_truncate_req *req,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->offset = offset;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
@@ -328,7 +328,7 @@ client_pre_open (xlator_t *this, gfs3_open_req *req, loc_t *loc, fd_t *fd,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->flags = gf_flags_from_flags (flags);
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
@@ -418,7 +418,7 @@ client_pre_statfs (xlator_t *this, gfs3_statfs_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
                                     req->xdata.xdata_len, op_errno, out);
@@ -486,7 +486,7 @@ client_pre_setxattr (xlator_t *this, gfs3_setxattr_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         if (xattr) {
                 GF_PROTOCOL_DICT_SERIALIZE (this, xattr,
                                             (&req->dict.dict_val),
@@ -511,7 +511,7 @@ client_pre_getxattr (xlator_t *this, gfs3_getxattr_req *req, loc_t *loc,
         int                op_errno   = ESTALE;
 
         if (!loc) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -522,7 +522,7 @@ client_pre_getxattr (xlator_t *this, gfs3_getxattr_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->namelen = 1; /* Use it as a flag */
 
         req->name = (char *)name;
@@ -555,7 +555,7 @@ client_pre_removexattr (xlator_t *this, gfs3_removexattr_req *req,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->name = (char *)name;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
@@ -583,7 +583,7 @@ client_pre_opendir (xlator_t *this,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
                                     req->xdata.xdata_len, op_errno, out);
@@ -631,7 +631,7 @@ client_pre_access (xlator_t *this, gfs3_access_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->mask = mask;
 
         GF_PROTOCOL_DICT_SERIALIZE (this, xdata, (&req->xdata.xdata_val),
@@ -658,7 +658,7 @@ client_pre_create (xlator_t *this, gfs3_create_req *req,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                    !gf_uuid_is_null (*((uuid_t *)req->pargfid)),
-                                   out, op_errno, EINVAL);
+                                   out, op_errno, GF_ERROR_CODE_INVAL);
         req->bname = (char *)loc->name;
         req->mode  = mode;
         req->flags = gf_flags_from_flags (flags);
@@ -677,7 +677,7 @@ client_pre_ftruncate (xlator_t *this, gfs3_ftruncate_req *req, fd_t *fd,
                        off_t offset, dict_t *xdata)
 {
         int64_t             remote_fd = -1;
-        int                 op_errno = EINVAL;
+        int                 op_errno = GF_ERROR_CODE_INVAL;
 
         CLIENT_GET_REMOTE_FD (this, fd, DEFAULT_REMOTE_FD,
                               remote_fd, op_errno, out);
@@ -729,7 +729,7 @@ client_pre_lk (xlator_t *this, gfs3_lk_req *req,
 
         ret = client_cmd_to_gf_cmd (cmd, &gf_cmd);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         PC_MSG_INVALID_ENTRY, "Unknown cmd (%d)!", gf_cmd);
                 goto out;
@@ -840,7 +840,7 @@ client_pre_inodelk (xlator_t *this, gfs3_inodelk_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         if (cmd == F_GETLK || cmd == F_GETLK64)
                 gf_cmd = GF_LK_GETLK;
         else if (cmd == F_SETLK || cmd == F_SETLK64)
@@ -850,7 +850,7 @@ client_pre_inodelk (xlator_t *this, gfs3_inodelk_req *req, loc_t *loc,
         else {
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         PC_MSG_INVALID_ENTRY, "Unknown cmd (%d)!", gf_cmd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -947,7 +947,7 @@ client_pre_entrylk (xlator_t *this, gfs3_entrylk_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         req->cmd = cmd_entrylk;
         req->type = type;
         req->volume = (char *)volume;
@@ -1011,7 +1011,7 @@ client_pre_xattrop (xlator_t *this, gfs3_xattrop_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
         if (xattr) {
                 GF_PROTOCOL_DICT_SERIALIZE (this, xattr,
                                             (&req->dict.dict_val),
@@ -1152,7 +1152,7 @@ client_pre_setattr (xlator_t *this, gfs3_setattr_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
 
         req->valid = valid;
         gf_stat_from_iatt (&req->stbuf, stbuf);
@@ -1356,7 +1356,7 @@ client_pre_lease (xlator_t *this, gfs3_lease_req *req, loc_t *loc,
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name,
                                       !gf_uuid_is_null (*((uuid_t *)req->gfid)),
-                                      out, op_errno, EINVAL);
+                                      out, op_errno, GF_ERROR_CODE_INVAL);
 
         gf_proto_lease_from_lease (&req->lease, lease);
 

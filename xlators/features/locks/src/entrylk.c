@@ -771,7 +771,7 @@ pl_common_entrylk (call_frame_t *frame, xlator_t *this,
 				__pl_entrylk_unref (unlocked);
 				op_ret = 0;
 			} else {
-				op_errno = EINVAL;
+				op_errno = GF_ERROR_CODE_INVAL;
 			}
 			__pl_entrylk_unref (reqlock);
                 }

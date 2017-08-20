@@ -180,7 +180,7 @@ tier_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!local) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -224,7 +224,7 @@ tier_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "could not set preset layout for subvol %s",
                               prev->name);
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -263,7 +263,7 @@ tier_create_linkfile_create_cbk (call_frame_t *frame, void *cookie,
 
         local = frame->local;
         if (!local) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -274,8 +274,8 @@ tier_create_linkfile_create_cbk (call_frame_t *frame, void *cookie,
 
         conf = this->private;
         if (!conf) {
-                local->op_errno = EINVAL;
-                op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -567,10 +567,10 @@ tier_unlink_linkfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         LOCK (&frame->lock);
         {
-                /* Ignore EINVAL for tier to ignore error when the file
+                /* Ignore GF_ERROR_CODE_INVAL for tier to ignore error when the file
                         does not exist on the other tier  */
                 if ((op_ret == -1) && !((op_errno == GF_ERROR_CODE_NOENT) ||
-                                        (op_errno == EINVAL))) {
+                                        (op_errno == GF_ERROR_CODE_INVAL))) {
                         local->op_errno = op_errno;
                         local->op_ret   = op_ret;
                         gf_msg_debug (this->name, op_errno,
@@ -717,7 +717,7 @@ tier_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
         if (!cached_subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1106,7 +1106,7 @@ tier_statfs_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         goto unlock;
                 }
                 if (!statvfs) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         local->op_ret = -1;
                         goto unlock;
                 }
@@ -1246,7 +1246,7 @@ tier_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         if (loc->inode && !IA_ISDIR (loc->inode->ia_type)) {
                 itable = loc->inode->table;
                 if (!itable) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -1255,7 +1255,7 @@ tier_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
                 inode = inode_find (itable, root_gfid);
                 if (!inode) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 

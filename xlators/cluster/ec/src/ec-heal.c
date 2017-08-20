@@ -2567,7 +2567,7 @@ ec_heal (call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .heal = func };
     ec_fop_data_t *fop = NULL;
-    int32_t err = EINVAL;
+    int32_t err = GF_ERROR_CODE_INVAL;
 
     gf_msg_trace ("ec", 0, "EC(HEAL) %p", frame);
 

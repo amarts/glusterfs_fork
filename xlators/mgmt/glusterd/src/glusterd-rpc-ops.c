@@ -252,7 +252,7 @@ __glusterd_probe_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         GD_MSG_RES_DECODE_FAIL, "error");
                 //rsp.op_ret   = -1;
-                //rsp.op_errno = EINVAL;
+                //rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -464,7 +464,7 @@ __glusterd_friend_add_cbk (struct rpc_req * req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -473,7 +473,7 @@ __glusterd_friend_add_cbk (struct rpc_req * req, struct iovec *iov,
                 gf_msg ("glusterd", GF_LOG_ERROR, errno,
                         GD_MSG_RES_DECODE_FAIL, "error");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -582,7 +582,7 @@ __glusterd_friend_remove_cbk (struct rpc_req * req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 move_sm_now = _gf_false;
                 goto inject;
         }
@@ -592,7 +592,7 @@ __glusterd_friend_remove_cbk (struct rpc_req * req, struct iovec *iov,
                 gf_msg ("glusterd", GF_LOG_ERROR, errno,
                         GD_MSG_RES_DECODE_FAIL, "error");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto respond;
         }
 
@@ -1185,7 +1185,7 @@ __glusterd_stage_op_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 /* use standard allocation because to keep uniformity
                    in freeing it */
                 rsp.op_errstr = strdup ("error");
@@ -1198,7 +1198,7 @@ __glusterd_stage_op_cbk (struct rpc_req *req, struct iovec *iov,
                         GD_MSG_RES_DECODE_FAIL, "Failed to decode stage "
                         "response received from peer");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 /* use standard allocation because to keep uniformity
                    in freeing it */
                 rsp.op_errstr = strdup ("Failed to decode stage response "
@@ -1336,7 +1336,7 @@ __glusterd_commit_op_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 /* use standard allocation because to keep uniformity
                    in freeing it */
                 rsp.op_errstr = strdup ("error");
@@ -1350,7 +1350,7 @@ __glusterd_commit_op_cbk (struct rpc_req *req, struct iovec *iov,
                         GD_MSG_RES_DECODE_FAIL, "Failed to decode commit "
                         "response received from peer");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 /* use standard allocation because to keep uniformity
                    in freeing it */
                 rsp.op_errstr = strdup ("Failed to decode commit response "
@@ -2158,7 +2158,7 @@ __glusterd_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 /* use standard allocation because to keep uniformity
                    in freeing it */
                 rsp.op_errstr = strdup ("error");
@@ -2173,7 +2173,7 @@ __glusterd_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
                         "Failed to decode brick op "
                         "response received");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 rsp.op_errstr = strdup ("Unable to decode brick op response");
 		event_type = GD_OP_EVENT_RCVD_RJT;
                 goto out;

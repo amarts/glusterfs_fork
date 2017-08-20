@@ -145,8 +145,8 @@ typedef error_t (*argp_parser_t) (int key, char *arg,
 
 /* What to return for unrecognized keys.  For special ARGP_KEY_ keys, such
    returns will simply be ignored.  For user keys, this error will be turned
-   into EINVAL (if the call to argp_parse is such that errors are propagated
-   back to the user instead of exiting); returning EINVAL itself would result
+   into GF_ERROR_CODE_INVAL (if the call to argp_parse is such that errors are propagated
+   back to the user instead of exiting); returning GF_ERROR_CODE_INVAL itself would result
    in an immediate stop to parsing in *all* cases.  */
 #define ARGP_ERR_UNKNOWN	E2BIG /* Hurd should never need E2BIG.  XXX */
 

@@ -118,7 +118,7 @@
 	gf_uuid_copy (loc.gfid, oinode->gfid);         \
 	ret = glfs_loc_touchup (&loc);                 \
 	if (ret != 0) {                                \
-		errno = EINVAL;                        \
+		errno = GF_ERROR_CODE_INVAL;                        \
 		goto label;                            \
 	}                                              \
 	} while (0)
@@ -134,7 +134,7 @@
 	loc.name = path;                                                  \
 	ret = glfs_loc_touchup (&loc);                                    \
 	if (ret != 0) {                                                   \
-		errno = EINVAL;                                           \
+		errno = GF_ERROR_CODE_INVAL;                                           \
 		goto label;                                               \
 	}                                                                 \
 	} while (0)
@@ -280,7 +280,7 @@ void glfs_process_upcall_event (struct glfs *fs, void *data)
 #define __GLFS_ENTRY_VALIDATE_FS(fs, label)                         \
 do {                                                                \
         if (!fs) {                                                  \
-                errno = EINVAL;                                     \
+                errno = GF_ERROR_CODE_INVAL;                                     \
                 goto label;                                         \
         }                                                           \
         old_THIS = THIS;                                            \

@@ -278,7 +278,7 @@ stripe_discover (call_frame_t *frame, xlator_t *this, loc_t *loc,
         stripe_local_t   *local    = NULL;
         xlator_list_t    *trav     = NULL;
         stripe_private_t *priv     = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
         int64_t           filesize = 0;
         int               ret      = 0;
         uint64_t          tmpctx   = 0;
@@ -479,7 +479,7 @@ stripe_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
         stripe_local_t   *local    = NULL;
         xlator_list_t    *trav     = NULL;
         stripe_private_t *priv     = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
         int64_t           filesize = 0;
         int               ret      = 0;
         uint64_t          tmpctx   = 0;
@@ -622,7 +622,7 @@ stripe_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
 	stripe_fd_ctx_t  *fctx = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -721,7 +721,7 @@ stripe_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         stripe_local_t   *local = NULL;
         xlator_list_t    *trav = NULL;
         stripe_private_t *priv = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -833,7 +833,7 @@ stripe_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset, 
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
 	stripe_fd_ctx_t  *fctx = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 	int		  i, eof_idx;
 	off_t		  dest_offset, tmp_offset;
 
@@ -863,7 +863,7 @@ stripe_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset, 
 	inode_ctx_get(loc->inode, this, (uint64_t *) &fctx);
 	if (!fctx) {
 		gf_log(this->name, GF_LOG_ERROR, "no stripe context");
-		op_errno = EINVAL;
+		op_errno = GF_ERROR_CODE_INVAL;
 		goto err;
 	}
 
@@ -874,7 +874,7 @@ stripe_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset, 
 		if (!fctx->xl_array[i]) {
 			gf_log(this->name, GF_LOG_ERROR,
 				"no xlator at index %d", i);
-			op_errno = EINVAL;
+			op_errno = GF_ERROR_CODE_INVAL;
 			goto err;
 		}
 
@@ -994,7 +994,7 @@ stripe_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
 	stripe_fd_ctx_t	 *fctx = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -1056,7 +1056,7 @@ stripe_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
         xlator_list_t    *trav = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -1175,7 +1175,7 @@ stripe_first_rename_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!this || !frame || !frame->local) {
                 gf_log ("stripe", GF_LOG_DEBUG, "possible NULL deref");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1218,7 +1218,7 @@ stripe_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
         stripe_local_t   *local = NULL;
         xlator_list_t    *trav = NULL;
 	stripe_fd_ctx_t	 *fctx = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -1362,7 +1362,7 @@ stripe_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc,
         xlator_list_t    *trav = NULL;
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -1424,7 +1424,7 @@ stripe_first_rmdir_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (!this || !frame || !frame->local) {
                 gf_log ("stripe", GF_LOG_DEBUG, "possible NULL deref");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1502,7 +1502,7 @@ stripe_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags, dict_t
         xlator_list_t    *trav = NULL;
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -1849,7 +1849,7 @@ stripe_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
 {
         stripe_private_t *priv           = NULL;
         stripe_local_t   *local          = NULL;
-        int32_t           op_errno       = EINVAL;
+        int32_t           op_errno       = GF_ERROR_CODE_INVAL;
         int32_t           i              = 0;
         dict_t           *dict           = NULL;
         int               ret            = 0;
@@ -2160,7 +2160,7 @@ stripe_link_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 					gf_log(this->name, GF_LOG_ERROR,
 						"failed to get stripe context");
 					op_ret = -1;
-					op_errno = EINVAL;
+					op_errno = GF_ERROR_CODE_INVAL;
 				}
 			}
 
@@ -2521,7 +2521,7 @@ stripe_create (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         stripe_private_t *priv = NULL;
         stripe_local_t   *local = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
         int               ret            = 0;
         int               need_unref     = 0;
         int               i              = 0;
@@ -2760,7 +2760,7 @@ stripe_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd, dict_
         xlator_list_t    *trav = NULL;
         stripe_local_t   *local = NULL;
         stripe_private_t *priv = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -2853,7 +2853,7 @@ stripe_lk (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t cmd,
         stripe_local_t   *local = NULL;
         xlator_list_t    *trav = NULL;
         stripe_private_t *priv = NULL;
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -3073,7 +3073,7 @@ stripe_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t flags, dict
 
 	inode_ctx_get(fd->inode, this, (uint64_t *) &fctx);
 	if (!fctx) {
-		op_errno = EINVAL;
+		op_errno = GF_ERROR_CODE_INVAL;
 		goto err;
 	}
 	local->fctx = fctx;
@@ -3234,12 +3234,12 @@ stripe_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset, d
 	inode_ctx_get(fd->inode, this, (uint64_t *) &fctx);
 	if (!fctx) {
 		gf_log(this->name, GF_LOG_ERROR, "no stripe context");
-		op_errno = EINVAL;
+		op_errno = GF_ERROR_CODE_INVAL;
 		goto err;
 	}
 	if (!fctx->stripe_count) {
 		gf_log(this->name, GF_LOG_ERROR, "no stripe count");
-		op_errno = EINVAL;
+		op_errno = GF_ERROR_CODE_INVAL;
 		goto err;
 	}
 
@@ -3250,7 +3250,7 @@ stripe_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset, d
 		if (!fctx->xl_array[i]) {
 			gf_log(this->name, GF_LOG_ERROR, "no xlator at index "
 				"%d", i);
-			op_errno = EINVAL;
+			op_errno = GF_ERROR_CODE_INVAL;
 			goto err;
 		}
 
@@ -3623,7 +3623,7 @@ int32_t
 stripe_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
               size_t size, off_t offset, uint32_t flags, dict_t *xdata)
 {
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
         int32_t           idx = 0;
         int32_t           index = 0;
         int32_t           num_stripe = 0;
@@ -3854,7 +3854,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
         inode_ctx_get (fd->inode, this, &tmp_fctx);
         if (!tmp_fctx) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         fctx = (stripe_fd_ctx_t *)(long)tmp_fctx;
@@ -3878,7 +3878,7 @@ stripe_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
         if (!stripe_size) {
                 gf_log (this->name, GF_LOG_DEBUG,
                         "Wrong stripe size for the file");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4054,7 +4054,7 @@ stripe_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 
         inode_ctx_get (fd->inode, this, &tmp_fctx);
         if (!tmp_fctx) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         fctx = (stripe_fd_ctx_t *)(long)tmp_fctx;
@@ -4076,7 +4076,7 @@ stripe_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
         if (!stripe_size) {
                 gf_log (this->name, GF_LOG_DEBUG,
                         "Wrong stripe size for the file");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4221,7 +4221,7 @@ stripe_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         inode_ctx_get (fd->inode, this, &tmp_fctx);
         if (!tmp_fctx) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         fctx = (stripe_fd_ctx_t *)(long)tmp_fctx;
@@ -4243,7 +4243,7 @@ stripe_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         if (!stripe_size) {
                 gf_log (this->name, GF_LOG_DEBUG,
                         "Wrong stripe size for the file");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4389,7 +4389,7 @@ stripe_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         inode_ctx_get (fd->inode, this, &tmp_fctx);
         if (!tmp_fctx) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         fctx = (stripe_fd_ctx_t *)(long)tmp_fctx;
@@ -4411,7 +4411,7 @@ stripe_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         if (!stripe_size) {
                 gf_log (this->name, GF_LOG_DEBUG,
                         "Wrong stripe size for the file");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4682,7 +4682,7 @@ int
 stripe_setxattr (call_frame_t *frame, xlator_t *this,
                  loc_t *loc, dict_t *dict, int flags, dict_t *xdata)
 {
-        int32_t           op_errno = EINVAL;
+        int32_t           op_errno = GF_ERROR_CODE_INVAL;
         xlator_list_t    *trav     = NULL;
         stripe_private_t *priv     = NULL;
         stripe_local_t   *local    = NULL;
@@ -4850,7 +4850,7 @@ int
 stripe_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                   dict_t *dict, int flags, dict_t *xdata)
 {
-        int32_t      op_ret = -1, ret = -1, op_errno = EINVAL;
+        int32_t      op_ret = -1, ret = -1, op_errno = GF_ERROR_CODE_INVAL;
         gf_boolean_t is_spl = _gf_false;
 
         VALIDATE_OR_GOTO (frame, err);
@@ -4895,7 +4895,7 @@ int
 stripe_removexattr (call_frame_t *frame, xlator_t *this,
                     loc_t *loc, const char *name, dict_t *xdata)
 {
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (this, err);
 
@@ -4929,7 +4929,7 @@ stripe_fremovexattr (call_frame_t *frame, xlator_t *this,
                      fd_t *fd, const char *name, dict_t *xdata)
 {
         int32_t         op_ret   = -1;
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, err);
         VALIDATE_OR_GOTO (this, err);
@@ -5138,7 +5138,7 @@ out:
                 frame->local = NULL;
                 STRIPE_STACK_UNWIND (readdir, frame,
                                      (local ? local->op_ret : -1),
-                                     (local ? local->op_errno : EINVAL),
+                                     (local ? local->op_errno : GF_ERROR_CODE_INVAL),
                                      (local ? &local->entries : NULL),
                                      NULL);
                 gf_dirent_free (&local->entries);
@@ -5689,7 +5689,7 @@ stripe_getxattr (call_frame_t *frame, xlator_t *this,
         stripe_local_t    *local    = NULL;
         xlator_list_t     *trav     = NULL;
         stripe_private_t  *priv     = NULL;
-        int32_t            op_errno = EINVAL;
+        int32_t            op_errno = GF_ERROR_CODE_INVAL;
         int                i        = 0;
         int                ret      = 0;
 

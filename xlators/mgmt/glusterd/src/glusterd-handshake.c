@@ -1169,7 +1169,7 @@ __glusterd_mgmt_hndsk_versions (rpcsvc_request_t *req)
         xlator_t          *this            = NULL;
         glusterd_conf_t   *conf            = NULL;
         int                ret             = -1;
-        int                op_errno        = EINVAL;
+        int                op_errno        = GF_ERROR_CODE_INVAL;
         gf_mgmt_hndsk_req  args            = {{0,},};
         gf_mgmt_hndsk_rsp  rsp             = {0,};
         dict_t            *args_dict       = NULL;
@@ -1266,7 +1266,7 @@ __glusterd_mgmt_hndsk_versions_ack (rpcsvc_request_t *req)
         xlator_t          *this            = NULL;
         glusterd_conf_t   *conf            = NULL;
         int                ret             = -1;
-        int                op_errno        = EINVAL;
+        int                op_errno        = GF_ERROR_CODE_INVAL;
         int                peer_op_version = 0;
         gf_mgmt_hndsk_req  args            = {{0,},};
         gf_mgmt_hndsk_rsp  rsp             = {0,};
@@ -1409,14 +1409,14 @@ __server_get_volume_info (rpcsvc_request_t *req)
 
         ret = dict_get_str (dict, "volname", &volname);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
 
         ret = glusterd_volinfo_find (volname, &volinfo);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -1523,7 +1523,7 @@ __server_get_snap_info (rpcsvc_request_t *req)
                         gf_msg ("glusterd", GF_LOG_ERROR, EINVAL,
                                 GD_MSG_DICT_UNSERIALIZE_FAIL,
                                 "Failed to unserialize dictionary");
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 } else {
@@ -1533,7 +1533,7 @@ __server_get_snap_info (rpcsvc_request_t *req)
 
         ret = dict_get_str (dict, "volname", &volname);
         if (ret) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg ("glusterd", GF_LOG_ERROR, EINVAL,
                         GD_MSG_DICT_GET_FAILED,
                         "Failed to retrieve volname");
@@ -1556,7 +1556,7 @@ __server_get_snap_info (rpcsvc_request_t *req)
                         GD_MSG_VOL_NOT_FOUND,
                         "Error getting snapshot volume names and uuids : %s",
                         volname);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
 out:
@@ -1881,7 +1881,7 @@ __glusterd_mgmt_hndsk_version_cbk (struct rpc_req *req, struct iovec *iov,
                                  int count, void *myframe)
 {
         int                  ret       = -1;
-        int                  op_errno  = EINVAL;
+        int                  op_errno  = GF_ERROR_CODE_INVAL;
         gf_mgmt_hndsk_rsp    rsp       = {0,};
         gf_mgmt_hndsk_req    arg       = {{0,}};
         xlator_t            *this      = NULL;

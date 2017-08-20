@@ -26,7 +26,7 @@ glfs_iatt_from_stat (struct stat *stat, int valid, struct iatt *iatt,
 {
         /* validate in args */
         if ((stat == NULL) || (iatt == NULL) || (glvalid == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return;
         }
 
@@ -77,7 +77,7 @@ pub_glfs_h_lookupat (struct glfs *fs, struct glfs_object *parent,
 
         /* validate in args */
         if (path == NULL) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -149,7 +149,7 @@ pub_glfs_h_statfs (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL || statvfs == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -206,7 +206,7 @@ pub_glfs_h_stat (struct glfs *fs, struct glfs_object *object, struct stat *stat)
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -266,7 +266,7 @@ pub_glfs_h_getattrs (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -324,13 +324,13 @@ glfs_h_getxattrs_common (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
         if (!is_listxattr) {
                 if (!name || *name == '\0') {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         return -1;
                 }
 
@@ -381,7 +381,7 @@ pub_glfs_h_getxattrs (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -424,7 +424,7 @@ pub_glfs_h_setattrs (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL) || (stat == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -486,12 +486,12 @@ pub_glfs_h_setxattrs (struct glfs *fs, struct glfs_object *object,
         /* validate in args */
         if ((fs == NULL) || (object == NULL) ||
                  (name == NULL) || (value == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
         if (!name || *name == '\0') {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -563,7 +563,7 @@ pub_glfs_h_removexattrs (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL) || (name == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -620,7 +620,7 @@ pub_glfs_h_open (struct glfs *fs, struct glfs_object *object, int flags)
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -650,7 +650,7 @@ pub_glfs_h_open (struct glfs *fs, struct glfs_object *object, int flags)
 
         if (!IA_ISREG (inode->ia_type)) {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -720,7 +720,7 @@ pub_glfs_h_creat (struct glfs *fs, struct glfs_object *parent, const char *path,
 
         /* validate in args */
         if ((fs == NULL) || (parent == NULL) || (path == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -830,7 +830,7 @@ pub_glfs_h_mkdir (struct glfs *fs, struct glfs_object *parent, const char *path,
 
         /* validate in args */
         if ((fs == NULL) || (parent == NULL) || (path == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -926,7 +926,7 @@ pub_glfs_h_mknod (struct glfs *fs, struct glfs_object *parent, const char *path,
 
         /* validate in args */
         if ((fs == NULL) || (parent == NULL) || (path == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -1016,7 +1016,7 @@ pub_glfs_h_unlink (struct glfs *fs, struct glfs_object *parent, const char *path
 
         /* validate in args */
         if ((fs == NULL) || (parent == NULL) || (path == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1088,7 +1088,7 @@ pub_glfs_h_opendir (struct glfs *fs, struct glfs_object *object)
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -1173,7 +1173,7 @@ pub_glfs_h_access (struct glfs *fs, struct glfs_object *object, int mask)
 
 	/* validate in args */
 	if ((fs == NULL) || (object == NULL)) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return ret;
 	}
 
@@ -1228,7 +1228,7 @@ pub_glfs_h_extract_handle (struct glfs_object *object, unsigned char *handle,
 
         /* validate in args */
         if (object == NULL) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1268,7 +1268,7 @@ pub_glfs_h_create_from_handle (struct glfs *fs, unsigned char *handle, int len,
 
         /* validate in args */
         if ((fs == NULL) || (handle == NULL) || (len != GFAPI_HANDLE_LENGTH)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -1384,7 +1384,7 @@ pub_glfs_h_truncate (struct glfs *fs, struct glfs_object *object, off_t offset)
 
         /* validate in args */
         if (object == NULL) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1450,7 +1450,7 @@ pub_glfs_h_symlink (struct glfs *fs, struct glfs_object *parent,
         /* validate in args */
         if ((parent == NULL) || (name == NULL) ||
                 (data == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -1544,7 +1544,7 @@ pub_glfs_h_readlink (struct glfs *fs, struct glfs_object *object, char *buf,
 
         /* validate in args */
         if ((object == NULL) || (buf == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1612,7 +1612,7 @@ pub_glfs_h_link (struct glfs *fs, struct glfs_object *linksrc,
         /* validate in args */
         if ((linksrc == NULL) || (parent == NULL) ||
                 (name == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1653,7 +1653,7 @@ pub_glfs_h_link (struct glfs *fs, struct glfs_object *linksrc,
         newloc.name = name;
         ret = glfs_loc_touchup (&newloc);
         if (ret != 0) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1708,7 +1708,7 @@ pub_glfs_h_rename (struct glfs *fs, struct glfs_object *olddir,
         /* validate in args */
         if ((olddir == NULL) || (oldname == NULL) ||
                 (newdir == NULL) || (newname == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1760,7 +1760,7 @@ pub_glfs_h_rename (struct glfs *fs, struct glfs_object *olddir,
                 }
         }
 
-        /* TODO: check if new or old is a prefix of the other, and fail EINVAL */
+        /* TODO: check if new or old is a prefix of the other, and fail GF_ERROR_CODE_INVAL */
 
         ret = syncop_rename (subvol, &oldloc, &newloc, NULL, NULL);
         DECODE_SYNCOP_ERR (ret);
@@ -1804,7 +1804,7 @@ glfs_h_find_handle (struct glfs *fs, unsigned char *handle, int len)
 
         /* validate in args */
         if ((fs == NULL) || (handle == NULL) || (len != GFAPI_HANDLE_LENGTH)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -2015,7 +2015,7 @@ pub_glfs_h_poll_upcall (struct glfs *fs, struct glfs_upcall **up_arg)
         DECLARE_OLD_THIS;
 
         if (!up_arg) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -2223,7 +2223,7 @@ pub_glfs_h_acl_set (struct glfs *fs, struct glfs_object *object,
         DECLARE_OLD_THIS;
 
         if (!object || !acl) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return ret;
         }
 
@@ -2274,7 +2274,7 @@ pub_glfs_h_acl_get (struct glfs *fs, struct glfs_object *object,
         DECLARE_OLD_THIS;
 
         if (!object) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -2344,7 +2344,7 @@ pub_glfs_h_anonymous_read (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -2368,7 +2368,7 @@ pub_glfs_h_anonymous_write (struct glfs *fs, struct glfs_object *object,
 
         /* validate in args */
         if ((fs == NULL) || (object == NULL)) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 

@@ -1359,7 +1359,7 @@ marker_rename_unwind (call_frame_t *frame, void *cookie, xlator_t *this,
                 MARKER_RESET_UID_GID (frame, frame->root, local);
 
         if (op_ret < 0)
-                local->err =  op_errno ? op_errno : EINVAL;
+                local->err =  op_errno ? op_errno : GF_ERROR_CODE_INVAL;
 
         if (local->stub != NULL) {
                 /* Remove contribution node from in-memory even if
@@ -1534,7 +1534,7 @@ marker_do_rename (call_frame_t *frame, void *cookie, xlator_t *this,
                 MARKER_RESET_UID_GID (frame, frame->root, local);
 
         if ((op_ret < 0) && (op_errno != GF_ERROR_CODE_NOATTR) && (op_errno != GF_ERROR_CODE_NODATA)) {
-                local->err = op_errno ? op_errno : EINVAL;
+                local->err = op_errno ? op_errno : GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING,
                         "fetching contribution values from %s (gfid:%s) "
                         "failed (%s)", oplocal->loc.path,
@@ -1578,7 +1578,7 @@ marker_get_oldpath_contribution (call_frame_t *lk_frame, void *cookie,
         frame = local->frame;
 
         if (op_ret < 0) {
-                local->err = op_errno ? op_errno : EINVAL;
+                local->err = op_errno ? op_errno : GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING,
                         "cannot hold inodelk on %s (gfid:%s) (%s)",
                         oplocal->loc.path, uuid_utoa (oplocal->loc.inode->gfid),
@@ -2377,7 +2377,7 @@ call_from_sp_client_to_reset_tmfile (call_frame_t *frame,
                 }
         } else {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 out:
         STACK_UNWIND_STRICT (setxattr, frame, op_ret, op_errno, NULL);

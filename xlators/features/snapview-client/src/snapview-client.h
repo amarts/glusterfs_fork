@@ -69,7 +69,7 @@ typedef struct __svc_local svc_local_t;
                                 "inode context not found for gfid %s",  \
                                 uuid_utoa (inode->gfid));               \
                         op_ret = -1;                                    \
-                        op_errno = EINVAL;                              \
+                        op_errno = GF_ERROR_CODE_INVAL;                              \
                         goto label;                                     \
                 }                                                       \
                                                                         \

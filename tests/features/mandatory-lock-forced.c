@@ -26,7 +26,7 @@ int do_child (char *argv[]) {
         else if (strcmp (argv[2], "NONE") == 0)
                 open_flags = O_RDWR | O_NONBLOCK;
         else
-                LOG_ERR ("Invalid option:", EINVAL);
+                LOG_ERR ("Invalid option:", GF_ERROR_CODE_INVAL);
 
         /* Open the file */
         fd = open (fname, open_flags);
@@ -48,7 +48,7 @@ int do_child (char *argv[]) {
                 if (err)
                         LOG_ERR ("Child ftruncate", errno);
         } else
-                LOG_ERR ("Invalid operation:", EINVAL);
+                LOG_ERR ("Invalid operation:", GF_ERROR_CODE_INVAL);
 
         /* Close child fd */
         err = close (fd);
@@ -77,7 +77,7 @@ int main (int argc, char *argv[]) {
         else if (strcmp (argv[1], "WR_LCK") == 0)
                 lock.l_type = F_WRLCK;
         else
-                LOG_ERR ("Parent lock type", EINVAL);
+                LOG_ERR ("Parent lock type", GF_ERROR_CODE_INVAL);
 
         lock.l_whence = SEEK_SET;
         lock.l_start = 0L;

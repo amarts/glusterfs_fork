@@ -612,7 +612,7 @@ ra_file_destroy (ra_file_t *file)
 
         trav = file->pages.next;
         while (trav != &file->pages) {
-                ra_page_error (trav, -1, EINVAL);
+                ra_page_error (trav, -1, GF_ERROR_CODE_INVAL);
                 trav = file->pages.next;
         }
 

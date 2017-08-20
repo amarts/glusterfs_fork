@@ -217,7 +217,7 @@ string2bytesize (const char *str, unsigned long long *n)
 
         if (str == NULL || n == NULL)
         {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -238,7 +238,7 @@ string2bytesize (const char *str, unsigned long long *n)
         errno = 0;
         value = strtoull (str, &tail, 10);
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
         {
                 return -1;
         }

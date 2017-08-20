@@ -586,7 +586,7 @@ ioc_page_fault (ioc_inode_t *ioc_inode, call_frame_t *frame, fd_t *fd,
         GF_ASSERT (ioc_inode);
         if (frame == NULL) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg ("io-cache", GF_LOG_WARNING,
                         EINVAL, IO_CACHE_MSG_ENFORCEMENT_FAILED,
                         "page fault on a NULL frame");
@@ -671,7 +671,7 @@ __ioc_frame_fill (ioc_page_t *page, call_frame_t *frame, off_t offset,
                         IO_CACHE_MSG_ENFORCEMENT_FAILED,
                         "NULL page has been provided to serve read request");
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

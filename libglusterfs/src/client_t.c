@@ -51,7 +51,7 @@ gf_client_clienttable_expand (clienttable_t *clienttable, uint32_t nr)
         if (clienttable == NULL || nr <= clienttable->max_clients) {
                 gf_msg_callingfn ("client_t", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                ret = EINVAL;
+                ret = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -170,7 +170,7 @@ gf_client_get (xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
         if (this == NULL || client_uid == NULL) {
                 gf_msg_callingfn ("client_t", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 

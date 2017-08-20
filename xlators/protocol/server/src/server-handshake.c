@@ -241,7 +241,7 @@ server_getspec (rpcsvc_request_t *req)
         if (ret < 0) {
                 //failed to decode msg;
                 req->rpc_err = GARBAGE_ARGS;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -464,7 +464,7 @@ server_setvolume (rpcsvc_request_t *req)
         uint32_t             checksum      = 0;
         int32_t              ret           = -1;
         int32_t              op_ret        = -1;
-        int32_t              op_errno      = EINVAL;
+        int32_t              op_errno      = GF_ERROR_CODE_INVAL;
         uint32_t             lk_version    = 0;
         char                *buf           = NULL;
         gf_boolean_t        cancelled      = _gf_false;
@@ -511,7 +511,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "to unserialize request dictionary");
 
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -527,7 +527,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -601,7 +601,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -620,7 +620,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -699,7 +699,7 @@ server_setvolume (rpcsvc_request_t *req)
                                       "msg");
 
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto fail;
         }
 
@@ -886,7 +886,7 @@ fail:
                 gf_msg_debug ("server-handshake", 0, "failed to get serialized"
                                " length of reply dict");
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 rsp->dict.dict_len = 0;
         }
 
@@ -961,7 +961,7 @@ int
 server_set_lk_version (rpcsvc_request_t *req)
 {
         int                 op_ret   = -1;
-        int                 op_errno = EINVAL;
+        int                 op_errno = GF_ERROR_CODE_INVAL;
         gf_set_lk_ver_req   args     = {0,};
         gf_set_lk_ver_rsp   rsp      = {0,};
         client_t           *client   = NULL;

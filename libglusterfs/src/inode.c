@@ -966,13 +966,13 @@ __inode_link (inode_t *inode, inode_t *parent, const char *name,
         inode_t       *link_inode = NULL;
 
         if (!inode) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
         table = inode->table;
         if (!table) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -981,18 +981,18 @@ __inode_link (inode_t *inode, inode_t *parent, const char *name,
                    inode tables. This can cause errors which is very
                    hard to catch/debug. */
                 if (inode->table != parent->table) {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         GF_ASSERT (!"link attempted b/w inodes of diff table");
                 }
 
                 if (parent->ia_type != IA_IFDIR) {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         GF_ASSERT (!"link attempted on non-directory parent");
                         return NULL;
                 }
 
                 if (!name || strlen (name) == 0) {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         GF_ASSERT (!"link attempted with no basename on "
                                     "parent");
                         return NULL;
@@ -1003,12 +1003,12 @@ __inode_link (inode_t *inode, inode_t *parent, const char *name,
 
         if (!__is_inode_hashed (inode)) {
                 if (!iatt) {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         return NULL;
                 }
 
                 if (gf_uuid_is_null (iatt->ia_gfid)) {
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         return NULL;
                 }
 

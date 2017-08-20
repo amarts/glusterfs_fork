@@ -359,7 +359,7 @@ gd_syncop_mgmt_v3_lock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_lock_rsp);
@@ -462,7 +462,7 @@ gd_syncop_mgmt_v3_unlock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_unlock_rsp);
@@ -562,7 +562,7 @@ _gd_syncop_mgmt_lock_cbk (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_cluster_lock_rsp);
@@ -661,7 +661,7 @@ _gd_syncop_mgmt_unlock_cbk (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_cluster_unlock_rsp);
@@ -758,7 +758,7 @@ _gd_syncop_stage_op_cbk (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_stage_op_rsp);
@@ -892,7 +892,7 @@ _gd_syncop_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
 
         /* initialize */
         args->op_ret   = -1;
-        args->op_errno = EINVAL;
+        args->op_errno = GF_ERROR_CODE_INVAL;
 
         if (-1 == req->rpc_status) {
                 args->op_errno = GF_ERROR_CODE_NOTCONN;
@@ -900,7 +900,7 @@ _gd_syncop_brick_op_cbk (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, args->op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_brick_op_rsp);
@@ -1074,7 +1074,7 @@ _gd_syncop_commit_op_cbk (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_commit_op_rsp);

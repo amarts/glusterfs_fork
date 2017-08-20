@@ -1460,7 +1460,7 @@ dht_selfheal_dir_mkdir_lock_cbk (call_frame_t *frame, void *cookie,
                  * on a newky attatched tier subvol. Hence proceed and do mkdir
                  * on the tier subvol.
                  */
-                if (op_errno == EINVAL) {
+                if (op_errno == GF_ERROR_CODE_INVAL) {
                         local->call_cnt = 1;
                         dht_selfheal_dir_mkdir_lookup_done (frame, this);
                         return 0;
@@ -1524,7 +1524,7 @@ dht_selfheal_dir_mkdir (call_frame_t *frame, loc_t *loc,
                 local->hashed_subvol = dht_subvol_get_hashed (this, loc);
 
         if (local->hashed_subvol == NULL) {
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_HASHED_SUBVOL_GET_FAILED,
                         "(%s/%s) (path: %s): "
@@ -1588,7 +1588,7 @@ dht_get_layout_count (xlator_t *this, dht_layout_t *layout, int new_layout)
                 for (j = 0; j < conf->subvolume_cnt; j++) {
                         if (conf->decommissioned_bricks[j] &&
                             conf->decommissioned_bricks[j] == layout->list[i].xlator) {
-                                layout->list[i].err = EINVAL;
+                                layout->list[i].err = GF_ERROR_CODE_INVAL;
                                 break;
                         }
                 }

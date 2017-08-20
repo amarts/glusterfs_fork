@@ -1781,7 +1781,7 @@ wb_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
         gf_boolean_t  wb_disabled   = 0;
         call_stub_t  *stub          = NULL;
         int           ret           = -1;
-        int32_t       op_errno      = EINVAL;
+        int32_t       op_errno      = GF_ERROR_CODE_INVAL;
 	int           o_direct      = O_DIRECT;
 
 	conf = this->private;
@@ -1906,7 +1906,7 @@ wb_flush_helper (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 	wb_inode = wb_inode_ctx_get (this, fd->inode);
 	if (!wb_inode) {
 		op_ret = -1;
-		op_errno = EINVAL;
+		op_errno = GF_ERROR_CODE_INVAL;
 		goto unwind;
 	}
 
@@ -1986,7 +1986,7 @@ wb_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t datasync,
 {
         wb_inode_t   *wb_inode     = NULL;
         call_stub_t  *stub         = NULL;
-	int32_t       op_errno     = EINVAL;
+	int32_t       op_errno     = GF_ERROR_CODE_INVAL;
 
         wb_inode = wb_inode_ctx_get (this, fd->inode);
 	if (!wb_inode)

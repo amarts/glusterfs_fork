@@ -307,7 +307,7 @@ quotad_aggregator_lookup (rpcsvc_request_t *req)
         ret = xdr_to_generic (req->msg[0], &args,
                               (xdrproc_t)xdr_gfs3_lookup_req);
         if (ret < 0) {
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 

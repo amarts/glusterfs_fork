@@ -313,7 +313,7 @@ cli_validate_disperse_volume (char *word, gf1_cluster_type type,
                                 goto out;
                         }
                         ret = gf_string2int (words[index + 1], disperse_count);
-                        if (ret == -1 && errno == EINVAL) {
+                        if (ret == -1 && errno == GF_ERROR_CODE_INVAL) {
                                 *disperse_count = 0;
                                 ret = 1;
                         } else if (ret == -1) {
@@ -1163,7 +1163,7 @@ cli_cmd_quota_parse (const char **words, int wordcount, dict_t **options)
                 } else {
                         errno = 0;
                         limit = strtol (words[5], &end_ptr, 10);
-                        if (errno == ERANGE || errno == EINVAL || limit <= 0
+                        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL || limit <= 0
                                             || strcmp (end_ptr, "") != 0) {
                                 ret = -1;
                                 cli_err ("Please enter an integer value in "
@@ -2667,7 +2667,7 @@ parse_ssh_port (const char **words, int wordcount, dict_t *dict,
                 }
                 (*cmdi)++;
                 limit = strtol (words[ssh_index+1], &end_ptr, 10);
-                if (errno == ERANGE || errno == EINVAL || limit <= 0
+                if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL || limit <= 0
                                     || strcmp (end_ptr, "") != 0) {
                         ret = -1;
                         cli_err ("Please enter an integer value for ssh_port ");

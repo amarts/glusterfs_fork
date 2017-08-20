@@ -163,7 +163,7 @@ br_stub_add (xlator_t *this, uuid_t gfid)
 
         priv = this->private;
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, !gf_uuid_is_null (gfid),
-                                       out, errno, EINVAL);
+                                       out, errno, GF_ERROR_CODE_INVAL);
 
         br_stub_linked_entry (priv, gfid_path, gfid, sizeof (gfid_path));
 
@@ -203,7 +203,7 @@ br_stub_del (xlator_t *this, uuid_t gfid)
 
         priv = this->private;
         GF_ASSERT_AND_GOTO_WITH_ERROR (this->name, !gf_uuid_is_null (gfid),
-                                       out, op_errno, EINVAL);
+                                       out, op_errno, GF_ERROR_CODE_INVAL);
         br_stub_linked_entry (priv, gfid_path, gfid,
                               sizeof (gfid_path));
         ret = sys_unlink (gfid_path);
@@ -395,7 +395,7 @@ br_stub_lookup_wrapper (call_frame_t *frame, xlator_t *this,
         br_stub_private_t *priv        = NULL;
         struct stat        lstatbuf    = {0};
         int                ret         = 0;
-        int32_t            op_errno    = EINVAL;
+        int32_t            op_errno    = GF_ERROR_CODE_INVAL;
         int32_t            op_ret      = -1;
         struct iatt        stbuf       = {0, };
         struct iatt        postparent  = {0,};
@@ -498,7 +498,7 @@ br_stub_fill_readdir (fd_t *fd, br_stub_fd_t *fctx, DIR *dir, off_t off,
                                 "seekdir(0x%llx) failed on dir=%p: "
 				"Invalid argument (offset reused from "
 				"another DIR * structure?)", off, dir);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         count = -1;
                         goto out;
                 }
@@ -554,7 +554,7 @@ br_stub_fill_readdir (fd_t *fd, br_stub_fd_t *fctx, DIR *dir, off_t off,
 					"Invalid argument (offset reused from "
 					"another DIR * structure?)",
 					in_case, dir);
-				errno = EINVAL;
+				errno = GF_ERROR_CODE_INVAL;
 				count = -1;
 				goto out;
                         }
@@ -626,7 +626,7 @@ br_stub_readdir_wrapper (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, 0,
                         BRS_MSG_BAD_HANDLE_DIR_NULL,
                         "dir is NULL for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto done;
         }
 

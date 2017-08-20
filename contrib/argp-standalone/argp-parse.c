@@ -740,7 +740,7 @@ parser_finalize (struct parser *parser,
     group_parse (group, &parser->state, ARGP_KEY_FINI, 0);
 
   if (err == EBADKEY)
-    err = EINVAL;
+    err = GF_ERROR_CODE_INVAL;
 
   free (parser->storage);
 
@@ -1202,7 +1202,7 @@ parser_parse_next (struct parser *parser, int *arg_ebadkey)
 /* Parse the options strings in ARGC & ARGV according to the argp in ARGP.
    FLAGS is one of the ARGP_ flags above.  If END_INDEX is non-NULL, the
    index in ARGV of the first unparsed option is returned in it.  If an
-   unknown option is present, EINVAL is returned; if some parser routine
+   unknown option is present, GF_ERROR_CODE_INVAL is returned; if some parser routine
    returned a non-zero value, it is returned; otherwise 0 is returned.  */
 error_t
 __argp_parse (const struct argp *argp, int argc, char **argv, unsigned flags,

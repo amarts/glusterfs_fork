@@ -67,7 +67,7 @@
 
 #define BD_VALIDATE_LOCAL_OR_GOTO(local, op_errno, label) \
         if (!local) {                                     \
-                op_errno = EINVAL;                        \
+                op_errno = GF_ERROR_CODE_INVAL;                        \
                 goto label;                               \
         }
 

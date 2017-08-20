@@ -854,7 +854,7 @@ dc_compound (call_frame_t *frame, xlator_t *this, void *data, dict_t *xdata)
         compound_req = data;
 
         GF_ASSERT_AND_GOTO_WITH_ERROR (this, compound_req, out, op_errno,
-                                       EINVAL);
+                                       GF_ERROR_CODE_INVAL);
 
         local = mem_get0 (this->local_pool);
         if (!local)
@@ -874,7 +874,7 @@ dc_compound (call_frame_t *frame, xlator_t *this, void *data, dict_t *xdata)
         local->compound_req = compound_req;
 
         if (!local->length) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

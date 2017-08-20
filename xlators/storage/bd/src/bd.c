@@ -147,7 +147,7 @@ bd_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
         ret = bd_inode_ctx_set (inode, this, bdatt);
         if (ret < 0) {
                 GF_FREE (bdatt);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -173,7 +173,7 @@ bd_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req)
 {
         dict_t     *bd_xattr = NULL;
         bd_attr_t  *bdatt    = NULL;
-        int         op_errno = EINVAL;
+        int         op_errno = GF_ERROR_CODE_INVAL;
 
         VALIDATE_OR_GOTO (frame, out);
         VALIDATE_OR_GOTO (this, out);
@@ -253,7 +253,7 @@ int32_t
 bd_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
              off_t off, dict_t *dict)
 {
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
         bd_local_t  *local    = NULL;
 
         VALIDATE_OR_GOTO (frame, out);
@@ -309,7 +309,7 @@ out:
 int
 bd_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
         bd_local_t  *local    = NULL;
         bd_attr_t   *bdatt    = NULL;
 
@@ -415,7 +415,7 @@ out:
 int
 bd_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 {
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
         bd_local_t  *local    = NULL;
         bd_attr_t   *bdatt    = NULL;
 
@@ -476,7 +476,7 @@ bd_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
                 return 0;
         }
         if (!size) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING, "size=%"GF_PRI_SIZET, size);
                 goto out;
         }
@@ -502,7 +502,7 @@ bd_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         iobref_add (iobref, iobuf);
 
         if (bd_inode_ctx_get (fd->inode, this, &bdatt)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 op_ret = -1;
                 goto out;
         }
@@ -534,7 +534,7 @@ bd_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
             size_t len, dict_t *xdata)
 {
         int           ret      = -1;
-        int           op_errno = EINVAL;
+        int           op_errno = GF_ERROR_CODE_INVAL;
         bd_fd_t      *bd_fd    = NULL;
         uint64_t      param[2] = {0, };
         bd_attr_t    *bdatt    = NULL;
@@ -555,7 +555,7 @@ bd_discard (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 
         ret = bd_fd_ctx_get (this, fd, &bd_fd);
         if (ret < 0 || !bd_fd) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -633,7 +633,7 @@ int32_t
 bd_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
          fd_t *fd, dict_t *xdata)
 {
-        int32_t      ret     = EINVAL;
+        int32_t      ret     = GF_ERROR_CODE_INVAL;
         bd_fd_t     *bd_fd   = NULL;
         bd_attr_t   *bdatt   = NULL;
         bd_gfid_t    gfid    = {0, };
@@ -1000,14 +1000,14 @@ bd_setx_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         type = strtok_r (param, ":", &p);
         if (!type) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         if (strcmp (type, BD_LV) && strcmp (type, BD_THIN)) {
                 gf_log (this->name, GF_LOG_WARNING, "Invalid bd type %s given",
                         type);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1036,7 +1036,7 @@ bd_setx_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         BD_VALIDATE_MEM_ALLOC (local->bdatt, op_errno, out);
 
         if (dict_set_dynstr (local->dict, BD_XATTR, bd) < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1123,7 +1123,7 @@ bd_offload_getx_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
 
         if (dict_get_str (xattr, BD_XATTR, &p)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1132,7 +1132,7 @@ bd_offload_getx_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         p = strrchr (type, ':');
         if (!p) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING,
                         "source file xattr %s corrupted?", type);
                 goto out;
@@ -1150,7 +1150,7 @@ bd_offload_getx_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         dict_del (local->dict, BD_XATTR);
         dict_del (local->dict, LINKTO);
         if (dict_set_dynstr (local->dict, BD_XATTR, bd)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1184,12 +1184,12 @@ bd_offload_dest_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         int         ret    = -1;
 
         if (op_ret < 0 && op_errno != GF_ERROR_CODE_NODATA) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         if (!IA_ISREG (iatt->ia_type)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING, "destination gfid is not a "
                         "regular file");
                 goto out;
@@ -1197,7 +1197,7 @@ bd_offload_dest_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         ret = dict_get_str (xattr, LINKTO, &linkto);
         if (linkto) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING, "destination file not "
                         "present in same brick");
                 goto out;
@@ -1259,7 +1259,7 @@ bd_do_merge(call_frame_t *frame, xlator_t *this)
                  * FIXME: Snapshot LV already deleted.
                  * remove xattr, instead of returning failure
                  */
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         gf_uuid_copy (local->loc.pargfid, parent->gfid);
@@ -1312,11 +1312,11 @@ bd_offload (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 local->size = bd_get_default_extent (this->private);
 
         if (dict_set_int8 (local->dict, BD_XATTR, 1) < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         if (dict_set_int8 (local->dict, LINKTO, 1) < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1388,7 +1388,7 @@ bd_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
                 if (!bdatt) {
                         gf_log (this->name, GF_LOG_WARNING,
                                 "%s not mapped to BD", loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
                 if (cl_type == BD_OF_MERGE)
@@ -1476,7 +1476,7 @@ bd_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
                 if (!bdatt) {
                         gf_log (this->name, GF_LOG_WARNING,
                                 "fd %p not mapped to BD", fd);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
 
                 }
@@ -1632,13 +1632,13 @@ bd_trunc_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         bd_inode_ctx_get (local->inode, this, &bdatt);
         if (!bdatt) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         gf_asprintf (&bd, "%s:%ld", bdatt->type, local->bdatt->iatt.ia_size);
         if (dict_set_dynstr (local->dict, BD_XATTR, bd)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1861,7 +1861,7 @@ bd_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
 
         if (bd_inode_ctx_get (fd->inode, this, &bdatt)) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         size = bdatt->iatt.ia_size;

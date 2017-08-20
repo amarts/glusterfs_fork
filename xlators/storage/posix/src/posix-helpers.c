@@ -1137,7 +1137,7 @@ posix_handle_pair (xlator_t *this, const char *real_path,
         int sys_ret = -1;
         int ret     = 0;
 #ifdef GF_DARWIN_HOST_OS
-        const int error_code = EINVAL;
+        const int error_code = GF_ERROR_CODE_INVAL;
 #else
         const int error_code = EEXIST;
 #endif
@@ -1227,7 +1227,7 @@ posix_fhandle_pair (xlator_t *this, int fd,
                 } else {
 
 #ifdef GF_DARWIN_HOST_OS
-                        if (errno == EINVAL) {
+                        if (errno == GF_ERROR_CODE_INVAL) {
                                 gf_msg_debug (this->name, 0, "fd=%d: key:%s "
                                               "error:%s", fd, key,
                                               strerror (errno));
@@ -1652,7 +1652,7 @@ __posix_fd_ctx_get (fd_t *fd, xlator_t *this, struct posix_fd **pfd_p,
                         "Failed to get fd context for a non-anonymous fd, "
                         "file: %s, gfid: %s", real_path,
                         uuid_utoa (fd->inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1663,7 +1663,7 @@ __posix_fd_ctx_get (fd_t *fd, xlator_t *this, struct posix_fd **pfd_p,
                         "Failed to create handle path (%s)",
                         uuid_utoa (fd->inode->gfid));
                 ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         pfd = GF_CALLOC (1, sizeof (*pfd), gf_posix_mt_posix_fd);

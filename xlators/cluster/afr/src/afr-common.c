@@ -764,7 +764,7 @@ afr_set_split_brain_choice (int ret, call_frame_t *frame, void *opaque)
 
         if (!loc->inode) {
                 ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -775,7 +775,7 @@ afr_set_split_brain_choice (int ret, call_frame_t *frame, void *opaque)
                         " not in data/metadata split-brain.",
                         uuid_utoa (loc->gfid));
                 ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1325,7 +1325,7 @@ afr_inode_refresh_do (call_frame_t *frame, xlator_t *this)
         if (local->fd) {
                 fd_ctx = afr_fd_ctx_get (local->fd, this);
                 if (!fd_ctx) {
-                        afr_inode_refresh_done (frame, this, EINVAL);
+                        afr_inode_refresh_done (frame, this, GF_ERROR_CODE_INVAL);
                         return 0;
                 }
         }

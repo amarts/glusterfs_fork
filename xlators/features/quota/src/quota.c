@@ -603,9 +603,9 @@ quota_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         GF_ASSERT (local);
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO_WITH_ERROR ("quota", this, unwind, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, xdata, unwind, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = inode_ctx_get (local->validate_loc.inode, this, &value);
 
@@ -615,7 +615,7 @@ quota_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 			Q_MSG_INODE_CTX_GET_FAILED, "quota context is"
 			" not present in  inode (gfid:%s)",
                         uuid_utoa (local->validate_loc.inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -624,7 +624,7 @@ quota_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
 			Q_MSG_SIZE_KEY_MISSING, "quota size key not present "
                         "in dict");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
         local->just_validated = 1; /* so that we don't go into infinite
@@ -787,7 +787,7 @@ quota_build_ancestry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         gf_msg (this->name, GF_LOG_WARNING,
                                                 EINVAL, Q_MSG_PARENT_NULL,
                                                 "inode link failed");
-                                                op_errno = EINVAL;
+                                                op_errno = GF_ERROR_CODE_INVAL;
                                                 goto err;
                                 }
                         }
@@ -819,7 +819,7 @@ quota_build_ancestry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (parent == NULL) {
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         Q_MSG_PARENT_NULL, "parent is NULL");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1251,7 +1251,7 @@ out:
 int32_t
 quota_check_limit (call_frame_t *frame, inode_t *inode, xlator_t *this)
 {
-        int32_t            ret                 = -1, op_errno = EINVAL;
+        int32_t            ret                 = -1, op_errno = GF_ERROR_CODE_INVAL;
         inode_t           *_inode              = NULL, *parent = NULL;
         quota_inode_ctx_t *ctx                 = NULL;
         quota_priv_t      *priv                = NULL;
@@ -1743,7 +1743,7 @@ quota_writev_helper (call_frame_t *frame, xlator_t *this, fd_t *fd,
                      uint32_t flags, struct iobref *iobref, dict_t *xdata)
 {
         quota_local_t *local      = NULL;
-        int32_t        op_errno   = EINVAL;
+        int32_t        op_errno   = GF_ERROR_CODE_INVAL;
         struct iovec  *new_vector = NULL;
         int32_t        new_count  = 0;
 
@@ -1813,7 +1813,7 @@ quota_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
               uint32_t flags, struct iobref *iobref, dict_t *xdata)
 {
         quota_priv_t      *priv       = NULL;
-        int32_t            op_errno   = EINVAL;
+        int32_t            op_errno   = GF_ERROR_CODE_INVAL;
         int32_t            parents    = 0;
         int32_t            fail_count = 0;
         uint64_t           size       = 0;
@@ -1941,7 +1941,7 @@ quota_mkdir_helper (call_frame_t *frame, xlator_t *this, loc_t *loc,
                     mode_t mode, mode_t umask, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -2087,7 +2087,7 @@ quota_create_helper (call_frame_t *frame, xlator_t *this, loc_t *loc,
                      dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -2332,7 +2332,7 @@ quota_link_helper (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
                    loc_t *newloc, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -2642,7 +2642,7 @@ quota_rename_helper (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
                      loc_t *newloc, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -2679,9 +2679,9 @@ quota_rename_get_size_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO_WITH_ERROR ("quota", this, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, xdata, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
         local = frame->local;
         GF_ASSERT (local);
         local->link_count = 1;
@@ -2694,7 +2694,7 @@ quota_rename_get_size_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (ret < 0) {
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
 			Q_MSG_SIZE_KEY_MISSING, "size key not present in dict");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         local->delta = ntoh64 (*size);
@@ -2936,7 +2936,7 @@ quota_symlink_helper (call_frame_t *frame, xlator_t *this, const char *linkpath,
                       loc_t *loc, mode_t umask, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -3875,7 +3875,7 @@ quota_mknod_helper (call_frame_t *frame, xlator_t *this, loc_t *loc,
                     mode_t mode, dev_t rdev, mode_t umask, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -3998,7 +3998,7 @@ quota_setxattr (call_frame_t *frame, xlator_t *this,
                 loc_t *loc, dict_t *dict, int flags, dict_t *xdata)
 {
         quota_priv_t   *priv                    = NULL;
-        int             op_errno                = EINVAL;
+        int             op_errno                = GF_ERROR_CODE_INVAL;
         int             op_ret                  = -1;
         int64_t         hard_lim                = -1;
         int64_t         soft_lim                = -1;
@@ -4103,7 +4103,7 @@ quota_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 {
         quota_priv_t    *priv                   = NULL;
         int32_t         op_ret                  = -1;
-        int32_t         op_errno                = EINVAL;
+        int32_t         op_errno                = GF_ERROR_CODE_INVAL;
         quota_local_t   *local                  = NULL;
         int64_t         hard_lim                = -1;
         int64_t         soft_lim                = -1;
@@ -4177,7 +4177,7 @@ quota_removexattr (call_frame_t *frame, xlator_t *this,
                    loc_t *loc, const char *name, dict_t *xdata)
 {
         quota_priv_t       *priv        = NULL;
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
 
         priv = this->private;
 
@@ -4229,7 +4229,7 @@ quota_fremovexattr (call_frame_t *frame, xlator_t *this,
 {
         quota_priv_t       *priv        = NULL;
         int32_t         op_ret   = -1;
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
 
         priv = this->private;
 
@@ -4339,7 +4339,7 @@ quota_statfs_helper (call_frame_t *frame, xlator_t *this, loc_t *loc,
                      dict_t *xdata)
 {
         quota_local_t   *local          = frame->local;
-        int              op_errno       = EINVAL;
+        int              op_errno       = GF_ERROR_CODE_INVAL;
 
         GF_VALIDATE_OR_GOTO ("quota", local, err);
 
@@ -4378,9 +4378,9 @@ quota_statfs_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         GF_ASSERT (local);
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO_WITH_ERROR ("quota", this, resume, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, xdata, resume, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = inode_ctx_get (local->validate_loc.inode, this, &value);
 
@@ -4390,7 +4390,7 @@ quota_statfs_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 			Q_MSG_INODE_CTX_GET_FAILED,
 			"quota context is not present in inode (gfid:%s)",
                         uuid_utoa (local->validate_loc.inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto resume;
         }
 
@@ -4399,7 +4399,7 @@ quota_statfs_validate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
 			Q_MSG_SIZE_KEY_MISSING, "size key not present in "
                         "dict");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
         LOCK (&ctx->lock);
@@ -4774,7 +4774,7 @@ quota_fallocate_helper (call_frame_t *frame, xlator_t *this, fd_t *fd,
                         int32_t mode, off_t offset, size_t len, dict_t *xdata)
 {
         quota_local_t *local    = NULL;
-        int32_t        op_errno = EINVAL;
+        int32_t        op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
 
@@ -4817,7 +4817,7 @@ int32_t
 quota_fallocate(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t mode,
 		off_t offset, size_t len, dict_t *xdata)
 {
-        int32_t            op_errno    = EINVAL;
+        int32_t            op_errno    = GF_ERROR_CODE_INVAL;
         int32_t            parents     = 0;
         int32_t            fail_count  = 0;
         quota_local_t     *local       = NULL;

@@ -86,7 +86,7 @@ br_stub_bad_object_container_init (xlator_t *this, br_stub_private_t *priv)
         }
 
         ret = pthread_attr_setstacksize (&w_attr, BAD_OBJECT_THREAD_STACK_SIZE);
-        if (ret == EINVAL) {
+        if (ret == GF_ERROR_CODE_INVAL) {
                 gf_msg (this->name, GF_LOG_WARNING, 0,
                         BRS_MSG_BAD_OBJ_THREAD_FAIL,
                         "Using default thread stack size");
@@ -668,7 +668,7 @@ br_stub_check_bad_object (xlator_t *this, inode_t *inode, int32_t *op_ret,
                                 "failed to init inode context for %s",
                                 uuid_utoa (inode->gfid));
                         *op_ret = -1;
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                 }
         }
 
@@ -697,7 +697,7 @@ br_stub_fd_incversioning_cbk (call_frame_t *frame,
 
         op_ret = br_stub_mod_inode_versions (this, fd, inode, version);
         if (op_ret < 0)
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
 
  done:
         if (op_ret < 0) {
@@ -799,7 +799,7 @@ br_stub_perform_incversioning (xlator_t *this,
         int              op_errno          = 0;
         br_stub_local_t *local             = NULL;
 
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         local = frame->local;
 
         writeback_version = __br_stub_writeback_version (ctx);
@@ -1000,7 +1000,7 @@ br_stub_handle_object_signature (call_frame_t *frame,
 {
         int32_t                   ret         = -1;
         int32_t                   op_ret      = -1;
-        int32_t                   op_errno    = EINVAL;
+        int32_t                   op_errno    = GF_ERROR_CODE_INVAL;
         int                       fakesuccess = 0;
         br_stub_private_t        *priv        = NULL;
         struct br_stub_signentry *sigstub     = NULL;
@@ -1076,7 +1076,7 @@ br_stub_fsetxattr_resume (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = br_stub_mark_inode_modified (this, local);
         if (ret) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
         STACK_UNWIND_STRICT (fsetxattr, frame, op_ret, op_errno, xdata);
@@ -1127,7 +1127,7 @@ br_stub_handle_object_reopen (call_frame_t *frame,
 {
         int32_t              ret         = -1;
         int32_t              op_ret      = -1;
-        int32_t              op_errno    = EINVAL;
+        int32_t              op_errno    = GF_ERROR_CODE_INVAL;
         call_stub_t         *stub        = NULL;
         gf_boolean_t         inc_version = _gf_false;
         gf_boolean_t         modified    = _gf_false;
@@ -1240,7 +1240,7 @@ br_stub_handle_bad_object_key (call_frame_t *frame, xlator_t *this, fd_t *fd,
 {
         br_stub_local_t *local    = NULL;
         int32_t          op_ret   = -1;
-        int32_t         op_errno = EINVAL;
+        int32_t         op_errno = GF_ERROR_CODE_INVAL;
 
         if (frame->root->pid != GF_CLIENT_PID_SCRUB) {
                 gf_msg (this->name, GF_LOG_ERROR, 0,
@@ -1293,7 +1293,7 @@ br_stub_handle_internal_xattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                                char *key)
 {
         int32_t          op_ret   = -1;
-        int32_t          op_errno = EINVAL;
+        int32_t          op_errno = GF_ERROR_CODE_INVAL;
 
         gf_msg (this->name, GF_LOG_ERROR, 0,
                 BRS_MSG_SET_INTERNAL_XATTR, "setxattr called"
@@ -1313,7 +1313,7 @@ br_stub_fsetxattr (call_frame_t *frame, xlator_t *this,
         br_isignature_t     *sign     = NULL;
         br_stub_private_t   *priv     = NULL;
         int32_t              op_ret   = -1;
-        int32_t              op_errno = EINVAL;
+        int32_t              op_errno = GF_ERROR_CODE_INVAL;
         char                *format   = "(%s:%s)";
         char                 dump[64*1024]  = {0,};
 
@@ -1404,7 +1404,7 @@ br_stub_setxattr (call_frame_t *frame, xlator_t *this,
                   loc_t *loc, dict_t *dict, int flags, dict_t *xdata)
 {
         int32_t  op_ret                    = -1;
-        int32_t  op_errno                  = EINVAL;
+        int32_t  op_errno                  = GF_ERROR_CODE_INVAL;
         char     dump[64*1024]             = {0,};
         char    *format                    = "(%s:%s)";
 
@@ -1437,7 +1437,7 @@ br_stub_removexattr (call_frame_t *frame, xlator_t *this,
                      loc_t *loc, const char *name, dict_t *xdata)
 {
         int32_t op_ret    = -1;
-        int32_t op_errno  = EINVAL;
+        int32_t op_errno  = GF_ERROR_CODE_INVAL;
 
         if (!strcmp (BITROT_OBJECT_BAD_KEY, name) ||
             !strcmp (BITROT_SIGNING_VERSION_KEY, name) ||
@@ -1462,7 +1462,7 @@ br_stub_fremovexattr (call_frame_t *frame, xlator_t *this,
                       fd_t *fd, const char *name, dict_t *xdata)
 {
         int32_t op_ret    = -1;
-        int32_t op_errno  = EINVAL;
+        int32_t op_errno  = GF_ERROR_CODE_INVAL;
 
         if (!strcmp (BITROT_OBJECT_BAD_KEY, name) ||
             !strcmp (BITROT_SIGNING_VERSION_KEY, name) ||
@@ -1609,7 +1609,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (bad_object)
                 goto delkeys;
 
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         if (status == BR_VXATTR_STATUS_INVALID)
                 goto delkeys;
 
@@ -1625,7 +1625,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
          * indirectly via the size of the _whole_ xattr and the
          * on-disk signing xattr header size.
          */
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         ret = dict_get_uint32 (xattr, BITROT_SIGNING_XATTR_SIZE_KEY,
                                (uint32_t *)&signaturelen);
         if (ret)
@@ -1651,7 +1651,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         sign->signaturetype = sbuf->signaturetype;
         (void) memcpy (sign->signature, sbuf->signature, signaturelen);
 
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         ret = dict_set_bin (xattr, GLUSTERFS_GET_OBJECT_SIGNATURE,
                             (void *)sign, totallen);
         if (ret < 0) {
@@ -1698,7 +1698,7 @@ br_stub_send_stub_init_time (call_frame_t *frame, xlator_t *this)
         op_ret = dict_set_static_bin (xattr, GLUSTERFS_GET_BR_STUB_INIT_TIME,
                                       (void *) &stub, sizeof (br_stub_init_t));
         if (op_ret < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1719,7 +1719,7 @@ br_stub_getxattr (call_frame_t *frame, xlator_t *this,
         uuid_t              rootgfid = {0, };
         fop_getxattr_cbk_t  cbk      = br_stub_getxattr_cbk;
         int32_t             op_ret   = -1;
-        int32_t             op_errno = EINVAL;
+        int32_t             op_errno = GF_ERROR_CODE_INVAL;
         br_stub_local_t    *local    = NULL;
         br_stub_private_t  *priv     = NULL;
 
@@ -1804,7 +1804,7 @@ br_stub_fgetxattr (call_frame_t *frame, xlator_t *this,
         uuid_t rootgfid = {0, };
         fop_fgetxattr_cbk_t cbk = br_stub_getxattr_cbk;
         int32_t op_ret = -1;
-        int32_t op_errno = EINVAL;
+        int32_t op_errno = GF_ERROR_CODE_INVAL;
         br_stub_local_t *local = NULL;
         br_stub_private_t  *priv = NULL;
 
@@ -1879,7 +1879,7 @@ br_stub_readv (call_frame_t *frame, xlator_t *this,
                fd_t *fd, size_t size, off_t offset, uint32_t flags, dict_t *xdata)
 {
         int32_t              op_ret   = -1;
-        int32_t              op_errno = EINVAL;
+        int32_t              op_errno = GF_ERROR_CODE_INVAL;
         int32_t              ret      = -1;
         br_stub_private_t   *priv     = NULL;
 
@@ -1933,7 +1933,7 @@ br_stub_writev_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = br_stub_mark_inode_modified (this, local);
         if (ret) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
 unwind:
@@ -1974,7 +1974,7 @@ br_stub_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 {
         call_stub_t         *stub        = NULL;
         int32_t              op_ret      = -1;
-        int32_t              op_errno    = EINVAL;
+        int32_t              op_errno    = GF_ERROR_CODE_INVAL;
         gf_boolean_t         inc_version = _gf_false;
         gf_boolean_t         modified    = _gf_false;
         br_stub_inode_ctx_t *ctx         = NULL;
@@ -2074,7 +2074,7 @@ br_stub_ftruncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = br_stub_mark_inode_modified (this, local);
         if (ret) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
 unwind:
@@ -2104,7 +2104,7 @@ br_stub_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd,
         br_stub_local_t     *local       = NULL;
         call_stub_t         *stub        = NULL;
         int32_t              op_ret      = -1;
-        int32_t              op_errno    = EINVAL;
+        int32_t              op_errno    = GF_ERROR_CODE_INVAL;
         gf_boolean_t         inc_version = _gf_false;
         gf_boolean_t         modified    = _gf_false;
         br_stub_inode_ctx_t *ctx         = NULL;
@@ -2189,7 +2189,7 @@ br_stub_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = br_stub_mark_inode_modified (this, local);
         if (ret) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
 unwind:
@@ -2233,7 +2233,7 @@ br_stub_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc,
         br_stub_local_t     *local       = NULL;
         call_stub_t         *stub        = NULL;
         int32_t              op_ret      = -1;
-        int32_t              op_errno    = EINVAL;
+        int32_t              op_errno    = GF_ERROR_CODE_INVAL;
         gf_boolean_t         inc_version = _gf_false;
         gf_boolean_t         modified    = _gf_false;
         br_stub_inode_ctx_t *ctx         = NULL;
@@ -2344,7 +2344,7 @@ br_stub_open (call_frame_t *frame, xlator_t *this,
         br_stub_inode_ctx_t *ctx      = NULL;
         uint64_t             ctx_addr = 0;
         int32_t              op_ret   = -1;
-        int32_t              op_errno = EINVAL;
+        int32_t              op_errno = GF_ERROR_CODE_INVAL;
         br_stub_private_t   *priv     = NULL;
         unsigned long        version  = BITROT_DEFAULT_CURRENT_VERSION;
 
@@ -2469,7 +2469,7 @@ br_stub_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                                    &ctx_addr);
                 if (ret) {
                         op_ret = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                 }
         } else {
                 ctx = (br_stub_inode_ctx_t *)(long)ctx_addr;
@@ -2528,7 +2528,7 @@ br_stub_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
          */
         if (ret) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
 unwind:
@@ -2626,7 +2626,7 @@ br_stub_opendir (call_frame_t *frame, xlator_t *this,
         br_stub_private_t    *priv = NULL;
         br_stub_fd_t         *fd_ctx = NULL;
         int32_t               op_ret = -1;
-        int32_t               op_errno = EINVAL;
+        int32_t               op_errno = GF_ERROR_CODE_INVAL;
 
         priv = this->private;
         if (gf_uuid_compare (fd->inode->gfid, priv->bad_object_dir_gfid))
@@ -2738,7 +2738,7 @@ br_stub_readdirp_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
 
         if (ret) {
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
  unwind:
@@ -2770,7 +2770,7 @@ br_stub_readdirp (call_frame_t *frame, xlator_t *this,
 
         xref = _gf_true;
 
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         ret = dict_set_uint32 (dict, BITROT_CURRENT_VERSION_KEY, 0);
         if (ret)
                 goto unwind;
@@ -2899,7 +2899,7 @@ br_stub_lookup_cbk (call_frame_t *frame, void *cookie,
         ret = br_stub_lookup_version (this, stbuf->ia_gfid, inode, xattr);
         if (ret < 0) {
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto delkey;
         }
 
@@ -2985,7 +2985,7 @@ br_stub_lookup (call_frame_t *frame,
          * object. Anomaly checking is done in cbk by examining absence
          * of either or both xattrs.
          */
-        op_errno = EINVAL;
+        op_errno = GF_ERROR_CODE_INVAL;
         ret = dict_set_uint32 (xdata, BITROT_CURRENT_VERSION_KEY, 0);
         if (ret)
                 goto unwind;
@@ -3024,7 +3024,7 @@ br_stub_stat (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
         int32_t            ret      = 0;
         int32_t            op_ret   = -1;
-        int32_t            op_errno = EINVAL;
+        int32_t            op_errno = GF_ERROR_CODE_INVAL;
         br_stub_private_t *priv     = NULL;
 
         priv = this->private;
@@ -3055,7 +3055,7 @@ br_stub_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 {
         int32_t            ret      = 0;
         int32_t            op_ret   = -1;
-        int32_t            op_errno = EINVAL;
+        int32_t            op_errno = GF_ERROR_CODE_INVAL;
         br_stub_private_t *priv     = NULL;
 
         priv = this->private;

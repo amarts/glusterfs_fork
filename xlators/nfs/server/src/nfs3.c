@@ -587,7 +587,7 @@ nfs3_call_state_init (struct nfs3_state *s, rpcsvc_request_t *req, xlator_t *v)
         GF_REF_INIT (cs, __nfs3_call_state_wipe);
         INIT_LIST_HEAD (&cs->entries.list);
         INIT_LIST_HEAD (&cs->openwait_q);
-        cs->operrno = EINVAL;
+        cs->operrno = GF_ERROR_CODE_INVAL;
         cs->req = req;
         cs->vol = v;
         cs->nfsx = s->nfsx;
@@ -1472,7 +1472,7 @@ nfs3_lookup_parentdir_resume (void *carg)
         if (!carg) {
                 gf_msg (GF_NFS3, GF_LOG_ERROR, EINVAL, NFS_MSG_INVALID_ENTRY,
                         "Invalid argument, carg value NULL");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
 
         cs = (nfs3_call_state_t *)carg;
@@ -1551,7 +1551,7 @@ nfs3_lookup_resume (void *carg)
         if (!carg) {
                 gf_msg (GF_NFS3, GF_LOG_ERROR, EINVAL, NFS_MSG_INVALID_ENTRY,
                         "Invalid argument, carg value NULL");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
 
         cs = (nfs3_call_state_t *)carg;
@@ -1722,7 +1722,7 @@ nfs3_access_resume (void *carg)
         if (!carg) {
                 gf_msg (GF_NFS3, GF_LOG_ERROR, EINVAL, NFS_MSG_INVALID_ENTRY,
                         "Invalid argument, carg value NULL");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
 
         cs = (nfs3_call_state_t *)carg;

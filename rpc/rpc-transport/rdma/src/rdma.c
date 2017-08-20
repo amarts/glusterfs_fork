@@ -1349,7 +1349,7 @@ gf_rdma_post_send (struct ibv_qp *qp, gf_rdma_post_t *post, int32_t len)
         }, *bad_wr;
 
         if (!qp)
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
 
         return ibv_post_send (qp, &wr, &bad_wr);
 }

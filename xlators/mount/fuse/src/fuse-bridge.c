@@ -210,7 +210,7 @@ send_fuse_iov (xlator_t *this, fuse_in_header_t *finh, struct iovec *iov_out,
 
         if (!this || !finh || !iov_out) {
                 gf_log ("send_fuse_iov", GF_LOG_ERROR,"Invalid arguments");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
         priv = this->private;
 
@@ -228,7 +228,7 @@ send_fuse_iov (xlator_t *this, fuse_in_header_t *finh, struct iovec *iov_out,
         if (res == -1)
                 return errno;
         if (res != fouh->len)
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
 
         if (priv->fuse_dump_fd != -1) {
                 char w                         = 'W';
@@ -2539,7 +2539,7 @@ fuse_lseek (xlator_t *this, fuse_in_header_t *finh, void *msg)
                 break;
         default:
                 /* fuse should handle other whence internally */
-                send_fuse_err (this, finh, EINVAL);
+                send_fuse_err (this, finh, GF_ERROR_CODE_INVAL);
                 free_fuse_state (state);
                 return;
         }
@@ -3283,7 +3283,7 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                         "%"PRIu64": SETXATTR %s/%"PRIu64" (%s):"
                         "refusing positioned setxattr",
                         finh->unique, state->loc.path, finh->nodeid, name);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto done;
         }
 #endif
@@ -3598,7 +3598,7 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         fuse_state_t            *state    = NULL;
         struct fuse_private     *priv     = NULL;
         int                      rv       = 0;
-        int                     op_errno  = EINVAL;
+        int                     op_errno  = GF_ERROR_CODE_INVAL;
         char                    *newkey   = NULL;
         int                      ret      = 0;
 
@@ -3619,7 +3619,7 @@ fuse_getxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
                         "%"PRIu64": GETXATTR %s/%"PRIu64" (%s):"
                         "refusing positioned getxattr",
                         finh->unique, state->loc.path, finh->nodeid, name);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 #endif

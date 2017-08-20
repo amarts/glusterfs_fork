@@ -398,7 +398,7 @@ glfsh_get_index_dir_loc (loc_t *rootloc, xlator_t *xl, loc_t *dirloc,
 
         ret = dict_get_ptr (xattr, vgfid, &index_gfid);
         if (ret < 0) {
-                *op_errno = EINVAL;
+                *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

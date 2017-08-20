@@ -1246,7 +1246,7 @@ dht_migration_complete_check_done (int op_ret, call_frame_t *frame, void *data)
                 goto out;
 
         if (local->cached_subvol == NULL) {
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1288,7 +1288,7 @@ dht_migration_complete_check_task (void *data)
         src_node = local->cached_subvol;
 
         if (!local->loc.inode && !local->fd) {
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1527,7 +1527,7 @@ dht_inprogress_check_done (int op_ret, call_frame_t *frame, void *data)
                                      src_subvol, dst_subvol)) {
                 dst_subvol = dht_subvol_get_cached (THIS, inode);
                 if (!dst_subvol) {
-                        local->op_errno = EINVAL;
+                        local->op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         }

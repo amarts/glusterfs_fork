@@ -115,7 +115,7 @@ glfs_loc_link (loc_t *loc, struct iatt *iatt)
         uint64_t ctx_value = LOOKUP_NOT_NEEDED;
 
 	if (!loc->inode) {
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return -1;
 	}
 
@@ -196,7 +196,7 @@ retry:
 
 	if (!IA_ISREG (iatt.ia_type)) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -490,7 +490,7 @@ retry:
 
 		if (!IA_ISREG (iatt.ia_type)) {
 			ret = -1;
-			errno = EINVAL;
+			errno = GF_ERROR_CODE_INVAL;
 			goto out;
 		}
 	}
@@ -578,7 +578,7 @@ glfs_seek (struct glfs_fd *glfd, off_t offset, int whence)
         default:
                 /* other SEEK_* do not make sense, all operations get an offset
                  * and the position in the fd is not tracked */
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -647,7 +647,7 @@ pub_glfs_lseek (struct glfs_fd *glfd, off_t offset, int whence)
                 break;
 #endif
         default:
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 	}
 
         if (glfd)
@@ -821,7 +821,7 @@ glfs_io_async_cbk (int op_ret, int op_errno, call_frame_t *frame,
         } else if (gio->op == GF_FOP_READ) {
                 if (!iovec) {
                         op_ret = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
 
@@ -1870,7 +1870,7 @@ retry:
 
 	if (iatt.ia_type != IA_IFLNK) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 
@@ -2225,7 +2225,7 @@ retrynew:
                 }
         }
 
-	/* TODO: check if new or old is a prefix of the other, and fail EINVAL */
+	/* TODO: check if new or old is a prefix of the other, and fail GF_ERROR_CODE_INVAL */
 
 	ret = syncop_rename (subvol, &oldloc, &newloc, NULL, NULL);
         DECODE_SYNCOP_ERR (ret);
@@ -3274,7 +3274,7 @@ glfs_getxattr_common (struct glfs *fs, const char *path, const char *name,
 
         if (!name || *name == '\0') {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3362,7 +3362,7 @@ pub_glfs_fgetxattr (struct glfs_fd *glfd, const char *name, void *value,
 
         if (!name || *name == '\0') {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3577,7 +3577,7 @@ glfs_setxattr_common (struct glfs *fs, const char *path, const char *name,
 
         if (!name || *name == '\0') {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -3667,7 +3667,7 @@ pub_glfs_fsetxattr (struct glfs_fd *glfd, const char *name, const void *value,
 
         if (!name || *name == '\0') {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -4172,7 +4172,7 @@ pub_glfs_getcwd (struct glfs *fs, char *buf, size_t n)
 
 	if (!buf || n < 2) {
 		ret = -1;
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		goto out;
 	}
 

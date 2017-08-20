@@ -44,7 +44,7 @@ selinux_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 {
         selinux_priv_t  *priv           = NULL;
         int32_t         op_ret          = -1;
-        int32_t         op_errno        = EINVAL;
+        int32_t         op_errno        = GF_ERROR_CODE_INVAL;
         char            *xattr_name     = (char *) name;
 
         priv = this->private;
@@ -99,7 +99,7 @@ selinux_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         selinux_priv_t  *priv           = NULL;
         int32_t         op_ret          = -1;
-        int32_t         op_errno        = EINVAL;
+        int32_t         op_errno        = GF_ERROR_CODE_INVAL;
         char            *xattr_name     = (char *) name;
 
         priv = this->private;
@@ -140,7 +140,7 @@ selinux_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
 {
         selinux_priv_t  *priv           = NULL;
         int32_t         op_ret          = -1;
-        int32_t         op_errno        = EINVAL;
+        int32_t         op_errno        = GF_ERROR_CODE_INVAL;
         int32_t         ret             = -1;
 
         priv = this->private;
@@ -182,7 +182,7 @@ selinux_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         selinux_priv_t  *priv           = NULL;
         int32_t         op_ret          = -1;
-        int32_t         op_errno        = EINVAL;
+        int32_t         op_errno        = GF_ERROR_CODE_INVAL;
         int32_t         ret             = -1;
 
         priv = this->private;

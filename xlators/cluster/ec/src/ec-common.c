@@ -680,7 +680,7 @@ ec_lock_t *ec_lock_allocate(ec_fop_data_t *fop, loc_t *loc)
                 "Trying to lock based on an invalid "
                 "inode");
 
-        __ec_fop_set_error(fop, EINVAL);
+        __ec_fop_set_error(fop, GF_ERROR_CODE_INVAL);
 
         return NULL;
     }
@@ -1041,7 +1041,7 @@ ec_prepare_update_cbk (call_frame_t *frame, void *cookie,
                                 EC_MSG_CONFIG_XATTR_INVALID,
                                 "Invalid config xattr");
 
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
 
                         goto unlock;
                     }

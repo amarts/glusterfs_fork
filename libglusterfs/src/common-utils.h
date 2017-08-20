@@ -280,7 +280,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
 
 #define VALIDATE_OR_GOTO(arg,label)   do {				\
 		if (!arg) {						\
-			errno = EINVAL;					\
+			errno = GF_ERROR_CODE_INVAL;					\
 			gf_msg_callingfn ((this ? (this->name) :        \
                                            "(Govinda! Govinda!)"),      \
                                           GF_LOG_WARNING, EINVAL,       \
@@ -292,7 +292,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
 
 #define GF_VALIDATE_OR_GOTO(name,arg,label)   do {                      \
 		if (!arg) {                                             \
-			errno = EINVAL;                                 \
+			errno = GF_ERROR_CODE_INVAL;                                 \
 			gf_msg_callingfn (name, GF_LOG_ERROR, errno,    \
                                           LG_MSG_INVALID_ARG,           \
                                           "invalid argument: " #arg);	\
@@ -338,7 +338,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
         do {                                                            \
                 GF_VALIDATE_OR_GOTO (name, arg, label);                 \
                 if ((arg[0]) != '/') {                                  \
-                        errno = EINVAL;                                 \
+                        errno = GF_ERROR_CODE_INVAL;                                 \
 			gf_msg_callingfn (name, GF_LOG_ERROR, EINVAL,   \
                                           LG_MSG_INVALID_ARG,           \
                                           "invalid argument: " #arg);	\

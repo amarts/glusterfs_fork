@@ -875,7 +875,7 @@ serialize_rsp_direntp (gf_dirent_t *entries, gfs3_readdirp_rsp *rsp)
                                 gf_msg (THIS->name, GF_LOG_ERROR, EINVAL,
                                         PS_MSG_INVALID_ENTRY, "failed to get "
                                         "serialized length of reply dict");
-                                errno = EINVAL;
+                                errno = GF_ERROR_CODE_INVAL;
                                 trav->dict.dict_len = 0;
                                 goto out;
                         }
@@ -2213,7 +2213,7 @@ server_populate_compound_response (xlator_t *this, gfs3_compound_rsp *rsp,
                                    call_frame_t *frame,
                                    compound_args_cbk_t *args_cbk, int index)
 {
-        int                     op_errno    = EINVAL;
+        int                     op_errno    = GF_ERROR_CODE_INVAL;
         default_args_cbk_t      *this_args_cbk = NULL;
         compound_rsp            *this_rsp   = NULL;
         server_state_t          *state      = NULL;

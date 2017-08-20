@@ -246,13 +246,13 @@ ioc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (local == NULL) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         if (!this || !this->private) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -325,13 +325,13 @@ ioc_discover_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (local == NULL) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         if (!this || !this->private) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -679,7 +679,7 @@ ioc_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
         local = frame->local;
         if (!this || !this->private) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -769,7 +769,7 @@ ioc_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (!this || !this->private) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -856,7 +856,7 @@ ioc_mknod_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (!this || !this->private) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1258,7 +1258,7 @@ ioc_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
         if (!table) {
                 gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                         IO_CACHE_MSG_ENFORCEMENT_FAILED, "table is null");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

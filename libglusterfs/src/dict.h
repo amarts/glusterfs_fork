@@ -35,7 +35,7 @@ typedef struct _data_pair data_pair_t;
                                 LG_MSG_DICT_SERIAL_FAILED,            \
                                 "failed to get serialized dict (%s)",   \
                                 (#from_dict));                          \
-                        ope = EINVAL;                                   \
+                        ope = GF_ERROR_CODE_INVAL;                                   \
                         goto labl;                                      \
                 }                                                       \
         } while (0)
@@ -54,7 +54,7 @@ typedef struct _data_pair data_pair_t;
                                 "failed to unserialize dictionary (%s)", \
                                 (#to));                                 \
                                                                         \
-                        ope = EINVAL;                                   \
+                        ope = GF_ERROR_CODE_INVAL;                                   \
                         goto labl;                                      \
                 }                                                       \
                                                                         \

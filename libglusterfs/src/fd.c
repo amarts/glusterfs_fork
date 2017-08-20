@@ -58,7 +58,7 @@ gf_fd_fdtable_expand (fdtable_t *fdtable, uint32_t nr)
         if (fdtable == NULL || nr > UINT32_MAX) {
                 gf_msg_callingfn ("fd", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                ret = EINVAL;
+                ret = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -255,7 +255,7 @@ gf_fd_unused_get (fdtable_t *fdtable, fd_t *fdptr)
         if (fdtable == NULL || fdptr == NULL) {
                 gf_msg_callingfn ("fd", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
 
         pthread_mutex_lock (&fdtable->lock);
@@ -409,14 +409,14 @@ gf_fd_fdptr_get (fdtable_t *fdtable, int64_t fd)
         if (fdtable == NULL || fd < 0) {
                 gf_msg_callingfn ("fd", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
         if (!(fd < fdtable->max_fds)) {
                 gf_msg_callingfn ("fd", GF_LOG_ERROR, EINVAL,
                                   LG_MSG_INVALID_ARG, "invalid argument");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 

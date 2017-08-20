@@ -54,7 +54,7 @@ static char *ec_read_policies[EC_READ_POLICY_MAX + 1] = {
 int32_t ec_parse_options(xlator_t * this)
 {
     ec_t * ec = this->private;
-    int32_t error = EINVAL;
+    int32_t error = GF_ERROR_CODE_INVAL;
     uintptr_t mask;
 
     GF_OPTION_INIT("redundancy", ec->redundancy, int32, out);
@@ -106,7 +106,7 @@ int32_t ec_prepare_childs(xlator_t * this)
         gf_msg (this->name, GF_LOG_ERROR, EINVAL,
                 EC_MSG_TOO_MANY_SUBVOLS, "Too many subvolumes");
 
-        return EINVAL;
+        return GF_ERROR_CODE_INVAL;
     }
     ec->nodes = count;
 

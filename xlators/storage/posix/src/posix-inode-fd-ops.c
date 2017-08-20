@@ -1045,7 +1045,7 @@ posix_opendir (call_frame_t *frame, xlator_t *this,
 {
         char             *real_path = NULL;
         int32_t           op_ret    = -1;
-        int32_t           op_errno  = EINVAL;
+        int32_t           op_errno  = GF_ERROR_CODE_INVAL;
         DIR              *dir       = NULL;
         struct posix_fd  *pfd       = NULL;
 
@@ -1384,7 +1384,7 @@ posix_readv (call_frame_t *frame, xlator_t *this,
         }
 
         if (!size) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL,
                         P_MSG_INVALID_ARGUMENT, "size=%"GF_PRI_SIZET, size);
                 goto out;
@@ -3114,7 +3114,7 @@ posix_fgetxattr (call_frame_t *frame, xlator_t *this,
                  fd_t *fd, const char *name, dict_t *xdata)
 {
         int32_t           op_ret         = -1;
-        int32_t           op_errno       = EINVAL;
+        int32_t           op_errno       = GF_ERROR_CODE_INVAL;
         struct posix_fd  *pfd            = NULL;
         int               _fd            = -1;
         int32_t           list_offset    = 0;
@@ -3982,7 +3982,7 @@ _posix_handle_xattr_keyvalue_pair (dict_t *d, char *k, data_t *v,
                                 "gluster-devel@gluster.org", optype,
                                 filler->real_path);
                         op_ret = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto unlock;
                 }
 
@@ -4033,7 +4033,7 @@ unlock:
                                         k, strerror (-size));
 
                         op_ret = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         GF_FREE (array);
                         goto out;
                 }
@@ -4490,7 +4490,7 @@ posix_fill_readdir (fd_t *fd, DIR *dir, off_t off, size_t size,
                                 "seekdir(0x%llx) failed on dir=%p: "
                                 "Invalid argument (offset reused from "
                                 "another DIR * structure?)", off, dir);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         count = -1;
                         goto out;
                 }
@@ -4567,7 +4567,7 @@ posix_fill_readdir (fd_t *fd, DIR *dir, off_t off, size_t size,
                                         "Invalid argument (offset reused from "
                                         "another DIR * structure?)",
                                         in_case, dir);
-                                errno = EINVAL;
+                                errno = GF_ERROR_CODE_INVAL;
                                 count = -1;
                                 goto out;
                         }
@@ -4756,7 +4756,7 @@ posix_do_readdir (call_frame_t *frame, xlator_t *this,
         if (!dir) {
                 gf_msg (this->name, GF_LOG_WARNING, EINVAL, P_MSG_PFD_NULL,
                         "dir is NULL for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
 	}
 

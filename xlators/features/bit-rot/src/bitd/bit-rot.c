@@ -1026,7 +1026,7 @@ bitd_oneshot_crawl (xlator_t *subvol,
                  */
                 if (op_errno == GF_ERROR_CODE_NODATA && (iatt.ia_size != 0))
                         need_signing = _gf_true;
-                if (op_errno == EINVAL)
+                if (op_errno == GF_ERROR_CODE_INVAL)
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 BRB_MSG_PARTIAL_VERSION_PRESENCE, "Partial "
                                 "version xattr presence detected, ignoring "

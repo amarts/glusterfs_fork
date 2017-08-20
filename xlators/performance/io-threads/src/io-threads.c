@@ -866,7 +866,7 @@ set_stack_size (iot_conf_t *conf)
 
         pthread_attr_init (&conf->w_attr);
         err = pthread_attr_setstacksize (&conf->w_attr, stacksize);
-        if (err == EINVAL) {
+        if (err == GF_ERROR_CODE_INVAL) {
                 err = pthread_attr_getstacksize (&conf->w_attr, &stacksize);
                 if (!err)
                         gf_msg (this->name, GF_LOG_WARNING,

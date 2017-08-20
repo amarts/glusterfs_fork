@@ -1294,7 +1294,7 @@ afr_split_brain_resolve_do (call_frame_t *frame, xlator_t *this, loc_t *loc,
 {
         afr_local_t    *local             = NULL;
         int     ret                       = -1;
-        int     op_errno                  = EINVAL;
+        int     op_errno                  = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
         local->xdata_req = dict_new ();
@@ -1398,7 +1398,7 @@ afr_handle_split_brain_commands (xlator_t *this, call_frame_t *frame,
         int             len               = 0;
         int             spb_child_index   = -1;
         int             ret               = -1;
-        int             op_errno          = EINVAL;
+        int             op_errno          = GF_ERROR_CODE_INVAL;
 
         priv = this->private;
 
@@ -1421,7 +1421,7 @@ afr_handle_split_brain_commands (xlator_t *this, call_frame_t *frame,
                                 spb_child_index = -1;
                         else {
                                 ret = 1;
-                                op_errno = EINVAL;
+                                op_errno = GF_ERROR_CODE_INVAL;
                                 goto out;
                         }
                 }
@@ -1597,7 +1597,7 @@ afr_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
         afr_local_t    *local             = NULL;
         call_frame_t   *transaction_frame = NULL;
         int             ret               = -1;
-        int             op_errno          = EINVAL;
+        int             op_errno          = GF_ERROR_CODE_INVAL;
 
         GF_IF_INTERNAL_XATTR_GOTO ("trusted.afr.*", dict,
                                    op_errno, out);

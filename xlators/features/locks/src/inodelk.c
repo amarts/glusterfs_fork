@@ -835,7 +835,7 @@ pl_common_inodelk (call_frame_t *frame, xlator_t *this,
         VALIDATE_OR_GOTO (flock, unwind);
 
         if ((flock->l_start < 0) || (flock->l_len < 0)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 

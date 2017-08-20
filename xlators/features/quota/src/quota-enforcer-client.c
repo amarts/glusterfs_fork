@@ -122,7 +122,7 @@ quota_enforcer_lookup_cbk (struct rpc_req *req, struct iovec *iov,
         gfs3_lookup_rsp   rsp         = {0,};
         struct iatt       stbuf       = {0,};
         struct iatt       postparent  = {0,};
-        int               op_errno    = EINVAL;
+        int               op_errno    = GF_ERROR_CODE_INVAL;
         dict_t           *xdata       = NULL;
         inode_t          *inode       = NULL;
         xlator_t         *this        = NULL;
@@ -149,7 +149,7 @@ quota_enforcer_lookup_cbk (struct rpc_req *req, struct iovec *iov,
                         Q_MSG_XDR_DECODING_FAILED,
                         "XDR decoding failed");
                 rsp.op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

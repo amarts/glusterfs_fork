@@ -2507,7 +2507,7 @@ mgmt_pmap_signin2_cbk (struct rpc_req *req, struct iovec *iov, int count,
         if (-1 == req->rpc_status) {
                 ret = -1;
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2515,7 +2515,7 @@ mgmt_pmap_signin2_cbk (struct rpc_req *req, struct iovec *iov, int count,
         if (ret < 0) {
                 gf_log (frame->this->name, GF_LOG_ERROR, "XDR decode error");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2557,7 +2557,7 @@ mgmt_pmap_signin_cbk (struct rpc_req *req, struct iovec *iov, int count,
         if (-1 == req->rpc_status) {
                 ret = -1;
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2565,7 +2565,7 @@ mgmt_pmap_signin_cbk (struct rpc_req *req, struct iovec *iov, int count,
         if (ret < 0) {
                 gf_log (frame->this->name, GF_LOG_ERROR, "XDR decode error");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2652,7 +2652,7 @@ mgmt_pmap_signout_cbk (struct rpc_req *req, struct iovec *iov, int count,
 
         if (-1 == req->rpc_status) {
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2660,7 +2660,7 @@ mgmt_pmap_signout_cbk (struct rpc_req *req, struct iovec *iov, int count,
         if (ret < 0) {
                 gf_log (THIS->name, GF_LOG_ERROR, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

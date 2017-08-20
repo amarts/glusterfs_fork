@@ -479,7 +479,7 @@ dht_rename_dir_lock1_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         ret = dht_protect_namespace (frame, loc, subvol, &local->current->ns,
                                      dht_rename_dir_lock2_cbk);
         if (ret < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -577,7 +577,7 @@ dht_rename_dir (call_frame_t *frame, xlator_t *this)
                                      &local->current->ns,
                                      dht_rename_dir_lock1_cbk);
         if (ret < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1683,7 +1683,7 @@ dht_rename (call_frame_t *frame, xlator_t *this,
                         DHT_MSG_RENAME_FAILED,
                         "No hashed subvolume in layout for path=%s,"
                         "(gfid = %s)", oldloc->path, gfid);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1694,7 +1694,7 @@ dht_rename (call_frame_t *frame, xlator_t *this,
                         "No cached subvolume for path = %s,"
                         "(gfid = %s)", oldloc->path, gfid);
 
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -1704,7 +1704,7 @@ dht_rename (call_frame_t *frame, xlator_t *this,
                         DHT_MSG_RENAME_FAILED,
                         "No hashed subvolume in layout for path=%s",
                         newloc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 

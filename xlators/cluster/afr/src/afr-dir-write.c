@@ -45,7 +45,7 @@ afr_build_parent_loc (loc_t *parent, loc_t *child, int32_t *op_errno)
 
         if (!child->parent) {
                 if (op_errno)
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

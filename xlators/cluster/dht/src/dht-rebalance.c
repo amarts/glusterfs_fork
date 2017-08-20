@@ -293,7 +293,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
         dict_t                 *xattr_rsp       = NULL;
         struct iatt             stbuf                   = {0,};
 
-        *fop_errno = EINVAL;
+        *fop_errno = GF_ERROR_CODE_INVAL;
 
         GF_VALIDATE_OR_GOTO ("defrag", loc, out);
         GF_VALIDATE_OR_GOTO ("defrag", loc->name, out);
@@ -307,7 +307,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "Migrate file failed :"
                         "loc->pargfid is NULL for %s", loc->path);
-                *fop_errno = EINVAL;
+                *fop_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -317,7 +317,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                         DHT_MSG_MIGRATE_FILE_FAILED,
                         "Migrate file failed :"
                         "loc->gfid is NULL for %s", loc->path);
-                *fop_errno = EINVAL;
+                *fop_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -397,7 +397,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                         "Migrate file failed :"
                         "Failed to get cached subvol"
                         " for %s on %s", loc->name, this->name);
-                *fop_errno = EINVAL;
+                *fop_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -409,7 +409,7 @@ gf_defrag_handle_hardlink (xlator_t *this, loc_t *loc, int *fop_errno)
                         "Migrate file failed :"
                         "Failed to get hashed subvol"
                         " for %s on %s", loc->name, this->name);
-                *fop_errno = EINVAL;
+                *fop_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -630,7 +630,7 @@ __is_file_migratable (xlator_t *this, loc_t *loc,
                                 "Migrate file failed:"
                                 "%s: Unable to get lock count for file",
                                 loc->path);
-                        *fop_errno = EINVAL;
+                        *fop_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -718,7 +718,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
                                 DHT_MSG_GFID_MISMATCH,
                                 "file %s exists in %s with different gfid",
                                 loc->path, to->name);
-                        *fop_errno = EINVAL;
+                        *fop_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -786,7 +786,7 @@ __dht_rebalance_create_dst_file (xlator_t *this, xlator_t *to, xlator_t *from,
                                 "file %s exists in %s with different gfid,"
                                 "found in lookup after create",
                                 loc->path, to->name);
-                        *fop_errno = EINVAL;
+                        *fop_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -1012,7 +1012,7 @@ find_new_subvol:
         layout = dht_layout_get (this, loc->parent);
         if (!layout) {
                 gf_log (this->name, GF_LOG_ERROR, "Layout is NULL");
-                *fop_errno = EINVAL;
+                *fop_errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -1272,7 +1272,7 @@ migrate_special_files (xlator_t *this, xlator_t *from, xlator_t *to, loc_t *loc,
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 DHT_MSG_MIGRATE_FILE_FAILED,
                                 "%s: file exists in destination", loc->path);
-                        *fop_errno = EINVAL;
+                        *fop_errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -2272,7 +2272,7 @@ rebalance_task (void *data)
 static int
 rebalance_task_completion (int op_ret, call_frame_t *sync_frame, void *data)
 {
-        int32_t       op_errno   = EINVAL;
+        int32_t       op_errno   = GF_ERROR_CODE_INVAL;
 
         if (op_ret == -1) {
                 /* Failure of migration process, mostly due to write process.

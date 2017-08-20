@@ -523,12 +523,12 @@ int32_t crypt_readv(call_frame_t *frame,
 
 	info = local_get_inode_info(local, this);
 	if (info == NULL) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		fd_unref(fd);
 		goto error;
 	}
 	if (!object_alg_atomic(&info->cinfo)) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		fd_unref(fd);
 		goto error;
 	}
@@ -1107,11 +1107,11 @@ int crypt_writev(call_frame_t *frame,
 
 	info = local_get_inode_info(local, this);
 	if (info == NULL) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto error;
 	}
 	if (!object_alg_atomic(&info->cinfo)) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto error;
 	}
 	if (iov_length(vec, count) == 0)
@@ -1723,11 +1723,11 @@ static int32_t crypt_ftruncate(call_frame_t *frame,
 	local->fd = fd_ref(fd);
 	info = local_get_inode_info(local, this);
 	if (info == NULL) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto error;
 	}
 	if (!object_alg_atomic(&info->cinfo)) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto error;
 	}
 	local->data_conf.orig_offset = offset;
@@ -2197,7 +2197,7 @@ static int32_t crypt_open(call_frame_t *frame,
 	if (ret < 0) {
 		loc_wipe(local->loc);
 		GF_FREE(local->loc);
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		goto error;
 	}
 	local->custom_mtd = ret;
@@ -2525,12 +2525,12 @@ static int32_t crypt_create(call_frame_t *frame,
 	}
 	data = dict_get(xdata, "gfid-req");
 	if (!data) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		gf_log("crypt", GF_LOG_WARNING, "gfid not found");
 		goto error;
 	}
 	if (data->len != sizeof(uuid_t)) {
-		ret = EINVAL;
+		ret = GF_ERROR_CODE_INVAL;
 		gf_log("crypt", GF_LOG_WARNING,
 		       "bad gfid size (%d), should be %d",
 		       (int)data->len, (int)sizeof(uuid_t));
@@ -3151,7 +3151,7 @@ static int32_t linkop_begin(call_frame_t *frame,
 		if (info == NULL) {
 			gf_log (this->name, GF_LOG_WARNING,
 				"Inode info was not found");
-			op_errno = EINVAL;
+			op_errno = GF_ERROR_CODE_INVAL;
 			goto error;
 		}
 		/*
@@ -4438,7 +4438,7 @@ int32_t init(xlator_t *this)
 	if (!this->children || this->children->next) {
 		gf_log ("crypt", GF_LOG_ERROR,
 			"FATAL: crypt should have exactly one child");
-		return EINVAL;
+		return GF_ERROR_CODE_INVAL;
 	}
 	if (!this->parents) {
 		gf_log (this->name, GF_LOG_WARNING,

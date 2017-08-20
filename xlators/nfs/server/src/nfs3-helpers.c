@@ -286,7 +286,7 @@ void
 nfs3_stat_to_fattr3 (struct iatt *buf, fattr3 *fa)
 {
         if (buf == NULL || fa == NULL) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return;
         }
 

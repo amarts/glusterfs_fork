@@ -52,7 +52,7 @@ client3_getspec_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (THIS->name, GF_LOG_ERROR, EINVAL, PC_MSG_INVALID_ENTRY,
                         "frame not found with the request, returning EINVAL");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         if (-1 == req->rpc_status) {
@@ -70,7 +70,7 @@ client3_getspec_cbk (struct rpc_req *req, struct iovec *iov, int count,
                         PC_MSG_XDR_DECODING_FAILED,
                         "XDR decoding failed, returning EINVAL");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -715,7 +715,7 @@ client3_3_reopen_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (frame->this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -804,7 +804,7 @@ client3_3_reopendir_cbk (struct rpc_req *req, struct iovec *iov, int count,
                 gf_msg (frame->this->name, GF_LOG_ERROR, EINVAL,
                         PC_MSG_XDR_DECODING_FAILED, "XDR decoding failed");
                 rsp.op_ret   = -1;
-                rsp.op_errno = EINVAL;
+                rsp.op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

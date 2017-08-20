@@ -202,7 +202,7 @@ ec_code_intel_emit(ec_code_builder_t *builder, ec_code_intel_t *intel)
     uint32_t i, count;
 
     if (intel->invalid) {
-        ec_code_error(builder, EINVAL);
+        ec_code_error(builder, GF_ERROR_CODE_INVAL);
         return;
     }
 

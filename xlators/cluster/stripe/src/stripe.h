@@ -53,7 +53,7 @@
 #define STRIPE_VALIDATE_FCTX(fctx, label) do {                  \
         int     idx = 0;                                        \
         if (!fctx) {                                            \
-                op_errno = EINVAL;                              \
+                op_errno = GF_ERROR_CODE_INVAL;                              \
                 goto label;                                     \
         }                                                       \
         for (idx = 0; idx < fctx->stripe_count; idx++) {        \

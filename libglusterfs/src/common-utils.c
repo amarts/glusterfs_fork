@@ -168,7 +168,7 @@ gf_lstat_dir (const char *path, struct stat *stbuf_in)
         struct stat stbuf = {0,};
 
         if (path == NULL) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -935,7 +935,7 @@ gf_string2time (const char *str, uint32_t *n)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -951,9 +951,9 @@ gf_string2time (const char *str, uint32_t *n)
         errno = 0;
         value = strtol (str, &tail, 0);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1013,7 +1013,7 @@ gf_string2percent (const char *str, double *n)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1029,9 +1029,9 @@ gf_string2percent (const char *str, double *n)
         errno = 0;
         value = strtod (str, &tail);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1057,7 +1057,7 @@ _gf_string2long (const char *str, long *n, int base)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1065,9 +1065,9 @@ _gf_string2long (const char *str, long *n, int base)
         errno = 0;
         value = strtol (str, &tail, base);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1092,7 +1092,7 @@ _gf_string2ulong (const char *str, unsigned long *n, int base)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1108,9 +1108,9 @@ _gf_string2ulong (const char *str, unsigned long *n, int base)
         errno = 0;
         value = strtoul (str, &tail, base);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1135,7 +1135,7 @@ _gf_string2uint (const char *str, unsigned int *n, int base)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1151,9 +1151,9 @@ _gf_string2uint (const char *str, unsigned int *n, int base)
         errno = 0;
         value = strtoul (str, &tail, base);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1177,7 +1177,7 @@ _gf_string2double (const char *str, double *n)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1185,9 +1185,9 @@ _gf_string2double (const char *str, double *n)
         errno = 0;
         value = strtod (str, &tail);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1211,7 +1211,7 @@ _gf_string2longlong (const char *str, long long *n, int base)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1219,9 +1219,9 @@ _gf_string2longlong (const char *str, long long *n, int base)
         errno = 0;
         value = strtoll (str, &tail, base);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1246,7 +1246,7 @@ _gf_string2ulonglong (const char *str, unsigned long long *n, int base)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1262,9 +1262,9 @@ _gf_string2ulonglong (const char *str, unsigned long long *n, int base)
         errno = 0;
         value = strtoull (str, &tail, base);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1617,7 +1617,7 @@ gf_string2bytesize_range (const char *str, uint64_t *n, uint64_t umax)
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1642,9 +1642,9 @@ gf_string2bytesize_range (const char *str, uint64_t *n, uint64_t umax)
                 int_value = strtoll (str, &tail, 10);
 
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)
@@ -1735,7 +1735,7 @@ gf_string2percent_or_bytesize (const char *str, double *n,
         if (str == NULL || n == NULL) {
                 gf_msg_callingfn (THIS->name, GF_LOG_WARNING, EINVAL,
                                   LG_MSG_INVALID_ARG, "argument invalid");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return -1;
         }
 
@@ -1751,9 +1751,9 @@ gf_string2percent_or_bytesize (const char *str, double *n,
         errno = 0;
         value = strtod (str, &tail);
         if (str == tail)
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
 
-        if (errno == ERANGE || errno == EINVAL)
+        if (errno == ERANGE || errno == GF_ERROR_CODE_INVAL)
                 return -1;
 
         if (errno == 0)

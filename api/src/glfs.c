@@ -355,7 +355,7 @@ pub_glfs_unset_volfile_server (struct glfs *fs, const char *transport,
         int               ret = -1;
 
         if (!fs || !host) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return ret;
         }
 
@@ -414,7 +414,7 @@ pub_glfs_set_volfile_server (struct glfs *fs, const char *transport,
         int                    ret = -1;
 
         if (!fs || !host) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return ret;
         }
 
@@ -741,7 +741,7 @@ pub_glfs_new (const char *volname)
         xlator_t        *old_THIS       = NULL;
 
         if (!volname) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 return NULL;
         }
 
@@ -1016,7 +1016,7 @@ glfs_init_async (struct glfs *fs, glfs_init_cbk cbk)
 	if (!fs || !fs->ctx) {
 		gf_msg ("glfs", GF_LOG_ERROR, EINVAL, API_MSG_INVALID_ENTRY,
 			"fs is not properly initialized.");
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return ret;
 	}
 
@@ -1038,7 +1038,7 @@ pub_glfs_init (struct glfs *fs)
 	if (!fs || !fs->ctx) {
 		gf_msg ("glfs", GF_LOG_ERROR, EINVAL, API_MSG_INVALID_ENTRY,
 			"fs is not properly initialized.");
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		return ret;
 	}
 
@@ -1504,7 +1504,7 @@ pub_glfs_sysrq (struct glfs *fs, char sysrq)
 
         if (!fs || !fs->ctx) {
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

@@ -1213,7 +1213,7 @@ posix_acl_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int mask,
         }
         if (!perm) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 

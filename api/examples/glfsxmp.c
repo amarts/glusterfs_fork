@@ -1268,7 +1268,7 @@ test_handleops (int argc, char *argv[])
         }
 
         tmp = glfs_h_creat (fs, root, parent_name, O_CREAT, 0644, &sb);
-        if (tmp != NULL || !(errno == EISDIR || errno == EINVAL)) {
+        if (tmp != NULL || !(errno == EISDIR || errno == GF_ERROR_CODE_INVAL)) {
                 fprintf (stderr, "glfs_h_creat: dir create, tmp = (%p), errno = %s\n",
                         leaf, strerror (errno));
                 printf ("glfs_h_creat tests: FAILED\n");
@@ -1419,7 +1419,7 @@ test_handleops (int argc, char *argv[])
 
         /* TODO: creat op on a FIFO node hangs, need to check and fix
         tmp = glfs_h_creat (fs, parent, newnod_name, O_CREAT, 0644, &sb);
-        if (tmp != NULL || errno != EINVAL) {
+        if (tmp != NULL || errno != GF_ERROR_CODE_INVAL) {
                 fprintf (stderr, "glfs_h_creat: node create, tmp = (%p), errno = %s\n",
                         tmp, strerror (errno));
                 printf ("glfs_h_creat/mknod tests: FAILED\n");

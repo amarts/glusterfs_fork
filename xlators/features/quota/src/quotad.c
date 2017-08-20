@@ -123,7 +123,7 @@ qd_nameless_lookup (xlator_t *this, call_frame_t *frame, gfs3_lookup_req *req,
 
         ret = dict_get_str (xdata, "volume-uuid", &volume_uuid);
         if (ret < 0) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -137,7 +137,7 @@ qd_nameless_lookup (xlator_t *this, call_frame_t *frame, gfs3_lookup_req *req,
 
         subvol = qd_find_subvol (this, volume_uuid);
         if (subvol == NULL) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

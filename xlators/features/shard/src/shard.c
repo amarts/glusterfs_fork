@@ -1126,7 +1126,7 @@ shard_lookup_base_file_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local->prebuf = *buf;
         if (shard_modify_size_and_block_count (&local->prebuf, xdata)) {
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1254,7 +1254,7 @@ shard_common_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local->prebuf = *buf;
         if (shard_modify_size_and_block_count (&local->prebuf, xdata)) {
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
         local->xattr_rsp = dict_ref (xdata);
@@ -4389,7 +4389,7 @@ int32_t
 shard_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                      const char *name, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if (frame->root->pid != GF_CLIENT_PID_GSYNCD) {
                 GF_IF_NATIVE_XATTR_GOTO (SHARD_XATTR_PREFIX"*",
@@ -4415,7 +4415,7 @@ int32_t
 shard_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                       const char *name, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if (frame->root->pid != GF_CLIENT_PID_GSYNCD) {
                 GF_IF_NATIVE_XATTR_GOTO (SHARD_XATTR_PREFIX"*",
@@ -4459,7 +4459,7 @@ int32_t
 shard_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                    const char *name, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if ((frame->root->pid != GF_CLIENT_PID_GSYNCD) &&
             (name) && (!strncmp (name, SHARD_XATTR_PREFIX,
@@ -4500,7 +4500,7 @@ int32_t
 shard_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                   const char *name, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if ((frame->root->pid != GF_CLIENT_PID_GSYNCD) &&
             (name) && (!strncmp (name, SHARD_XATTR_PREFIX,
@@ -4522,7 +4522,7 @@ int32_t
 shard_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
                    int32_t flags, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if (frame->root->pid != GF_CLIENT_PID_GSYNCD) {
                 GF_IF_INTERNAL_XATTR_GOTO (SHARD_XATTR_PREFIX"*", dict,
@@ -4543,7 +4543,7 @@ int32_t
 shard_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
                   int32_t flags, dict_t *xdata)
 {
-        int op_errno = EINVAL;
+        int op_errno = GF_ERROR_CODE_INVAL;
 
         if (frame->root->pid != GF_CLIENT_PID_GSYNCD) {
                 GF_IF_INTERNAL_XATTR_GOTO (SHARD_XATTR_PREFIX"*", dict,
@@ -4606,7 +4606,7 @@ shard_common_setattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local->prebuf = *prebuf;
         if (shard_modify_size_and_block_count (&local->prebuf, xdata)) {
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
         if (xdata)

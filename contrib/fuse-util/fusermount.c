@@ -827,7 +827,7 @@ static int do_mount(const char *mnt, char **typep, mode_t rootmode,
 
 		res = mount(source, mnt, type, flags, optbuf);
 	}
-	if (res == -1 && errno == EINVAL) {
+	if (res == -1 && errno == GF_ERROR_CODE_INVAL) {
 		/* It could be an old version not supporting group_id */
 		sprintf(d, "fd=%i,rootmode=%o,user_id=%i",
 			fd, rootmode, getuid());

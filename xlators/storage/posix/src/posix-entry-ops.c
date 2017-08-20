@@ -1312,7 +1312,7 @@ real_op:
 
         if (op_ret == -1) {
                 op_errno = errno;
-                if ((op_errno == EINVAL) && S_ISREG (mode)) {
+                if ((op_errno == GF_ERROR_CODE_INVAL) && S_ISREG (mode)) {
                         /* Over Darwin, mknod with (S_IFREG|mode)
                            doesn't work */
                         tmp_fd = sys_creat (real_path, mode);

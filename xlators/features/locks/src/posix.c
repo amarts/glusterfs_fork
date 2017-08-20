@@ -1005,7 +1005,7 @@ int32_t
 pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
              const char *name, dict_t *xdata)
 {
-        int32_t                 op_errno        = EINVAL;
+        int32_t                 op_errno        = GF_ERROR_CODE_INVAL;
         int                     op_ret          = -1;
         int32_t                 bcount          = 0;
         int32_t                 gcount          = 0;
@@ -1023,7 +1023,7 @@ pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 goto usual;
 
         if (clrlk_parse_args (name, &args)) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1057,7 +1057,7 @@ pl_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                                 goto out;
                         break;
                 case CLRLK_TYPE_MAX:
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
         }
 
@@ -1653,7 +1653,7 @@ pl_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
          fd_t *fd, dict_t *xdata)
 {
         int                     op_ret         = -1;
-        int                     op_errno       = EINVAL;
+        int                     op_errno       = GF_ERROR_CODE_INVAL;
         pl_inode_t              *pl_inode      = NULL;
         posix_lock_t            *l             = NULL;
         posix_locks_private_t   *priv          = NULL;
@@ -2254,7 +2254,7 @@ pl_lk (call_frame_t *frame, xlator_t *this,
         if ((flock->l_start < 0) ||
             ((flock->l_start + flock->l_len) < 0)) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -3383,7 +3383,7 @@ pl_dump_inode_priv (xlator_t *this, inode_t *inode)
         int count      = 0;
 
         if (!inode) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

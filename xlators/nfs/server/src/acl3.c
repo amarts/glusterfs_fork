@@ -415,7 +415,7 @@ acl3_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (!frame->local) {
                 gf_msg (GF_ACL, GF_LOG_ERROR, EINVAL, NFS_MSG_INVALID_ENTRY,
                         "Invalid argument, frame->local NULL");
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         }
 
         cs = frame->local;

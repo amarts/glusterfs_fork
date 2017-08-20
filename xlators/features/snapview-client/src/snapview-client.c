@@ -339,7 +339,7 @@ gf_svc_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         svc_local_t   *local       = NULL;
         xlator_t      *subvolume   = NULL;
         int            op_ret      = -1;
-        int            op_errno    = EINVAL;
+        int            op_errno    = GF_ERROR_CODE_INVAL;
         inode_t       *parent      = NULL;
         svc_private_t *priv        = NULL;
         dict_t        *new_xdata   = NULL;
@@ -458,7 +458,7 @@ gf_svc_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         int32_t        ret        = -1;
         int            inode_type = -1;
         int32_t        op_ret     = -1;
-        int32_t        op_errno   = EINVAL;
+        int32_t        op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t   wind       = _gf_false;
         svc_private_t  *priv      = NULL;
         const char     *path      = NULL;
@@ -545,7 +545,7 @@ gf_svc_stat (call_frame_t *frame, xlator_t *this, loc_t *loc,
         int          inode_type = -1;
         xlator_t    *subvolume  = NULL;
         int32_t      op_ret     = -1;
-        int32_t      op_errno   = EINVAL;
+        int32_t      op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -575,7 +575,7 @@ gf_svc_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
         int          inode_type = -1;
         xlator_t    *subvolume  = NULL;
         int32_t      op_ret     = -1;
-        int32_t      op_errno   = EINVAL;
+        int32_t      op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -672,7 +672,7 @@ gf_svc_opendir (call_frame_t *frame, xlator_t *this, loc_t *loc, fd_t *fd,
         int            inode_type = -1;
         xlator_t      *subvolume  = NULL;
         int            op_ret     = -1;
-        int            op_errno   = EINVAL;
+        int            op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t   wind       = _gf_false;
         svc_local_t   *local      = NULL;
 
@@ -717,7 +717,7 @@ gf_svc_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         int32_t      ret        = -1;
         int          inode_type = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -728,7 +728,7 @@ gf_svc_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         ret = svc_inode_ctx_get (this, loc->inode, &inode_type);
         if (ret < 0) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s (gfid: %s)", loc->path,
                         uuid_utoa (loc->inode->gfid));
@@ -763,7 +763,7 @@ gf_svc_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         int32_t      ret        = -1;
         int          inode_type = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -776,7 +776,7 @@ gf_svc_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -808,7 +808,7 @@ gf_svc_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         int              inode_type             = -1;
         xlator_t        *subvolume              = NULL;
         int              op_ret                 = -1;
-        int              op_errno               = EINVAL;
+        int              op_errno               = GF_ERROR_CODE_INVAL;
         gf_boolean_t     wind                   = _gf_false;
         svc_private_t   *priv                   = NULL;
         char             attrname[PATH_MAX]     = "";
@@ -890,7 +890,7 @@ gf_svc_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         xlator_t     *subvolume  = NULL;
         gf_boolean_t  wind       = _gf_false;
         int           op_ret     = -1;
-        int           op_errno   = EINVAL;
+        int           op_errno   = GF_ERROR_CODE_INVAL;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
         GF_VALIDATE_OR_GOTO (this->name, frame, out);
@@ -920,7 +920,7 @@ gf_svc_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
         int32_t      ret         = -1;
         int          inode_type  = -1;
         int          op_ret      = -1;
-        int          op_errno    = EINVAL;
+        int          op_errno    = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind        = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -934,7 +934,7 @@ gf_svc_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
                         "for %s (gfid: %s)", loc->name,
                         uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -965,7 +965,7 @@ gf_svc_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
         int32_t      ret        = -1;
         int          inode_type = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -978,7 +978,7 @@ gf_svc_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get inode context "
                         "for %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1009,7 +1009,7 @@ gf_svc_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
         int          inode_type = -1;
         int          ret        = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -1023,7 +1023,7 @@ gf_svc_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
                         "context for %s (gfid: %s)", loc->name,
                         uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1078,7 +1078,7 @@ gf_svc_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         int            parent_type = -1;
         int            ret         = -1;
         int            op_ret      = -1;
-        int            op_errno    = EINVAL;
+        int            op_errno    = GF_ERROR_CODE_INVAL;
         svc_private_t *priv        = NULL;
         gf_boolean_t   wind        = _gf_false;
 
@@ -1095,7 +1095,7 @@ gf_svc_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (loc->parent->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1149,7 +1149,7 @@ gf_svc_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         int            parent_type = -1;
         int            ret         = -1;
         int            op_ret      = -1;
-        int            op_errno    = EINVAL;
+        int            op_errno    = GF_ERROR_CODE_INVAL;
         svc_private_t *priv        = NULL;
         gf_boolean_t   wind        = _gf_false;
 
@@ -1166,7 +1166,7 @@ gf_svc_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (loc->parent->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1200,7 +1200,7 @@ gf_svc_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         xlator_t    *subvolume  = NULL;
         int          inode_type = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         int          ret        = -1;
         gf_boolean_t wind       = _gf_false;
 
@@ -1221,7 +1221,7 @@ gf_svc_open (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
             ((flags & O_ACCMODE) == O_RDWR)) {
                 if (subvolume != FIRST_CHILD (this)) {
                         op_ret = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         }
@@ -1270,7 +1270,7 @@ gf_svc_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
         int            parent_type = -1;
         int            ret         = -1;
         int            op_ret      = -1;
-        int            op_errno    = EINVAL;
+        int            op_errno    = GF_ERROR_CODE_INVAL;
         svc_private_t *priv        = NULL;
         gf_boolean_t   wind        = _gf_false;
 
@@ -1288,7 +1288,7 @@ gf_svc_create (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (loc->parent->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1342,7 +1342,7 @@ gf_svc_symlink (call_frame_t *frame, xlator_t *this, const char *linkpath,
 {
         int            parent_type = -1;
         int            op_ret      = -1;
-        int            op_errno    = EINVAL;
+        int            op_errno    = GF_ERROR_CODE_INVAL;
         int            ret         = -1;
         svc_private_t *priv        = NULL;
         gf_boolean_t   wind        = _gf_false;
@@ -1360,7 +1360,7 @@ gf_svc_symlink (call_frame_t *frame, xlator_t *this, const char *linkpath,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (loc->parent->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1389,7 +1389,7 @@ gf_svc_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 {
         int            inode_type   = -1;
         int            op_ret       = -1;
-        int            op_errno     = EINVAL;
+        int            op_errno     = GF_ERROR_CODE_INVAL;
         int            ret          = -1;
         gf_boolean_t   wind         = _gf_false;
 
@@ -1403,7 +1403,7 @@ gf_svc_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get the inode "
                         "context for %s", uuid_utoa (loc->parent->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1434,7 +1434,7 @@ gf_svc_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         xlator_t     *subvolume  = NULL;
         int           ret        = -1;
         int           op_ret     = -1;
-        int           op_errno   = EINVAL;
+        int           op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t  wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -1465,7 +1465,7 @@ gf_svc_readlink (call_frame_t *frame, xlator_t *this, loc_t *loc, size_t size,
         xlator_t        *subvolume  = NULL;
         int              ret        = -1;
         int              op_ret     = -1;
-        int              op_errno   = EINVAL;
+        int              op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t     wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -1496,7 +1496,7 @@ gf_svc_access (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t mask,
         int            inode_type = -1;
         xlator_t      *subvolume  = NULL;
         int            op_ret     = -1;
-        int            op_errno   = EINVAL;
+        int            op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t   wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -1564,7 +1564,7 @@ gf_svc_readdir (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         svc_local_t  *local      = NULL;
         int           ret        = -1;
         int           op_ret     = -1;
-        int           op_errno   = EINVAL;
+        int           op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t  wind       = _gf_false;
         svc_fd_t     *svc_fd     = NULL;
         gf_dirent_t   entries;
@@ -1984,7 +1984,7 @@ gf_svc_readdirp (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         svc_local_t   *local      = NULL;
         int            ret        = -1;
         int            op_ret     = -1;
-        int            op_errno   = EINVAL;
+        int            op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t   wind       = _gf_false;
         svc_fd_t      *svc_fd     = NULL;
         gf_dirent_t    entries;
@@ -2074,7 +2074,7 @@ gf_svc_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
                         "context for the inode %s",
                         uuid_utoa (oldloc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2183,7 +2183,7 @@ gf_svc_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         int          ret        = -1;
         int          inode_type = -1;
         int          op_ret     = -1;
-        int          op_errno   = EINVAL;
+        int          op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -2197,7 +2197,7 @@ gf_svc_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
                         "context for %s (gfid: %s)", loc->path,
                         uuid_utoa (loc->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -2228,7 +2228,7 @@ gf_svc_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int datasync,
         int             inode_type = -1;
         int             ret        = -1;
         int             op_ret     = -1;
-        int             op_errno   = EINVAL;
+        int             op_errno   = GF_ERROR_CODE_INVAL;
         gf_boolean_t    wind       = _gf_false;
 
         GF_VALIDATE_OR_GOTO ("svc", this, out);
@@ -2241,7 +2241,7 @@ gf_svc_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int datasync,
                 gf_log (this->name, GF_LOG_ERROR, "failed to get inode context "
                         "for %s", uuid_utoa (fd->inode->gfid));
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

@@ -566,7 +566,7 @@ server_resolve (call_frame_t *frame)
                                 resolve->path, gf_fop_list[frame->root->op]);
 
                 resolve->op_ret = -1;
-                resolve->op_errno = EINVAL;
+                resolve->op_errno = GF_ERROR_CODE_INVAL;
 
                 server_resolve_all (frame);
         }

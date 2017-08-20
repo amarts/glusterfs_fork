@@ -159,7 +159,7 @@ int
 posix_aio_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
                  size_t size, off_t offset, uint32_t flags, dict_t *xdata)
 {
-        int32_t                op_errno   = EINVAL;
+        int32_t                op_errno   = GF_ERROR_CODE_INVAL;
         int                    _fd        = -1;
         struct iobuf          *iobuf      = NULL;
         struct posix_fd *      pfd        = NULL;
@@ -184,7 +184,7 @@ posix_aio_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
         _fd = pfd->fd;
 
         if (!size) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, op_errno,
                         P_MSG_INVALID_ARGUMENT, "size=%"GF_PRI_SIZET, size);
                 goto err;
@@ -317,7 +317,7 @@ posix_aio_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                   struct iovec *iov, int count, off_t offset, uint32_t flags,
                   struct iobref *iobref, dict_t *xdata)
 {
-        int32_t                op_errno   = EINVAL;
+        int32_t                op_errno   = GF_ERROR_CODE_INVAL;
         int                    _fd        = -1;
         struct posix_fd *      pfd        = NULL;
         int                    ret        = -1;

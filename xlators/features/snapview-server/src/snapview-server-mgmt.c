@@ -243,14 +243,14 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
 
         if (!ctx) {
                 gf_log (frame->this->name, GF_LOG_ERROR, "NULL context");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
         if (-1 == req->rpc_status) {
                 gf_log (frame->this->name, GF_LOG_ERROR,
                         "RPC call is not successful");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -273,7 +273,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_log (frame->this->name, GF_LOG_ERROR,
                         "Response dict is not populated");
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -288,7 +288,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
         if (ret) {
                 gf_log (frame->this->name, GF_LOG_ERROR,
                         "Failed to unserialize dictionary");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -296,7 +296,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
         if (ret) {
                 gf_log (this->name, GF_LOG_ERROR,
                         "Error retrieving snapcount");
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
         }
@@ -321,7 +321,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
                         gf_log (this->name, GF_LOG_ERROR,
                                 "Error retrieving snap volname %d",
                                 i+1);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -334,7 +334,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
                 if (ret) {
                         gf_log (this->name, GF_LOG_ERROR,
                                 "Error retrieving snap uuid %d", i+1);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }
@@ -346,7 +346,7 @@ mgmt_get_snapinfo_cbk (struct rpc_req *req, struct iovec *iov,
                 if (ret) {
                         gf_log (this->name, GF_LOG_ERROR,
                                 "Error retrieving snap name %d", i+1);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         ret = -1;
                         goto out;
                 }

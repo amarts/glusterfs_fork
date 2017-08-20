@@ -147,7 +147,7 @@ int
 bd_aio_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
                  size_t size, off_t offset, uint32_t flags, dict_t *xdata)
 {
-        int32_t             op_errno   = EINVAL;
+        int32_t             op_errno   = GF_ERROR_CODE_INVAL;
         int                 _fd        = -1;
         struct iobuf       *iobuf      = NULL;
         bd_fd_t            *bd_fd      = NULL;
@@ -173,7 +173,7 @@ bd_aio_readv (call_frame_t *frame, xlator_t *this, fd_t *fd,
         _fd = bd_fd->fd;
         bd_inode_ctx_get (fd->inode, this, &bdatt);
         if (!size) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 gf_log (this->name, GF_LOG_WARNING, "size=%"GF_PRI_SIZET, size);
                 goto err;
         }
@@ -284,7 +284,7 @@ bd_aio_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
                struct iovec *iov, int count, off_t offset, uint32_t flags,
                struct iobref *iobref, dict_t *xdata)
 {
-        int32_t             op_errno   = EINVAL;
+        int32_t             op_errno   = GF_ERROR_CODE_INVAL;
         int                 _fd        = -1;
         bd_fd_t            *bd_fd      = NULL;
         int                 ret        = -1;

@@ -221,7 +221,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "ENOMEM"))
                 return GF_ERROR_CODE_NOMEM;
         else if (!strcmp ((*error_no), "EINVAL"))
-                return EINVAL;
+                return GF_ERROR_CODE_INVAL;
         else if (!strcmp ((*error_no), "EIO"))
                 return GF_ERROR_CODE_IO;
         else if (!strcmp ((*error_no), "EEXIST"))

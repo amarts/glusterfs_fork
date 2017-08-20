@@ -2253,7 +2253,7 @@ server_rchecksum_resume (call_frame_t *frame, xlator_t *bound_xl)
 {
         server_state_t *state    = NULL;
         int             op_ret   = 0;
-        int             op_errno = EINVAL;
+        int             op_errno = GF_ERROR_CODE_INVAL;
 
         state = CALL_STATE (frame);
 

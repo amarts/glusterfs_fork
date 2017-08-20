@@ -29,7 +29,7 @@ gf_changelog_done (char *file)
         gf_changelog_journal_t *jnl    = NULL;
         char to_path[PATH_MAX]         = {0,};
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
         if (!this)
@@ -86,7 +86,7 @@ gf_changelog_start_fresh ()
         if (!this)
                 goto out;
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         jnl = (gf_changelog_journal_t *) GF_CHANGELOG_GET_API_PTR (this);
         if (!jnl)
@@ -115,7 +115,7 @@ gf_changelog_next_change (char *bufptr, size_t maxlen)
         gf_changelog_journal_t *jnl = NULL;
         char buffer[PATH_MAX]      = {0,};
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         this = THIS;
         if (!this)
@@ -175,7 +175,7 @@ gf_changelog_scan ()
                 goto out;
         }
 
-        errno = EINVAL;
+        errno = GF_ERROR_CODE_INVAL;
 
         tracker_fd = jnl->jnl_fd;
         if (gf_ftruncate (tracker_fd, 0))

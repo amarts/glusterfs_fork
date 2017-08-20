@@ -128,7 +128,7 @@ evaluate_marker_results (int *gauge, int *count)
                         if (count[i] > 0)
                                 op_errno = marker_idx_errno_map[i];
                 }
-                if (op_errno && op_errno != EINVAL)
+                if (op_errno && op_errno != GF_ERROR_CODE_INVAL)
                         break;
         }
 
@@ -278,7 +278,7 @@ cluster_markeruuid_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         if ((local->volmark->major != volmark->major) ||
                             (local->volmark->minor != volmark->minor)) {
                                 op_ret = -1;
-                                op_errno = EINVAL;
+                                op_errno = GF_ERROR_CODE_INVAL;
                                 goto unlock;
                         }
 

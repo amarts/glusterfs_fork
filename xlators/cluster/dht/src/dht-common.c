@@ -486,7 +486,7 @@ dht_discover_complete (xlator_t *this, call_frame_t *discover_frame)
                                 DHT_MSG_LAYOUT_SET_FAILED,
                                 "failed to set layout for subvolume %s",
                                 local->cached_subvol ? local->cached_subvol->name : "<nil>");
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
         } else {
@@ -720,7 +720,7 @@ dht_discover (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req
         dht_local_t *local = NULL;
         dht_conf_t  *conf = NULL;
         int          call_cnt = 0;
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
         int          i = 0;
         call_frame_t *discover_frame = NULL;
 
@@ -1058,7 +1058,7 @@ dht_revalidate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 local->loc.path, gfid);
 
                         local->op_ret = -1;
-                        local->op_errno = EINVAL;
+                        local->op_errno = GF_ERROR_CODE_INVAL;
 
                         goto unlock;
 
@@ -1280,7 +1280,7 @@ dht_lookup_linkfile_create_cbk (call_frame_t *frame, void *cookie,
                               cached_subvol ? cached_subvol->name : "<nil>",
                               gfid);
                 local->op_ret = -1;
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 goto unwind;
         }
 
@@ -1666,7 +1666,7 @@ dht_lookup_everywhere_done (call_frame_t *frame, xlator_t *this)
                                 }
 
                                 local->op_ret = (ret == 0) ? ret : -1;
-                                local->op_errno = (ret == 0) ? ret : EINVAL;
+                                local->op_errno = (ret == 0) ? ret : GF_ERROR_CODE_INVAL;
 
                                 /* Presence of local->cached_subvol validates
                                  * that lookup from cached node is successful
@@ -1802,7 +1802,7 @@ preset_layout:
                                 cached_subvol ? cached_subvol->name :
                                 "<nil>", gfid);
                         local->op_ret = -1;
-                        local->op_errno = EINVAL;
+                        local->op_errno = GF_ERROR_CODE_INVAL;
                 }
 
                 if (local->loc.parent) {
@@ -2173,7 +2173,7 @@ dht_lookup_linkfile_cbk (call_frame_t *frame, void *cookie,
                         "Failed to set layout for subvolume %s,"
                         "gfid = %s", prev->name, gfid);
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
         }
 
         if (local->loc.parent) {
@@ -2386,7 +2386,7 @@ dht_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "could not set pre-set layout for subvolume %s",
                                 prev->name);
                         op_ret   = -1;
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
                 goto out;
@@ -2552,7 +2552,7 @@ dht_lookup (call_frame_t *frame, xlator_t *this,
                         gf_msg_debug (this->name, 0,
                                       "Revalidate lookup without cache."
                                       " path=%s", loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -3063,7 +3063,7 @@ dht_find_local_subvol_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 DHT_MSG_DICT_GET_FAILED,
                                 "Failed to get %s", local->xsel);
                         local->op_ret = -1;
-                        local->op_errno = EINVAL;
+                        local->op_errno = GF_ERROR_CODE_INVAL;
                         goto unlock;
                 }
 
@@ -3087,7 +3087,7 @@ dht_find_local_subvol_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                         "Failed to parse uuid"
                                         " for %s", prev->name);
                                 local->op_ret = -1;
-                                local->op_errno = EINVAL;
+                                local->op_errno = GF_ERROR_CODE_INVAL;
                                 goto unlock;
                         }
 
@@ -3676,7 +3676,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                                 DHT_MSG_HASHED_SUBVOL_GET_FAILED,
                                 "Failed to get hashed subvol for %s",
                                 loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -3686,7 +3686,7 @@ dht_getxattr (call_frame_t *frame, xlator_t *this,
                                 DHT_MSG_CACHED_SUBVOL_GET_FAILED,
                                 "Failed to get cached subvol for %s",
                                 loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -3886,7 +3886,7 @@ dht_fsetxattr (call_frame_t *frame, xlator_t *this,
 {
         xlator_t     *subvol   = NULL;
         dht_local_t  *local    = NULL;
-        int           op_errno = EINVAL;
+        int           op_errno = GF_ERROR_CODE_INVAL;
         dht_conf_t   *conf     = NULL;
         dht_layout_t *layout   = NULL;
         int           ret      = -1;
@@ -3915,7 +3915,7 @@ dht_fsetxattr (call_frame_t *frame, xlator_t *this,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -3923,7 +3923,7 @@ dht_fsetxattr (call_frame_t *frame, xlator_t *this,
         if (!layout) {
                 gf_msg_debug (this->name, 0,
                               "no layout for fd=%p", fd);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4022,7 +4022,7 @@ int
 dht_setxattr2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t  *local  = NULL;
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto err;
@@ -4122,7 +4122,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
         dht_methods_t *methods = NULL;
         dht_layout_t *layout   = NULL;
         int           i        = 0;
-        int           op_errno = EINVAL;
+        int           op_errno = GF_ERROR_CODE_INVAL;
         int           ret      = -1;
         data_t       *tmp      = NULL;
         uint32_t      dir_spread = 0;
@@ -4157,7 +4157,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s",
                               loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4165,7 +4165,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
         if (!layout) {
                 gf_msg_debug (this->name, 0,
                               "no layout for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4190,7 +4190,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                         forced_rebalance = GF_DHT_MIGRATE_HARDLINK;
 
                 if (!loc->path) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -4202,7 +4202,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                                 inode_parent(local->loc.inode, NULL, NULL);
 
                 if ((!local->loc.name) || (!local->loc.parent)) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -4216,7 +4216,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                                 DHT_MSG_HASHED_SUBVOL_GET_FAILED,
                                 "Failed to get hashed subvol for %s",
                                 loc->path);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -4255,7 +4255,7 @@ dht_setxattr (call_frame_t *frame, xlator_t *this,
                                 "%s: failed to create a new rebalance synctask",
                                 loc->path);
                 }
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
 
         }
@@ -4456,7 +4456,7 @@ dht_removexattr2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame,
                   int ret)
 {
         dht_local_t *local    = NULL;
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
 
         if (!frame || !frame->local)
                 goto err;
@@ -4568,7 +4568,7 @@ dht_removexattr (call_frame_t *frame, xlator_t *this,
         if (!subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4576,7 +4576,7 @@ dht_removexattr (call_frame_t *frame, xlator_t *this,
         if (!local->layout) {
                 gf_msg_debug (this->name, 0,
                               "no layout for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         local->xattr_req = (xdata) ? dict_ref (xdata) : dict_new ();
@@ -4652,7 +4652,7 @@ dht_fremovexattr (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for inode=%s",
                               uuid_utoa (fd->inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -4661,7 +4661,7 @@ dht_fremovexattr (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no layout for inode=%s",
                               uuid_utoa (fd->inode->gfid));
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
         local->xattr_req = xdata ? dict_ref (xdata) : dict_new ();
@@ -4791,7 +4791,7 @@ dht_statfs_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         goto unlock;
                 }
                 if (!statvfs) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         local->op_ret = -1;
                         goto unlock;
                 }
@@ -4909,7 +4909,7 @@ dht_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
         if (loc->inode && !IA_ISDIR (loc->inode->ia_type)) {
                 itable = loc->inode->table;
                 if (!itable) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -4918,7 +4918,7 @@ dht_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
                 inode = inode_find (itable, root_gfid);
                 if (!inode) {
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
 
@@ -5582,7 +5582,7 @@ dht_newfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (!local) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -5602,7 +5602,7 @@ dht_newfile_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "could not set pre-set layout for subvolume %s",
                               prev? prev->name: NULL);
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         if (local->linked == _gf_true)
@@ -5652,7 +5652,7 @@ dht_mknod_linkfile_create_cbk (call_frame_t *frame, void *cookie,
         local = frame->local;
 
         if (!local || !local->cached_subvol) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -5663,8 +5663,8 @@ dht_mknod_linkfile_create_cbk (call_frame_t *frame, void *cookie,
 
         conf = this->private;
         if (!conf) {
-                local->op_errno =  EINVAL;
-                op_errno = EINVAL;
+                local->op_errno =  GF_ERROR_CODE_INVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -6080,7 +6080,7 @@ dht_guard_parent_layout_and_namespace (xlator_t *subvol, call_stub_t *stub)
 
         hashed_subvol = dht_subvol_get_hashed (this, loc);
         if (hashed_subvol == NULL) {
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
 
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_PARENT_LAYOUT_CHANGED,
@@ -6096,7 +6096,7 @@ dht_guard_parent_layout_and_namespace (xlator_t *subvol, call_stub_t *stub)
                                                   hashed_subvol,
                                                   &parent_disk_layout);
         if (ret == -1) {
-                local->op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_PARENT_LAYOUT_CHANGED,
                         "%s (%s/%s) (path: %s): "
@@ -6341,7 +6341,7 @@ dht_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
         if (!cached_subvol) {
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s", loc->path);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -6491,7 +6491,7 @@ int
 dht_link2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
 {
         dht_local_t *local  = NULL;
-        int          op_errno = EINVAL;
+        int          op_errno = GF_ERROR_CODE_INVAL;
 
         local = frame->local;
         if (!local)
@@ -6515,7 +6515,7 @@ dht_link2 (xlator_t *this, xlator_t *subvol, call_frame_t *frame, int ret)
         }
 
         if (subvol == NULL) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -6659,7 +6659,7 @@ dht_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         local = frame->local;
         if (!local) {
                 op_ret = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -6690,7 +6690,7 @@ dht_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                               "could not set preset layout for subvol %s",
                               prev->name);
                 op_ret   = -1;
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -6737,7 +6737,7 @@ dht_create_linkfile_create_cbk (call_frame_t *frame, void *cookie,
 
         local = frame->local;
         if (!local) {
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -6748,8 +6748,8 @@ dht_create_linkfile_create_cbk (call_frame_t *frame, void *cookie,
 
         conf = this->private;
         if (!conf) {
-                local->op_errno = EINVAL;
-                op_errno = EINVAL;
+                local->op_errno = GF_ERROR_CODE_INVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -6838,7 +6838,7 @@ dht_build_parent_loc (xlator_t *this, loc_t *parent, loc_t *child,
 
         if (!parent || !child) {
                 if (op_errno)
-                        *op_errno = EINVAL;
+                        *op_errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -6846,7 +6846,7 @@ dht_build_parent_loc (xlator_t *this, loc_t *parent, loc_t *child,
                 parent->inode = inode_ref (child->parent);
                 if (!parent->inode) {
                         if (op_errno)
-                                *op_errno = EINVAL;
+                                *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
 
@@ -6858,7 +6858,7 @@ dht_build_parent_loc (xlator_t *this, loc_t *parent, loc_t *child,
         } else {
                 if (gf_uuid_is_null (child->pargfid)) {
                         if (op_errno)
-                                *op_errno = EINVAL;
+                                *op_errno = GF_ERROR_CODE_INVAL;
                         goto out;
                 }
 
@@ -6866,7 +6866,7 @@ dht_build_parent_loc (xlator_t *this, loc_t *parent, loc_t *child,
 
                 if (!table) {
                         if (op_errno) {
-                                *op_errno = EINVAL;
+                                *op_errno = GF_ERROR_CODE_INVAL;
                                 goto out;
                         }
                 }
@@ -6875,7 +6875,7 @@ dht_build_parent_loc (xlator_t *this, loc_t *parent, loc_t *child,
 
                 if (!parent->inode) {
                          if (op_errno) {
-                                *op_errno = EINVAL;
+                                *op_errno = GF_ERROR_CODE_INVAL;
                                 goto out;
                         }
                 }
@@ -8155,7 +8155,7 @@ dht_rmdir_do (call_frame_t *frame, xlator_t *this)
                                      &local->current->ns, dht_rmdir_lock_cbk);
         if (ret < 0) {
                 local->op_ret = -1;
-                local->op_errno = errno ? errno : EINVAL;
+                local->op_errno = errno ? errno : GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -8870,7 +8870,7 @@ dht_entrylk (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no cached subvolume for path=%s, "
                               "gfid = %s", loc->path, gfid);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -8922,7 +8922,7 @@ dht_fentrylk (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "No cached subvolume for fd=%p,"
                               " gfid = %s", fd, gfid);
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 
@@ -8979,7 +8979,7 @@ int32_t
 dht_ipc (call_frame_t *frame, xlator_t *this, int32_t op, dict_t *xdata)
 {
         dht_local_t  *local    = NULL;
-        int           op_errno = EINVAL;
+        int           op_errno = GF_ERROR_CODE_INVAL;
         dht_conf_t   *conf     = NULL;
         int           call_cnt = 0;
         int           i        = 0;

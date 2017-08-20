@@ -604,7 +604,7 @@ gd_mgmt_v3_lock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_lock_rsp);
@@ -885,7 +885,7 @@ gd_mgmt_v3_pre_validate_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_pre_val_rsp);
@@ -1219,7 +1219,7 @@ gd_mgmt_v3_brick_op_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_brick_op_rsp);
@@ -1436,7 +1436,7 @@ gd_mgmt_v3_commit_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_commit_rsp);
@@ -1720,7 +1720,7 @@ gd_mgmt_v3_post_validate_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_post_val_rsp);
@@ -1946,7 +1946,7 @@ gd_mgmt_v3_unlock_cbk_fn (struct rpc_req *req, struct iovec *iov,
         }
 
         GF_VALIDATE_OR_GOTO_WITH_ERROR (this->name, iov, out, op_errno,
-                                        EINVAL);
+                                        GF_ERROR_CODE_INVAL);
 
         ret = xdr_to_generic (*iov, &rsp,
                               (xdrproc_t)xdr_gd1_mgmt_v3_unlock_rsp);

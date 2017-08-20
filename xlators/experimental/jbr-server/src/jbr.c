@@ -1045,7 +1045,7 @@ jbr_get_terms (call_frame_t *frame, xlator_t *this)
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 J_MSG_INVALID,
                                 "invalid term file name %s", entry->d_name);
-                        op_errno = EINVAL;
+                        op_errno = GF_ERROR_CODE_INVAL;
                         goto err;
                 }
                 if ((term_first < 0) || (term_first > term_num)) {
@@ -1059,7 +1059,7 @@ jbr_get_terms (call_frame_t *frame, xlator_t *this)
                 /* TBD: are we *sure* there should always be at least one? */
                 gf_msg (this->name, GF_LOG_ERROR, 0,
                         J_MSG_NO_DATA, "no terms found");
-                op_errno = EINVAL;
+                op_errno = GF_ERROR_CODE_INVAL;
                 goto err;
         }
 

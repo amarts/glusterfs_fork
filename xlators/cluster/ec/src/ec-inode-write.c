@@ -859,7 +859,7 @@ int32_t ec_manager_fallocate(ec_fop_data_t *fop, int32_t state)
     switch (state) {
     case EC_STATE_INIT:
         if (fop->size == 0) {
-                ec_fop_set_error(fop, EINVAL);
+                ec_fop_set_error(fop, GF_ERROR_CODE_INVAL);
                 return EC_STATE_REPORT;
         }
         if (fop->int32 & (FALLOC_FL_COLLAPSE_RANGE

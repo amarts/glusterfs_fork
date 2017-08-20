@@ -158,7 +158,7 @@ store_eliminate_path (char *str, trash_elim_path **eliminate)
         char                    *strtokptr              = NULL;
 
         if (eliminate == NULL) {
-                ret = EINVAL;
+                ret = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -1947,7 +1947,7 @@ trash_truncate_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         /* Creating valid parent and pargfids for both files */
 
         if (dir_entry == NULL) {
-                ret = EINVAL;
+                ret = GF_ERROR_CODE_INVAL;
                 goto out;
         }
         local->loc.parent = inode_ref (dir_entry->parent);

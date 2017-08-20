@@ -393,7 +393,7 @@ int32_t ec_manager_readdir(ec_fop_data_t * fop, int32_t state)
              * any subvolume. */
             ctx = ec_fd_get(fop->fd, fop->xl);
             if ((ctx == NULL) || (ctx->open == 0)) {
-                fop->error = EINVAL;
+                fop->error = GF_ERROR_CODE_INVAL;
 
                 return EC_STATE_REPORT;
             }

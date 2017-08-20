@@ -629,7 +629,7 @@ afr_shd_entry_changes_index_inode (xlator_t *this, xlator_t *subvol,
 
         ret = dict_get_ptr (xattr, GF_XATTROP_ENTRY_CHANGES_GFID, &index_gfid);
         if (ret) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 

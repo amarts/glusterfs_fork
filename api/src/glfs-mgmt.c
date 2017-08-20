@@ -133,7 +133,7 @@ mgmt_cbk_statedump (struct rpc_clnt *rpc, void *mydata, void *data)
         if (!this) {
                 gf_msg ("glfs", GF_LOG_ERROR, EINVAL,
                         API_MSG_STATEDUMP_FAILED, "NULL mydata");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -141,7 +141,7 @@ mgmt_cbk_statedump (struct rpc_clnt *rpc, void *mydata, void *data)
         if (!fs) {
                 gf_msg ("glfs", GF_LOG_ERROR, EINVAL,
                         API_MSG_STATEDUMP_FAILED, "NULL glfs");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -149,7 +149,7 @@ mgmt_cbk_statedump (struct rpc_clnt *rpc, void *mydata, void *data)
         if (!iov) {
                 gf_msg ("glfs", GF_LOG_ERROR, EINVAL,
                         API_MSG_STATEDUMP_FAILED, "NULL iovec data");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -294,7 +294,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
         if (!ctx) {
                 gf_msg (frame->this->name, GF_LOG_ERROR, EINVAL,
                         API_MSG_INVALID_ENTRY, "NULL context");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -305,7 +305,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
                 gf_msg (frame->this->name, GF_LOG_ERROR, EINVAL,
                         API_MSG_INVALID_ENTRY,
                         "GET_VOLUME_INFO RPC call is not successful");
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 ret = -1;
                 goto out;
         }
@@ -333,7 +333,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
                         API_MSG_INVALID_ENTRY, "Response received for "
                         "GET_VOLUME_INFO RPC call is not valid");
                 ret = -1;
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -357,7 +357,7 @@ mgmt_get_volinfo_cbk (struct rpc_req *req, struct iovec *iov,
         snprintf (key, sizeof (key), "volume_id");
         ret = dict_get_str (dict, key, &volume_id_str);
         if (ret) {
-                errno = EINVAL;
+                errno = GF_ERROR_CODE_INVAL;
                 goto out;
         }
 
@@ -589,7 +589,7 @@ glfs_mgmt_getspec_cbk (struct rpc_req *req, struct iovec *iov, int count,
 	if (!ctx) {
 		gf_msg (frame->this->name, GF_LOG_ERROR, EINVAL,
                         API_MSG_INVALID_ENTRY, "NULL context");
-		errno = EINVAL;
+		errno = GF_ERROR_CODE_INVAL;
 		ret = -1;
 		goto out;
 	}
@@ -700,7 +700,7 @@ out:
 			ctx->cmd_args.volfile_id);
 		if (!need_retry) {
 			if (!errno)
-				errno = EINVAL;
+				errno = GF_ERROR_CODE_INVAL;
 			glfs_init_done (fs, -1);
 		}
 	}
@@ -925,7 +925,7 @@ mgmt_rpc_notify (struct rpc_clnt *rpc, void *mydata, rpc_clnt_event_t event,
                                 API_MSG_INVALID_ENTRY,
 				"failed to fetch volume file (key:%s)",
                                 ctx->cmd_args.volfile_id);
-                        errno = EINVAL;
+                        errno = GF_ERROR_CODE_INVAL;
                         glfs_init_done (fs, -1);
                 }
 

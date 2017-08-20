@@ -467,7 +467,7 @@ ra_readv (call_frame_t *frame, xlator_t *this, fd_t *fd, size_t size,
         ra_file_t   *file            = NULL;
         ra_local_t  *local           = NULL;
         ra_conf_t   *conf            = NULL;
-        int          op_errno        = EINVAL;
+        int          op_errno        = GF_ERROR_CODE_INVAL;
         char         expected_offset = 1;
         uint64_t     tmp_file        = 0;
 
@@ -585,7 +585,7 @@ ra_flush (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
 {
         ra_file_t *file     = NULL;
         uint64_t   tmp_file = 0;
-        int32_t    op_errno = EINVAL;
+        int32_t    op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -614,7 +614,7 @@ ra_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t datasync,
 {
         ra_file_t *file     = NULL;
         uint64_t   tmp_file = 0;
-        int32_t    op_errno = EINVAL;
+        int32_t    op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -666,7 +666,7 @@ ra_writev (call_frame_t *frame, xlator_t *this, fd_t *fd, struct iovec *vector,
 {
         ra_file_t *file    = NULL;
         uint64_t  tmp_file = 0;
-        int32_t   op_errno = EINVAL;
+        int32_t   op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -726,7 +726,7 @@ ra_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
         fd_t      *iter_fd  = NULL;
         inode_t   *inode    = NULL;
         uint64_t   tmp_file = 0;
-        int32_t    op_errno = EINVAL;
+        int32_t    op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -866,7 +866,7 @@ ra_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *xdata)
         fd_t      *iter_fd  = NULL;
         inode_t   *inode    = NULL;
         uint64_t   tmp_file = 0;
-        int32_t    op_errno = EINVAL;
+        int32_t    op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -906,7 +906,7 @@ ra_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         fd_t      *iter_fd = NULL;
         inode_t   *inode   = NULL;
         uint64_t  tmp_file = 0;
-        int32_t   op_errno = EINVAL;
+        int32_t   op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -964,7 +964,7 @@ ra_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         fd_t      *iter_fd = NULL;
         inode_t   *inode   = NULL;
         uint64_t  tmp_file = 0;
-        int32_t   op_errno = EINVAL;
+        int32_t   op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
@@ -1014,7 +1014,7 @@ ra_zerofill(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
         fd_t      *iter_fd = NULL;
         inode_t   *inode   = NULL;
         uint64_t  tmp_file = 0;
-        int32_t   op_errno = EINVAL;
+        int32_t   op_errno = GF_ERROR_CODE_INVAL;
 
         GF_ASSERT (frame);
         GF_VALIDATE_OR_GOTO (frame->this->name, this, unwind);
