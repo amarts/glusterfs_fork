@@ -12065,8 +12065,8 @@ glusterd_remove_auxiliary_mount (char *volname)
                         GD_MSG_LAZY_UMOUNT_FAIL, "umount on %s failed, "
                         "reason : %s", mountdir, strerror (errno));
 
-                /* Hide EBADF as it means the mount is already gone */
-                if (errno == EBADF)
+                /* Hide GF_ERROR_CODE_BADF as it means the mount is already gone */
+                if (errno == GF_ERROR_CODE_BADF)
                        ret = 0;
         }
 

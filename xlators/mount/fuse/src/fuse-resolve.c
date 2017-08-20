@@ -487,7 +487,7 @@ fuse_resolve_fd (fuse_state_t *state)
         fd_migration_error = fuse_migrate_fd_error (state->this, basefd);
         if (fd_migration_error) {
                 resolve->op_ret = -1;
-                resolve->op_errno = EBADF;
+                resolve->op_errno = GF_ERROR_CODE_BADF;
         } else if (state->active_subvol != active_subvol) {
                 ret = synctask_new (state->this->ctx->env, fuse_migrate_fd_task,
                                     NULL, NULL, state);
@@ -528,7 +528,7 @@ fuse_resolve_fd (fuse_state_t *state)
                         }
 
                         resolve->op_ret = -1;
-                        resolve->op_errno = EBADF;
+                        resolve->op_errno = GF_ERROR_CODE_BADF;
                 } else {
                         gf_log (state->this->name, GF_LOG_DEBUG,
                                 "basefd (ptr:%p inode-gfid:%s) migrated "
@@ -541,10 +541,10 @@ fuse_resolve_fd (fuse_state_t *state)
                 }
         }
 
-        if ((resolve->op_ret == -1) && (resolve->op_errno == EBADF)) {
+        if ((resolve->op_ret == -1) && (resolve->op_errno == GF_ERROR_CODE_BADF)) {
                 gf_log ("fuse-resolve", GF_LOG_WARNING,
                         "migration of basefd (ptr:%p inode-gfid:%s) "
-                        "did not complete, failing fop with EBADF "
+                        "did not complete, failing fop with GF_ERROR_CODE_BADF "
                         "(old-subvolume:%s-%d new-subvolume:%s-%d)", basefd,
                         uuid_utoa (basefd->inode->gfid),
                         active_subvol->name, active_subvol->graph->id,

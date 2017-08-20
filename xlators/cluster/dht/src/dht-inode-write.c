@@ -44,7 +44,7 @@ dht_writev_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;
@@ -250,7 +250,7 @@ dht_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         }
 
         /* Can only occur for ftruncate */
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;
@@ -479,7 +479,7 @@ dht_fallocate_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;
@@ -658,7 +658,7 @@ dht_discard_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;
@@ -832,7 +832,7 @@ dht_zerofill_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
         }
 
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;
@@ -1009,7 +1009,7 @@ dht_file_setattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (local->call_cnt != 1)
                 goto out;
 
-        if (op_ret == -1 && (op_errno == EBADF)) {
+        if (op_ret == -1 && (op_errno == GF_ERROR_CODE_BADF)) {
                 ret = dht_check_and_open_fd_on_subvol (this, frame);
                 if (ret)
                         goto out;

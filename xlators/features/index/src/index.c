@@ -492,7 +492,7 @@ index_fill_readdir (fd_t *fd, index_fd_ctx_t *fctx, DIR *dir, off_t off,
                 errno = 0;
                 entry = sys_readdir (dir, scratch);
                 if (!entry || errno != 0) {
-                        if (errno == EBADF) {
+                        if (errno == GF_ERROR_CODE_BADF) {
                                 gf_msg (THIS->name, GF_LOG_WARNING, errno,
                                         INDEX_MSG_INDEX_READDIR_FAILED,
                                         "readdir failed on dir=%p", dir);

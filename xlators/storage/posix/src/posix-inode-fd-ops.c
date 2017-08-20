@@ -4512,7 +4512,7 @@ posix_fill_readdir (fd_t *fd, DIR *dir, off_t off, size_t size,
                 entry = sys_readdir (dir, scratch);
 
                 if (!entry || errno != 0) {
-                        if (errno == EBADF) {
+                        if (errno == GF_ERROR_CODE_BADF) {
                                 gf_msg (THIS->name, GF_LOG_WARNING, errno,
                                         P_MSG_DIR_OPERATION_FAILED,
                                         "readdir failed on dir=%p",

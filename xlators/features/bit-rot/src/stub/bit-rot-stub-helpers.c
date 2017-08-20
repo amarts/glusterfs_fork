@@ -519,7 +519,7 @@ br_stub_fill_readdir (fd_t *fd, br_stub_fd_t *fctx, DIR *dir, off_t off,
                 errno = 0;
                 entry = sys_readdir (dir, scratch);
                 if (!entry || errno != 0) {
-                        if (errno == EBADF) {
+                        if (errno == GF_ERROR_CODE_BADF) {
                                 gf_msg (THIS->name, GF_LOG_WARNING, 0,
                                         BRS_MSG_BAD_OBJECT_DIR_READ_FAIL,
                                         "readdir failed on dir=%p: %s",

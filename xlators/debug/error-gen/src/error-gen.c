@@ -215,7 +215,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "EACCES"))
                 return EACCES;
         else if (!strcmp ((*error_no), "EBADF"))
-                return EBADF;
+                return GF_ERROR_CODE_BADF;
         else if (!strcmp ((*error_no), "EFAULT"))
                 return EFAULT;
         else if (!strcmp ((*error_no), "ENOMEM"))

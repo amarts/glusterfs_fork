@@ -826,7 +826,7 @@ int generic_open_read_write (char *filename, int flag)
         strcpy (wstring, "My string to write\n");
         ret = write (fd, wstring, strlen(wstring));
         if (ret <= 0) {
-                if (errno != EBADF) {
+                if (errno != GF_ERROR_CODE_BADF) {
                         fprintf (stderr, "write failed: %s\n", strerror (errno));
                         close (fd);
                         unlink(filename);

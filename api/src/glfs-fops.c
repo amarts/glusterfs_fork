@@ -2702,7 +2702,7 @@ glfd_entry_refresh (struct glfs_fd *glfd, int plus)
 
 	if (fd->inode->ia_type != IA_IFDIR) {
 		ret = -1;
-		errno = EBADF;
+		errno = GF_ERROR_CODE_BADF;
 		goto out;
 	}
 

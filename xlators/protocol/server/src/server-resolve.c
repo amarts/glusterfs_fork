@@ -528,7 +528,7 @@ server_resolve_fd (call_frame_t *frame)
                 gf_msg ("", GF_LOG_INFO, EBADF, PS_MSG_FD_NOT_FOUND, "fd not "
                         "found in context");
                 resolve->op_ret   = -1;
-                resolve->op_errno = EBADF;
+                resolve->op_errno = GF_ERROR_CODE_BADF;
         }
 
         server_resolve_all (frame);

@@ -156,7 +156,7 @@ ra_fault_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         READ_AHEAD_MSG_FD_CONTEXT_NOT_SET,
                         "read-ahead context not set in fd (%p)", fd);
                 op_ret = -1;
-                op_errno = EBADF;
+                op_errno = GF_ERROR_CODE_BADF;
                 goto out;
         }
 

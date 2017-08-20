@@ -296,7 +296,7 @@ do {                                                                \
 do {                                                                \
         if (!glfd || !glfd->fd || !glfd->fd->inode ||               \
              glfd->state != GLFD_OPEN) {                           \
-                errno = EBADF;                                      \
+                errno = GF_ERROR_CODE_BADF;                                      \
                 goto label;                                         \
         }                                                           \
         old_THIS = THIS;                                            \

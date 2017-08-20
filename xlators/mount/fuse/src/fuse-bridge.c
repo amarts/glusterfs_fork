@@ -4015,7 +4015,7 @@ notify_kernel_loop (void *data)
 
                 GF_FREE (node);
 
-                if (rv == -1 && errno == EBADF)
+                if (rv == -1 && errno == GF_ERROR_CODE_BADF)
                         break;
 
                 if (rv != len && !(rv == -1 && errno == GF_ERROR_CODE_NOENT)) {
@@ -4970,7 +4970,7 @@ fuse_thread_proc (void *data)
                 res = sys_readv (priv->fd, iov_in, 2);
 
                 if (res == -1) {
-                        if (errno == ENODEV || errno == EBADF) {
+                        if (errno == ENODEV || errno == GF_ERROR_CODE_BADF) {
                                 gf_log ("glusterfs-fuse", GF_LOG_DEBUG,
                                         "terminating upon getting %s when "
                                         "reading /dev/fuse",
