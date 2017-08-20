@@ -1975,7 +1975,7 @@ setattr_scrutiny (call_frame_t *frame, inode_t *inode, struct iatt *buf,
        file,  or  the  process  must  be  privileged
 */
                 if (!frame_is_user (frame, ctx->uid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
 /*
        If the calling process is not privileged  (Linux:  does  not  have  the
        CAP_FSETID  capability),  and  the group of the file does not match the
@@ -2003,14 +2003,14 @@ setattr_scrutiny (call_frame_t *frame, inode_t *inode, struct iatt *buf,
         if (valid & GF_SET_ATTR_UID) {
                 if ((!frame_is_super_user (frame)) &&
                     (buf->ia_uid != ctx->uid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
         }
 
         if (valid & GF_SET_ATTR_GID) {
                 if (!frame_is_user (frame, ctx->uid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
                 if (!frame_in_group (frame, buf->ia_gid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
         }
 
         return 0;
@@ -2125,13 +2125,13 @@ setxattr_scrutiny (call_frame_t *frame, inode_t *inode, dict_t *xattr)
         if (dict_get (xattr, POSIX_ACL_ACCESS_XATTR)) {
                 found = 1;
                 if (!frame_is_user (frame, ctx->uid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
         }
 
         if (dict_get (xattr, POSIX_ACL_DEFAULT_XATTR)) {
                 found = 1;
                 if (!frame_is_user (frame, ctx->uid))
-                        return EPERM;
+                        return GF_ERROR_CODE_PERM;
         }
 
         if (!found && !acl_permits (frame, inode, POSIX_ACL_WRITE))
@@ -2435,7 +2435,7 @@ posix_acl_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         if (whitelisted_xattr (name)) {
                 if (!frame_is_user (frame, ctx->uid)) {
-                        op_errno = EPERM;
+                        op_errno = GF_ERROR_CODE_PERM;
                         goto red;
                 }
         }

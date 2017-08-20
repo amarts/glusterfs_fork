@@ -41,7 +41,7 @@ static char *ec_read_policies[EC_READ_POLICY_MAX + 1] = {
 #define EC_INTERNAL_XATTR_OR_GOTO(name, xattr, op_errno, label)                \
         do {                                                                   \
                 if (ec_is_internal_xattr (NULL, (char *)name, NULL, NULL)) {   \
-                        op_errno = EPERM;                                      \
+                        op_errno = GF_ERROR_CODE_PERM;                                      \
                         goto label;                                            \
                 }                                                              \
                 if (name && (strlen (name) == 0) && xattr) {                   \

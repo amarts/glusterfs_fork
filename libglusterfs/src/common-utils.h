@@ -379,7 +379,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
                 if (dict_foreach_fnmatch (dict, pattern,                \
                                           dict_null_foreach_fn,         \
                                           NULL) > 0) {                  \
-                        op_errno = EPERM;                               \
+                        op_errno = GF_ERROR_CODE_PERM;                               \
                         gf_msg (this->name, GF_LOG_ERROR, op_errno,     \
                                 LG_MSG_NO_PERM,                         \
                                 "attempt to set internal"               \
@@ -397,7 +397,7 @@ BIT_VALUE (unsigned char *array, unsigned int index)
                         goto label;                                     \
                 }                                                       \
                 if (!fnmatch (pattern, key, 0)) {                       \
-                        op_errno = EPERM;                               \
+                        op_errno = GF_ERROR_CODE_PERM;                               \
                         gf_msg (this->name, GF_LOG_ERROR, op_errno,     \
                                 LG_MSG_NO_PERM,                         \
                                 "attempt to remove internal "           \

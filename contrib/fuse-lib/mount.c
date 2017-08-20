@@ -488,7 +488,7 @@ gf_fuse_mount (const char *mountpoint, char *fsname,
                                 "direct mount failed (%s) errno %d",
                                 strerror (errno), errno);
 
-                        if (errno == EPERM) {
+                        if (errno == GF_ERROR_CODE_PERM) {
                                 gf_log ("glusterfs-fuse", GF_LOG_INFO,
                                         "retry to mount via fusermount");
 

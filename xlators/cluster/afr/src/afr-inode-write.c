@@ -1503,7 +1503,7 @@ afr_handle_empty_brick (xlator_t *this, call_frame_t *frame, loc_t *loc,
         int             ret               = -1;
         int             ab_ret            = -1;
         int             empty_index        = -1;
-        int             op_errno          = EPERM;
+        int             op_errno          = GF_ERROR_CODE_PERM;
         char           *empty_brick         = NULL;
         char           *op_type           = NULL;
         afr_empty_brick_args_t *data        = NULL;

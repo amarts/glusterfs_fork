@@ -4019,7 +4019,7 @@ client3_3_mkdir (call_frame_t *frame, xlator_t *this,
         conf = this->private;
 
         if (!args->xdata || !dict_get (args->xdata, "gfid-req")) {
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 gf_msg_callingfn (this->name, GF_LOG_WARNING, op_errno,
                                   PC_MSG_GFID_NULL, "mkdir: %s is received "
                                   "without gfid-req %p", args->loc->path,

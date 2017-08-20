@@ -333,7 +333,7 @@ posix_lookup (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, EPERM,
                         P_MSG_LOOKUP_NOT_PERMITTED, "Lookup issued on %s,"
                         " which is not permitted", GF_HIDDEN_PATH);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
                 goto out;
         }
@@ -1466,7 +1466,7 @@ posix_mkdir (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, EPERM,
                         P_MSG_MKDIR_NOT_PERMITTED, "mkdir issued on %s, which"
                         "is not permitted", GF_HIDDEN_PATH);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
                 goto out;
         }
@@ -1530,7 +1530,7 @@ posix_mkdir (call_frame_t *frame, xlator_t *this,
                 }
         } else if (!uuid_req && frame->root->pid != GF_SERVER_PID_TRASH) {
                 op_ret = -1;
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 gf_msg_callingfn (this->name, GF_LOG_WARNING, op_errno,
                         P_MSG_NULL_GFID, "mkdir (%s): is issued without "
                         "gfid-req %p", loc->path, xdata);
@@ -1980,7 +1980,7 @@ posix_rmdir (call_frame_t *frame, xlator_t *this,
                 gf_msg (this->name, GF_LOG_WARNING, EPERM,
                         P_MSG_RMDIR_NOT_PERMITTED, "rmdir issued on %s, which"
                         "is not permitted", GF_HIDDEN_PATH);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
                 goto out;
         }

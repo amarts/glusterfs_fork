@@ -59,21 +59,21 @@
             (((loc->parent) &&                                          \
             __is_root_gfid (loc->parent->gfid)) ||                     \
             __is_root_gfid (loc->pargfid))) {                           \
-                    op_errno = EPERM;                                  \
+                    op_errno = GF_ERROR_CODE_PERM;                                  \
                     goto label;                                        \
         }                                                              \
                                                                        \
         if ((loc->parent &&                                            \
             __is_shard_dir (loc->parent->gfid)) ||                     \
             __is_shard_dir (loc->pargfid)) {                           \
-                    op_errno = EPERM;                                  \
+                    op_errno = GF_ERROR_CODE_PERM;                                  \
                     goto label;                                        \
         }                                                              \
 } while (0)
 
 #define SHARD_INODE_OP_CHECK(gfid, err, label) do {                    \
         if (__is_shard_dir(gfid)) {                                    \
-                err = EPERM;                                           \
+                err = GF_ERROR_CODE_PERM;                                           \
                 goto label;                                            \
         }                                                              \
 } while (0)

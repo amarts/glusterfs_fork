@@ -3528,7 +3528,7 @@ _posix_remove_xattr (dict_t *dict, char *key, data_t *value, void *data)
 
         if (op_ret == -1) {
                 filler->op_errno = errno;
-                if (errno != GF_ERROR_CODE_NOATTR && errno != GF_ERROR_CODE_NODATA && errno != EPERM) {
+                if (errno != GF_ERROR_CODE_NOATTR && errno != GF_ERROR_CODE_NODATA && errno != GF_ERROR_CODE_PERM) {
                         gf_msg (this->name, GF_LOG_ERROR, errno,
                                 P_MSG_XATTR_FAILED, "removexattr failed on "
                                 "file/dir %s with gfid: %s (for %s)",
@@ -3594,7 +3594,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
                         "%s", name, real_path?real_path:"",
                         uuid_utoa(inode->gfid));
                 op_ret = -1;
-                *op_errno = EPERM;
+                *op_errno = GF_ERROR_CODE_PERM;
                 goto out;
         } else if (posix_is_bulk_removexattr ((char *)name, xdata)) {
                 bulk_removexattr = _gf_true;
@@ -3607,7 +3607,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
                                 "removed for file/dir %s with gfid: %s",
                                 real_path?real_path:"", uuid_utoa(inode->gfid));
                         op_ret = -1;
-                        *op_errno = EPERM;
+                        *op_errno = GF_ERROR_CODE_PERM;
                         goto out;
                 }
         }
@@ -3630,7 +3630,7 @@ posix_common_removexattr (call_frame_t *frame, loc_t *loc, fd_t *fd,
                 if (op_ret == -1) {
                         *op_errno = errno;
                         if (*op_errno != GF_ERROR_CODE_NOATTR && *op_errno != GF_ERROR_CODE_NODATA &&
-                            *op_errno != EPERM) {
+                            *op_errno != GF_ERROR_CODE_PERM) {
                                 gf_msg (this->name, GF_LOG_ERROR, *op_errno,
                                         P_MSG_XATTR_FAILED,
                                         "removexattr on %s with gfid %s "

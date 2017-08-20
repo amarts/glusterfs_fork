@@ -60,14 +60,14 @@ main (int argc, char *argv[])
         }
 
         ret = glfs_fremovexattr (fd, "trusted.gfid");
-        if (ret == 0 || errno != EPERM) {
+        if (ret == 0 || errno != GF_ERROR_CODE_PERM) {
                 fprintf (stderr, "glfs_fremovexattr gfid exited with ret: "
                          "%d (%s)\n", ret, strerror (errno));
                 return -1;
         }
 
         ret = glfs_fremovexattr (fd, "trusted.glusterfs.volume-id");
-        if (ret == 0 || errno != EPERM) {
+        if (ret == 0 || errno != GF_ERROR_CODE_PERM) {
                 fprintf (stderr, "glfs_fremovexattr volume-id exited with ret: "
                          "%d (%s)\n", ret, strerror (errno));
                 return -1;

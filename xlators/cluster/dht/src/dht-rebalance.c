@@ -2286,7 +2286,7 @@ rebalance_task_completion (int op_ret, call_frame_t *sync_frame, void *data)
                    file.
                 */
                 op_ret = -1;
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
         } else if (op_ret != 0) {
                 op_errno = -op_ret;
                 op_ret = -1;

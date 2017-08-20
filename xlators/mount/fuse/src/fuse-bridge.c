@@ -3324,7 +3324,7 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         }
 
         if (!strcmp (GFID_XATTR_KEY, name) || !strcmp (GF_XATTR_VOL_ID_KEY, name)) {
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 goto done;
         }
 
@@ -3763,7 +3763,7 @@ fuse_removexattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         char *newkey = NULL;
 
         if (!strcmp (GFID_XATTR_KEY, name) || !strcmp (GF_XATTR_VOL_ID_KEY, name)) {
-                send_fuse_err (this, finh, EPERM);
+                send_fuse_err (this, finh, GF_ERROR_CODE_PERM);
                 GF_FREE (finh);
                 return;
         }

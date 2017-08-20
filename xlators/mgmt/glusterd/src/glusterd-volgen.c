@@ -929,7 +929,7 @@ volgen_apply_filters (char *orig_volfile)
                         continue;
                 /*
                  * We could check the mode in statbuf directly, or just skip
-                 * this entirely and check for EPERM after exec fails, but this
+                 * this entirely and check for GF_ERROR_CODE_PERM after exec fails, but this
                  * is cleaner.
                  */
                 if (sys_access (filterpath, X_OK) != 0)

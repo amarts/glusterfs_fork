@@ -2179,7 +2179,7 @@ trash_mkdir (call_frame_t *frame, xlator_t *this,
                 gf_log (this->name, GF_LOG_WARNING,
                         "mkdir issued on %s, which is not permitted",
                         priv->newtrash_dir);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
 
                 STACK_UNWIND_STRICT (mkdir, frame, op_ret, op_errno,
@@ -2212,7 +2212,7 @@ trash_rename (call_frame_t *frame, xlator_t *this,
                 gf_log (this->name, GF_LOG_WARNING,
                         "rename issued on %s, which is not permitted",
                         priv->newtrash_dir);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
 
                 STACK_UNWIND_STRICT (rename, frame, op_ret, op_errno, NULL,
@@ -2245,7 +2245,7 @@ trash_rmdir (call_frame_t *frame, xlator_t *this,
                 gf_log (this->name, GF_LOG_WARNING,
                         "rmdir issued on %s, which is not permitted",
                         priv->newtrash_dir);
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 op_ret = -1;
 
                 STACK_UNWIND_STRICT (rmdir, frame, op_ret, op_errno,

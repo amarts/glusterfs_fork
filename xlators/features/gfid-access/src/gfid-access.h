@@ -41,7 +41,7 @@
                 if ((loc->parent &&                                     \
                      __is_gfid_access_dir (loc->parent->gfid)) ||       \
                     __is_gfid_access_dir (loc->pargfid)) {              \
-                        err = EPERM;                                    \
+                        err = GF_ERROR_CODE_PERM;                                    \
                         goto lbl;                                       \
                 }                                                       \
         } while (0)

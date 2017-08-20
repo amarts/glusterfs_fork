@@ -2800,7 +2800,7 @@ glusterd_do_lvm_snapshot_remove (glusterd_volinfo_t *snap_vol,
 
                 /*
                  * This used to be one second, but that wasn't long enough
-                 * to get past the spurious EPERM errors that prevent some
+                 * to get past the spurious GF_ERROR_CODE_PERM errors that prevent some
                  * tests (especially bug-1162462.t) from passing reliably.
                  *
                  * TBD: figure out where that garbage is coming from

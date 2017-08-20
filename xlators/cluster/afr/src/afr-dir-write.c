@@ -747,7 +747,7 @@ afr_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
         local->umask = umask;
 
         if (!xdata || !dict_get (xdata, "gfid-req")) {
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
                 gf_msg_callingfn (this->name, GF_LOG_WARNING, op_errno,
                                   AFR_MSG_GFID_NULL, "mkdir: %s is received "
                                   "without gfid-req %p", loc->path, xdata);

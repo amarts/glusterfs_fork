@@ -30,7 +30,7 @@ EXPECT "000000000000000100000000" get_hex_xattr trusted.afr.$V0-client-2 $B0/${V
 TEST $CLI volume start $V0 force
 EXPECT_WITHIN $PROCESS_UP_TIMEOUT "1" afr_child_up_status $V0 2
 
-# setfattr done as NEW_USER fails on 3rd brick with EPERM but suceeds on
+# setfattr done as NEW_USER fails on 3rd brick with GF_ERROR_CODE_PERM but suceeds on
 # the first 2 and hence on the mount.
 su -m bug1438255 -c "setfattr -n user.myattr -v myvalue  $M0/FILE"
 TEST [ $? -eq 0 ]

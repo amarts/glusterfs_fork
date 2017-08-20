@@ -2353,7 +2353,7 @@ call_from_sp_client_to_reset_tmfile (call_frame_t *frame,
 
         if (frame->root->pid != GF_CLIENT_PID_GSYNCD) {
                 op_ret = -1;
-                op_errno = EPERM;
+                op_errno = GF_ERROR_CODE_PERM;
 
                 goto out;
         }
@@ -2562,7 +2562,7 @@ marker_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
 
         if (marker_xattr_cleanup_cmd (dict)) {
                 if (frame->root->uid != 0 || frame->root->gid != 0) {
-                        op_errno = EPERM;
+                        op_errno = GF_ERROR_CODE_PERM;
                         ret = -1;
                         goto err;
                 }

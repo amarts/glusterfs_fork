@@ -910,7 +910,7 @@ class Server(object):
             # not supported in python3, we have to rely on 'chmod'
             # and 'utime with de-reference'. But 'chmod'
             # de-reference the symlink and gets ENOENT, EACCES,
-            # EPERM errors, hence ignoring those errors if it's on
+            # GF_ERROR_CODE_PERM errors, hence ignoring those errors if it's on
             # symlink file.
 
             is_symlink = False

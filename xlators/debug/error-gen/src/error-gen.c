@@ -229,7 +229,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "ENOSPC"))
                 return GF_ERROR_CODE_NOSPC;
         else if (!strcmp ((*error_no), "EPERM"))
-                return EPERM;
+                return GF_ERROR_CODE_PERM;
         else if (!strcmp ((*error_no), "EROFS"))
                 return EROFS;
         else if (!strcmp ((*error_no), "EBUSY"))

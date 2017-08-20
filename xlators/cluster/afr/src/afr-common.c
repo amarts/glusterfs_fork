@@ -2987,7 +2987,7 @@ afr_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xattr_req)
 
 	if (__is_root_gfid (loc->parent->gfid)) {
 		if (!strcmp (loc->name, GF_REPLICATE_TRASH_DIR)) {
-			op_errno = EPERM;
+			op_errno = GF_ERROR_CODE_PERM;
 			goto out;
 		}
 	}

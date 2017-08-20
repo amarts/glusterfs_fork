@@ -20,35 +20,35 @@ int
 meta_default_fgetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			const char *name, dict_t *xdata)
 {
-        return default_fgetxattr_failure_cbk (frame, EPERM);
+        return default_fgetxattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			dict_t *dict, int32_t flags, dict_t *xdata)
 {
-        return default_fsetxattr_failure_cbk (frame, EPERM);
+        return default_fsetxattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_setxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		       dict_t *dict, int32_t flags, dict_t *xdata)
 {
-        return default_setxattr_failure_cbk (frame, EPERM);
+        return default_setxattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_statfs (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		     dict_t *xdata)
 {
-        return default_statfs_failure_cbk (frame, EPERM);
+        return default_statfs_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_fsyncdir (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		       int32_t flags, dict_t *xdata)
 {
-        return default_fsyncdir_failure_cbk (frame, EPERM);
+        return default_fsyncdir_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -76,7 +76,7 @@ int
 meta_default_fsync (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		    int32_t flags, dict_t *xdata)
 {
-        return default_fsync_failure_cbk (frame, EPERM);
+        return default_fsync_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -109,7 +109,7 @@ meta_default_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			   &dummy, &dummy, xdata);
 	return 0;
 err:
-        return default_writev_failure_cbk (frame, EPERM);
+        return default_writev_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -186,56 +186,56 @@ meta_default_create (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		     int32_t flags, mode_t mode, mode_t umask, fd_t *fd,
 		     dict_t *xdata)
 {
-        return default_create_failure_cbk (frame, EPERM);
+        return default_create_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
 		   loc_t *newloc, dict_t *xdata)
 {
-        return default_link_failure_cbk (frame, EPERM);
+        return default_link_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_rename (call_frame_t *frame, xlator_t *this, loc_t *oldloc,
 		     loc_t *newloc, dict_t *xdata)
 {
-        return default_rename_failure_cbk (frame, EPERM);
+        return default_rename_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_symlink (call_frame_t *frame, xlator_t *this, const char *linkpath,
 		      loc_t *loc, mode_t umask, dict_t *xdata)
 {
-        return default_symlink_failure_cbk (frame, EPERM);
+        return default_symlink_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_rmdir (call_frame_t *frame, xlator_t *this, loc_t *loc, int flags,
 		    dict_t *xdata)
 {
-        return default_rmdir_failure_cbk (frame, EPERM);
+        return default_rmdir_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
 		     dict_t *xdata)
 {
-        return default_unlink_failure_cbk (frame, EPERM);
+        return default_unlink_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_mkdir (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		    mode_t mode, mode_t umask, dict_t *xdata)
 {
-        return default_mkdir_failure_cbk (frame, EPERM);
+        return default_mkdir_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		    mode_t mode, dev_t rdev, mode_t umask, dict_t *xdata)
 {
-        return default_mknod_failure_cbk (frame, EPERM);
+        return default_mknod_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -277,7 +277,7 @@ int
 meta_default_access (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		     int32_t mask, dict_t *xdata)
 {
-        return default_access_failure_cbk (frame, EPERM);
+        return default_access_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -297,42 +297,42 @@ int
 meta_default_getxattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		       const char *name, dict_t *xdata)
 {
-        return default_getxattr_failure_cbk (frame, EPERM);
+        return default_getxattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_xattrop (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		      gf_xattrop_flags_t flags, dict_t *dict, dict_t *xdata)
 {
-        return default_xattrop_failure_cbk (frame, EPERM);
+        return default_xattrop_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_fxattrop (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		       gf_xattrop_flags_t flags, dict_t *dict, dict_t *xdata)
 {
-        return default_fxattrop_failure_cbk (frame, EPERM);
+        return default_fxattrop_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 			  const char *name, dict_t *xdata)
 {
-        return default_removexattr_failure_cbk (frame, EPERM);
+        return default_removexattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_fremovexattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			   const char *name, dict_t *xdata)
 {
-        return default_fremovexattr_failure_cbk (frame, EPERM);
+        return default_fremovexattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_lk (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		 int32_t cmd, struct gf_flock *lock, dict_t *xdata)
 {
-        return default_lk_failure_cbk (frame, EPERM);
+        return default_lk_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 
@@ -341,7 +341,7 @@ meta_default_inodelk (call_frame_t *frame, xlator_t *this, const char *volume,
 		      loc_t *loc, int32_t cmd, struct gf_flock *lock,
 		      dict_t *xdata)
 {
-        return default_inodelk_failure_cbk (frame, EPERM);
+        return default_inodelk_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -349,7 +349,7 @@ meta_default_finodelk (call_frame_t *frame, xlator_t *this, const char *volume,
 		       fd_t *fd, int32_t cmd, struct gf_flock *lock,
 		       dict_t *xdata)
 {
-        return default_finodelk_failure_cbk (frame, EPERM);
+        return default_finodelk_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -357,7 +357,7 @@ meta_default_entrylk (call_frame_t *frame, xlator_t *this, const char *volume,
 		      loc_t *loc, const char *basename, entrylk_cmd cmd,
 		      entrylk_type type, dict_t *xdata)
 {
-        return default_entrylk_failure_cbk (frame, EPERM);
+        return default_entrylk_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -365,14 +365,14 @@ meta_default_fentrylk (call_frame_t *frame, xlator_t *this, const char *volume,
 		       fd_t *fd, const char *basename, entrylk_cmd cmd,
 		       entrylk_type type, dict_t *xdata)
 {
-        return default_fentrylk_failure_cbk (frame, EPERM);
+        return default_fentrylk_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_rchecksum (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			off_t offset, int32_t len, dict_t *xdata)
 {
-        return default_rchecksum_failure_cbk (frame, EPERM);
+        return default_rchecksum_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 
@@ -475,7 +475,7 @@ meta_default_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 		      struct iatt *stbuf, int32_t valid,
 		      dict_t *xdata)
 {
-        return default_setattr_failure_cbk (frame, EPERM);
+        return default_setattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -519,7 +519,7 @@ meta_default_lookup (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
 	ops = meta_ops_get (loc->parent, this);
 	if (!ops)
-		return default_lookup_failure_cbk (frame, EPERM);
+		return default_lookup_failure_cbk (frame, GF_ERROR_CODE_PERM);
 
 	for (dirent = ops->fixed_dirents; dirent && dirent->name; dirent++) {
 		if (strcmp (dirent->name, loc->name) == 0)
@@ -562,7 +562,7 @@ int
 meta_default_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		       struct iatt *stbuf, int32_t valid, dict_t *xdata)
 {
-        return default_fsetattr_failure_cbk (frame, EPERM);
+        return default_fsetattr_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
@@ -570,21 +570,21 @@ meta_default_fallocate (call_frame_t *frame, xlator_t *this, fd_t *fd,
 			int32_t keep_size, off_t offset, size_t len,
 			dict_t *xdata)
 {
-        return default_fallocate_failure_cbk (frame, EPERM);
+        return default_fallocate_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_discard (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		      off_t offset, size_t len, dict_t *xdata)
 {
-        return default_discard_failure_cbk (frame, EPERM);
+        return default_discard_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 int
 meta_default_zerofill (call_frame_t *frame, xlator_t *this, fd_t *fd,
 		       off_t offset, off_t len, dict_t *xdata)
 {
-        return default_zerofill_failure_cbk (frame, EPERM);
+        return default_zerofill_failure_cbk (frame, GF_ERROR_CODE_PERM);
 }
 
 #define SET_META_DEFAULT_FOP(f,name) do { if (!f->name) f->name = meta_default_##name ; } while (0)
