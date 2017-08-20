@@ -474,7 +474,7 @@ dht_discover_complete (xlator_t *this, call_frame_t *discover_frame)
                         "and directory on another. "
                         "Please fix it manually",
                         local->loc.path);
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 
@@ -5950,7 +5950,7 @@ dht_refresh_parent_layout_resume (call_frame_t *frame, xlator_t *this, int ret,
         if (ret < 0) {
                 parent_local->op_ret = -1;
                 parent_local->op_errno = local->op_errno
-                        ? local->op_errno : EIO;
+                        ? local->op_errno : GF_ERROR_CODE_IO;
         } else {
                 parent_local->op_ret = 0;
         }
@@ -6187,7 +6187,7 @@ dht_mknod (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               loc->path);
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 
@@ -6296,7 +6296,7 @@ dht_symlink (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               loc->path);
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 
@@ -6614,7 +6614,7 @@ dht_link (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "no subvolume in layout for path=%s",
                               newloc->path);
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 
@@ -7120,7 +7120,7 @@ dht_create (call_frame_t *frame, xlator_t *this,
                         "no subvolume in layout for path=%s",
                         loc->path);
 
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 
@@ -7393,7 +7393,7 @@ dht_mkdir_helper (call_frame_t *frame, xlator_t *this,
                         "previous attempt of mkdir failed because of "
                         "in-memory layout not matching with that on disk.",
                         pgfid, loc->name, loc->path);
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 
@@ -7649,7 +7649,7 @@ dht_mkdir (call_frame_t *frame, xlator_t *this,
                 gf_msg_debug (this->name, 0,
                               "hashed subvol not found for %s",
                               loc->path);
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 

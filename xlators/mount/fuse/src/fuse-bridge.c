@@ -477,7 +477,7 @@ fuse_entry_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                 "Received NULL gfid for %s. Forcing EIO",
                                 state->loc.path);
                         op_ret = -1;
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                 }
         }
 

@@ -390,7 +390,7 @@ int32_t check_format_v1(uint32_t len, unsigned char *wire)
 		goto error;
 	return nr_links;
  error:
-	return EIO;
+	return GF_ERROR_CODE_IO;
 }
 
 /*
@@ -469,7 +469,7 @@ static int32_t open_format_v1(unsigned char *wire,
 
 	num_nmtd_macs = check_format_v1(len, wire);
 	if (num_nmtd_macs <= 0)
-		return EIO;
+		return GF_ERROR_CODE_IO;
 
 	ret = lookup_link_mac_v1((struct mtd_format_v1 *)wire,
 				 num_nmtd_macs, loc, info, master);
@@ -501,7 +501,7 @@ static int32_t open_format_v1(unsigned char *wire,
 	ret = AES_set_encrypt_key(mtd_key, sizeof(mtd_key)*8, &EMTD_KEY);
 	if (ret < 0) {
 		gf_log("crypt", GF_LOG_ERROR, "Can not set encrypt key");
-		ret = EIO;
+		ret = GF_ERROR_CODE_IO;
 		goto out;
 	}
 	gctx = CRYPTO_gcm128_new(&EMTD_KEY, (block128_f)AES_encrypt);
@@ -517,7 +517,7 @@ static int32_t open_format_v1(unsigned char *wire,
 	if (ret) {
 		gf_log("crypt", GF_LOG_ERROR, " CRYPTO_gcm128_aad failed");
 		CRYPTO_gcm128_release(gctx);
-		ret = EIO;
+		ret = GF_ERROR_CODE_IO;
 		goto out;
 	}
 	ret = CRYPTO_gcm128_decrypt(gctx,
@@ -527,7 +527,7 @@ static int32_t open_format_v1(unsigned char *wire,
 	if (ret) {
 		gf_log("crypt", GF_LOG_ERROR, " CRYPTO_gcm128_decrypt failed");
 		CRYPTO_gcm128_release(gctx);
-		ret = EIO;
+		ret = GF_ERROR_CODE_IO;
 		goto out;
 	}
 	/*
@@ -572,7 +572,7 @@ int32_t open_format(unsigned char *str,
 	struct crypt_format *fmt;
 	if (len < sizeof(*fmt)) {
 		gf_log("crypt", GF_LOG_ERROR, "Bad core format");
-		return EIO;
+		return GF_ERROR_CODE_IO;
 	}
 	fmt = (struct crypt_format *)str;
 

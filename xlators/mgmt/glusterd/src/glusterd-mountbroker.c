@@ -710,7 +710,7 @@ glusterd_do_mount (char *label, dict_t *argdict, char **path, int *op_errno)
         runner_add_arg (&runner, mtptemp);
         ret = runner_run_reuse (&runner);
         if (ret == -1) {
-                *op_errno = EIO; /* XXX hacky fake */
+                *op_errno = GF_ERROR_CODE_IO; /* XXX hacky fake */
                 runner_log (&runner, "", GF_LOG_ERROR, "command failed");
         }
         runner_end (&runner);

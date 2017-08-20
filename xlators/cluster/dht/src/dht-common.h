@@ -742,7 +742,7 @@ typedef struct dht_fd_ctx {
         } while (0)
 
 #define dht_inode_missing(op_errno) (op_errno == GF_ERROR_CODE_NOENT || op_errno == GF_ERROR_CODE_STALE \
-                                     || op_errno == EIO) \
+                                     || op_errno == GF_ERROR_CODE_IO) \
 /*Bad fix. Please revert the commit after fixing the bug 1329505*/
 
 #define check_is_dir(i,s,x) (IA_ISDIR(s->ia_type))

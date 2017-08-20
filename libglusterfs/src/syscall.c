@@ -12,6 +12,7 @@
 #include "compat.h"
 #include "mem-pool.h"
 #include "libglusterfs-messages.h"
+#include "compat-errno.h"
 
 #include <sys/types.h>
 #include <utime.h>
@@ -35,7 +36,7 @@
         if (_result < -1) {                                            \
                 FS_ERROR_LOG (_result);                                \
                 _result = -1;                                          \
-                errno = EIO;                                           \
+                errno = GF_ERROR_CODE_IO;                                           \
         }                                                              \
         _result;                                                       \
  })
@@ -46,7 +47,7 @@
         if (_result0 < -1 || _result0 > 0) {                           \
                 FS_ERROR_LOG (_result0);                               \
                 _result0 = -1;                                         \
-                errno = EIO;                                           \
+                errno = GF_ERROR_CODE_IO;                                           \
         }                                                              \
         _result0;                                                      \
 })
@@ -56,7 +57,7 @@
         typeof(_ret) _result1 = (_ret);                                \
         if (_result1 < 0) {                                            \
                 FS_ERROR_LOG (_result1);                               \
-                _result1 = EIO;                                        \
+                _result1 = GF_ERROR_CODE_IO;                                        \
         }                                                              \
         _result1;                                                      \
 })

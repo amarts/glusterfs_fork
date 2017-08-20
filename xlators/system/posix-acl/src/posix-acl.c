@@ -1774,7 +1774,7 @@ posix_acl_link (call_frame_t *frame, xlator_t *this, loc_t *old, loc_t *new, dic
 
         ctx = posix_acl_ctx_get (old->inode, this);
         if (!ctx) {
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto red;
         }
 
@@ -1967,7 +1967,7 @@ setattr_scrutiny (call_frame_t *frame, inode_t *inode, struct iatt *buf,
 
         ctx = posix_acl_ctx_get (inode, frame->this);
         if (!ctx)
-                return EIO;
+                return GF_ERROR_CODE_IO;
 
         if (valid & GF_SET_ATTR_MODE) {
 /*
@@ -2120,7 +2120,7 @@ setxattr_scrutiny (call_frame_t *frame, inode_t *inode, dict_t *xattr)
 
         ctx = posix_acl_ctx_get (inode, frame->this);
         if (!ctx)
-                return EIO;
+                return GF_ERROR_CODE_IO;
 
         if (dict_get (xattr, POSIX_ACL_ACCESS_XATTR)) {
                 found = 1;
@@ -2429,7 +2429,7 @@ posix_acl_removexattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
 
         ctx = posix_acl_ctx_get (loc->inode, this);
         if (!ctx) {
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto red;
         }
 

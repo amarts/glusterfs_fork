@@ -882,7 +882,7 @@ nfs3svc_getattr_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                  * and buf is left in a NULL state, yet the op_errno == 0.
                  */
                 if (!buf && op_errno == 0) {
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                 }
                 status = nfs3_cbk_errno_status (op_ret, op_errno);
         }

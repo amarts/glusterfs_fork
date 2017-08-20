@@ -1632,7 +1632,7 @@ int32_t ec_writev_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 ec = this->private;
                 if ((op_ret > 0) && ((op_ret % ec->fragment_size) != 0)) {
                         op_ret = -1;
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                 }
         }
         return ec_inode_write_cbk (frame, this, cookie, op_ret, op_errno,

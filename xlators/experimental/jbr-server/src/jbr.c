@@ -648,7 +648,7 @@ jbr_lk_perform_local_op (call_frame_t *frame, xlator_t *this, int *op_errno,
                 jbr_inode_ctx_t  *ictx  = jbr_get_inode_ctx(this, fd->inode);
 
                 if (!ictx) {
-                        *op_errno = EIO;
+                        *op_errno = GF_ERROR_CODE_IO;
                         goto out;
                 }
 
@@ -1219,7 +1219,7 @@ jbr_open_term (call_frame_t *frame, xlator_t *this, dict_t *xdata)
                         J_MSG_NO_DATA, "failed to get entry count");
                 sys_close (priv->term_fd);
                 priv->term_fd = -1;
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
         priv->term_read = 0;
@@ -1262,7 +1262,7 @@ jbr_next_entry (call_frame_t *frame, xlator_t *this)
                                 "error reading next entry: %s",
                                 strerror(errno));
                 } else {
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                         gf_msg (this->name, GF_LOG_ERROR, 0,
                                 J_MSG_SYS_CALL_FAILURE,
                                 "got %zd/%d bytes for next entry",

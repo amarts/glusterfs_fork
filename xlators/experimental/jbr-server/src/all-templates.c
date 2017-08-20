@@ -178,7 +178,7 @@ jbr_@NAME@_call_dispatch (call_frame_t *frame, xlator_t *this, int *op_errno,
 #if defined(JBR_CG_QUEUE)
         jbr_inode_ctx_t  *ictx  = jbr_get_inode_ctx(this, fd->inode);
         if (!ictx) {
-                *op_errno = EIO;
+                *op_errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 

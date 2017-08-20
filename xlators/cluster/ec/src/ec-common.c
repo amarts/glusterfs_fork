@@ -232,7 +232,7 @@ ec_cbk_set_error(ec_cbk_data_t *cbk, int32_t error, gf_boolean_t ro)
          * read-only, there's no problem (i.e. we simply return the generated
          * error code). However if it caused a modification, we must return EIO
          * to indicate that the operation has been partially executed. */
-        cbk->op_errno = ro ? error : EIO;
+        cbk->op_errno = ro ? error : GF_ERROR_CODE_IO;
         cbk->op_ret = -1;
 
         ec_fop_set_error(cbk->fop, cbk->op_errno);
@@ -249,7 +249,7 @@ ec_fop_prepare_answer(ec_fop_data_t *fop, gf_boolean_t ro)
 
     cbk = fop->answer;
     if (cbk == NULL) {
-        ec_fop_set_error(fop, EIO);
+        ec_fop_set_error(fop, GF_ERROR_CODE_IO);
 
         return NULL;
     }

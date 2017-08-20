@@ -386,7 +386,7 @@ stripe_ctx_handle (xlator_t *this, call_frame_t *prev, stripe_local_t *local,
                         gf_log (this->name, GF_LOG_ERROR,
                                 "error with stripe-count xattr");
                         local->op_ret   = -1;
-                        local->op_errno = EIO;
+                        local->op_errno = GF_ERROR_CODE_IO;
                         goto out;
                 }
 
@@ -405,7 +405,7 @@ stripe_ctx_handle (xlator_t *this, call_frame_t *prev, stripe_local_t *local,
                         "error with stripe-count xattr (%d != %d)",
                         local->fctx->stripe_count, data_to_int32 (data));
                 local->op_ret   = -1;
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 
@@ -423,7 +423,7 @@ stripe_ctx_handle (xlator_t *this, call_frame_t *prev, stripe_local_t *local,
                 gf_log (this->name, GF_LOG_ERROR,
                         "error with stripe-index xattr (%d)", index);
                 local->op_ret   = -1;
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 goto out;
         }
         if (local->fctx->xl_array) {

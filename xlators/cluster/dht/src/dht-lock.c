@@ -1215,7 +1215,7 @@ dht_blocking_entrylk_after_inodelk (call_frame_t *frame, void *cookie,
 
         if (ret < 0) {
                 local->op_ret = -1;
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_ENTRYLK_ERROR,
                         "%s (%s/%s): "
@@ -1350,7 +1350,7 @@ dht_protect_namespace (call_frame_t *frame, loc_t *loc,
         ret = dht_blocking_inodelk (frame, lk_array, count, FAIL_ON_ANY_ERROR,
                                     dht_blocking_entrylk_after_inodelk);
         if (ret < 0) {
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 gf_msg (this->name, GF_LOG_WARNING, local->op_errno,
                         DHT_MSG_INODELK_ERROR,
                         "%s (%s/%s) (path: %s): "

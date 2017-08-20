@@ -328,7 +328,7 @@ static int32_t rmw_partial_block(call_frame_t *frame,
 				gf_log(this->name, GF_LOG_WARNING,
 				     "Can not uptodate a gap at the beginning");
 				local->op_ret = -1;
-				local->op_errno = EIO;
+				local->op_errno = GF_ERROR_CODE_IO;
 				goto exit;
 			}
 #if 0
@@ -421,7 +421,7 @@ static int32_t rmw_partial_block(call_frame_t *frame,
 			gf_log(this->name, GF_LOG_WARNING,
 			       "Can not uptodate a gap at the end");
 			local->op_ret = -1;
-			local->op_errno = EIO;
+			local->op_errno = GF_ERROR_CODE_IO;
 			goto exit;
 		}
 		/*

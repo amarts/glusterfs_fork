@@ -65,7 +65,7 @@ EXPECT "brick0" get_text_xattr user.test $M0/metadata-split-brain.txt
 TEST setfattr -n replica.split-brain-choice -v $V0-client-1 $M0/metadata-split-brain.txt
 EXPECT "brick1" get_text_xattr user.test $M0/metadata-split-brain.txt
 
-#Check that setting split-brain-choice to "none" results in EIO again
+#Check that setting split-brain-choice to "none" results in GF_ERROR_CODE_IO again
 TEST setfattr -n replica.split-brain-choice -v none $M0/metadata-split-brain.txt
 TEST setfattr -n replica.split-brain-choice -v none $M0/data-split-brain.txt
 TEST ! getfattr -n user.test $M0/metadata-split-brain.txt

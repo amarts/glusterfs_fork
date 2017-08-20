@@ -385,7 +385,7 @@ check_ancestory_continue (struct list_head *parents, inode_t *inode,
                         "cannot be enforced. "
                         "Hence, failing fop with EIO",
                         uuid_utoa (inode->gfid));
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 op_ret = -1;
         }
 
@@ -1052,7 +1052,7 @@ quota_check_limit_continuation (struct list_head *parents, inode_t *inode,
                                 "cannot be enforced. "
                                 "Hence, failing fop with EIO",
 				uuid_utoa (inode->gfid));
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                 }
 
                 quota_handle_validate_error (frame, -1, op_errno);
@@ -2359,7 +2359,7 @@ void
 quota_link_continue (call_frame_t *frame)
 {
         int32_t            ret               = -1;
-        int32_t            op_errno          = EIO;
+        int32_t            op_errno          = GF_ERROR_CODE_IO;
         quota_local_t     *local             = NULL;
         uuid_t             common_ancestor   = {0};
         xlator_t          *this              = NULL;
@@ -2711,7 +2711,7 @@ void
 quota_rename_continue (call_frame_t *frame)
 {
         int32_t            ret               = -1;
-        int32_t            op_errno          = EIO;
+        int32_t            op_errno          = GF_ERROR_CODE_IO;
         quota_local_t     *local             = NULL;
         uuid_t             common_ancestor   = {0};
         xlator_t          *this              = NULL;
@@ -4437,7 +4437,7 @@ quota_get_limit_dir_continuation (struct list_head *parents, inode_t *inode,
                                 "cannot be enforced. "
                                 "Hence, failing fop with EIO",
                                 uuid_utoa (inode->gfid));
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                 }
 
                 quota_handle_validate_error (frame, -1, op_errno);

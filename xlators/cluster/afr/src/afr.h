@@ -57,7 +57,7 @@ typedef int (*afr_compound_cbk_t) (call_frame_t *frame, void *cookie,
         do {                                                                   \
                 local->op_ret = ret;                                           \
                 local->op_errno = errnum;                                      \
-                if (local->op_errno == EIO)                                    \
+                if (local->op_errno == GF_ERROR_CODE_IO)                                    \
                         gf_msg (this->name, GF_LOG_ERROR, local->op_errno,     \
                                 AFR_MSG_SPLIT_BRAIN, "Failing %s on gfid %s: " \
                                 "split-brain observed.",                       \

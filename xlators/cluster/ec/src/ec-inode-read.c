@@ -1530,7 +1530,7 @@ int32_t ec_seek_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
 
         if ((op_ret > 0) && ((cbk->offset % ec->fragment_size) != 0)) {
             cbk->op_ret = -1;
-            cbk->op_errno = EIO;
+            cbk->op_errno = GF_ERROR_CODE_IO;
         }
 
         ec_combine(cbk, NULL);
@@ -1661,7 +1661,7 @@ void ec_seek(call_frame_t *frame, xlator_t *this, uintptr_t target,
 {
     ec_cbk_t callback = { .seek = func };
     ec_fop_data_t *fop = NULL;
-    int32_t error = EIO;
+    int32_t error = GF_ERROR_CODE_IO;
 
     gf_msg_trace ("ec", 0, "EC(SEEK) %p", frame);
 

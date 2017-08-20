@@ -2208,7 +2208,7 @@ afr_lookup_done (call_frame_t *frame, xlator_t *this)
 
 		/* LOG ERROR */
 		local->op_ret = -1;
-		local->op_errno = EIO;
+		local->op_errno = GF_ERROR_CODE_IO;
 		goto unwind;
 	}
 

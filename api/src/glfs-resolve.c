@@ -621,7 +621,7 @@ glfs_resolve_path (struct glfs *fs, xlator_t *subvol, const char *origpath,
         if (NULL == cwd) {
                 gf_msg (subvol->name, GF_LOG_WARNING, EIO,
                         API_MSG_GET_CWD_FAILED, "Failed to get cwd");
-                errno = EIO;
+                errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 
@@ -1179,7 +1179,7 @@ glfs_h_resolve_symlink (struct glfs *fs, struct glfs_object *object)
         subvol = glfs_active_subvol (fs);
         if (!subvol) {
                 ret = -1;
-                errno = EIO;
+                errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 

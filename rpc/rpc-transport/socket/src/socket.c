@@ -282,7 +282,7 @@ ssl_do (rpc_transport_t *this, void *buf, size_t len, SSL_trinary_func *func)
 			errno = GF_ERROR_CODE_NODATA;
 			goto out;
 		default:
-			errno = EIO;
+			errno = GF_ERROR_CODE_IO;
 			goto out;	/* "break" would just loop again */
 		}
 	}

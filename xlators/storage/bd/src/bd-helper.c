@@ -474,7 +474,7 @@ bd_resize (bd_priv_t *priv, uuid_t uuid, size_t size)
         lv = lvm_lv_from_name (vg, gfid);
         if (!lv) {
                 gf_log (THIS->name, GF_LOG_WARNING, "LV %s not found", gfid);
-                ret = EIO;
+                ret = GF_ERROR_CODE_IO;
                 goto out;
         }
         new_size = lvm_lv_get_size (lv);
@@ -483,7 +483,7 @@ bd_resize (bd_priv_t *priv, uuid_t uuid, size_t size)
                 gf_log (THIS->name, GF_LOG_WARNING,
                         "resized LV size %" PRIu64 " does "
                         "not match requested size %zd", new_size, size);
-                ret = EIO;
+                ret = GF_ERROR_CODE_IO;
         }
 
 out:
@@ -615,7 +615,7 @@ bd_snapshot_create (bd_local_t *local, bd_priv_t *priv)
         runner_end (&runner);
 
         if (sys_lstat (path, &stat) < 0)
-                ret = EIO;
+                ret = GF_ERROR_CODE_IO;
 
         GF_FREE (path);
         return ret;
@@ -732,7 +732,7 @@ bd_merge (bd_priv_t *priv, uuid_t gfid)
         runner_end (&runner);
 
         if (!sys_lstat (path, &stat))
-                ret = EIO;
+                ret = GF_ERROR_CODE_IO;
 
         GF_FREE (path);
 

@@ -1378,7 +1378,7 @@ dht_migration_complete_check_task (void *data)
                                 tmp_loc.path ? tmp_loc.path :
                                 uuid_utoa (tmp_loc.gfid), dst_node->name);
                 ret = -1;
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 goto out;
         }
 

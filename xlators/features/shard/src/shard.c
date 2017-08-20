@@ -908,7 +908,7 @@ shard_lookup_dot_shard_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         "is not a directory. Please remove /.shard from all "
                         "bricks and try again");
                 local->op_ret = -1;
-                local->op_errno = EIO;
+                local->op_errno = GF_ERROR_CODE_IO;
                 goto unwind;
         }
 

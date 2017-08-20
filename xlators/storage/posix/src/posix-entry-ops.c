@@ -1622,7 +1622,7 @@ posix_mkdir (call_frame_t *frame, xlator_t *this,
                                         "value for key %s", pgfid, loc->name,
                                         real_path, xattr_name);
                                 op_ret = -1;
-                                op_errno = EIO;
+                                op_errno = GF_ERROR_CODE_IO;
 
                                 xdata_rsp = dict_new ();
                                 if (xdata_rsp == NULL) {

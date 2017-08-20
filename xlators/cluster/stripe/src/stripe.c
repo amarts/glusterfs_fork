@@ -1875,7 +1875,7 @@ stripe_mknod (call_frame_t *frame, xlator_t *this, loc_t *loc, mode_t mode,
                 if (priv->nodes_down) {
                         gf_log (this->name, GF_LOG_WARNING,
                                 "Some node down, returning EIO");
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                         goto err;
                 }
 
@@ -2541,7 +2541,7 @@ stripe_create (call_frame_t *frame, xlator_t *this, loc_t *loc,
         if (priv->first_child_down || priv->nodes_down) {
                 gf_log (this->name, GF_LOG_DEBUG,
                         "First node down, returning EIO");
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto err;
         }
 

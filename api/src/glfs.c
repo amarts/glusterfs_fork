@@ -1353,7 +1353,7 @@ priv_glfs_ipc (struct glfs *fs, int opcode, void *xd_in, void **xd_out)
 	subvol = glfs_active_subvol (fs);
 	if (!subvol) {
 		ret = -1;
-		errno = EIO;
+		errno = GF_ERROR_CODE_IO;
 		goto out;
 	}
 

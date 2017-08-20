@@ -361,7 +361,7 @@ fdl_ipc (call_frame_t *frame, xlator_t *this, int32_t op, dict_t *xdata)
         call_stub_t     *stub;
         fdl_private_t   *priv   = this->private;
         dict_t          *tdict;
-        int32_t         gt_err  = EIO;
+        int32_t         gt_err  = GF_ERROR_CODE_IO;
 
         switch (op) {
 

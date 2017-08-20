@@ -2031,7 +2031,7 @@ dht_selfheal_new_directory (call_frame_t *frame,
         loc_t       *loc                     = NULL;
         char         pgfid[GF_UUID_BUF_SIZE] = {0};
         char         gfid[GF_UUID_BUF_SIZE]  = {0};
-        int32_t      op_errno                = EIO;
+        int32_t      op_errno                = GF_ERROR_CODE_IO;
 
         local = frame->local;
 

@@ -318,7 +318,7 @@ int32_t crypt_readv_cbk(call_frame_t *frame,
 	if (conf->aligned_offset + to_user <= conf->orig_offset) {
 		gf_log(this->name, GF_LOG_WARNING, "Incomplete read");
 		local->op_ret = -1;
-		local->op_errno = EIO;
+		local->op_errno = GF_ERROR_CODE_IO;
 		goto put_one_call;
 	}
 	to_user -= (conf->aligned_offset - conf->orig_offset);
@@ -392,7 +392,7 @@ static int32_t do_readv(call_frame_t *frame,
 	data = dict_get(dict, FSIZE_XATTR_PREFIX);
 	if (!data) {
 		gf_log("crypt", GF_LOG_WARNING, "Regular file size not found");
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		goto error;
 	}
 	local->cur_file_size = data_to_uint64(data);
@@ -549,14 +549,14 @@ int32_t crypt_readv(call_frame_t *frame,
 		if (!xdata) {
 			gf_log("crypt", GF_LOG_WARNING,
 			       "Regular file size hasn't been passed");
-			ret = EIO;
+			ret = GF_ERROR_CODE_IO;
 			goto error;
 		}
 		data = dict_get(xdata, FSIZE_XATTR_PREFIX);
 		if (!data) {
 			gf_log("crypt", GF_LOG_WARNING,
 			       "Regular file size not found");
-			ret = EIO;
+			ret = GF_ERROR_CODE_IO;
 			goto error;
 		}
 		local->old_file_size =
@@ -981,7 +981,7 @@ static int32_t do_writev(call_frame_t *frame,
 	if (!data) {
 		gf_log("crypt", GF_LOG_WARNING, "Regular file size not found");
 		op_ret = -1;
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		goto error;
 	}
 	local->old_file_size = local->cur_file_size = data_to_uint64(data);
@@ -1141,14 +1141,14 @@ int crypt_writev(call_frame_t *frame,
 		if (!xdata) {
 			gf_log("crypt", GF_LOG_WARNING,
 			       "Regular file size hasn't been passed");
-			ret = EIO;
+			ret = GF_ERROR_CODE_IO;
 			goto error;
 		}
 		data = dict_get(xdata, FSIZE_XATTR_PREFIX);
 		if (!data) {
 			gf_log("crypt", GF_LOG_WARNING,
 			       "Regular file size not found");
-			ret = EIO;
+			ret = GF_ERROR_CODE_IO;
 			goto error;
 		}
 		local->old_file_size =
@@ -1408,7 +1408,7 @@ static int32_t prune_write(call_frame_t *frame,
 		gf_log(this->name, GF_LOG_WARNING,
 		       "Failed to uptodate head block for prune");
 		local->op_ret = -1;
-		local->op_errno = EIO;
+		local->op_errno = GF_ERROR_CODE_IO;
 		goto put_one_call;
 	}
 	local->vec.iov_len = conf->off_in_head;
@@ -1606,7 +1606,7 @@ static int32_t do_ftruncate(call_frame_t *frame,
 	data = dict_get(dict, FSIZE_XATTR_PREFIX);
 	if (!data) {
 		gf_log("crypt", GF_LOG_WARNING, "Regular file size not found");
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		goto error;
 	}
 	local->old_file_size = local->cur_file_size = data_to_uint64(data);
@@ -2001,7 +2001,7 @@ static int load_mtd_open(call_frame_t *frame,
 			gf_log(this->name, GF_LOG_WARNING,
 			       "Inode info expected, but not found");
 			local->op_ret = -1;
-			local->op_errno = EIO;
+			local->op_errno = GF_ERROR_CODE_IO;
 			goto exit;
 		}
 		/*
@@ -2059,7 +2059,7 @@ static int load_mtd_open(call_frame_t *frame,
 				    this, (uint64_t)(long)info);
 		if (ret == -1) {
 			local->op_ret = -1;
-			local->op_errno = EIO;
+			local->op_errno = GF_ERROR_CODE_IO;
 			goto exit;
 		}
 	}
@@ -2305,7 +2305,7 @@ static int32_t crypt_create_done(call_frame_t *frame,
 	 */
 	op_ret = inode_ctx_put(local->fd->inode, this, (uint64_t)(long)info);
 	if (op_ret == -1) {
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		free_inode_info(info);
 		goto unwind;
 	}
@@ -3133,7 +3133,7 @@ static int32_t linkop_begin(call_frame_t *frame,
 
 	old_mtd = dict_get(xdata, CRYPTO_FORMAT_PREFIX);
 	if (!old_mtd) {
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		gf_log (this->name, GF_LOG_DEBUG,
 			"Metadata string wasn't found");
 		goto error;
@@ -3188,7 +3188,7 @@ static int32_t linkop_begin(call_frame_t *frame,
 		op_errno = inode_ctx_put(fd->inode, this,
 					 (uint64_t)(long)(info));
 		if (op_errno == -1) {
-			op_errno = EIO;
+			op_errno = GF_ERROR_CODE_IO;
 			goto error;
 		}
 	}
@@ -3792,7 +3792,7 @@ static int32_t load_file_size(call_frame_t *frame,
 			dict_unref(local->xdata);
 		gf_log("crypt", GF_LOG_WARNING, "Regular file size not found");
 		op_ret = -1;
-		op_errno = EIO;
+		op_errno = GF_ERROR_CODE_IO;
 		goto unwind;
 	}
 	local->buf.ia_size = data_to_uint64(data);
@@ -4102,7 +4102,7 @@ static int32_t crypt_readdirp_cbk(call_frame_t *frame,
 		if (!data){
 			gf_log("crypt", GF_LOG_WARNING,
 			       "Regular file size of direntry not found");
-			op_errno = EIO;
+			op_errno = GF_ERROR_CODE_IO;
 			op_ret = -1;
 			break;
 		}

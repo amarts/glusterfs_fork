@@ -656,7 +656,7 @@ br_stub_check_bad_object (xlator_t *this, inode_t *inode, int32_t *op_ret,
                         "%s is a bad object. Returning",
                         uuid_utoa (inode->gfid));
                 *op_ret = -1;
-                *op_errno = EIO;
+                *op_errno = GF_ERROR_CODE_IO;
         }
 
         if (ret == -1) {
@@ -1605,7 +1605,7 @@ br_stub_getxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         op_ret   = -1;
         status = br_version_xattr_state (xattr, &obuf, &sbuf, &bad_object);
 
-        op_errno = EIO;
+        op_errno = GF_ERROR_CODE_IO;
         if (bad_object)
                 goto delkeys;
 
@@ -1745,7 +1745,7 @@ br_stub_getxattr (call_frame_t *frame, xlator_t *this,
 
         /**
          * If xattr is node-uuid and the inode is marked bad, return EIO.
-         * Returning EIO would result in AFR to choose correct node-uuid
+         * Returning GF_ERROR_CODE_IO would result in AFR to choose correct node-uuid
          * coresponding to the subvolume * where the good copy of the
          * file resides.
          */
@@ -1824,7 +1824,7 @@ br_stub_fgetxattr (call_frame_t *frame, xlator_t *this,
 
         /**
          * If xattr is node-uuid and the inode is marked bad, return EIO.
-         * Returning EIO would result in AFR to choose correct node-uuid
+         * Returning GF_ERROR_CODE_IO would result in AFR to choose correct node-uuid
          * coresponding to the subvolume * where the good copy of the
          * file resides.
          */
@@ -2889,7 +2889,7 @@ br_stub_lookup_cbk (call_frame_t *frame, void *cookie,
                 ret =  br_stub_mark_xdata_bad_object (this, inode, xattr);
                 if (ret) {
                         op_ret = -1;
-                        op_errno = EIO;
+                        op_errno = GF_ERROR_CODE_IO;
                         goto unwind;
                 }
 
@@ -2914,7 +2914,7 @@ br_stub_lookup_cbk (call_frame_t *frame, void *cookie,
                  * satisfy the request on allocation failures.
                  */
                 op_ret = -1;
-                op_errno = EIO;
+                op_errno = GF_ERROR_CODE_IO;
                 goto unwind;
         }
 

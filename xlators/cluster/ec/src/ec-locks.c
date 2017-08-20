@@ -33,7 +33,7 @@ int32_t ec_lock_check(ec_fop_data_t *fop, uintptr_t *mask)
     list_for_each_entry(ans, &fop->cbk_list, list) {
         if (ans->op_ret >= 0) {
             if (locked != 0) {
-                error = EIO;
+                error = GF_ERROR_CODE_IO;
             }
             locked |= ans->mask;
             cbk = ans;
@@ -72,7 +72,7 @@ int32_t ec_lock_check(ec_fop_data_t *fop, uintptr_t *mask)
                     break;
 
                 default:
-                    error = EIO;
+                    error = GF_ERROR_CODE_IO;
                     break;
                 }
             }
@@ -80,7 +80,7 @@ int32_t ec_lock_check(ec_fop_data_t *fop, uintptr_t *mask)
             if (fop->answer && fop->answer->op_ret < 0)
                     error = fop->answer->op_errno;
             else
-                    error = EIO;
+                    error = GF_ERROR_CODE_IO;
         }
     }
 

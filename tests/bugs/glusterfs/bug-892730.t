@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Bug 892730 - Verify that afr handles EIO errors from the brick properly.
+# Bug 892730 - Verify that afr handles GF_ERROR_CODE_IO errors from the brick properly.
 #
-# The associated bug describes a problem where EIO errors returned from the
+# The associated bug describes a problem where GF_ERROR_CODE_IO errors returned from the
 # local filesystem of a brick that is part of a replica volume are exposed to
 # the user. This test simulates such failures and verifies that the volume
 # operates as expected.
@@ -17,7 +17,7 @@ cleanup;
 TEST mkdir -p $B0/test{1,2}
 
 # The graph is a two brick replica with error-gen enabled on the second brick
-# and configured to return EIO lookup errors 100% of the time. This simulates
+# and configured to return GF_ERROR_CODE_IO lookup errors 100% of the time. This simulates
 # a brick with a crashed or shut down local filesystem. Note that the order in
 # which errors occur is a factor in reproducing the original bug (error-gen
 # must be enabled in the second brick for this test to be effective).
