@@ -50,7 +50,7 @@ static int32_t
 worm_link (call_frame_t *frame, xlator_t *this, loc_t *oldloc, loc_t *newloc,
            dict_t *xdata)
 {
-        int op_errno                =       EROFS;
+        int op_errno                =       GF_ERROR_CODE_ROFS;
         read_only_priv_t *priv      =       NULL;
 
         priv = this->private;
@@ -86,7 +86,7 @@ static int32_t
 worm_unlink (call_frame_t *frame, xlator_t *this, loc_t *loc, int32_t flags,
              dict_t *xdata)
 {
-        int op_errno                =       EROFS;
+        int op_errno                =       GF_ERROR_CODE_ROFS;
         read_only_priv_t *priv      =       NULL;
 
         priv = this->private;
@@ -122,7 +122,7 @@ static int32_t
 worm_rename (call_frame_t *frame, xlator_t *this,
              loc_t *oldloc, loc_t *newloc, dict_t *xdata)
 {
-        int op_errno                =       EROFS;
+        int op_errno                =       GF_ERROR_CODE_ROFS;
         read_only_priv_t *priv      =       NULL;
 
         priv = this->private;
@@ -158,7 +158,7 @@ static int32_t
 worm_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc, off_t offset,
                dict_t *xdata)
 {
-        int op_errno                =       EROFS;
+        int op_errno                =       GF_ERROR_CODE_ROFS;
         read_only_priv_t *priv      =       NULL;
 
         priv = this->private;
@@ -193,7 +193,7 @@ static int32_t
 worm_ftruncate (call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
                 dict_t *xdata)
 {
-        int op_errno                =       EROFS;
+        int op_errno                =       GF_ERROR_CODE_ROFS;
         read_only_priv_t *priv      =       NULL;
 
         priv = this->private;
@@ -232,7 +232,7 @@ worm_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
         worm_reten_state_t reten_state  =       {0,};
         struct iatt stpre               =       {0,};
         read_only_priv_t *priv          =       NULL;
-        int op_errno                    =       EROFS;
+        int op_errno                    =       GF_ERROR_CODE_ROFS;
         int ret                         =       -1;
 
         priv = this->private;
@@ -312,7 +312,7 @@ worm_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
         worm_reten_state_t reten_state  =       {0,};
         struct iatt stpre               =       {0,};
         read_only_priv_t *priv          =       NULL;
-        int op_errno                    =       EROFS;
+        int op_errno                    =       GF_ERROR_CODE_ROFS;
         int ret                         =       -1;
 
         priv = this->private;
@@ -391,7 +391,7 @@ worm_writev (call_frame_t *frame, xlator_t *this, fd_t *fd,
 {
         worm_reten_state_t reten_state    =       {0,};
         read_only_priv_t *priv            =       NULL;
-        int op_errno                      =       EROFS;
+        int op_errno                      =       GF_ERROR_CODE_ROFS;
         int ret                           =       -1;
 
         priv = this->private;

@@ -64,7 +64,7 @@ mtab_needs_update (const char *mnt)
                 if (ruid != 0)
                         setreuid (ruid, -1);
 
-                if (err == EROFS)
+                if (err == GF_ERROR_CODE_ROFS)
                         return 0;
         }
 

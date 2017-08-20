@@ -50,7 +50,7 @@ afr_quorum_errno (afr_private_t *priv)
 {
         if (priv->quorum_reads)
                 return GF_ERROR_CODE_NOTCONN;
-        return EROFS;
+        return GF_ERROR_CODE_ROFS;
 }
 
 int

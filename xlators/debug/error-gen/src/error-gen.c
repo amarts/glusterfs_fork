@@ -231,7 +231,7 @@ conv_errno_to_int (char **error_no)
         else if (!strcmp ((*error_no), "EPERM"))
                 return GF_ERROR_CODE_PERM;
         else if (!strcmp ((*error_no), "EROFS"))
-                return EROFS;
+                return GF_ERROR_CODE_ROFS;
         else if (!strcmp ((*error_no), "EBUSY"))
                 return EBUSY;
         else if (!strcmp ((*error_no), "EISDIR"))

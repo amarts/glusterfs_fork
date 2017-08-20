@@ -255,7 +255,7 @@ jbr_leader_checks_and_init (call_frame_t *frame, xlator_t *this, int *op_errno,
                         gf_msg (this->name, GF_LOG_ERROR, EROFS,
                                 J_MSG_QUORUM_NOT_MET, "Sufficient number of "
                                 "subvolumes are not up to meet quorum.");
-                        *op_errno = EROFS;
+                        *op_errno = GF_ERROR_CODE_ROFS;
                         goto out;
                 }
         } else {
@@ -443,7 +443,7 @@ jbr_lk_complete (call_frame_t *frame, void *cookie, xlator_t *this,
                                             (double)local->successful_acks);
                         if (result == _gf_false) {
                                 op_ret = -1;
-                                op_errno = EROFS;
+                                op_errno = GF_ERROR_CODE_ROFS;
                                 gf_msg (this->name, GF_LOG_ERROR, EROFS,
                                         J_MSG_QUORUM_NOT_MET,
                                         "Quorum is not met. "

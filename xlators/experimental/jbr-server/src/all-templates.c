@@ -454,7 +454,7 @@ jbr_@NAME@_complete (call_frame_t *frame, void *cookie, xlator_t *this,
                                            (double)local->successful_acks + 1);
                 if (result == _gf_false) {
                         op_ret = -1;
-                        op_errno = EROFS;
+                        op_errno = GF_ERROR_CODE_ROFS;
                         gf_msg (this->name, GF_LOG_ERROR, EROFS,
                                 J_MSG_QUORUM_NOT_MET, "Quorum is not met. "
                                 "The operation has failed.");

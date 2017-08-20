@@ -302,7 +302,7 @@ int
 gf_worm_state_transition (xlator_t *this, gf_boolean_t fop_with_fd,
                           void *file_ptr, glusterfs_fop_t op)
 {
-        int op_errno                      =       EROFS;
+        int op_errno                      =       GF_ERROR_CODE_ROFS;
         int ret                           =       -1;
         uint64_t com_period               =       0;
         uint64_t start_time               =       0;
