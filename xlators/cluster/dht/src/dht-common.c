@@ -3384,7 +3384,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
         LOCK (&frame->lock);
         {
                 if (local->op_errno == GF_ERROR_CODE_NODATA ||
-                    local->op_errno == EOPNOTSUPP) {
+                    local->op_errno == GF_ERROR_CODE_OPNOTSUPP) {
                         /* Nothing to do here, we have already found
                          * a subvol which does not have the get_real_filename
                          * optimization. If condition is for simple logic.
@@ -3394,7 +3394,7 @@ dht_getxattr_get_real_filename_cbk (call_frame_t *frame, void *cookie,
 
                 if (op_ret == -1) {
 
-                        if (op_errno == GF_ERROR_CODE_NODATA || op_errno == EOPNOTSUPP) {
+                        if (op_errno == GF_ERROR_CODE_NODATA || op_errno == GF_ERROR_CODE_OPNOTSUPP) {
                                 /* This subvol does not have the optimization.
                                  * Better let the user know we don't support it.
                                  * Remove previous results if any.

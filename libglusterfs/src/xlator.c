@@ -1112,7 +1112,7 @@ is_gf_log_command (xlator_t *this, const char *name, char *value)
         if (!strcmp ("trusted.glusterfs.syslog", name)) {
                 ret = gf_string2boolean (value, &syslog_flag);
                 if (ret) {
-                        ret = EOPNOTSUPP;
+                        ret = GF_ERROR_CODE_OPNOTSUPP;
                         goto out;
                 }
                 if (syslog_flag)
@@ -1128,7 +1128,7 @@ is_gf_log_command (xlator_t *this, const char *name, char *value)
 
         log_level = glusterd_check_log_level (value);
         if (log_level == -1) {
-                ret = EOPNOTSUPP;
+                ret = GF_ERROR_CODE_OPNOTSUPP;
                 goto out;
         }
 

@@ -713,7 +713,7 @@ sys_fallocate(int fd, int mode, off_t offset, off_t len)
         if (mode) {
                 /* keep size not supported */
                 gf_log ("FS", GF_LOG_ERROR, "Fallocate fails because mode is %d", mode);
-                errno = EOPNOTSUPP;
+                errno = GF_ERROR_CODE_OPNOTSUPP;
                 return -1;
         }
 
@@ -727,7 +727,7 @@ sys_fallocate(int fd, int mode, off_t offset, off_t len)
         /* C conversion from C++ implementation for OSX by Mozilla Foundation */
         if (mode) {
                 /* keep size not supported */
-                errno = EOPNOTSUPP;
+                errno = GF_ERROR_CODE_OPNOTSUPP;
                 return -1;
         }
         /*

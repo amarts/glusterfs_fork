@@ -989,7 +989,7 @@ bd_setx_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 goto out;
 
         if (!IA_ISREG (iatt->ia_type)) {
-                op_errno = EOPNOTSUPP;
+                op_errno = GF_ERROR_CODE_OPNOTSUPP;
                 goto out;
         }
 
@@ -1014,7 +1014,7 @@ bd_setx_stat_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (!strcmp (type, BD_THIN) && !(priv->caps & BD_CAPS_THIN)) {
                 gf_log (this->name, GF_LOG_WARNING, "THIN lv not supported by "
                         "this volume");
-                op_errno = EOPNOTSUPP;
+                op_errno = GF_ERROR_CODE_OPNOTSUPP;
                 goto out;
         }
 
@@ -1450,7 +1450,7 @@ bd_fsetxattr (call_frame_t *frame, xlator_t *this, fd_t *fd, dict_t *dict,
                  * bd_merge is not supported for fsetxattr, because snapshot LV
                  * is opened and it causes problem in snapshot merge
                  */
-                op_errno = EOPNOTSUPP;
+                op_errno = GF_ERROR_CODE_OPNOTSUPP;
                 goto out;
         }
 

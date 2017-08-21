@@ -16,7 +16,7 @@ TEST $CLI volume info;
 TEST $CLI volume create $V0 $H0:$B0/1
 TEST $CLI volume start $V0
 
-# Find OS-dependent EOPNOTSUPP value from system headers
+# Find OS-dependent GF_ERROR_CODE_OPNOTSUPP value from system headers
 EOPNOTSUPP=$( echo '#include <errno.h>\\EOPNOTSUPP\\' | tr '\\' '\n' | \
               cc -E -c - | tail -1 )
 

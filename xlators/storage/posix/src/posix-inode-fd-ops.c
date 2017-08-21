@@ -917,7 +917,7 @@ posix_discard(call_frame_t *frame, xlator_t *this, fd_t *fd, off_t offset,
 {
 	int32_t ret;
 #ifndef FALLOC_FL_KEEP_SIZE
-	ret = EOPNOTSUPP;
+	ret = GF_ERROR_CODE_OPNOTSUPP;
 
 #else /* FALLOC_FL_KEEP_SIZE */
 	int32_t flags = FALLOC_FL_KEEP_SIZE|FALLOC_FL_PUNCH_HOLE;

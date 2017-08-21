@@ -3295,14 +3295,14 @@ fuse_setxattr (xlator_t *this, fuse_in_header_t *finh, void *msg)
         if (!priv->acl) {
                 if ((strcmp (name, POSIX_ACL_ACCESS_XATTR) == 0) ||
                     (strcmp (name, POSIX_ACL_DEFAULT_XATTR) == 0)) {
-                        op_errno = EOPNOTSUPP;
+                        op_errno = GF_ERROR_CODE_OPNOTSUPP;
                         goto done;
                 }
         }
 
         ret = fuse_check_selinux_cap_xattr (priv, name);
         if (ret) {
-                op_errno = EOPNOTSUPP;
+                op_errno = GF_ERROR_CODE_OPNOTSUPP;
                 goto done;
         }
 
