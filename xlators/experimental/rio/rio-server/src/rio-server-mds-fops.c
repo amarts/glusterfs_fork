@@ -123,6 +123,29 @@ bailout:
         return;
 }
 
+/* TODO: This is wrapper functionality, we just turn right back till we have
+utime xlator and POSIX changes to preserve size and time */
+static int32_t
+rio_cache_iatt_from_ds (call_frame_t *frame, xlator_t *this)
+{
+        struct rio_local *local = NULL;
+        default_args_cbk_t *args;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        local = frame->local;
+        VALIDATE_OR_GOTO (local, bailout);
+        local->riolocal_iattrefreshed = _gf_true;
+        args = &(local->riolocal_stub_cbk->args_cbk);
+        VALIDATE_OR_GOTO (args, error);
+
+        call_resume (local->riolocal_stub_cbk);
+        return 0;
+error:
+        call_unwind_error (local->riolocal_stub_cbk, -1, errno);
+bailout:
+        return 0;
+}
+
 /* MDS LOOKUP Callback
 If lookup returns an inode, the resolution is complete and we need the
 checks as follows,
@@ -403,6 +426,269 @@ rio_server_mds_fstat (call_frame_t *frame, xlator_t *this, fd_t *fd,
 
 error:
         STACK_UNWIND (fstat, frame, -1, errno, NULL, NULL);
+bailout:
+        return 0;
+}
+
+static int32_t
+rio_server_setattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                        int32_t op_ret, int32_t op_errno,
+                        struct iatt *preop_stbuf, struct iatt *postop_stbuf,
+                        dict_t *xdata)
+{
+        struct rio_local *local = NULL;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        local = frame->local;
+        VALIDATE_OR_GOTO (local, bailout);
+
+        if (op_ret != 0) {
+                goto done;
+        }
+
+        /* Dirty inode handling - for regular files only, nothing else has data
+        in the DS */
+        if (!(postop_stbuf->ia_type & IA_IFREG)) {
+                goto done;
+        }
+
+        /* Check if inode is dirty, or if we already refreshed a dirty inode */
+        if (local->riolocal_iattrefreshed || !local->riolocal_idirty) {
+                goto done;
+        }
+
+        /*** Dirty inode handling starts ***/
+        /* stub the call back */
+        local->riolocal_stub_cbk =
+                        fop_setattr_cbk_stub (frame, rio_server_setattr_cbk,
+                                              op_ret, op_errno,
+                                              preop_stbuf, postop_stbuf, xdata);
+        if (!local->riolocal_stub_cbk) {
+                errno = ENOMEM;
+                goto error;
+        }
+
+        rio_refresh_iatt_from_ds (frame, this);
+        return 0;
+        /*** Dirty inode handling ends ***/
+
+        /* TODO: xaction handling
+        If inode is part of an ongoing xaction, we need saved/stored
+        iatt information that we will respond with
+                - inode->xactioninprogress
+                - inode->savedlinkcount */
+
+        /* TODO: layout unlocks */
+
+done:
+        if (local->riolocal_fop == GF_FOP_SETATTR)
+                STACK_UNWIND_STRICT (setattr, frame, op_ret, op_errno,
+                                     preop_stbuf, postop_stbuf, xdata);
+        else
+                STACK_UNWIND_STRICT (fsetattr, frame, op_ret, op_errno,
+                                     preop_stbuf, postop_stbuf, xdata);
+        rio_local_wipe (local);
+        return 0;
+error:
+        if (local->riolocal_fop == GF_FOP_SETATTR)
+                STACK_UNWIND (setattr, frame, -1, errno, NULL, NULL, NULL);
+        else
+                STACK_UNWIND (fsetattr, frame, -1, errno, NULL, NULL, NULL);
+        rio_local_wipe (local);
+bailout:
+        return 0;
+}
+
+int32_t
+rio_server_setattr (call_frame_t *frame, xlator_t *this, loc_t *loc,
+                    struct iatt *stbuf, int32_t valid, dict_t *xdata)
+{
+        xlator_t *subvol;
+        struct rio_conf *conf;
+        struct rio_local *local = NULL;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        VALIDATE_OR_GOTO (this, error);
+        conf = this->private;
+        VALIDATE_OR_GOTO (conf, error);
+
+        /* TODO: layout checks and locks */
+
+        subvol = conf->riocnf_server_local_xlator;
+
+        /* Save return values for future unwind */
+        local = rio_local_init (frame, conf, NULL, NULL, NULL,
+                                GF_FOP_SETATTR);
+        if (!local) {
+                errno = ENOMEM;
+                goto error;
+        }
+
+        gf_uuid_copy (local->riolocal_gfid, loc->gfid);
+        local->riolocal_inode = inode_ref (loc->inode);
+        local->riolocal_idirty = rio_is_inode_dirty (loc->inode);
+
+        STACK_WIND (frame, rio_server_setattr_cbk, subvol,
+                    subvol->fops->setattr, loc, stbuf, valid, xdata);
+        return 0;
+
+error:
+        STACK_UNWIND (setattr, frame, -1, errno, NULL, NULL, NULL);
+bailout:
+        return 0;
+}
+
+int32_t
+rio_server_fsetattr (call_frame_t *frame, xlator_t *this, fd_t *fd,
+                     struct iatt *stbuf, int32_t valid, dict_t *xdata)
+{
+        xlator_t *subvol;
+        struct rio_conf *conf;
+        struct rio_local *local = NULL;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        VALIDATE_OR_GOTO (this, error);
+        conf = this->private;
+        VALIDATE_OR_GOTO (conf, error);
+
+        /* TODO: layout checks and locks */
+
+        subvol = conf->riocnf_server_local_xlator;
+
+        /* Save return values for future unwind */
+        local = rio_local_init (frame, conf, NULL, NULL, NULL,
+                                GF_FOP_FSETATTR);
+        if (!local) {
+                errno = ENOMEM;
+                goto error;
+        }
+
+        gf_uuid_copy (local->riolocal_gfid, fd->inode->gfid);
+        local->riolocal_inode = inode_ref (fd->inode);
+        local->riolocal_idirty = rio_is_inode_dirty (fd->inode);
+
+        STACK_WIND (frame, rio_server_setattr_cbk, subvol,
+                    subvol->fops->fsetattr, fd, stbuf, valid, xdata);
+        return 0;
+
+error:
+        STACK_UNWIND (fsetattr, frame, -1, errno, NULL, NULL, NULL);
+bailout:
+        return 0;
+}
+
+static int32_t
+rio_server_mds_truncate_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                             int32_t op_ret, int32_t op_errno,
+                             struct iatt *prebuf, struct iatt *postbuf,
+                             dict_t *xdata)
+{
+        struct rio_local *local = NULL;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        local = frame->local;
+        VALIDATE_OR_GOTO (local, error);
+
+        /* Check if inode cache is already refreshed */
+        if (local->riolocal_iattrefreshed) {
+                /* TODO: inode should be marked dirty no longer */
+                goto done;
+        }
+
+        if (op_ret != 0) {
+                /* TODO: Do errors still necessitate a cache refresh? */
+                goto done;
+        }
+
+        /*** Dirty inode cache refresh starts ***/
+        /* stub the call back */
+        local->riolocal_stub_cbk =
+                fop_truncate_cbk_stub (frame, rio_server_mds_truncate_cbk,
+                                       op_ret, op_errno,
+                                       prebuf, postbuf, xdata);
+        if (!local->riolocal_stub_cbk) {
+                errno = ENOMEM;
+                goto error;
+        }
+
+        rio_cache_iatt_from_ds (frame, this);
+        return 0;
+        /*** Dirty inode cache refresh ends ***/
+
+        /* TODO: xaction handling */
+        /* TODO: layout unlocks */
+
+done:
+        STACK_UNWIND_STRICT (truncate, frame, op_ret, op_errno, prebuf, postbuf,
+                             xdata);
+        rio_local_wipe (local);
+        return 0;
+error:
+        STACK_UNWIND (truncate, frame, -1, errno, NULL, NULL, NULL);
+        rio_local_wipe (local);
+bailout:
+        return 0;
+}
+
+/* TRUNCATE Call
+Truncate is passed to the DS, noting that the indoe is dirty in the interim,
+and once the OP is completed at the DS, the inode cache is updated and response
+returned to the callers.
+
+Generic steps:
+  - Determine which DS to send the operation to
+  - Mark the inode dirty
+  - Forward the operation to the DS
+  - On, response, refresh local cache (if inode may become clean post truncate)
+    - If we refresh the cache, then we get the pre/post iatt complete
+  - Respond to the caller with the data
+*/
+int32_t
+rio_server_mds_truncate (call_frame_t *frame, xlator_t *this, loc_t *loc,
+                         off_t offset, dict_t *xdata)
+{
+        struct rio_local *local = NULL;
+        struct rio_conf *conf;
+        loc_t inode_loc = {0,};
+        xlator_t *subvol;
+
+        VALIDATE_OR_GOTO (frame, bailout);
+        VALIDATE_OR_GOTO (this, error);
+        conf = this->private;
+        VALIDATE_OR_GOTO (conf, error);
+
+        /* Find subvol to wind lookup to in DS */
+        subvol = layout_search (conf->riocnf_dclayout, loc->gfid);
+        if (!subvol) {
+                gf_msg (this->name, GF_LOG_ERROR, EINVAL,
+                        RIO_MSG_LAYOUT_ERROR,
+                        "Unable to find subvolume for GFID %s",
+                        uuid_utoa (loc->gfid));
+                errno = EINVAL;
+                goto error;
+        }
+
+        /* Save return values for future unwind */
+        local = rio_local_init (frame, conf, NULL, NULL, NULL,
+                                GF_FOP_FSETATTR);
+        if (!local) {
+                errno = ENOMEM;
+                goto error;
+        }
+
+        /* TODO: Mark the inode as dirty, currently we treat all inodes as
+        dirty */
+        local->riolocal_inode = inode_ref (loc->inode);
+
+        rio_prepare_inode_loc (&inode_loc, loc->inode, loc->gfid, _gf_true);
+
+        STACK_WIND (frame, rio_server_mds_truncate_cbk,
+                    subvol, subvol->fops->truncate,
+                    &inode_loc, offset, xdata);
+        loc_wipe (&inode_loc);
+        return 0;
+error:
+        STACK_UNWIND (truncate, frame, -1, errno, NULL, NULL, NULL);
 bailout:
         return 0;
 }

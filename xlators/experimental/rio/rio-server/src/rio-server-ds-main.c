@@ -31,7 +31,9 @@ struct xlator_fops fops = {
         .writev         = rio_server_ds_writev,
         .fallocate      = rio_server_ds_fallocate,
         .discard        = rio_server_ds_discard,
-        .zerofill       = rio_server_ds_zerofill
+        .zerofill       = rio_server_ds_zerofill,
+        .ftruncate      = rio_server_ds_ftruncate,
+        .truncate       = rio_server_ds_truncate
 };
 
 struct xlator_cbks cbks = {

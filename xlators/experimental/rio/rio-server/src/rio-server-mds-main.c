@@ -29,7 +29,10 @@ struct xlator_fops fops = {
         .create         = rio_server_create,
         .mkdir          = rio_server_mkdir,
         .stat           = rio_server_mds_stat,
-        .fstat          = rio_server_mds_fstat
+        .fstat          = rio_server_mds_fstat,
+        .setattr        = rio_server_setattr,
+        .fsetattr       = rio_server_fsetattr,
+        .truncate       = rio_server_mds_truncate
 };
 
 struct xlator_cbks cbks = {

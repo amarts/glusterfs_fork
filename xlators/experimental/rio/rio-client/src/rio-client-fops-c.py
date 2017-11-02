@@ -305,13 +305,13 @@ unsupported_ops = ['mknod', 'unlink', 'rmdir', 'symlink', 'rename',
 mdsonly_inode_ops = ['stat', 'truncate', 'open', 'setxattr', 'getxattr',
                      'removexattr', 'access', 'inodelk', 'entrylk', 'xattrop',
                      'setattr', 'lease', 'getactivelk', 'setactivelk']
-mdsonly_fd_ops = ['flush', 'fsyncdir', 'ftruncate', 'fstat', 'lk', 'finodelk',
+mdsonly_fd_ops = ['flush', 'fsyncdir', 'fstat', 'lk', 'finodelk',
                   'fentrylk', 'fxattrop', 'fsetxattr', 'fgetxattr', 'fsetattr',
                   'fremovexattr']
 
 mdsonly_entry_ops = ['mkdir', 'create']
-dsonly_fd_ops = ['readv', 'writev', 'rchecksum', 'fallocate', 'discard',
-                 'zerofill', 'seek']
+dsonly_fd_ops = ['readv', 'writev', 'ftruncate', 'rchecksum', 'fallocate',
+                 'discard', 'zerofill', 'seek']
 dsonly_inode_ops = ['not-yet']
 both_ops = ['statfs', 'fsync']
 

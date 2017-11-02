@@ -14,7 +14,8 @@ rio_server_ds_@NAME@ (call_frame_t *frame, xlator_t *this,
                    @LONG_ARGS@);
 """
 
-fops = ['readv', 'writev', 'fallocate', 'discard', 'zerofill']
+fops = ['readv', 'writev', 'truncate', 'ftruncate', 'fallocate', 'discard',
+        'zerofill']
 
 
 def gen_defaults():

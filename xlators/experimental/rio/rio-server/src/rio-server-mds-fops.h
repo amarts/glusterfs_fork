@@ -32,4 +32,15 @@ rio_server_mds_stat (call_frame_t *, xlator_t *, loc_t *, dict_t *);
 int32_t
 rio_server_mds_fstat (call_frame_t *, xlator_t *, fd_t *, dict_t *);
 
+int32_t
+rio_server_setattr (call_frame_t *, xlator_t *, loc_t *, struct iatt *,
+                    int32_t, dict_t *);
+
+int32_t
+rio_server_fsetattr (call_frame_t *, xlator_t *, fd_t *, struct iatt *,
+                     int32_t, dict_t *);
+
+int32_t
+rio_server_mds_truncate (call_frame_t *, xlator_t *, loc_t *, off_t, dict_t *);
+
 #endif /* _RIO_SERVER_MDS_FOPS_H */
