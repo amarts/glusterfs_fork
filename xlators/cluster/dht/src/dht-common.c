@@ -2848,8 +2848,8 @@ dht_lookup_directory (call_frame_t *frame, xlator_t *this, loc_t *loc)
         }
 
         if (!gf_uuid_is_null (local->gfid)) {
-                ret = dict_set_static_bin (local->xattr_req, "gfid-req",
-                                           local->gfid, 16);
+                ret = dict_set_gfuuid (local->xattr_req, "gfid-req",
+                                       local->gfid, true);
                 if (ret)
                         gf_msg (this->name, GF_LOG_WARNING, 0,
                                 DHT_MSG_DICT_SET_FAILED,
@@ -4882,7 +4882,7 @@ dht_file_setxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         int           ret     = -1;
         dht_local_t  *local   = NULL;
         xlator_t     *prev    = NULL;
-        struct iatt  *stbuf   = NULL;
+        struct iatt   stbuf   = {0,};
         inode_t      *inode   = NULL;
         xlator_t     *subvol1 = NULL, *subvol2 = NULL;
 
@@ -4909,9 +4909,9 @@ dht_file_setxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (local->call_cnt != 1)
                 goto out;
 
-        ret = dict_get_bin (xdata, DHT_IATT_IN_XDATA_KEY, (void **) &stbuf);
+        ret = dict_get_iatt (xdata, DHT_IATT_IN_XDATA_KEY, &stbuf);
 
-        if ((!op_ret) && !stbuf) {
+        if (!op_ret) {
                 goto out;
         }
 
@@ -4921,14 +4921,14 @@ dht_file_setxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 local->rebalance.xdata = dict_ref (xdata);
 
         /* Phase 2 of migration */
-        if ((op_ret == -1) || IS_DHT_MIGRATION_PHASE2 (stbuf)) {
+        if ((op_ret == -1) || IS_DHT_MIGRATION_PHASE2 (&stbuf)) {
                 ret = dht_rebalance_complete_check (this, frame);
                 if (!ret)
                         return 0;
         }
 
         /* Phase 1 of migration */
-        if (IS_DHT_MIGRATION_PHASE1 (stbuf)) {
+        if (IS_DHT_MIGRATION_PHASE1 (&stbuf)) {
                 inode = (local->fd) ? local->fd->inode : local->loc.inode;
 
                 ret = dht_inode_ctx_get_mig_info (this, inode,
@@ -5615,7 +5615,7 @@ dht_file_removexattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         int           ret     = -1;
         dht_local_t  *local   = NULL;
         xlator_t     *prev    = NULL;
-        struct iatt  *stbuf   = NULL;
+        struct iatt   stbuf   = {0,};
         inode_t      *inode   = NULL;
         xlator_t     *subvol1 = NULL, *subvol2 = NULL;
 
@@ -5642,9 +5642,9 @@ dht_file_removexattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         if (local->call_cnt != 1)
                 goto out;
 
-        ret = dict_get_bin (xdata, DHT_IATT_IN_XDATA_KEY, (void **) &stbuf);
+        ret = dict_get_iatt (xdata, DHT_IATT_IN_XDATA_KEY, &stbuf);
 
-        if ((!op_ret) && !stbuf) {
+        if (!op_ret) {
                 goto out;
         }
 
@@ -5655,14 +5655,14 @@ dht_file_removexattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                 local->rebalance.xdata = dict_ref (xdata);
 
         /* Phase 2 of migration */
-        if ((op_ret == -1) || IS_DHT_MIGRATION_PHASE2 (stbuf)) {
+        if ((op_ret == -1) || IS_DHT_MIGRATION_PHASE2 (&stbuf)) {
                 ret = dht_rebalance_complete_check (this, frame);
                 if (!ret)
                         return 0;
         }
 
         /* Phase 1 of migration */
-        if (IS_DHT_MIGRATION_PHASE1 (stbuf)) {
+        if (IS_DHT_MIGRATION_PHASE1 (&stbuf)) {
                 inode = (local->fd) ? local->fd->inode : local->loc.inode;
 
                 ret = dht_inode_ctx_get_mig_info (this, inode,

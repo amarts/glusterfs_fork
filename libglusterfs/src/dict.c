@@ -2452,7 +2452,6 @@ dict_get_iatt (dict_t *this, char *key, struct iatt *iatt)
         VALIDATE_DATA_AND_LOG(data, GF_DATA_TYPE_IATT, key, -EINVAL);
 
         memcpy (iatt, data->data, min(data->len, sizeof (struct iatt)));
-
 err:
         if (data)
                 data_unref (data);
