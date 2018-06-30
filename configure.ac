@@ -124,8 +124,6 @@ AC_CONFIG_FILES([Makefile
                 xlators/features/arbiter/src/Makefile
                 xlators/features/thin-arbiter/Makefile
                 xlators/features/thin-arbiter/src/Makefile
-                xlators/experimental/fdl/Makefile
-                xlators/experimental/fdl/src/Makefile
                 xlators/features/changelog/Makefile
                 xlators/features/changelog/src/Makefile
                 xlators/features/changelog/lib/Makefile
@@ -220,6 +218,12 @@ AC_CONFIG_FILES([Makefile
                 xlators/experimental/posix2/mds/src/Makefile
                 xlators/experimental/posix2/common/Makefile
                 xlators/experimental/posix2/common/src/Makefile
+                xlators/experimental/fdl/Makefile
+                xlators/experimental/fdl/src/Makefile
+                xlators/experimental/rwo-client/Makefile
+                xlators/experimental/rwo-client/src/Makefile
+                xlators/experimental/rwo-server/Makefile
+                xlators/experimental/rwo-server/src/Makefile
                 cli/Makefile
                 cli/src/Makefile
                 doc/Makefile
