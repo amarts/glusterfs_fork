@@ -9,6 +9,198 @@
 */
 #include "rwo-server.h"
 
+/* FOPs section */
+int
+rwos_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                 int32_t op_ret, int32_t op_errno,
+                 inode_t *inode, struct iatt *buf,
+                 dict_t *xdata, struct iatt *postparent)
+{
+        int ret = 0;
+        uint64_t open_count = 0;
+        if (op_ret > 0) {
+                ret = dict_get_uint64 (xdata, "trusted.glusterfs.open_gen_count",
+                                       &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to get dict");
+                /* Can happen if the create doesn't happen through
+                   the newer version */
+                if (open_count == 0)
+                        open_count++;
+
+                ret = inode_ctx_set0 (inode, this, &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set inode ctx");
+                ret = dict_set_uint64 (xdata, "trusted.glusterfs.open_gen_count",
+                                       open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set dict");
+        }
+
+        STACK_UNWIND_STRICT (lookup, frame, op_ret, op_errno, inode, buf,
+                             xdata, postparent);
+        return 0;
+}
+
+int
+rwos_lookup (call_frame_t *frame, xlator_t *this,
+             loc_t *loc, dict_t *xdata)
+{
+        STACK_WIND (frame, rwos_lookup_cbk, FIRST_CHILD(this),
+                    FIRST_CHILD(this)->fops->lookup, loc, xdata);
+
+        return 0;
+}
+
+int
+rwos_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+               int32_t op_ret, int32_t op_errno, fd_t *fd, dict_t *xdata)
+{
+        int ret = 0;
+        uint64_t open_count = 0;
+        uint64_t in_use = 0;
+
+        if (op_ret >= 0) {
+                /* ctx1 for setting 'in-use' */
+                in_use = 1;
+                ret = inode_ctx_set1 (fd->inode, this, &in_use);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set inode ctx");
+
+                /* Is there a atomic way to increment the context ?*/
+                ret = inode_ctx_get0 (fd->inode, this, &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to get inode ctx");
+                open_count++;
+                ret = inode_ctx_set0 (fd->inode, this, &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set inode ctx");
+        }
+
+        STACK_UNWIND_STRICT (open, frame, op_ret, op_errno, fd, xdata);
+        return 0;
+}
+
+int
+rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
+           int32_t flags, fd_t *fd, dict_t *xdata)
+{
+        int ret = 0;
+        uint64_t open_count = 0;
+        uint64_t clnt_open_count = 0;
+        uint64_t in_use = 0;
+
+        /* If ! internal frame */
+        /* if ! read-only */
+        /* TODO: fix me */
+        ret = inode_ctx_get1 (loc->inode, this, &in_use);
+        if (ret == -1)
+                gf_msg_debug (this->name, ENODATA,
+                              "failed to get data from inode_ctx");
+        if (in_use) {
+                gf_msg (this->name, GF_LOG_WARNING, EBUSY, RWOS_MSG_NO_MEMORY,
+                        "already in use by other client");
+                STACK_UNWIND_STRICT (open, frame, -1, EBUSY, fd, xdata);
+                return 0;
+        }
+
+        /* Validate the generation number client sent */
+        ret = inode_ctx_get0 (loc->inode, this, &open_count);
+        if (ret == -1)
+                gf_msg_debug (this->name, ENODATA,
+                              "failed to get data from inode_ctx");
+
+        ret = dict_get_uint64 (xdata, "trusted.glusterfs.open_gen_count",
+                               &clnt_open_count);
+        if (ret == -1)
+                gf_msg (this->name, GF_LOG_WARNING, ENOMEM, RWOS_MSG_NO_MEMORY,
+                        "failed to set dict");
+
+        if (open_count != clnt_open_count) {
+                gf_msg (this->name, GF_LOG_WARNING, ESTALE, RWOS_MSG_NO_MEMORY,
+                        "client has stale information about the file,"
+                        " would be good to get a revalidate lookup");
+                STACK_UNWIND_STRICT (open, frame, -1, ESTALE, fd, xdata);
+                return 0;
+        }
+
+        ret = dict_set_uint64 (xdata, "trusted.glusterfs.open_gen_count",
+                               ++open_count);
+        if (ret == -1)
+                gf_msg_debug (this->name, ENOMEM,
+                              "failed to set data in xdata");
+
+        gf_log ("", GF_LOG_WARNING, "%lu, %lu, %lu", in_use, clnt_open_count, open_count);
+        STACK_WIND (frame, rwos_open_cbk,
+                    FIRST_CHILD(this),
+                    FIRST_CHILD(this)->fops->open,
+                    loc, flags, fd, xdata);
+        return 0;
+}
+
+int
+rwos_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                 int32_t op_ret, int32_t op_errno, fd_t *fd, inode_t *inode,
+                 struct iatt *buf, struct iatt *preparent,
+                 struct iatt *postparent, dict_t *xdata)
+{
+        int ret = 0;
+        uint64_t open_count = 0;
+        uint64_t in_use = 0;
+
+        if (op_ret >= 0) {
+                /* ctx1 for setting 'in-use' */
+                in_use = 1;
+                ret = inode_ctx_set1 (fd->inode, this, &in_use);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set inode ctx");
+
+                /* Is there a atomic way to increment the context ?*/
+                ret = inode_ctx_get0 (fd->inode, this, &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to get inode ctx");
+                open_count++;
+                ret = inode_ctx_set0 (fd->inode, this, &open_count);
+                if (ret == -1)
+                        gf_msg_debug (this->name, ENOMEM,
+                                      "failed to set inode ctx");
+        }
+
+        STACK_UNWIND_STRICT (create, frame, op_ret, op_errno, fd, inode, buf,
+                             preparent, postparent, xdata);
+        return 0;
+}
+
+int
+rwos_create (call_frame_t *frame, xlator_t *this,
+             loc_t *loc, int32_t flags, mode_t mode,
+             mode_t umask, fd_t *fd, dict_t *xdata)
+{
+        int ret = -1;
+
+        ret = dict_set_uint64 (xdata, "trusted.glusterfs.open_gen_count", 1);
+        if (ret == -1)
+                gf_msg (this->name, GF_LOG_WARNING, ENOMEM, RWOS_MSG_NO_MEMORY,
+                        "failed to set dict");
+
+        STACK_WIND (frame, rwos_create_cbk,
+                    FIRST_CHILD(this),
+                    FIRST_CHILD(this)->fops->create,
+                    loc, flags, mode, umask, fd, xdata);
+        return 0;
+}
+
+
+/* End of FOPs */
+
 int32_t
 rwos_mem_acct_init (xlator_t *this)
 {
@@ -19,7 +211,7 @@ rwos_mem_acct_init (xlator_t *this)
         ret = xlator_mem_acct_init (this, gf_rwos_mt_end + 1);
 
         if (ret != 0) {
-                gf_msg (this->name, GF_LOG_ERROR, ENOMEM, TEMPLATE_MSG_NO_MEMORY,
+                gf_msg (this->name, GF_LOG_ERROR, ENOMEM, RWOS_MSG_NO_MEMORY,
                         "Memory accounting init failed");
                 return ret;
         }
@@ -45,13 +237,13 @@ rwos_init (xlator_t *this)
         rwos_private_t *priv = NULL;
 
         if (!this->children || this->children->next) {
-                gf_msg (this->name, GF_LOG_ERROR, EINVAL, TEMPLATE_MSG_NO_GRAPH,
+                gf_msg (this->name, GF_LOG_ERROR, EINVAL, RWOS_MSG_NO_GRAPH,
                         "not configured with exactly one child. exiting");
                 goto out;
         }
 
         if (!this->parents) {
-                gf_msg (this->name, GF_LOG_ERROR, EINVAL, TEMPLATE_MSG_NO_GRAPH,
+                gf_msg (this->name, GF_LOG_ERROR, EINVAL, RWOS_MSG_NO_GRAPH,
                         "dangling volume. check volfile ");
                 goto out;
         }
@@ -107,6 +299,9 @@ rwos_notify (xlator_t *this, int32_t event, void *data, ...)
 }
 
 struct xlator_fops rwos_fops = {
+        .open = rwos_open,
+        .create = rwos_create,
+        .lookup = rwos_lookup,
 };
 
 struct xlator_cbks rwos_cbks = {

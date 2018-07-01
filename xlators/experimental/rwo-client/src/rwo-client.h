@@ -38,9 +38,9 @@ enum gf_rwoc_mem_types_ {
  */
 #include "glfs-message-id.h"
 
-GLFS_MSGID(TEMPLATE,
-           TEMPLATE_MSG_NO_MEMORY,
-           TEMPLATE_MSG_NO_GRAPH
+GLFS_MSGID(RWOC,
+           RWOC_MSG_NO_MEMORY,
+           RWOC_MSG_NO_GRAPH
         );
 
 #endif /* __TEMPLATE_H__ */
