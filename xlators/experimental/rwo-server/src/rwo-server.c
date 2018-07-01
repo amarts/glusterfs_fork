@@ -105,7 +105,7 @@ rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                               "failed to get data from inode_ctx");
         if (in_use) {
                 gf_msg (this->name, GF_LOG_WARNING, EBUSY, RWOS_MSG_NO_MEMORY,
-                        "already in use by other client");
+                        "already in use by other client %lu", in_use);
                 STACK_UNWIND_STRICT (open, frame, -1, EBUSY, fd, xdata);
                 return 0;
         }
@@ -122,10 +122,11 @@ rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 gf_msg (this->name, GF_LOG_WARNING, ENOMEM, RWOS_MSG_NO_MEMORY,
                         "failed to set dict");
 
-        if (open_count != clnt_open_count) {
+        if (clnt_open_count && (open_count != clnt_open_count)) {
                 gf_msg (this->name, GF_LOG_WARNING, ESTALE, RWOS_MSG_NO_MEMORY,
-                        "client has stale information about the file,"
-                        " would be good to get a revalidate lookup");
+                        "client has stale information about the file (%lu),"
+                        " would be good to get a revalidate lookup (%lu)",
+                        clnt_open_count, open_count);
                 STACK_UNWIND_STRICT (open, frame, -1, ESTALE, fd, xdata);
                 return 0;
         }
@@ -136,7 +137,6 @@ rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 gf_msg_debug (this->name, ENOMEM,
                               "failed to set data in xdata");
 
-        gf_log ("", GF_LOG_WARNING, "%lu, %lu, %lu", in_use, clnt_open_count, open_count);
         STACK_WIND (frame, rwos_open_cbk,
                     FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->open,
@@ -155,6 +155,7 @@ rwos_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         uint64_t in_use = 0;
 
         if (op_ret >= 0) {
+                /* Will the fd->inode be proper ? */
                 /* ctx1 for setting 'in-use' */
                 in_use = 1;
                 ret = inode_ctx_set1 (fd->inode, this, &in_use);
@@ -162,12 +163,7 @@ rwos_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                         gf_msg_debug (this->name, ENOMEM,
                                       "failed to set inode ctx");
 
-                /* Is there a atomic way to increment the context ?*/
-                ret = inode_ctx_get0 (fd->inode, this, &open_count);
-                if (ret == -1)
-                        gf_msg_debug (this->name, ENOMEM,
-                                      "failed to get inode ctx");
-                open_count++;
+                open_count = 1;
                 ret = inode_ctx_set0 (fd->inode, this, &open_count);
                 if (ret == -1)
                         gf_msg_debug (this->name, ENOMEM,
@@ -198,6 +194,34 @@ rwos_create (call_frame_t *frame, xlator_t *this,
         return 0;
 }
 
+int
+rwos_setxattr (call_frame_t *frame, xlator_t *this,
+               loc_t *loc, dict_t *dict,
+               int32_t flags, dict_t *xdata)
+{
+        uint64_t in_use = 0;
+        int ret = 0;
+
+        gf_log ("", GF_LOG_ERROR, "here");
+        if (dict && dict_get (dict, "rwo-release"))
+                goto clear_flag;
+
+        STACK_WIND_TAIL (frame, FIRST_CHILD(this),
+                         FIRST_CHILD(this)->fops->setxattr,
+                         loc, dict, flags, xdata);
+
+        return 0;
+
+clear_flag:
+        /* Clear the inode context */
+        ret = inode_ctx_reset1 (loc->inode, this, &in_use);
+        if (ret == -1)
+                gf_msg_debug (this->name, ENOMEM,
+                              "failed to delete inode ctx");
+
+        STACK_UNWIND_STRICT (setxattr, frame, 0, 0, NULL);
+        return 0;
+}
 
 /* End of FOPs */
 
@@ -302,6 +326,7 @@ struct xlator_fops rwos_fops = {
         .open = rwos_open,
         .create = rwos_create,
         .lookup = rwos_lookup,
+        .setxattr = rwos_setxattr,
 };
 
 struct xlator_cbks rwos_cbks = {

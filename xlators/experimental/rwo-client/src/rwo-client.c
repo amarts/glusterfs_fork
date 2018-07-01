@@ -9,6 +9,57 @@
 */
 #include "rwo-client.h"
 
+/* CBK section */
+
+int
+rwoc_dummy_setxattr_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
+                         int32_t op_ret, int32_t op_errno, dict_t *xdata)
+{
+        inode_t *inode = NULL;
+
+        inode = frame->local;
+        frame->local = NULL;
+        inode_unref (inode);
+        STACK_DESTROY (frame->root);
+
+        return 0;
+}
+
+int
+rwoc_release (xlator_t *this, fd_t *fd)
+{
+        int ret = 0;
+        call_frame_t *fr = NULL;
+        dict_t *xattr = NULL;
+        loc_t loc = {0};
+
+        /* Call server with a frame, and a virtual xattr
+           to release the lock on file */
+        fr = create_frame (this, this->ctx->pool);
+        if (fr == NULL) {
+                goto out;
+        }
+
+        xattr = dict_new ();
+        if (!xattr)
+                goto out;
+
+        ret = dict_set_int64 (xattr, "rwo-release", 1);
+        if (ret == -1) {
+                gf_msg_debug (this->name, ENOMEM, "dict_set failed");
+                goto out;
+        }
+
+        loc.inode = inode_ref (fd->inode);
+        fr->local = loc.inode;
+
+        STACK_WIND (fr, rwoc_dummy_setxattr_cbk,
+                    FIRST_CHILD(this), FIRST_CHILD(this)->fops->setxattr,
+                    &loc, xattr, 0, NULL);
+out:
+        return 0;
+}
+
 /* FOP section */
 int
 rwoc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
@@ -23,7 +74,7 @@ rwoc_lookup_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                                        &open_count);
                 if (ret == -1)
                         gf_msg_debug (this->name, ENOMEM,
-                                      "failed to set dict");
+                                      "failed to get dict");
                 ret = inode_ctx_set0 (inode, this, &open_count);
                 if (ret == -1)
                         gf_msg_debug (this->name, ENOMEM,
@@ -54,6 +105,8 @@ rwoc_lookup (call_frame_t *frame, xlator_t *this,
         STACK_WIND (frame, rwoc_lookup_cbk, FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->lookup, loc, xdata);
 
+        dict_unref (xdata);
+
         return 0;
 }
 
@@ -61,6 +114,12 @@ int
 rwoc_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                int32_t op_ret, int32_t op_errno, fd_t *fd, dict_t *xdata)
 {
+        if (op_ret >= 0) {
+                /* Need to set fd ctx so that we get release to free up the
+                   ctx on client */
+                fd_ctx_set (fd, this, 1);
+        }
+
         STACK_UNWIND_STRICT (open, frame, op_ret, op_errno, fd, xdata);
         return 0;
 }
@@ -77,6 +136,11 @@ rwoc_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 gf_msg_debug (this->name, ENODATA,
                               "failed to get data from inode_ctx");
 
+        if (!xdata)
+                xdata = dict_new ();
+        else
+                dict_ref (xdata);
+
         ret = dict_set_uint64 (xdata, "trusted.glusterfs.open_gen_count",
                                open_count);
         if (ret == -1)
@@ -87,6 +151,8 @@ rwoc_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                     FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->open,
                     loc, flags, fd, xdata);
+
+        dict_unref (xdata);
         return 0;
 }
 
@@ -96,6 +162,12 @@ rwoc_create_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
                  struct iatt *buf, struct iatt *preparent,
                  struct iatt *postparent, dict_t *xdata)
 {
+        if (op_ret >= 0) {
+                /* Need to set fd ctx so that we get release to free up the
+                   ctx on client */
+                fd_ctx_set (fd, this, 1);
+        }
+
         STACK_UNWIND_STRICT (create, frame, op_ret, op_errno, fd, inode, buf,
                              preparent, postparent, xdata);
         return 0;
@@ -108,6 +180,11 @@ rwoc_create (call_frame_t *frame, xlator_t *this,
 {
         int ret = -1;
 
+        if (!xdata)
+                xdata = dict_new ();
+        else
+                dict_ref (xdata);
+
         ret = dict_set_uint64 (xdata, "trusted.glusterfs.open_gen_count", 0);
         if (ret == -1)
                 gf_msg (this->name, GF_LOG_WARNING, ENOMEM, RWOC_MSG_NO_MEMORY,
@@ -117,6 +194,8 @@ rwoc_create (call_frame_t *frame, xlator_t *this,
                     FIRST_CHILD(this),
                     FIRST_CHILD(this)->fops->create,
                     loc, flags, mode, umask, fd, xdata);
+
+        dict_unref (xdata);
         return 0;
 }
 
@@ -227,6 +306,7 @@ struct xlator_fops rwoc_fops = {
 };
 
 struct xlator_cbks rwoc_cbks = {
+        .release = rwoc_release,
 };
 
 struct xlator_dumpops rwoc_dumpops = {
