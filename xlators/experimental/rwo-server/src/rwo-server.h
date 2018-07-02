@@ -16,31 +16,31 @@
 #include "xlator.h"
 #include "defaults.h"
 
-struct template_private {
+struct rwos_private {
         /* Add all the relevant fields you need here */
         int32_t dummy;
 };
 
-typedef struct template_private template_private_t;
+typedef struct rwos_private rwos_private_t;
 
-/* Below section goes to template-mem-types.h */
+/* Below section goes to rwos-mem-types.h */
 #include "mem-types.h"
 
-enum gf_template_mem_types_ {
-        gf_template_mt_private_t = gf_common_mt_end + 1,
-        gf_template_mt_end,
+enum gf_rwos_mem_types_ {
+        gf_rwos_mt_private_t = gf_common_mt_end + 1,
+        gf_rwos_mt_end,
 };
 
-/* This normally goes to another file 'template-messages.h",
+/* This normally goes to another file 'rwos-messages.h",
    required for 'gf_msg()'.
    NOTE: make sure you have added your component (in this case,
    TEMPLATE) in `libglusterfs/src/glfs-message-id.h`.
  */
 #include "glfs-message-id.h"
 
-GLFS_MSGID(TEMPLATE,
-           TEMPLATE_MSG_NO_MEMORY,
-           TEMPLATE_MSG_NO_GRAPH
+GLFS_MSGID(RWOS,
+           RWOS_MSG_NO_MEMORY,
+           RWOS_MSG_NO_GRAPH
         );
 
 #endif /* __TEMPLATE_H__ */

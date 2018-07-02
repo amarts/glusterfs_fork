@@ -3856,6 +3856,14 @@ struct volopt_map_entry glusterd_volopt_map[] = {
           .op_version = GD_OP_VERSION_4_2_0,
           .flags      = VOLOPT_FLAG_CLIENT_OPT
         },
+        { .key        = "features.read-write-once",
+          .voltype    = "!rwo",
+          .value      = "off",
+          .op_version = GD_OP_VERSION_4_2_0,
+          .flags      = VOLOPT_FLAG_CLIENT_OPT,
+          .description = "recommended to have this option enabled with volume which"
+          " provides disk image or block files to consumers",
+        },
         { .key         = NULL
         }
 };

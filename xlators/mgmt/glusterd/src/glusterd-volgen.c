@@ -2054,6 +2054,31 @@ out:
 }
 
 static int
+brick_graph_add_rwos (volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
+                      dict_t *set_dict, glusterd_brickinfo_t *brickinfo)
+{
+        xlator_t        *xl = NULL;
+        int             ret = -1;
+
+        if (!graph || !volinfo)
+                goto out;
+
+        if (!dict_get_str_boolean (set_dict, "features.read-write-once", 0)) {
+                /* update only if option is enabled */
+                ret = 0;
+                goto out;
+        }
+
+        xl = volgen_graph_add (graph, "testing/features/rwos", volinfo->volname);
+        if (!xl)
+                goto out;
+
+        ret = 0;
+out:
+        return ret;
+}
+
+static int
 brick_graph_add_namespace (volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
                            dict_t *set_dict, glusterd_brickinfo_t *brickinfo)
 {
@@ -2709,6 +2734,7 @@ static volgen_brick_xlator_t server_graph_table[] = {
         {brick_graph_add_bd, "bd"},
         {brick_graph_add_trash, "trash"},
         {brick_graph_add_arbiter, "arbiter"},
+        {brick_graph_add_rwos, "rwo-server"},
         {brick_graph_add_posix, "posix"},
 };
 
@@ -4711,6 +4737,15 @@ client_graph_builder (volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
 
         if (ret) {
                 xl = volgen_graph_add (graph, "features/cloudsync", volname);
+                if (!xl) {
+                        ret = -1;
+                        goto out;
+                }
+        }
+
+        ret = dict_get_str_boolean (set_dict, "features.read-write-once", 0);
+        if (ret == 1) {
+                xl = volgen_graph_add (graph, "testing/features/rwoc", volname);
                 if (!xl) {
                         ret = -1;
                         goto out;
