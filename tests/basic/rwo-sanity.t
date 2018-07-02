@@ -22,14 +22,12 @@ TEST $GFS -s $H0 --volfile-id $V0 $M1;
 
 # This test covers lookup, mkdir, mknod, symlink, link, rename,
 # create operations
-#TEST $(dirname $0)/rpc-coverage.sh $M1
+TEST $(dirname $0)/rpc-coverage.sh $M1
 
-TEST $(echo hello > $M1/test-file)
+# TEST truncate -s 200M $M0/loop-file
 
-tail $M1/test-file &
+# mkfs.xfs
 
-TEST ! cat $M1/test-file
+# add more tests
 
-wait
-
-#cleanup;
+# cleanup;

@@ -63,7 +63,7 @@ rwos_open_cbk (call_frame_t *frame, void *cookie, xlator_t *this,
         uint64_t open_count = 0;
         uint64_t in_use = 0;
 
-        if (op_ret >= 0) {
+        if (op_ret >= 0 && cookie) {
                 /* ctx1 for setting 'in-use' */
                 in_use = 1;
                 ret = inode_ctx_set1 (fd->inode, this, &in_use);
@@ -97,8 +97,10 @@ rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
         uint64_t in_use = 0;
 
         /* If ! internal frame */
-        /* if ! read-only */
-        /* TODO: fix me */
+        if ((flags & O_ACCMODE) == O_RDONLY)
+                goto go_ahead_and_open;
+
+        /* TODO: add more comments, and do elaborate testing */
         ret = inode_ctx_get1 (loc->inode, this, &in_use);
         if (ret == -1)
                 gf_msg_debug (this->name, ENODATA,
@@ -137,10 +139,11 @@ rwos_open (call_frame_t *frame, xlator_t *this, loc_t *loc,
                 gf_msg_debug (this->name, ENOMEM,
                               "failed to set data in xdata");
 
-        STACK_WIND (frame, rwos_open_cbk,
-                    FIRST_CHILD(this),
-                    FIRST_CHILD(this)->fops->open,
-                    loc, flags, fd, xdata);
+go_ahead_and_open:
+        STACK_WIND_COOKIE (frame, rwos_open_cbk, open_count,
+                           FIRST_CHILD(this),
+                           FIRST_CHILD(this)->fops->open,
+                           loc, flags, fd, xdata);
         return 0;
 }
 
@@ -202,7 +205,6 @@ rwos_setxattr (call_frame_t *frame, xlator_t *this,
         uint64_t in_use = 0;
         int ret = 0;
 
-        gf_log ("", GF_LOG_ERROR, "here");
         if (dict && dict_get (dict, "rwo-release"))
                 goto clear_flag;
 
