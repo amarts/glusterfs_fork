@@ -20,10 +20,9 @@ AM_CPPFLAGS = $(GF_CPPFLAGS) \
 	-I$(top_srcdir)/api/src\
 	-I$(top_srcdir)/contrib/argp-standalone\
 	-DDATADIR=\"$(localstatedir)\" \
-	-DSBIN_DIR=\"$(sbindir)\" \
-	$(XML_CPPFLAGS)
+	-DSBIN_DIR=\"$(sbindir)\"
 
-AM_CFLAGS = -Wall $(GF_CFLAGS)
+AM_CFLAGS = -Wall $(GF_CFLAGS) $(XML_CFLAGS)
 
 CLEANFILES =
 
