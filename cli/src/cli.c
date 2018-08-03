@@ -794,17 +794,28 @@ main(int argc, char *argv[])
     mem_pools_init_early();
     mem_pools_init_late();
 
+    ret = gf_async_init();
+    if (ret < 0) {
+        goto out;
+    }
+
     ctx = glusterfs_ctx_new();
-    if (!ctx)
+    if (!ctx) {
+        gf_async_fini();
+        mem_pools_fini();
         return ENOMEM;
+    }
 
 #ifdef DEBUG
     gf_mem_acct_enable_set(ctx);
 #endif
 
     ret = glusterfs_globals_init(ctx);
-    if (ret)
+    if (ret) {
+        gf_async_fini();
+        mem_pools_fini();
         return ret;
+    }
 
     THIS->ctx = ctx;
 
@@ -856,8 +867,9 @@ main(int argc, char *argv[])
     ret = event_dispatch(ctx->event_pool);
 
 out:
-    //        glusterfs_ctx_destroy (ctx);
+//    glusterfs_ctx_destroy (ctx);
 
+    gf_async_fini();
     mem_pools_fini();
 
     return ret;

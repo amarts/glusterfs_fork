@@ -15,6 +15,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#define _LGPL_SOURCE
+#include <urcu/wfcqueue.h>
+
 #include "glusterfs/event-history.h"
 #include "glusterfs/logging.h"
 #include "glusterfs/common-utils.h"
@@ -24,6 +27,7 @@
 #include "glusterfs/latency.h"
 #include "glusterfs/compat-uuid.h"
 #include "glusterfs/syscall.h"
+#include "glusterfs/atomic.h"
 
 #define FIRST_CHILD(xl) (xl->children->xlator)
 #define SECOND_CHILD(xl) (xl->children->next->xlator)
@@ -866,6 +870,24 @@ struct _xlator {
     uint32_t notify_down;
 };
 
+typedef struct _gf_async gf_async_t;
+typedef struct _gf_async_queue gf_async_queue_t;
+
+typedef void (*gf_async_callback_f)(xlator_t *xl, gf_async_t *async);
+
+struct _gf_async {
+    xlator_t *xl;
+    gf_async_callback_f cbk;
+    struct cds_wfcq_node queue;
+};
+
+struct _gf_async_queue {
+    pthread_t thread;
+    int32_t event;
+    struct __cds_wfcq_head head __attribute__((aligned(64)));
+    struct cds_wfcq_tail tail __attribute__((aligned(64)));
+};
+
 /* This would be the only structure which needs to be exported by
    the translators. For the backward compatibility, in 4.x series
    even the old exported fields will be supported */
@@ -1090,4 +1112,14 @@ handle_default_options(xlator_t *xl, dict_t *options);
 
 void
 gluster_graph_take_reference(xlator_t *tree);
+
+int32_t
+gf_async_init(void);
+
+void
+gf_async_fini(void);
+
+void
+gf_async(xlator_t *xl, gf_async_callback_f cbk, gf_async_t *async);
+
 #endif /* _XLATOR_H */

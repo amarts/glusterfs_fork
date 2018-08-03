@@ -2838,12 +2838,12 @@ glusterd_op_remove_brick(dict_t *dict, char **op_errstr)
     if (!glusterd_is_volume_replicate(volinfo) &&
         conf->op_version >= GD_OP_VERSION_3_12_2) {
         ret = dict_set_nstrn(volinfo->dict, "performance.client-io-threads",
-                             SLEN("performance.client-io-threads"), "on",
-                             SLEN("on"));
+                             SLEN("performance.client-io-threads"), "off",
+                             SLEN("off"));
         if (ret) {
             gf_msg(this->name, GF_LOG_ERROR, 0, GD_MSG_DICT_SET_FAILED,
                    "Failed to set "
-                   "performance.client-io-threads to on");
+                   "performance.client-io-threads to off");
             goto out;
         }
     }

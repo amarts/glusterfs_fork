@@ -1202,7 +1202,8 @@ struct volopt_map_entry glusterd_volopt_map[] = {
     {.key = "performance.iot-pass-through",
      .voltype = "performance/io-threads",
      .option = "pass-through",
-     .op_version = GD_OP_VERSION_4_1_0},
+     .op_version = GD_OP_VERSION_4_1_0,
+    .value = "on"},
 
     /* Other perf xlators' options */
     {.key = "performance.io-cache-pass-through",
@@ -1737,7 +1738,7 @@ struct volopt_map_entry glusterd_volopt_map[] = {
     {.key = "performance.client-io-threads",
      .voltype = "performance/io-threads",
      .option = "!perf",
-     .value = "on",
+     .value = "off",
      .op_version = 1,
      .description = "enable/disable io-threads translator in the client "
                     "graph of volume.",

@@ -201,6 +201,7 @@ gf_changelog_cleanup_this(xlator_t *this)
     this->private = NULL;
     this->ctx = NULL;
 
+    gf_async_fini();
     mem_pools_fini();
 }
 
@@ -240,6 +241,10 @@ gf_changelog_init_master()
     mem_pools_init_early();
     ret = gf_changelog_init_context();
     mem_pools_init_late();
+
+    if (ret == 0) {
+        ret = gf_async_init();
+    }
 
     return ret;
 }

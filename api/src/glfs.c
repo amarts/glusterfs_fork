@@ -839,6 +839,11 @@ pub_glfs_new(const char *volname)
     mem_pools_init_early();
     mem_pools_init_late();
 
+    ret = gf_async_init();
+    if (ret < 0) {
+        goto out;
+    }
+
     fs = glfs_new_fs(volname);
     if (!fs)
         goto out;
@@ -895,6 +900,7 @@ out:
             glfs_fini(fs);
             fs = NULL;
         } else {
+            gf_async_fini();
             /* glfs_fini() calls mem_pools_fini() too */
             mem_pools_fini();
         }
@@ -1402,6 +1408,7 @@ free_fs:
      */
     mem_pools_fini();
 
+    gf_async_fini();
 fail:
     if (!ret)
         ret = err;

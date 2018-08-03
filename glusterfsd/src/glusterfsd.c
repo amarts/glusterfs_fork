@@ -2832,6 +2832,11 @@ main(int argc, char *argv[])
      */
     mem_pools_init_late();
 
+    ret = gf_async_init();
+    if (ret < 0) {
+        goto out;
+    }
+
 #ifdef GF_LINUX_HOST_OS
     ret = set_oom_score_adj(ctx);
     if (ret)
@@ -2858,6 +2863,7 @@ main(int argc, char *argv[])
     ret = event_dispatch(ctx->event_pool);
 
 out:
-    //        glusterfs_ctx_destroy (ctx);
+//    glusterfs_ctx_destroy (ctx);
+    gf_async_fini();
     return ret;
 }

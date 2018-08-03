@@ -12,6 +12,8 @@
 #include <dlfcn.h>
 #include <netdb.h>
 #include <fnmatch.h>
+#include <sys/eventfd.h>
+
 #include "glusterfs/defaults.h"
 #include "glusterfs/libglusterfs-messages.h"
 
@@ -30,6 +32,9 @@
     } while (0)
 
 pthread_mutex_t xlator_init_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static gf_async_queue_t *gf_async_queues = NULL;
+static int32_t gf_async_threads = 0;
 
 void
 xlator_init_lock(void)
@@ -1464,4 +1469,158 @@ gluster_graph_take_reference(xlator_t *tree)
         prev = trav;
     }
     return;
+}
+
+static void
+gf_async_wake(gf_async_queue_t *queue)
+{
+    uint64_t data;
+
+    data = 1;
+    write(queue->event, &data, sizeof(data));
+}
+
+static void
+gf_async_wait(gf_async_queue_t *queue)
+{
+    uint64_t data;
+
+    read(queue->event, &data, sizeof(data));
+}
+
+static gf_async_t *
+gf_async_get(gf_async_queue_t *queue)
+{
+    struct cds_wfcq_node *node;
+
+    for (;;) {
+        node = __cds_wfcq_dequeue_nonblocking(&queue->head, &queue->tail);
+        if (node == CDS_WFCQ_WOULDBLOCK) {
+            node = __cds_wfcq_dequeue_blocking(&queue->head, &queue->tail);
+        }
+        if (node != NULL) {
+            return caa_container_of(node, gf_async_t, queue);
+        }
+        gf_async_wait(queue);
+    }
+}
+
+static void
+gf_async_enqueue(gf_async_queue_t *queue, gf_async_t *async)
+{
+    if (!cds_wfcq_enqueue(&queue->head, &queue->tail, &async->queue)) {
+        gf_async_wake(queue);
+    }
+}
+
+static void *
+gf_async_worker(void *arg)
+{
+    gf_async_queue_t *queue;
+    gf_async_t *async;
+
+    queue = (gf_async_queue_t *)arg;
+    do {
+        async = gf_async_get(queue);
+        if (async->cbk == NULL) {
+            break;
+        }
+        THIS = async->xl;
+        async->cbk(async->xl, async);
+    } while (1);
+
+    return NULL;
+}
+
+void
+gf_async_fini(void)
+{
+    gf_async_t async;
+    int32_t i;
+
+    for (i = 0; i < gf_async_threads; i++) {
+        async.cbk = NULL;
+        cds_wfcq_node_init(&async.queue);
+        gf_async_enqueue(&gf_async_queues[i], &async);
+        pthread_join(gf_async_queues[i].thread, NULL);
+        close(gf_async_queues[i].event);
+        GF_ASSERT(cds_wfcq_empty(&gf_async_queues[i].head,
+                                 &gf_async_queues[i].tail));
+    }
+    gf_async_threads = 0;
+
+    free(gf_async_queues);
+    gf_async_queues = NULL;
+}
+
+int32_t
+gf_async_init(void)
+{
+    char name[16];
+    long cores;
+    uint32_t i;
+    int32_t ret;
+
+    cores = sysconf(_SC_NPROCESSORS_ONLN);
+    if (cores < GF_THREAD_POOL_COUNT) {
+        cores = GF_THREAD_POOL_COUNT;
+    }
+
+    gf_async_queues = NULL;
+    gf_async_threads = 0;
+
+    ret = -posix_memalign((void **)&gf_async_queues, 64,
+                          sizeof(gf_async_queue_t) * cores);
+    if (ret < 0) {
+        gf_async_fini();
+        return ret;
+    }
+
+    gf_async_threads = cores;
+    for (i = 0; i < cores; i++) {
+        gf_async_queues[i].event = eventfd(0, EFD_CLOEXEC);
+        if (gf_async_queues[i].event < 0) {
+            ret = -errno;
+            break;
+        }
+        __cds_wfcq_init(&gf_async_queues[i].head, &gf_async_queues[i].tail);
+        snprintf(name, sizeof(name), "tp%u", i);
+        if (gf_thread_create(&gf_async_queues[i].thread, NULL,
+                             gf_async_worker, &gf_async_queues[i], name) < 0) {
+            ret = -ENOMEM;
+            break;
+        }
+    }
+    if (i < cores) {
+        gf_async_threads = i;
+        gf_async_fini();
+    }
+
+    return ret;
+}
+
+void
+gf_async(xlator_t *xl, gf_async_callback_f cbk, gf_async_t *async)
+{
+    static __thread uint32_t thread_idx = -1;
+    int32_t idx;
+
+    idx = thread_idx;
+    if (idx < 0) {
+        struct timespec now;
+
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        idx = now.tv_nsec % gf_async_threads;
+    } else {
+        idx++;
+        if (idx >= gf_async_threads) {
+            idx = 0;
+        }
+    }
+    thread_idx = idx;
+
+    async->xl = xl;
+    async->cbk = cbk;
+    cds_wfcq_node_init(&async->queue);
+    gf_async_enqueue(&gf_async_queues[idx], async);
 }

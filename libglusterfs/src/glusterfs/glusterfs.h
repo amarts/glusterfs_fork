@@ -374,6 +374,10 @@ enum gf_internal_fop_indicator {
 #define _gf_false false
 #define _gf_true true
 
+#define GF_THREAD_POOL_COUNT 16
+#define GF_THREAD_POOL_QUEUE_SIZE (1 << 16)
+#define GF_THREAD_POOL_QUEUE_MASK (GF_THREAD_POOL_QUEUE_MASK - 1)
+
 typedef enum {
     GF_CS_LOCAL = 1,
     GF_CS_REMOTE = 2,
