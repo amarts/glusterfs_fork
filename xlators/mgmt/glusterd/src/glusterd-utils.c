@@ -9661,7 +9661,7 @@ glusterd_append_status_dicts (dict_t *dst, dict_t *src)
                 if (ret)
                         goto out;
 
-                dst_sts_val = GF_CALLOC (1, sizeof(gf_gsync_status_t),
+                dst_sts_val = GF_MALLOC (sizeof(gf_gsync_status_t),
                                          gf_common_mt_gsync_status_t);
                 if (!dst_sts_val) {
                         gf_msg ("glusterd", GF_LOG_ERROR, ENOMEM,
@@ -12170,7 +12170,7 @@ glusterd_set_originator_uuid (dict_t *dict)
 
         GF_ASSERT (dict);
 
-        originator_uuid = GF_CALLOC (1, sizeof(uuid_t),
+        originator_uuid = GF_MALLOC (sizeof(uuid_t),
                                      gf_common_mt_uuid_t);
         if (!originator_uuid) {
                 ret = -1;
