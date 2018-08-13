@@ -722,6 +722,7 @@ struct _glusterfs_ctx {
     pthread_cond_t janitor_cond;
     pthread_mutex_t janitor_lock;
     pthread_t janitor;
+    void *iot; /* refcounted io-threads */
 };
 typedef struct _glusterfs_ctx glusterfs_ctx_t;
 

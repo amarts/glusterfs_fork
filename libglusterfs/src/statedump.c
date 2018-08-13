@@ -16,6 +16,7 @@
 #include "glusterfs/stack.h"
 #include "glusterfs/common-utils.h"
 #include "glusterfs/syscall.h"
+#include "glusterfs/io-threads.h"
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
@@ -877,6 +878,10 @@ gf_proc_dump_info(int signum, glusterfs_ctx_t *ctx)
         iobuf_stats_dump(ctx->iobuf_pool);
     if (GF_PROC_DUMP_IS_OPTION_ENABLED(callpool))
         gf_proc_dump_pending_frames(ctx->pool);
+
+    /* io-threads stats */
+    gf_proc_dump_add_section("io-threads");
+    gf_dump_iot_info(ctx);
 
     /* dictionary stats */
     gf_proc_dump_add_section("dict");

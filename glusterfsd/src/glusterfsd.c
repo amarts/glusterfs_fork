@@ -77,6 +77,7 @@
 #include "netgroups.h"
 #include "exports.h"
 #include <glusterfs/monitoring.h>
+#include <glusterfs/io-threads.h>
 
 #include <glusterfs/daemon.h>
 
@@ -1714,6 +1715,13 @@ glusterfs_ctx_defaults_init(glusterfs_ctx_t *ctx)
         goto out;
     }
 
+    ctx->iot = gf_iot_defaults_init(ctx);
+    if (!ctx->iot) {
+        gf_msg("", GF_LOG_CRITICAL, 0, glusterfsd_msg_14,
+               "ERROR: glusterfs io-threads creation failed");
+        goto out;
+    }
+
     ctx->pool = GF_CALLOC(1, sizeof(call_pool_t), gfd_mt_call_pool_t);
     if (!ctx->pool) {
         gf_msg("", GF_LOG_CRITICAL, 0, glusterfsd_msg_14,
@@ -1809,6 +1817,7 @@ glusterfs_ctx_defaults_init(glusterfs_ctx_t *ctx)
 out:
 
     if (ret) {
+        gf_iot_free(ctx->iot);
         if (ctx->pool) {
             mem_pool_destroy(ctx->pool->frame_mem_pool);
             mem_pool_destroy(ctx->pool->stack_mem_pool);

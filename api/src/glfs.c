@@ -45,6 +45,7 @@
 #include <glusterfs/hashfn.h>
 #include "rpc-clnt.h"
 #include <glusterfs/statedump.h>
+#include <glusterfs/io-threads.h>
 
 #include "gfapi-messages.h"
 #include "glfs.h"
@@ -99,6 +100,11 @@ glusterfs_ctx_defaults_init(glusterfs_ctx_t *ctx)
 
     ctx->env = syncenv_new(0, 0, 0);
     if (!ctx->env) {
+        goto err;
+    }
+
+    ctx->iot = gf_iot_defaults_init(ctx);
+    if (!ctx->iot) {
         goto err;
     }
 
@@ -168,6 +174,7 @@ err:
             mem_pool_destroy(ctx->dict_pair_pool);
         if (ctx->logbuf_pool)
             mem_pool_destroy(ctx->logbuf_pool);
+        gf_iot_free(ctx->iot);
     }
 
     return ret;
@@ -1191,6 +1198,8 @@ glusterfs_ctx_destroy(glusterfs_ctx_t *ctx)
     /* Free the event pool */
     ret = event_pool_destroy(ctx->event_pool);
 
+    gf_iot_free(ctx->iot);
+
     /* Free the iobuf pool */
     iobuf_pool_destroy(ctx->iobuf_pool);
 
@@ -1549,7 +1558,7 @@ GFAPI_SYMVER_PUBLIC_DEFAULT(glfs_upcall_inode_get_oldpstat, 3.7.16);
 struct glfs_object *
 pub_glfs_upcall_lease_get_object(struct glfs_upcall_lease *arg)
 {
-        return arg->object;
+    return arg->object;
 }
 
 GFAPI_SYMVER_PUBLIC_DEFAULT(glfs_upcall_lease_get_object, 4.1.6);
