@@ -827,11 +827,15 @@ glusterd_create_sub_tier_volinfo (glusterd_volinfo_t *volinfo,
         (*dup_volinfo)->status           = volinfo->status;
         (*dup_volinfo)->snapshot         = volinfo->snapshot;
 
+        if (snprintf ((*dup_volinfo)->volname,
+                      sizeof ((*dup_volinfo)->volname), "%s", new_volname) >=
+            sizeof ((*dup_volinfo)->volname)) {
+                        ret = -1;
+                        goto out;
+        }
+
         memcpy (&(*dup_volinfo)->tier_info, &volinfo->tier_info,
                 sizeof (volinfo->tier_info));
-
-        strncpy ((*dup_volinfo)->volname, new_volname,
-                  sizeof((*dup_volinfo)->volname)-1);
 
         cds_list_for_each_entry (brickinfo, &volinfo->bricks, brick_list) {
                 i++;
@@ -1243,7 +1247,11 @@ glusterd_brickinfo_new_from_brick (char *brick,
         vg = strchr (path, '?');
         /* ? is used as a delimiter for vg */
         if (vg) {
-                strncpy (new_brickinfo->vg, vg + 1, PATH_MAX - 1);
+                if (snprintf (new_brickinfo->vg, PATH_MAX, "%s",
+                              vg + 1) >= PATH_MAX) {
+                        ret = -1;
+                        goto out;
+                }
                 *vg = '\0';
         }
         new_brickinfo->caps = CAPS_BD;
@@ -1251,9 +1259,18 @@ glusterd_brickinfo_new_from_brick (char *brick,
         ret = gf_canonicalize_path (path);
         if (ret)
                 goto out;
-        gf_strncpy (new_brickinfo->hostname, hostname,
-                    sizeof(new_brickinfo->hostname));
-        gf_strncpy (new_brickinfo->path, path, sizeof(new_brickinfo->path));
+        ret = snprintf (new_brickinfo->hostname,
+                        sizeof (new_brickinfo->hostname), "%s", hostname);
+        if (ret < 0 || ret >= sizeof (new_brickinfo->hostname)) {
+                ret = -1;
+                goto out;
+        }
+        ret  = snprintf (new_brickinfo->path, sizeof (new_brickinfo->path),
+                         "%s", path);
+        if (ret < 0 || ret >= sizeof (new_brickinfo->path)) {
+                ret = -1;
+                goto out;
+        }
 
         if (construct_real_path) {
                 ret = glusterd_hostname_to_uuid (new_brickinfo->hostname,
@@ -1364,7 +1381,8 @@ glusterd_is_brickpath_available (uuid_t uuid, char *path)
 
         priv = THIS->private;
 
-        strncpy (tmp_path, path, PATH_MAX);
+        if (snprintf (tmp_path, PATH_MAX, "%s", path) >= PATH_MAX)
+                goto out;
         /* path may not yet exist */
         if (!realpath (path, tmp_path)) {
                 if (errno != ENOENT) {
@@ -1902,8 +1920,10 @@ glusterd_set_brick_socket_filepath (glusterd_volinfo_t *volinfo,
         char                    sock_filepath[PATH_MAX] = "";
         int32_t                 slen = 0;
 
-        expected_file_len = strlen (GLUSTERD_SOCK_DIR) + strlen ("/") +
-                            SHA256_DIGEST_LENGTH*2 + strlen (".socket") + 1;
+        expected_file_len = SLEN (GLUSTERD_SOCK_DIR) +
+                            SLEN ("/") +
+                            SHA256_DIGEST_LENGTH*2 +
+                            SLEN (".socket") + 1;
         GF_ASSERT (len >= expected_file_len);
         this = THIS;
         GF_ASSERT (this);
@@ -3115,7 +3135,7 @@ glusterd_add_volume_to_dict (glusterd_volinfo_t *volinfo,
                         goto out;
         }
 
-        snprintf (key, 256, "%s%d.rebalance", prefix, count);
+        snprintf (key, sizeof (key), "%s%d.rebalance", prefix, count);
         ret = dict_set_int32 (dict, key, volinfo->rebal.defrag_cmd);
         if (ret)
                 goto out;
@@ -3126,7 +3146,7 @@ glusterd_add_volume_to_dict (glusterd_volinfo_t *volinfo,
                 ret = -1;
                 goto out;
         }
-        snprintf (key, 256, "%s%d.rebalance-id", prefix, count);
+        snprintf (key, sizeof (key), "%s%d.rebalance-id", prefix, count);
         ret = dict_set_dynstr (dict, key, rebalance_id_str);
         if (ret)
                 goto out;
@@ -3712,9 +3732,18 @@ glusterd_import_new_brick (dict_t *peer_data, int32_t vol_count,
         if (ret)
                 goto out;
 
-        strncpy (new_brickinfo->path, path, sizeof (new_brickinfo->path) - 1);
-        strncpy (new_brickinfo->hostname, hostname,
-                 sizeof (new_brickinfo->hostname) - 1);
+        ret = snprintf (new_brickinfo->path, sizeof (new_brickinfo->path),
+                        "%s", path);
+        if (ret < 0 || ret >= sizeof (new_brickinfo->path)) {
+                ret = -1;
+                goto out;
+        }
+        ret = snprintf (new_brickinfo->hostname,
+                        sizeof (new_brickinfo->hostname), "%s", hostname);
+        if (ret < 0 || ret >= sizeof (new_brickinfo->hostname)) {
+                ret = -1;
+                goto out;
+        }
         new_brickinfo->decommissioned = decommissioned;
         if (brick_id)
                 strcpy (new_brickinfo->brick_id, brick_id);
@@ -3978,9 +4007,12 @@ glusterd_import_volinfo (dict_t *peer_data, int count,
         ret = glusterd_volinfo_new (&new_volinfo);
         if (ret)
                 goto out;
-        strncpy (new_volinfo->volname, volname,
-                 sizeof(new_volinfo->volname) - 1);
-
+        ret = snprintf (new_volinfo->volname,
+                        sizeof (new_volinfo->volname), "%s", volname);
+        if (ret < 0 || ret >= sizeof (new_volinfo->volname)) {
+                ret = -1;
+                goto out;
+        }
         snprintf (key, sizeof (key), "%s%d.type", prefix, count);
         ret = dict_get_int32 (peer_data, key, &new_volinfo->type);
         if (ret) {
@@ -3991,10 +4023,15 @@ glusterd_import_volinfo (dict_t *peer_data, int count,
 
         snprintf (key, sizeof (key), "%s%d.parent_volname", prefix, count);
         ret = dict_get_str (peer_data, key, &parent_volname);
-        if (!ret)
-                strncpy (new_volinfo->parent_volname, parent_volname,
-                         sizeof(new_volinfo->parent_volname)-1);
-
+        if (!ret) {
+                ret = snprintf (new_volinfo->parent_volname,
+                                sizeof(new_volinfo->parent_volname), "%s",
+                                parent_volname);
+                if (ret < 0 || ret >= sizeof (new_volinfo->volname)) {
+                        ret = -1;
+                        goto out;
+                }
+        }
         snprintf (key, sizeof (key), "%s%d.brick_count", prefix, count);
         ret = dict_get_int32 (peer_data, key, &new_volinfo->brick_count);
         if (ret) {
@@ -7656,7 +7693,9 @@ glusterd_is_path_in_use (char *path, gf_boolean_t *in_use, char **op_errstr)
         if (!path)
                 goto out;
 
-        strncpy (dir, path, (sizeof (dir) - 1));
+        if (snprintf (dir, PATH_MAX, "%s", path) >= PATH_MAX)
+                goto out;
+
         curdir = dir;
         do {
                 for (i = 0; !used && keys[i]; i++) {
@@ -9973,13 +10012,11 @@ glusterd_volume_status_add_peer_rsp (dict_t *this, char *key, data_t *value,
         if (index > rsp_ctx->brick_index_max) {
                 len = snprintf (new_key, sizeof (new_key), "brick%d.%s",
                                 index + rsp_ctx->other_count, brick_key);
-                if ((len < 0) || (len >= sizeof(new_key))) {
-                        goto out;
-                }
         } else {
-                strncpy (new_key, key, sizeof (new_key));
-                new_key[sizeof (new_key) - 1] = 0;
+                len = snprintf (new_key, sizeof (new_key), "%s", key);
         }
+        if (len < 0 || len >= sizeof(new_key))
+                goto out;
 
         ret = dict_set (rsp_ctx->dict, new_key, new_value);
 out:
@@ -10475,21 +10512,21 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 gf_msg (this->name, GF_LOG_ERROR, 0, GD_MSG_DICT_SET_FAILED,
                         "Failed to set count in dictonary");
 
-        snprintf (key, 256, "node-uuid-%d", src_count);
+        snprintf (key, sizeof (key), "node-uuid-%d", src_count);
         ret = dict_get_str (rsp_dict, key, &node_uuid);
         if (!ret) {
                 node_uuid_str = gf_strdup (node_uuid);
-                snprintf (key, 256, "node-uuid-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "node-uuid-%d", src_count+dst_count);
                 ret = dict_set_dynstr (aggr, key, node_uuid_str);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "failed to set node-uuid");
                 }
         }
 
-        snprintf (key, 256, "scrub-running-%d", src_count);
+        snprintf (key, sizeof (key), "scrub-running-%d", src_count);
         ret = dict_get_int8 (rsp_dict, key, &scrub_running);
         if (!ret) {
-                snprintf (key, 256, "scrub-running-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "scrub-running-%d", src_count+dst_count);
                 ret = dict_set_int8 (aggr, key, scrub_running);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10497,10 +10534,10 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "scrubbed-files-%d", src_count);
+        snprintf (key, sizeof (key), "scrubbed-files-%d", src_count);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "scrubbed-files-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "scrubbed-files-%d", src_count+dst_count);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10508,10 +10545,10 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "unsigned-files-%d", src_count);
+        snprintf (key, sizeof (key), "unsigned-files-%d", src_count);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "unsigned-files-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "unsigned-files-%d", src_count+dst_count);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10519,11 +10556,11 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "last-scrub-time-%d", src_count);
+        snprintf (key, sizeof (key), "last-scrub-time-%d", src_count);
         ret = dict_get_str (rsp_dict, key, &last_scrub_time);
         if (!ret) {
                 scrub_time = gf_strdup (last_scrub_time);
-                snprintf (key, 256, "last-scrub-time-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "last-scrub-time-%d", src_count+dst_count);
                 ret = dict_set_dynstr (aggr, key, scrub_time);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10531,10 +10568,10 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "scrub-duration-%d", src_count);
+        snprintf (key, sizeof (key), "scrub-duration-%d", src_count);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "scrub-duration-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "scrub-duration-%d", src_count+dst_count);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10542,10 +10579,10 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "error-count-%d", src_count);
+        snprintf (key, sizeof (key), "error-count-%d", src_count);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "error-count-%d", src_count+dst_count);
+                snprintf (key, sizeof (key), "error-count-%d", src_count+dst_count);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set error "
@@ -10554,10 +10591,10 @@ glusterd_volume_bitrot_scrub_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
 
                 /* Storing all the bad files in the dictionary */
                 for (j = 0; j < value; j++) {
-                        snprintf (key, 256, "quarantine-%d-%d", j, src_count);
+                        snprintf (key, sizeof (key), "quarantine-%d-%d", j, src_count);
                         ret = dict_get_str (rsp_dict, key, &bad_gfid_str);
                         if (!ret) {
-                                snprintf (key, 256, "quarantine-%d-%d", j,
+                                snprintf (key, sizeof (key), "quarantine-%d-%d", j,
                                           src_count+dst_count);
                                 ret = dict_set_dynstr_with_alloc (aggr, key,
                                                                   bad_gfid_str);
@@ -10697,7 +10734,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         snprintf (buf, 1024, "%s", uuid_utoa (MY_UUID));
 
-        snprintf (key, 256, "node-uuid-%d", i);
+        snprintf (key, sizeof (key), "node-uuid-%d", i);
         ret = dict_set_dynstr_with_alloc (aggr, key, buf);
         if (ret)
                 gf_msg (this->name, GF_LOG_ERROR, 0, GD_MSG_DICT_SET_FAILED,
@@ -10761,7 +10798,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_int8 (rsp_dict, "scrub-running", &scrub_running);
         if (!ret) {
-                snprintf (key, 256, "scrub-running-%d", i);
+                snprintf (key, sizeof (key), "scrub-running-%d", i);
                 ret = dict_set_uint64 (aggr, key, scrub_running);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10771,7 +10808,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_uint64 (rsp_dict, "scrubbed-files", &value);
         if (!ret) {
-                snprintf (key, 256, "scrubbed-files-%d", i);
+                snprintf (key, sizeof (key), "scrubbed-files-%d", i);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10781,7 +10818,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_uint64 (rsp_dict, "unsigned-files", &value);
         if (!ret) {
-                snprintf (key, 256, "unsigned-files-%d", i);
+                snprintf (key, sizeof (key), "unsigned-files-%d", i);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10791,7 +10828,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_str (rsp_dict, "last-scrub-time", &last_scrub_time);
         if (!ret) {
-                snprintf (key, 256, "last-scrub-time-%d", i);
+                snprintf (key, sizeof (key), "last-scrub-time-%d", i);
 
                 scrub_time = gf_strdup (last_scrub_time);
                 ret = dict_set_dynstr (aggr, key, scrub_time);
@@ -10803,7 +10840,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_uint64 (rsp_dict, "scrub-duration", &value);
         if (!ret) {
-                snprintf (key, 256, "scrub-duration-%d", i);
+                snprintf (key, sizeof (key), "scrub-duration-%d", i);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set "
@@ -10813,7 +10850,7 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
         ret = dict_get_uint64 (rsp_dict, "total-count", &value);
         if (!ret) {
-                snprintf (key, 256, "error-count-%d", i);
+                snprintf (key, sizeof (key), "error-count-%d", i);
                 ret = dict_set_uint64 (aggr, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0, "Failed to set error "
@@ -10822,10 +10859,10 @@ glusterd_bitrot_volume_node_rsp (dict_t *aggr, dict_t *rsp_dict)
 
                 /* Storing all the bad files in the dictionary */
                 for (j = 0; j < value; j++) {
-                        snprintf (key, 256, "quarantine-%d", j);
+                        snprintf (key, sizeof (key), "quarantine-%d", j);
                         ret = dict_get_str (rsp_dict, key, &bad_gfid_str);
                         if (!ret) {
-                                snprintf (key, 256, "quarantine-%d-%d", j, i);
+                                snprintf (key, sizeof (key), "quarantine-%d-%d", j, i);
                                 ret = dict_set_dynstr_with_alloc (aggr, key,
                                                                   bad_gfid_str);
                                 if (ret) {
@@ -10897,7 +10934,7 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                         GD_MSG_DICT_GET_FAILED,
                         "failed to get index");
 
-        snprintf (key, 256, "node-uuid-%d", index);
+        snprintf (key, sizeof (key), "node-uuid-%d", index);
         ret = dict_get_str (rsp_dict, key, &node_uuid);
         if (!ret) {
                 node_uuid_str = gf_strdup (node_uuid);
@@ -10925,7 +10962,7 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
 
                 /* Setting the same index for the node, as is in the peerlist.*/
-                snprintf (key, 256, "node-uuid-%d", current_index);
+                snprintf (key, sizeof (key), "node-uuid-%d", current_index);
                 ret = dict_set_dynstr (ctx_dict, key, node_uuid_str);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10933,10 +10970,10 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "files-%d", index);
+        snprintf (key, sizeof (key), "files-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "files-%d", current_index);
+                snprintf (key, sizeof (key), "files-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10944,10 +10981,10 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "size-%d", index);
+        snprintf (key, sizeof (key), "size-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "size-%d", current_index);
+                snprintf (key, sizeof (key), "size-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10955,10 +10992,10 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "lookups-%d", index);
+        snprintf (key, sizeof (key), "lookups-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "lookups-%d", current_index);
+                snprintf (key, sizeof (key), "lookups-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10966,10 +11003,10 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "status-%d", index);
+        snprintf (key, sizeof (key), "status-%d", index);
         ret = dict_get_int32 (rsp_dict, key, &value32);
         if (!ret) {
-                snprintf (key, 256, "status-%d", current_index);
+                snprintf (key, sizeof (key), "status-%d", current_index);
                 ret = dict_set_int32 (ctx_dict, key, value32);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10977,10 +11014,10 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "failures-%d", index);
+        snprintf (key, sizeof (key), "failures-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "failures-%d", current_index);
+                snprintf (key, sizeof (key), "failures-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -10988,20 +11025,20 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "skipped-%d", index);
+        snprintf (key, sizeof (key), "skipped-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "skipped-%d", current_index);
+                snprintf (key, sizeof (key), "skipped-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
                                 "failed to set skipped count");
                 }
         }
-        snprintf (key, 256, "run-time-%d", index);
+        snprintf (key, sizeof (key), "run-time-%d", index);
         ret = dict_get_double (rsp_dict, key, &elapsed_time);
         if (!ret) {
-                snprintf (key, 256, "run-time-%d", current_index);
+                snprintf (key, sizeof (key), "run-time-%d", current_index);
                 ret = dict_set_double (ctx_dict, key, elapsed_time);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -11009,30 +11046,30 @@ glusterd_volume_rebalance_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "time-left-%d", index);
+        snprintf (key, sizeof (key), "time-left-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "time-left-%d", current_index);
+                snprintf (key, sizeof (key), "time-left-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
                                 "failed to set time-left");
                 }
         }
-        snprintf (key, 256, "demoted-%d", index);
+        snprintf (key, sizeof (key), "demoted-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "demoted-%d", current_index);
+                snprintf (key, sizeof (key), "demoted-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
                                 "failed to set demoted count");
                 }
         }
-        snprintf (key, 256, "promoted-%d", index);
+        snprintf (key, sizeof (key), "promoted-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "promoted-%d", current_index);
+                snprintf (key, sizeof (key), "promoted-%d", current_index);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -11097,7 +11134,7 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                         GD_MSG_DICT_GET_FAILED,
                         "failed to get index");
 
-        snprintf (key, 256, "node-uuid-%d", index);
+        snprintf (key, sizeof (key), "node-uuid-%d", index);
         ret = dict_get_str (rsp_dict, key, &node_uuid);
         if (!ret) {
                 node_uuid_str = gf_strdup (node_uuid);
@@ -11111,17 +11148,17 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                                 GD_MSG_DICT_SET_FAILED,
                                 "Failed to set count");
 
-        snprintf (key, 256, "node-uuid-%d", count);
+        snprintf (key, sizeof (key), "node-uuid-%d", count);
         ret = dict_set_dynstr (ctx_dict, key, node_uuid_str);
         if (ret) {
                 gf_msg_debug (this->name, 0,
                                 "failed to set node-uuid");
         }
 
-        snprintf (key, 256, "files-%d", index);
+        snprintf (key, sizeof (key), "files-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "files-%d", count);
+                snprintf (key, sizeof (key), "files-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11129,10 +11166,10 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "size-%d", index);
+        snprintf (key, sizeof (key), "size-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "size-%d", count);
+                snprintf (key, sizeof (key), "size-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11140,10 +11177,10 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "lookups-%d", index);
+        snprintf (key, sizeof (key), "lookups-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "lookups-%d", count);
+                snprintf (key, sizeof (key), "lookups-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11151,10 +11188,10 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "status-%d", index);
+        snprintf (key, sizeof (key), "status-%d", index);
         ret = dict_get_int32 (rsp_dict, key, &value32);
         if (!ret) {
-                snprintf (key, 256, "status-%d", count);
+                snprintf (key, sizeof (key), "status-%d", count);
                 ret = dict_set_int32 (ctx_dict, key, value32);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11162,10 +11199,10 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "failures-%d", index);
+        snprintf (key, sizeof (key), "failures-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "failures-%d", count);
+                snprintf (key, sizeof (key), "failures-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11173,20 +11210,20 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "skipped-%d", index);
+        snprintf (key, sizeof (key), "skipped-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "skipped-%d", count);
+                snprintf (key, sizeof (key), "skipped-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
                                 "failed to set skipped count");
                 }
         }
-        snprintf (key, 256, "run-time-%d", index);
+        snprintf (key, sizeof (key), "run-time-%d", index);
         ret = dict_get_double (rsp_dict, key, &elapsed_time);
         if (!ret) {
-                snprintf (key, 256, "run-time-%d", count);
+                snprintf (key, sizeof (key), "run-time-%d", count);
                 ret = dict_set_double (ctx_dict, key, elapsed_time);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11194,20 +11231,20 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "demoted-%d", index);
+        snprintf (key, sizeof (key), "demoted-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "demoted-%d", count);
+                snprintf (key, sizeof (key), "demoted-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
                                 "failed to set demoted count");
                 }
         }
-        snprintf (key, 256, "promoted-%d", index);
+        snprintf (key, sizeof (key), "promoted-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "promoted-%d", count);
+                snprintf (key, sizeof (key), "promoted-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (this->name, 0,
@@ -11215,10 +11252,10 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
                 }
         }
 
-        snprintf (key, 256, "time-left-%d", index);
+        snprintf (key, sizeof (key), "time-left-%d", index);
         ret = dict_get_uint64 (rsp_dict, key, &value);
         if (!ret) {
-                snprintf (key, 256, "time-left-%d", count);
+                snprintf (key, sizeof (key), "time-left-%d", count);
                 ret = dict_set_uint64 (ctx_dict, key, value);
                 if (ret) {
                         gf_msg_debug (THIS->name, 0,
@@ -11274,9 +11311,12 @@ glusterd_sys_exec_output_rsp_dict (dict_t *dst, dict_t *src)
         }
 
         for (i = 1; i <= src_output_count; i++) {
-                len = snprintf (output_name, sizeof(output_name) - 1,
+                len = snprintf (output_name, sizeof (output_name),
                                 "output_%d", i);
-                output_name[len] = '\0';
+                if (len <= 0 || len >= sizeof (output_name)) {
+                        ret = -1;
+                        goto out;
+                }
                 ret = dict_get_str (src, output_name, &output);
                 if (ret) {
                         gf_msg ("glusterd", GF_LOG_ERROR, 0,
@@ -11286,9 +11326,12 @@ glusterd_sys_exec_output_rsp_dict (dict_t *dst, dict_t *src)
                         goto out;
                 }
 
-                len = snprintf (output_name, sizeof(output_name) - 1,
+                len = snprintf (output_name, sizeof (output_name),
                                 "output_%d", i+dst_output_count);
-                output_name[len] = '\0';
+                if (len <= 0 || len >= sizeof (output_name)) {
+                        ret = -1;
+                        goto out;
+                }
                 ret = dict_set_dynstr (dst, output_name, gf_strdup (output));
                 if (ret) {
                         gf_msg ("glusterd", GF_LOG_ERROR, 0,
@@ -11434,7 +11477,7 @@ glusterd_volume_quota_copy_to_op_ctx_dict (dict_t *dict, dict_t *rsp_dict)
                         " copied from rsp_dict into op_ctx");
 
         for (i = 0; i < rsp_dict_count; i++) {
-                snprintf (key, sizeof(key)-1, "gfid%d", i);
+                snprintf (key, sizeof (key), "gfid%d", i);
 
                 ret = dict_get_str (rsp_dict, key, &uuid_str);
                 if (ret) {
@@ -11445,7 +11488,7 @@ glusterd_volume_quota_copy_to_op_ctx_dict (dict_t *dict, dict_t *rsp_dict)
                         goto out;
                 }
 
-                snprintf (key, sizeof (key)-1, "gfid%d", i + count);
+                snprintf (key, sizeof (key), "gfid%d", i + count);
 
                 uuid_str_dup = gf_strdup (uuid_str);
                 if (!uuid_str_dup) {
@@ -11536,6 +11579,7 @@ _heal_volume_add_shd_rsp (dict_t *this, char *key, data_t *value, void *data)
         char                            int_str[16] = "";
         data_t                          *new_value = NULL;
         char                            *rxl_end = NULL;
+        int                             rxl_end_len;
         char                            *rxl_child_end = NULL;
         glusterd_volinfo_t              *volinfo = NULL;
         int                             rxl_id = 0;
@@ -11551,20 +11595,23 @@ _heal_volume_add_shd_rsp (dict_t *this, char *key, data_t *value, void *data)
         if (!rxl_end)
                 goto out;
 
-        int_len = strlen (key) - strlen (rxl_end);
-        strncpy (int_str, key, int_len);
-        int_str[int_len] = '\0';
-        ret = gf_string2int (int_str, &rxl_id);
-        if (ret)
-                goto out;
-
         rxl_child_end = strchr (rxl_end + 1, '-');
         if (!rxl_child_end)
                 goto out;
 
-        int_len = strlen (rxl_end) - strlen (rxl_child_end) - 1;
+        rxl_end_len = strlen (rxl_end);
+        int_len = strlen (key) - rxl_end_len;
+        strncpy (int_str, key, int_len);
+        int_str[int_len] = '\0';
+
+        ret = gf_string2int (int_str, &rxl_id);
+        if (ret)
+                goto out;
+
+        int_len = rxl_end_len - strlen (rxl_child_end) - 1;
         strncpy (int_str, rxl_end + 1, int_len);
         int_str[int_len] = '\0';
+
         ret = gf_string2int (int_str, &rxl_child_id);
         if (ret)
                 goto out;
@@ -11598,9 +11645,11 @@ _heal_volume_add_shd_rsp_of_statistics (dict_t *this, char *key, data_t
         char                            key_begin_string[128] = "";
         data_t                          *new_value = NULL;
         char                            *rxl_end = NULL;
+        int                             rxl_end_len;
         char                            *rxl_child_end = NULL;
         glusterd_volinfo_t              *volinfo = NULL;
         char                            *key_begin_str = NULL;
+        int                             key_begin_strlen;
         int                             rxl_id = 0;
         int                             rxl_child_id = 0;
         int                             brick_id = 0;
@@ -11614,27 +11663,29 @@ _heal_volume_add_shd_rsp_of_statistics (dict_t *this, char *key, data_t
         if (!key_begin_str)
                 goto out;
 
-        int_len = strlen (key) - strlen (key_begin_str);
-        strncpy (key_begin_string, key, int_len);
-        key_begin_string[int_len] = '\0';
-
         rxl_end = strchr (key_begin_str + 1, '-');
         if (!rxl_end)
                 goto out;
 
-        int_len = strlen (key_begin_str) - strlen (rxl_end) - 1;
+        rxl_child_end = strchr (rxl_end + 1, '-');
+        if (!rxl_child_end)
+                goto out;
+
+        key_begin_strlen = strlen (key_begin_str);
+        int_len = strlen (key) - key_begin_strlen;
+
+        strncpy (key_begin_string, key, int_len);
+        key_begin_string[int_len] = '\0';
+
+        rxl_end_len = strlen (rxl_end);
+        int_len = key_begin_strlen -  rxl_end_len - 1;
         strncpy (int_str, key_begin_str + 1, int_len);
         int_str[int_len] = '\0';
         ret = gf_string2int (int_str, &rxl_id);
         if (ret)
                 goto out;
 
-
-        rxl_child_end = strchr (rxl_end + 1, '-');
-        if (!rxl_child_end)
-                goto out;
-
-        int_len = strlen (rxl_end) - strlen (rxl_child_end) - 1;
+        int_len = rxl_end_len - strlen (rxl_child_end) - 1;
         strncpy (int_str, rxl_end + 1, int_len);
         int_str[int_len] = '\0';
         ret = gf_string2int (int_str, &rxl_child_id);
@@ -12073,10 +12124,10 @@ glusterd_defrag_volume_node_rsp (dict_t *req_dict, dict_t *rsp_dict,
                         GD_MSG_DICT_SET_FAILED,
                         "Failed to set count");
 
-        snprintf (buf, 1024, "%s", uuid_utoa (MY_UUID));
+        snprintf (buf, sizeof (buf), "%s", uuid_utoa (MY_UUID));
         node_str = gf_strdup (buf);
 
-        snprintf (key, 256, "node-uuid-%d",i);
+        snprintf (key, sizeof (key), "node-uuid-%d", i);
         ret = dict_set_dynstr (op_ctx, key, node_str);
         if (ret)
                 gf_msg (THIS->name, GF_LOG_ERROR, 0,
@@ -12990,8 +13041,11 @@ glusterd_update_mntopts (char *brick_path, glusterd_brickinfo_t *brickinfo)
                 goto out;
         }
 
-        strncpy (brickinfo->fstype, entry->mnt_type,
-                 (sizeof (brickinfo->fstype) - 1));
+        if (snprintf (brickinfo->fstype, sizeof (brickinfo->fstype), "%s",
+                      entry->mnt_type) >= sizeof (brickinfo->fstype)) {
+                ret = -1;
+                goto out;
+        }
         strcpy (brickinfo->mnt_opts, entry->mnt_opts);
 
         ret = 0;
