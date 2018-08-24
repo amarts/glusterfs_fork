@@ -7717,7 +7717,13 @@ glusterd_check_and_set_brick_xattr (char *host, char *path, uuid_t uuid,
                 goto out;
 
         } else {
-                sys_lremovexattr (path, "trusted.glusterfs.test");
+                ret = sys_lremovexattr (path, "trusted.glusterfs.test");
+                if (ret) {
+                        snprintf (msg, sizeof (msg), "Removing test extended"
+                                  " attribute failed, reason: %s",
+                                  strerror(errno));
+                        goto out;
+                }
         }
 
         ret = glusterd_is_path_in_use (path, &in_use, op_errstr);
@@ -11212,9 +11218,13 @@ glusterd_volume_tier_use_rsp_dict (dict_t *aggr, dict_t *rsp_dict)
         if (ret) {
                 gf_msg_debug (this->name, errno,
                                 "Missing remove-brick-id");
-        } else
+        } else {
                 ret = dict_set_str (ctx_dict, GF_REMOVE_BRICK_TID_KEY,
                                 task_id_str);
+                if (ret)
+                        gf_msg_debug (this->name, errno,
+                                      "Failed to set remove brick task ID");
+        }
 
         ret = 0;
 
@@ -13149,7 +13159,7 @@ glusterd_get_global_options_for_all_vols (rpcsvc_request_t *req, dict_t *ctx,
         ALL_VOLUME_OPTION_CHECK ("all", _gf_true, key, ret, op_errstr, out);
 
         for (i = 0; valid_all_vol_opts[i].option; i++) {
-                allvolopt = gf_strdup (valid_all_vol_opts[i].option);
+                allvolopt = valid_all_vol_opts[i].option;
 
                 if (!all_opts && strcmp (key, allvolopt) != 0)
                         continue;
@@ -13202,6 +13212,7 @@ glusterd_get_global_options_for_all_vols (rpcsvc_request_t *req, dict_t *ctx,
 
                 if (need_free) {
                         GF_FREE (def_val);
+                        need_free = _gf_false;
                 }
                 def_val = NULL;
                 allvolopt = NULL;
@@ -13224,6 +13235,11 @@ out:
                 if (*op_errstr == NULL)
                         *op_errstr = gf_strdup (err_str);
         }
+
+        if (ret && need_free) {
+                GF_FREE (def_val);
+        }
+
         gf_msg_debug (THIS->name, 0, "Returning %d", ret);
 
         return ret;
