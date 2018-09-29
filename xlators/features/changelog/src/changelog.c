@@ -34,6 +34,12 @@ static struct changelog_bootstrap cb_bootstrap[] = {
     },
 };
 
+static int
+changelog_init_rpc(xlator_t *this, changelog_priv_t *priv);
+
+static int
+changelog_init(xlator_t *this, changelog_priv_t *priv);
+
 /* Entry operations - TYPE III */
 
 /**
@@ -2022,12 +2028,15 @@ notify(xlator_t *this, int event, void *data, ...)
                priv->victim->name);
 
         this->cleanup_starting = 1;
-        changelog_destroy_rpc_listner(this, priv);
-        conn = &priv->connections;
-        if (conn)
-            changelog_ev_cleanup_connections(this, conn);
-        xprtcnt = GF_ATOMIC_GET(priv->xprtcnt);
-        clntcnt = GF_ATOMIC_GET(priv->clntcnt);
+        if (priv->active) {
+            changelog_destroy_rpc_listner(this, priv);
+            conn = &priv->connections;
+            xprtcnt = GF_ATOMIC_GET(priv->xprtcnt);
+            clntcnt = GF_ATOMIC_GET(priv->clntcnt);
+
+            if (conn && clntcnt)
+                changelog_ev_cleanup_connections(this, conn);
+        }
 
         if (!xprtcnt && !clntcnt) {
             LOCK(&priv->lock);
@@ -2513,6 +2522,16 @@ reconfigure(xlator_t *this, dict_t *options)
                      out);
 
     if (active_now || active_earlier) {
+        if (active_now) {
+            /* RPC ball rolling.. */
+            ret = changelog_init_rpc(this, priv);
+            if (ret)
+                goto out;
+
+            ret = changelog_init(this, priv);
+            if (ret)
+                goto out;
+        }
         ret = changelog_fill_rollover_data(&cld, !active_now);
         if (ret)
             goto out;
@@ -2757,24 +2776,27 @@ init(xlator_t *this)
     /* Mutex is not needed as threads are not spawned yet */
     priv->bn.bnotify = _gf_false;
     priv->bn.bnotify_error = _gf_false;
-    ret = changelog_barrier_pthread_init(this, priv);
-    if (ret)
-        goto cleanup_options;
-    LOCK_INIT(&priv->bflags.lock);
-    priv->bflags.barrier_ext = _gf_false;
 
-    /* Changelog barrier init */
-    INIT_LIST_HEAD(&priv->queue);
-    priv->barrier_enabled = _gf_false;
+    if (priv->active) {
+        ret = changelog_barrier_pthread_init(this, priv);
+        if (ret)
+            goto cleanup_options;
+        LOCK_INIT(&priv->bflags.lock);
+        priv->bflags.barrier_ext = _gf_false;
 
-    /* RPC ball rolling.. */
-    ret = changelog_init_rpc(this, priv);
-    if (ret)
-        goto cleanup_barrier;
+        /* Changelog barrier init */
+        INIT_LIST_HEAD(&priv->queue);
+        priv->barrier_enabled = _gf_false;
 
-    ret = changelog_init(this, priv);
-    if (ret)
-        goto cleanup_rpc;
+        /* RPC ball rolling.. */
+        ret = changelog_init_rpc(this, priv);
+        if (ret)
+            goto cleanup_barrier;
+
+        ret = changelog_init(this, priv);
+        if (ret)
+            goto cleanup_rpc;
+    }
 
     gf_msg_debug(this->name, 0, "changelog translator loaded");
 
@@ -2806,7 +2828,7 @@ fini(xlator_t *this)
 
     priv = this->private;
 
-    if (priv) {
+    if (priv && priv->active) {
         /* terminate RPC server/threads */
         changelog_cleanup_rpc(this, priv);
 
@@ -2829,8 +2851,11 @@ fini(xlator_t *this)
         if (priv->htime_fd != -1) {
             sys_close(priv->htime_fd);
         }
-
         /* finally, dealloac private variable */
+        GF_FREE(priv);
+    } else {
+        /* deallocate mempool */
+        mem_pool_destroy(this->local_pool);
         GF_FREE(priv);
     }
 

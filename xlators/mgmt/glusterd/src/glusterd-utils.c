@@ -6067,8 +6067,9 @@ search_brick_path_from_proc(pid_t brick_pid, char *brickpath)
             continue;
 
         /* check for non numerical descriptors */
-        if (!strtol(dp->d_name, (char **)NULL, 10))
+        /* if (!strtol(dp->d_name, (char **)NULL, 10))
             continue;
+        */
 
         len = readlinkat(fd, dp->d_name, path, sizeof(path) - 1);
         /* TODO: handle len == -1 -> error condition in readlinkat */
