@@ -199,7 +199,7 @@ struct posix_private {
     /* node-uuid in pathinfo xattr */
     gf_boolean_t node_uuid_pathinfo;
 
-    pthread_t fsyncer;
+    struct gf_tw_timer_list *fsyncer;
     struct list_head fsyncs;
     pthread_mutex_t fsync_mutex;
     pthread_cond_t fsync_cond;
@@ -368,8 +368,9 @@ posix_spawn_health_check_thread(xlator_t *this);
 void
 posix_spawn_disk_space_check_thread(xlator_t *this);
 
-void *
-posix_fsyncer(void *);
+void
+posix_fsyncer_timer_start (xlator_t *this);
+
 int
 posix_get_ancestry(xlator_t *this, inode_t *leaf_inode, gf_dirent_t *head,
                    char **path, int type, int32_t *op_errno, dict_t *xdata);

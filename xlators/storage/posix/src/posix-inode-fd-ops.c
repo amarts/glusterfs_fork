@@ -2400,7 +2400,6 @@ posix_batch_fsync(call_frame_t *frame, xlator_t *this, fd_t *fd, int datasync,
     {
         list_add_tail(&stub->list, &priv->fsyncs);
         priv->fsync_queue_count++;
-        pthread_cond_signal(&priv->fsync_cond);
     }
     pthread_mutex_unlock(&priv->fsync_mutex);
 
@@ -2440,7 +2439,8 @@ posix_fsync(call_frame_t *frame, xlator_t *this, fd_t *fd, int32_t datasync,
 
     priv = this->private;
 
-    if (priv->batch_fsync_mode && xdata && dict_get(xdata, "batch-fsync")) {
+    if (priv->batch_fsync_mode && xdata && dict_get(xdata, "batch-fsync")
+        && (priv->batch_fsync_delay_usec > 0)) {
         posix_batch_fsync(frame, this, fd, datasync, xdata);
         return 0;
     }

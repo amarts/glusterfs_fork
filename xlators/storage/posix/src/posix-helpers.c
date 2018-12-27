@@ -2350,9 +2350,6 @@ posix_fsyncer_pick(xlator_t *this, struct list_head *head)
     priv = this->private;
     pthread_mutex_lock(&priv->fsync_mutex);
     {
-        while (list_empty(&priv->fsyncs))
-            pthread_cond_wait(&priv->fsync_cond, &priv->fsync_mutex);
-
         count = priv->fsync_queue_count;
         priv->fsync_queue_count = 0;
         list_splice_init(&priv->fsyncs, head);
@@ -2425,8 +2422,48 @@ posix_fsyncer_syncfs(xlator_t *this, struct list_head *head)
 #endif
 }
 
-void *
-posix_fsyncer(void *d)
+void
+posix_fsyncer_task_initator (struct gf_tw_timer_list *timer,
+                             void *data, unsigned long calltime);
+
+static void
+__posix_fsyncer_timer_start (xlator_t *this)
+{
+        struct posix_private *priv = NULL;
+        struct gf_tw_timer_list *timer = NULL;
+
+        priv = this->private;
+        timer = priv->fsyncer;
+
+        INIT_LIST_HEAD (&timer->entry);
+        timer->expires = priv->batch_fsync_delay_usec;
+        timer->function = posix_fsyncer_task_initator;
+        timer->data = this;
+        gf_tw_add_timer (this->ctx->tw->timer_wheel, timer);
+
+        return;
+}
+
+static int
+posix_fsyncer_task_done (int ret, call_frame_t *frame, void *data)
+{
+        xlator_t             *this = NULL;
+        struct posix_private *priv = NULL;
+
+        this = data;
+        priv = this->private;
+
+        LOCK (&priv->lock);
+        {
+                __posix_fsyncer_timer_start (this);
+        }
+        UNLOCK (&priv->lock);
+
+        return 0;
+}
+
+static int
+posix_fsyncer_task (void *d)
 {
     xlator_t *this = d;
     struct posix_private *priv = NULL;
@@ -2438,43 +2475,89 @@ posix_fsyncer(void *d)
 
     priv = this->private;
 
-    for (;;) {
-        INIT_LIST_HEAD(&list);
+        INIT_LIST_HEAD (&list);
 
-        count = posix_fsyncer_pick(this, &list);
+        count = posix_fsyncer_pick (this, &list);
+        if (count == 0)
+                goto out;
 
-        usleep(priv->batch_fsync_delay_usec);
-
-        gf_msg_debug(this->name, 0, "picked %d fsyncs", count);
+        gf_msg_debug (this->name, 0,
+                        "picked %d fsyncs", count);
 
         switch (priv->batch_fsync_mode) {
-            case BATCH_NONE:
-            case BATCH_REVERSE_FSYNC:
-                break;
-            case BATCH_SYNCFS:
-            case BATCH_SYNCFS_SINGLE_FSYNC:
-            case BATCH_SYNCFS_REVERSE_FSYNC:
-                posix_fsyncer_syncfs(this, &list);
-                break;
+                case BATCH_NONE:
+                case BATCH_REVERSE_FSYNC:
+                        break;
+                case BATCH_SYNCFS:
+                case BATCH_SYNCFS_SINGLE_FSYNC:
+                case BATCH_SYNCFS_REVERSE_FSYNC:
+                        posix_fsyncer_syncfs (this, &list);
+                        break;
         }
 
         if (priv->batch_fsync_mode == BATCH_SYNCFS)
-            do_fsync = _gf_false;
-        else
-            do_fsync = _gf_true;
-
-        list_for_each_entry_safe_reverse(stub, tmp, &list, list)
-        {
-            list_del_init(&stub->list);
-
-            posix_fsyncer_process(this, stub, do_fsync);
-
-            if (priv->batch_fsync_mode == BATCH_SYNCFS_SINGLE_FSYNC)
                 do_fsync = _gf_false;
+        else
+                do_fsync = _gf_true;
+
+        list_for_each_entry_safe_reverse (stub, tmp, &list, list) {
+                list_del_init (&stub->list);
+
+                posix_fsyncer_process (this, stub, do_fsync);
+
+                if (priv->batch_fsync_mode == BATCH_SYNCFS_SINGLE_FSYNC)
+                        do_fsync = _gf_false;
         }
-    }
+
+out:
+        return 0;
 }
 
+void
+posix_fsyncer_task_initator (struct gf_tw_timer_list *timer,
+                             void *data, unsigned long calltime)
+{
+        xlator_t             *this = NULL;
+        int                   ret  = 0;
+
+        this = data;
+
+        ret = synctask_new (this->ctx->env, posix_fsyncer_task,
+                            posix_fsyncer_task_done, NULL, this);
+        if (ret < 0) {
+                gf_msg (this->name, GF_LOG_ERROR, errno,
+                        P_MSG_THREAD_FAILED, "spawning fsyncer "
+                        "task failed");
+        }
+
+        return;
+}
+
+void
+posix_fsyncer_timer_start (xlator_t *this)
+{
+        struct posix_private *priv = NULL;
+        struct gf_tw_timer_list *timer = NULL;
+
+        priv = this->private;
+
+        LOCK (&priv->lock);
+        {
+                if (!priv->fsyncer) {
+                        timer = GF_CALLOC (1, sizeof (struct gf_tw_timer_list),
+                                           gf_common_mt_tw_timer_list);
+                        if (!timer) {
+                                goto unlock;
+                        }
+                        priv->fsyncer = timer;
+                        __posix_fsyncer_timer_start (this);
+                }
+        }
+unlock:
+        UNLOCK (&priv->lock);
+
+        return;
+}
 /**
  * TODO: move fd/inode interfaces into a single routine..
  */

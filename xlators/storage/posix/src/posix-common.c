@@ -975,15 +975,7 @@ posix_init(xlator_t *this)
     pthread_cond_init(&_private->fsync_cond, NULL);
     INIT_LIST_HEAD(&_private->fsyncs);
     posix_spawn_ctx_janitor_thread(this);
-
-    ret = gf_thread_create(&_private->fsyncer, NULL, posix_fsyncer, this,
-                           "posixfsy");
-    if (ret) {
-        gf_msg(this->name, GF_LOG_ERROR, errno,
-               P_MSG_FSYNCER_THREAD_CREATE_FAILED,
-               "fsyncer thread creation failed");
-        goto out;
-    }
+    posix_fsyncer_timer_start(this);
 
     GF_OPTION_INIT("batch-fsync-mode", batch_fsync_mode_str, str, out);
 
@@ -1101,8 +1093,15 @@ posix_fini(xlator_t *this)
         priv->janitor = NULL;
     }
     if (priv->fsyncer) {
-        (void)gf_thread_cleanup_xint(priv->fsyncer);
-        priv->fsyncer = 0;
+      /*TODO: Make sure the synctask is also complete */
+      ret = gf_tw_del_timer (this->ctx->tw->timer_wheel,
+                             priv->fsyncer);
+      if (ret < 0) {
+        gf_msg (this->name, GF_LOG_ERROR, errno,
+                P_MSG_TIMER_DELETE_FAILED, "Failed to delete "
+                "fsyncer timer");
+      }
+      priv->fsyncer = 0;
     }
     /*unlock brick dir*/
     if (priv->mount_lock)
