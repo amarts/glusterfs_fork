@@ -86,7 +86,8 @@ for i in $(seq 1 $NUM_VOLS); do
         # Unmounting to reduce memory footprint on regression hosts
         mnt_point=$(get_mount_point $i)
         EXPECT_WITHIN $UMOUNT_TIMEOUT "Y" force_umount $mnt_point
-        pmap -x `pgrep glusterfsd` | grep total
+        echo "Memory Used after $i volumes : $(pmap -x `pgrep glusterfsd` | grep total)"
+        echo "Thread Count after $i volumes: $(ps -T -p `pgrep glusterfsd` | wc -l)"
 done
 
 # Kill glusterd, and wait a bit for all traces to disappear.
