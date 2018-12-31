@@ -351,7 +351,8 @@ int
 glusterd_clear_pending_nodes(struct cds_list_head *list);
 int32_t
 glusterd_brick_connect(glusterd_volinfo_t *volinfo,
-                       glusterd_brickinfo_t *brickinfo, char *socketpath);
+                       glusterd_brickinfo_t *brickinfo, char *socketpath,
+                       glusterd_brickinfo_t *rpc_brick);
 int32_t
 glusterd_brick_disconnect(glusterd_brickinfo_t *brickinfo);
 int32_t
