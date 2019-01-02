@@ -1774,6 +1774,7 @@ glusterfs_ctx_defaults_init(glusterfs_ctx_t *ctx)
     pthread_mutex_init(&ctx->notify_lock, NULL);
     pthread_mutex_init(&ctx->cleanup_lock, NULL);
     pthread_cond_init(&ctx->notify_cond, NULL);
+    pthread_mutex_init(&ctx->conf_lock, NULL);
 
     ctx->clienttable = gf_clienttable_alloc();
     if (!ctx->clienttable)

@@ -28,7 +28,7 @@ syncopctx_setfsuid(void *uid)
 
     /* alloc for this thread the first time */
     if (!opctx) {
-        opctx = GF_CALLOC(1, sizeof(*opctx), gf_common_mt_syncopctx);
+        opctx = GF_MALLOC(sizeof(*opctx), gf_common_mt_syncopctx);
         if (!opctx) {
             ret = -1;
             goto out;
@@ -68,7 +68,7 @@ syncopctx_setfsgid(void *gid)
 
     /* alloc for this thread the first time */
     if (!opctx) {
-        opctx = GF_CALLOC(1, sizeof(*opctx), gf_common_mt_syncopctx);
+        opctx = GF_MALLOC(sizeof(*opctx), gf_common_mt_syncopctx);
         if (!opctx) {
             ret = -1;
             goto out;
@@ -109,7 +109,7 @@ syncopctx_setfsgroups(int count, const void *groups)
 
     /* alloc for this thread the first time */
     if (!opctx) {
-        opctx = GF_CALLOC(1, sizeof(*opctx), gf_common_mt_syncopctx);
+        opctx = GF_MALLOC(sizeof(*opctx), gf_common_mt_syncopctx);
         if (!opctx) {
             ret = -1;
             goto out;
@@ -138,7 +138,7 @@ syncopctx_setfsgroups(int count, const void *groups)
                 goto out;
             }
         } else {
-            tmpgroups = GF_CALLOC(count, sizeof(gid_t), gf_common_mt_syncopctx);
+            tmpgroups = GF_MALLOC((count * sizeof(gid_t)), gf_common_mt_syncopctx);
             if (tmpgroups == NULL) {
                 opctx->grpsize = 0;
                 ret = -1;
@@ -179,7 +179,7 @@ syncopctx_setfspid(void *pid)
 
     /* alloc for this thread the first time */
     if (!opctx) {
-        opctx = GF_CALLOC(1, sizeof(*opctx), gf_common_mt_syncopctx);
+        opctx = GF_MALLOC(sizeof(*opctx), gf_common_mt_syncopctx);
         if (!opctx) {
             ret = -1;
             goto out;
@@ -219,7 +219,7 @@ syncopctx_setfslkowner(gf_lkowner_t *lk_owner)
 
     /* alloc for this thread the first time */
     if (!opctx) {
-        opctx = GF_CALLOC(1, sizeof(*opctx), gf_common_mt_syncopctx);
+        opctx = GF_MALLOC(sizeof(*opctx), gf_common_mt_syncopctx);
         if (!opctx) {
             ret = -1;
             goto out;
@@ -449,7 +449,7 @@ synctask_create(struct syncenv *env, size_t stacksize, synctask_fn_t fn,
     if (destroymode)
         return NULL;
 
-    newtask = GF_CALLOC(1, sizeof(*newtask), gf_common_mt_synctask);
+    newtask = GF_MALLOC(sizeof(*newtask), gf_common_mt_synctask);
     if (!newtask)
         return NULL;
 
@@ -485,10 +485,10 @@ synctask_create(struct syncenv *env, size_t stacksize, synctask_fn_t fn,
     }
 
     if (stacksize <= 0) {
-        newtask->stack = GF_CALLOC(1, env->stacksize, gf_common_mt_syncstack);
+        newtask->stack = GF_MALLOC(env->stacksize, gf_common_mt_syncstack);
         newtask->ctx.uc_stack.ss_size = env->stacksize;
     } else {
-        newtask->stack = GF_CALLOC(1, stacksize, gf_common_mt_syncstack);
+        newtask->stack = GF_MALLOC(stacksize, gf_common_mt_syncstack);
         newtask->ctx.uc_stack.ss_size = stacksize;
     }
 
@@ -796,7 +796,7 @@ syncenv_new(size_t stacksize, int procmin, int procmax)
     if (procmin > procmax)
         return NULL;
 
-    newenv = GF_CALLOC(1, sizeof(*newenv), gf_common_mt_syncenv);
+    newenv = GF_MALLOC(sizeof(*newenv), gf_common_mt_syncenv);
 
     if (!newenv)
         return NULL;
@@ -815,7 +815,7 @@ syncenv_new(size_t stacksize, int procmin, int procmax)
 
     for (i = 0; i < newenv->procmin; i++) {
         newenv->proc[i].env = newenv;
-        snprintf(thread_name, sizeof(thread_name), "%s%03hx", "sproc",
+        snprintf(thread_name, sizeof(thread_name), "%s%03hx", "sprc-",
                  (newenv->procs & 0x3ff));
         ret = gf_thread_create(&newenv->proc[i].processor, NULL,
                                syncenv_processor, &newenv->proc[i],
@@ -3259,7 +3259,7 @@ syncop_getactivelk_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     if (op_ret > 0) {
         list_for_each_entry(tmp, &locklist->list, list)
         {
-            entry = GF_CALLOC(1, sizeof(lock_migration_info_t),
+            entry = GF_MALLOC(sizeof(lock_migration_info_t),
                               gf_common_mt_char);
 
             if (!entry) {

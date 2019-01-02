@@ -118,6 +118,7 @@
 #define GF_XATTR_USER_PATHINFO_KEY "glusterfs.pathinfo"
 #define GF_INTERNAL_IGNORE_DEEM_STATFS "ignore-deem-statfs"
 #define GF_XATTR_IOSTATS_DUMP_KEY "trusted.io-stats-dump"
+#define GLUSTER_BRICKMUX_LIMIT_KEY 250
 
 #define GF_READDIR_SKIP_DIRS "readdir-filter-directories"
 #define GF_MDC_LOADED_KEY_NAMES "glusterfs.mdc.loaded.key.names"
@@ -727,6 +728,10 @@ struct _glusterfs_ctx {
     pthread_mutex_t janitor_lock;
     pthread_t janitor;
     void *iot; /* refcounted io-threads */
+
+    void *posix_private[GLUSTER_BRICKMUX_LIMIT_KEY];
+    pthread_mutex_t conf_lock;
+    pthread_t health_check;  
 };
 typedef struct _glusterfs_ctx glusterfs_ctx_t;
 

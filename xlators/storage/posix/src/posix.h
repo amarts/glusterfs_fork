@@ -256,6 +256,9 @@ struct posix_private {
 
     gf_boolean_t fips_mode_rchecksum;
     gf_boolean_t ctime;
+
+    int32_t ctx_index;
+    xlator_t *this;
 };
 
 typedef struct {
@@ -362,8 +365,8 @@ posix_special_xattr(char **pattern, char *key);
 void
 __posix_fd_set_odirect(fd_t *fd, struct posix_fd *pfd, int opflags,
                        off_t offset, size_t size);
-void
-posix_spawn_health_check_thread(xlator_t *this);
+int
+glusterfs_ctx_spawn_health_check_thread(xlator_t *this);
 
 void
 posix_spawn_disk_space_check_thread(xlator_t *this);

@@ -352,7 +352,6 @@ posix_reconfigure(xlator_t *this, dict_t *options)
                      options, uint32, out);
     GF_OPTION_RECONF("health-check-timeout", priv->health_check_timeout,
                      options, uint32, out);
-    posix_spawn_health_check_thread(this);
 
     GF_OPTION_RECONF("shared-brick-count", priv->shared_brick_count, options,
                      int32, out);
@@ -543,6 +542,9 @@ posix_init(xlator_t *this)
     int force_directory = -1;
     int create_mask = -1;
     int create_directory_mask = -1;
+    struct posix_private *tmp_private = NULL;
+    glusterfs_ctx_t *ctx = NULL;
+    int i = 0;
 
     dir_data = dict_get(this->options, "directory");
 
@@ -900,6 +902,28 @@ posix_init(xlator_t *this)
     }
 
     this->private = (void *)_private;
+    _private->this = this;
+    ctx = this->ctx;
+    _private->ctx_index = -1;
+    pthread_mutex_lock(&ctx->conf_lock);
+    {
+        for (i = 0; i < GLUSTER_BRICKMUX_LIMIT_KEY; i++) {
+            tmp_private = ctx->posix_private[i];
+            if (!tmp_private) {
+                ctx->posix_private[i] = tmp_private;
+                _private->ctx_index = i;
+                break;
+            }
+        }
+    }
+    pthread_mutex_unlock(&ctx->conf_lock);
+
+    if (_private->ctx_index == -1) {
+        ret = -1;
+        gf_log(this->name, GF_LOG_ERROR,
+               "No empty index found on ctx to save posix_private ptr");
+        goto out;
+    }
 
     op_ret = posix_handle_init(this);
     if (op_ret == -1) {
@@ -961,13 +985,19 @@ posix_init(xlator_t *this)
     if (_private->disk_reserve)
         posix_spawn_disk_space_check_thread(this);
 
-    _private->health_check_active = _gf_false;
+    _private->health_check_active = _gf_true;
     GF_OPTION_INIT("health-check-interval", _private->health_check_interval,
                    uint32, out);
     GF_OPTION_INIT("health-check-timeout", _private->health_check_timeout,
                    uint32, out);
-    if (_private->health_check_interval)
-        posix_spawn_health_check_thread(this);
+    if (_private->health_check_interval) {
+        ret = glusterfs_ctx_spawn_health_check_thread(this);
+        if (ret) {
+            gf_log(this->name, GF_LOG_ERROR,
+                   "ctx spawn health check thread creation failed");
+            goto out;
+        }
+    }
 
     posix_janitor_timer_start(this);
 
@@ -1061,22 +1091,24 @@ void
 posix_fini(xlator_t *this)
 {
     struct posix_private *priv = this->private;
-    gf_boolean_t health_check = _gf_false;
     int ret = 0;
+    glusterfs_ctx_t *ctx = NULL;
 
-    if (!priv)
+    ctx = this->ctx;
+
+    if (!priv || !ctx)
         return;
-    LOCK(&priv->lock);
+
+    pthread_mutex_lock(&ctx->conf_lock);
     {
-        health_check = priv->health_check_active;
+        if (priv->ctx_index >= 0) {
+            if (ctx->posix_private[priv->ctx_index])
+                ctx->posix_private[priv->ctx_index] = 0;
+            priv->ctx_index = -1;
+        }
         priv->health_check_active = _gf_false;
     }
-    UNLOCK(&priv->lock);
-
-    if (health_check) {
-        (void)gf_thread_cleanup_xint(priv->health_check);
-        priv->health_check = 0;
-    }
+    pthread_mutex_unlock(&ctx->conf_lock);
 
     if (priv->disk_space_check) {
         priv->disk_space_check_active = _gf_false;

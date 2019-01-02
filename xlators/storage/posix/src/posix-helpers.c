@@ -2073,7 +2073,7 @@ out:
 }
 
 static void *
-posix_health_check_thread_proc(void *data)
+glusterfs_ctx_health_check_thread_proc(void *data)
 {
     xlator_t *this = NULL;
     struct posix_private *priv = NULL;
@@ -2085,61 +2085,41 @@ posix_health_check_thread_proc(void *data)
     int count = 0;
     gf_boolean_t victim_found = _gf_false;
     glusterfs_ctx_t *ctx = NULL;
+    int i = 0;
 
-    this = data;
-    priv = this->private;
-    ctx = THIS->ctx;
+    ctx = data;
+    interval = 30;
 
-    /* prevent races when the interval is updated */
-    interval = priv->health_check_interval;
-    if (interval == 0)
+    if (!ctx)
         goto out;
-
-    gf_msg_debug(this->name, 0,
-                 "health-check thread started, "
-                 "interval = %d seconds",
-                 interval);
+start:
     while (1) {
-        /* aborting sleep() is a request to exit this thread, sleep()
-         * will normally not return when cancelled */
-        ret = sleep(interval);
-        if (ret > 0)
-            break;
-        /* prevent thread errors while doing the health-check(s) */
-        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
-
-        /* Do the health-check.*/
-        ret = posix_fs_health_check(this);
-        if (ret < 0 && priv->health_check_active)
-            goto abort;
-        if (!priv->health_check_active)
-            goto out;
-        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+        pthread_mutex_lock(&ctx->conf_lock);
+        {
+            for (i = 0; i < GLUSTER_BRICKMUX_LIMIT_KEY; i++) {
+                priv = ctx->posix_private[i];
+                if (!priv || !priv->health_check_active)
+                    continue;
+                /* Do the health-check.*/
+                this = priv->this;
+                ret = posix_fs_health_check(priv->this);
+                if (ret < 0 && priv->health_check_active) {
+                    priv->health_check_active = _gf_false;
+                    pthread_mutex_unlock(&ctx->conf_lock);
+                    goto abort;
+                }
+            }
+        }
+        pthread_mutex_unlock(&ctx->conf_lock);
+        sleep(interval);
     }
-
-out:
-    gf_msg_debug(this->name, 0, "health-check thread exiting");
-
-    LOCK(&priv->lock);
-    {
-        priv->health_check_active = _gf_false;
-    }
-    UNLOCK(&priv->lock);
-
-    return NULL;
-
 abort:
-    LOCK(&priv->lock);
-    {
-        priv->health_check_active = _gf_false;
-    }
-    UNLOCK(&priv->lock);
 
     /* health-check failed */
     gf_msg(this->name, GF_LOG_EMERG, 0, P_MSG_HEALTHCHECK_FAILED,
            "health-check failed, going down");
 
-    xlator_notify(this->parents->xlator, GF_EVENT_CHILD_DOWN, this);
+    xlator_notify(this->parents->xlator, GF_EVENT_CHILD_DOWN, priv->this);
 
     /* Below code is use to ensure if brick multiplexing is enabled if
        count is more than 1 it means brick mux has enabled
@@ -2190,44 +2170,30 @@ abort:
         }
     }
 
+    goto start;
+
+out:
     return NULL;
 }
 
-void
-posix_spawn_health_check_thread(xlator_t *xl)
+int
+glusterfs_ctx_spawn_health_check_thread(xlator_t *xl)
 {
-    struct posix_private *priv = NULL;
-    int ret = -1;
+    int ret = 0;
+    glusterfs_ctx_t *ctx = NULL;
 
-    priv = xl->private;
+    ctx = xl->ctx;
+    if (ctx->health_check)
+        return ret;
+    ret = gf_thread_create(&ctx->health_check, NULL,
+                           glusterfs_ctx_health_check_thread_proc, ctx,
+                           "ctxhealth");
+    if (ret < 0) {
+        gf_msg(xl->name, GF_LOG_ERROR, errno, P_MSG_HEALTHCHECK_FAILED,
+               "unable to setup glusterfs_ctx health-check thread");
+     }
 
-    LOCK(&priv->lock);
-    {
-        /* cancel the running thread  */
-        if (priv->health_check_active == _gf_true) {
-            pthread_cancel(priv->health_check);
-            priv->health_check_active = _gf_false;
-        }
-
-        /* prevent scheduling a check in a tight loop */
-        if (priv->health_check_interval == 0)
-            goto unlock;
-
-        /*
-        ret = gf_thread_create(&priv->health_check, NULL,
-                               posix_health_check_thread_proc, xl, "posixhc");
-        if (ret < 0) {
-            priv->health_check_interval = 0;
-            priv->health_check_active = _gf_false;
-            gf_msg(xl->name, GF_LOG_ERROR, errno, P_MSG_HEALTHCHECK_FAILED,
-                   "unable to setup health-check thread");
-            goto unlock;
-        }
-        */
-        priv->health_check_active = _gf_true;
-    }
-unlock:
-    UNLOCK(&priv->lock);
+    return ret;
 }
 
 void
