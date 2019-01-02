@@ -91,11 +91,11 @@ send_brick_req(xlator_t *this, struct rpc_clnt *rpc, char *path, int op)
 
     iov.iov_len = ret;
 
-    for (i = 0; i < 60; ++i) {
+    for (i = 0; i < 600; ++i) {
         if (rpc->conn.connected) {
             break;
         }
-        sleep(1);
+        usleep(100000);
     }
 
     /* Send the msg */

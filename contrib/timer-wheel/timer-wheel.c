@@ -159,7 +159,11 @@ run_timers (struct tvec_base *base)
                         data = timer->data;
 
                         __gf_tw_detach_timer (timer);
-                        fn (timer, data, call_time);
+                        pthread_spin_unlock (&base->lock);
+                        {
+                            fn (timer, data, call_time);
+                        }
+                        pthread_spin_lock (&base->lock);
                 }
         }
         pthread_spin_unlock (&base->lock);
