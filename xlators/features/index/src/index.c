@@ -2446,7 +2446,7 @@ init(xlator_t *this)
     priv->down = _gf_false;
 
     priv->curr_count = 0;
-    ret = gf_thread_create(&priv->thread, &w_attr, index_worker, this,
+    /*    ret = gf_thread_create(&priv->thread, &w_attr, index_worker, this,
                            "idxwrker");
     if (ret) {
         gf_msg(this->name, GF_LOG_WARNING, ret,
@@ -2454,6 +2454,7 @@ init(xlator_t *this)
                "Failed to create worker thread, aborting");
         goto out;
     }
+    */
     priv->curr_count++;
     ret = 0;
 out:

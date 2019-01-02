@@ -2213,6 +2213,7 @@ posix_spawn_health_check_thread(xlator_t *xl)
         if (priv->health_check_interval == 0)
             goto unlock;
 
+        /*
         ret = gf_thread_create(&priv->health_check, NULL,
                                posix_health_check_thread_proc, xl, "posixhc");
         if (ret < 0) {
@@ -2222,7 +2223,7 @@ posix_spawn_health_check_thread(xlator_t *xl)
                    "unable to setup health-check thread");
             goto unlock;
         }
-
+        */
         priv->health_check_active = _gf_true;
     }
 unlock:
@@ -2324,7 +2325,7 @@ posix_spawn_disk_space_check_thread(xlator_t *xl)
             pthread_cancel(priv->disk_space_check);
             priv->disk_space_check_active = _gf_false;
         }
-
+        /*
         ret = gf_thread_create(&priv->disk_space_check, NULL,
                                posix_disk_space_check_thread_proc, xl,
                                "posix_reserve");
@@ -2334,7 +2335,7 @@ posix_spawn_disk_space_check_thread(xlator_t *xl)
                    "unable to setup disk space check thread");
             goto unlock;
         }
-
+        */
         priv->disk_space_check_active = _gf_true;
     }
 unlock:

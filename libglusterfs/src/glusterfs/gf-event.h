@@ -29,7 +29,7 @@ typedef int (*event_handler_t)(int fd, int idx, int gen, void *data,
 
 #define EVENT_EPOLL_TABLES 1024
 #define EVENT_EPOLL_SLOTS 1024
-#define EVENT_MAX_THREADS 1024
+#define EVENT_MAX_THREADS 4
 
 struct event_pool {
     struct event_ops *ops;

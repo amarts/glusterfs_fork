@@ -367,7 +367,7 @@ __gf_free(void *free_ptr)
 
 free:
 #ifdef DEBUG
-    __gf_mem_invalidate(ptr);
+    //__gf_mem_invalidate(ptr);
 #endif
 
     FREE(ptr);

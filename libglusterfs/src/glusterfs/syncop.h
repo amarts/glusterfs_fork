@@ -16,7 +16,7 @@
 #include <pthread.h>
 #include <ucontext.h>
 
-#define SYNCENV_PROC_MAX 16
+#define SYNCENV_PROC_MAX 4
 #define SYNCENV_PROC_MIN 2
 #define SYNCPROC_IDLE_TIME 600
 
