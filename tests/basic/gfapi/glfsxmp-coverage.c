@@ -1813,7 +1813,7 @@ main(int argc, char *argv[])
 
     //      ret = glfs_set_volfile_server (fs, "unix", "/tmp/gluster.sock", 0);
 
-    ret = glfs_set_logging(fs, "/dev/stderr", 7);
+    ret = glfs_set_logging(fs, "/tmp/testfile.log", 7);
     if (ret)
         fprintf(stderr, "glfs_set_logging failed\n");
 
@@ -1838,7 +1838,7 @@ main(int argc, char *argv[])
     if (ret)
         fprintf(stderr, "glfs_set_volfile_server failed\n");
 
-    ret = glfs_set_logging(fs2, "/dev/stderr", 7);
+    ret = glfs_set_logging(fs2, "/tmp/test-file.2.log", 7);
     if (ret)
         fprintf(stderr, "glfs_set_logging failed\n");
 
@@ -1864,6 +1864,9 @@ main(int argc, char *argv[])
 
     /* Test some extra apis */
     test_write_apis(fs);
+
+    printf("Press <Enter> after you have taken statedump of process....");
+    getchar();
 
     glfs_statvfs(fs, "/", &sfs);
 
