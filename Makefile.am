@@ -14,11 +14,11 @@ EXTRA_DIST = autogen.sh \
 	$(shell find $(top_srcdir)/tests -type f -print)
 
 
-SUBDIRS = $(ARGP_STANDALONE_DIR) rpc/xdr/gen libglusterfs rpc api xlators libglusterd \
+SUBDIRS = $(ARGP_STANDALONE_DIR) libglusterfs rpc api xlators libglusterd \
 	glusterfsd $(FUSERMOUNT_SUBDIR) doc extras ${CLI_DIR} heal \
 	@SYNCDAEMON_SUBDIR@ @UMOUNTD_SUBDIR@ tools events
 
-DIST_SUBDIRS = $(ARGP_STANDALONE_DIR) rpc/xdr/gen libglusterfs rpc api xlators \
+DIST_SUBDIRS = $(ARGP_STANDALONE_DIR) libglusterfs rpc api xlators \
 	glusterfsd $(FUSERMOUNT_SUBDIR) doc extras cli heal libglusterd \
 	@SYNCDAEMON_SUBDIR@ @UMOUNTD_SUBDIR@ tools events
 

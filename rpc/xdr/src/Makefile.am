@@ -84,4 +84,3 @@ $(XDRHEADERS): $(XDRGENFILES)
 .PHONY : $(XDRGENFILES)
 $(XDRGENFILES):
 	@if [ ! -e $@ ]; then ln -s $(xdrsrc)/$@ . ; fi;
-
