@@ -45,13 +45,11 @@
 #include "glusterfs/stack.h"
 #include "glusterfs/lkowner.h"
 #include "glusterfs/syscall.h"
-#include "cli1-xdr.h"
 #include "glusterfs/globals.h"
 #define XXH_INLINE_ALL
 #include "xxhash.h"
 #include <ifaddrs.h>
 #include "glusterfs/libglusterfs-messages.h"
-#include "protocol-common.h"
 #ifdef __FreeBSD__
 #include <pthread_np.h>
 #undef BIT_SET
@@ -2987,10 +2985,11 @@ out:
 int
 get_vol_type(int type, int dist_count, int brick_count)
 {
+#if 0 // TODO
     if ((type != GF_CLUSTER_TYPE_TIER) && (type > 0) &&
         (dist_count < brick_count))
         type = type + GF_CLUSTER_TYPE_MAX - 1;
-
+#endif
     return type;
 }
 
@@ -5252,8 +5251,9 @@ glusterfs_compute_sha256(const unsigned char *content, size_t size,
 }
 
 char *
-get_struct_variable(int mem_num, gf_gsync_status_t *sts_val)
+get_struct_variable(int mem_num, int *sts_val)
 {
+#if 0
     switch (mem_num) {
         case 0:
             return (sts_val->node);
@@ -5302,7 +5302,7 @@ get_struct_variable(int mem_num, gf_gsync_status_t *sts_val)
         default:
             goto out;
     }
-
+#endif
 out:
     return NULL;
 }

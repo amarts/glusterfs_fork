@@ -42,7 +42,6 @@ trap(void);
 #include "glusterfs/compat-uuid.h"
 #include "glusterfs/iatt.h"
 #include "glusterfs/libglusterfs-messages.h"
-#include "protocol-common.h"
 
 #define STRINGIFY(val) #val
 #define TOSTRING(val) STRINGIFY(val)
@@ -1146,7 +1145,7 @@ int
 glusterfs_compute_sha256(const unsigned char *content, size_t size,
                          char *sha256_hash);
 char *
-get_struct_variable(int mem_num, gf_gsync_status_t *sts_val);
+get_struct_variable(int mem_num, int *sts_val);
 
 char *
 gf_strncpy(char *dest, const char *src, const size_t dest_size);

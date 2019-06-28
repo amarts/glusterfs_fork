@@ -13,7 +13,6 @@
 #include "glusterfs/statedump.h"
 #include "glusterfs/client_t.h"
 #include "glusterfs/list.h"
-#include "rpcsvc.h"
 #include "glusterfs/libglusterfs-messages.h"
 
 static int
@@ -146,7 +145,7 @@ gf_client_clienttable_destroy(clienttable_t *clienttable)
         GF_FREE(clienttable);
     }
 }
-
+#if 0
 /*
  * Increments ref.bind if the client is already present or creates a new
  * client with ref.bind = 1,ref.count = 1 it signifies that
@@ -274,7 +273,7 @@ unlock:
                          GF_ATOMIC_GET(client->count));
     return client;
 }
-
+#endif
 void
 gf_client_put(client_t *client, gf_boolean_t *detached)
 {
