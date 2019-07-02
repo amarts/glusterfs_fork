@@ -1566,6 +1566,18 @@ AC_SUBST(GLUSTERD_VOLFILE)
 AC_SUBST(GLUSTERFS_LIBEXECDIR)
 AC_SUBST(GLUSTERFSD_MISCDIR)
 
+# --enable-valgrind prevents calling dlclose(), this leaks memory
+BUILD_GLUSTERD="yes"
+AC_ARG_ENABLE([glusterd],
+              AC_HELP_STRING([--disable-glusterd],
+                             [disable glusterd from build.]))
+if test "x$enable_glusterd" = "xno"; then
+    BUILD_GLUSTERD="no"
+    AC_DEFINE(ONLY_FS_CODE, 1, [define if building only latest Filesystem code])   
+fi
+AM_CONDITIONAL([BUILD_GLUSTERD], [test x$BUILD_GLUSTERD = xyes])
+AC_SUBST(BUILD_GLUSTERD)
+
 dnl pkg-config versioning
 dnl
 dnl Once we released gluster-api.pc with version=7. Since then we undid the

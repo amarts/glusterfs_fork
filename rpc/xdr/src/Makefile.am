@@ -6,14 +6,20 @@ else
     NFS_EXTRA_XDRS = nlm4-xdr.x nsm-xdr.x acl3-xdr.x mount3udp.x
 endif
 
-XDRGENFILES = glusterfs3-xdr.x glusterfs4-xdr.x cli1-xdr.x \
-	rpc-common-xdr.x glusterd1-xdr.x changelog-xdr.x \
-	portmap-xdr.x ${NFS_XDRS}
+if BUILD_GLUSTERD
+   GLUSTERD_XDRS = cli1-xdr.x glusterd1-xdr.x
+else
+   GLUSTERD_DIST_XDRS = cli1-xdr.x glusterd1-xdr.x
+endif
+
+
+XDRGENFILES = glusterfs3-xdr.x glusterfs4-xdr.x rpc-common-xdr.x \
+	changelog-xdr.x portmap-xdr.x ${NFS_XDRS} ${GLUSTERD_XDRS}
 
 XDRHEADERS = $(XDRGENFILES:.x=.h)
 XDRSOURCES = $(XDRGENFILES:.x=.c)
 
-EXTRA_DIST = $(XDRGENFILES) libgfxdr.sym ${NFS_EXTRA_XDRS}
+EXTRA_DIST = $(XDRGENFILES) libgfxdr.sym ${NFS_EXTRA_XDRS} ${GLUSTERD_DIST_XDRS}
 
 lib_LTLIBRARIES = libgfxdr.la
 

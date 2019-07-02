@@ -2,9 +2,12 @@ if BUILD_GNFS
     NFS_XDRS = nlm4-xdr.x nsm-xdr.x acl3-xdr.x mount3udp.x
 endif
 
-XDRGENFILES = glusterfs3-xdr.x glusterfs4-xdr.x cli1-xdr.x \
-	rpc-common-xdr.x glusterd1-xdr.x portmap-xdr.x \
-	changelog-xdr.x ${NFS_XDRS}
+if BUILD_GLUSTERD
+   GLUSTERD_XDRS = cli1-xdr.x glusterd1-xdr.x
+endif
+
+XDRGENFILES = glusterfs3-xdr.x glusterfs4-xdr.x rpc-common-xdr.x \
+	portmap-xdr.x changelog-xdr.x ${NFS_XDRS} ${GLUSTERD_XDRS}
 
 XDRHEADERS = $(XDRGENFILES:.x=.h)
 XDRSOURCES = $(XDRGENFILES:.x=.c)

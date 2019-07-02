@@ -1,5 +1,9 @@
 SOURCES = site.h
 
+if BUILD_GLUSTERD
+  CLI_DIR = cli
+endif
+
 EXTRA_DIST = autogen.sh \
 	COPYING-GPLV2 COPYING-LGPLV3 COMMITMENT \
 	INSTALL README.md AUTHORS THANKS NEWS \
@@ -10,6 +14,10 @@ EXTRA_DIST = autogen.sh \
 	$(shell find $(top_srcdir)/tests -type f -print)
 
 SUBDIRS = $(ARGP_STANDALONE_DIR) rpc/xdr/gen libglusterfs rpc api xlators \
+	glusterfsd $(FUSERMOUNT_SUBDIR) doc extras ${CLI_DIR} heal \
+	@SYNCDAEMON_SUBDIR@ @UMOUNTD_SUBDIR@ tools events
+
+DIST_SUBDIRS = $(ARGP_STANDALONE_DIR) rpc/xdr/gen libglusterfs rpc api xlators \
 	glusterfsd $(FUSERMOUNT_SUBDIR) doc extras cli heal \
 	@SYNCDAEMON_SUBDIR@ @UMOUNTD_SUBDIR@ tools events
 
