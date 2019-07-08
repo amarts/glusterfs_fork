@@ -78,12 +78,6 @@ typedef struct clienttable clienttable_t;
  */
 #define GF_CLIENTENTRY_ALLOCATED -2
 
-struct rpcsvc_auth_data;
-
-client_t *
-gf_client_get(xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
-              char *subdir_mount);
-
 void
 gf_client_put(client_t *client, gf_boolean_t *detached);
 
@@ -137,5 +131,8 @@ gf_client_dump_inodes(xlator_t *this);
 
 int
 gf_client_disconnect(client_t *client);
+
+int
+gf_client_clienttable_expand(clienttable_t *clienttable, uint32_t nr);
 
 #endif /* _CLIENT_T_H */

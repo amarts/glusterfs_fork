@@ -561,12 +561,12 @@ __gf_calloc
 gf_canonicalize_path
 gf_check_log_format
 gf_check_logger
+gf_client_clienttable_expand
 gf_client_disconnect
 gf_client_dump_fdtables
 gf_client_dump_fdtables_to_dict
 gf_client_dump_inodes
 gf_client_dump_inodes_to_dict
-gf_client_get
 gf_client_put
 gf_client_ref
 gf_clienttable_alloc

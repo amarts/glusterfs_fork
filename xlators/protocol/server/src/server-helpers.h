@@ -104,4 +104,8 @@ serialize_rsp_dirent_v2(gf_dirent_t *entries, gfx_readdir_rsp *rsp);
 int
 serialize_rsp_direntp_v2(gf_dirent_t *entries, gfx_readdirp_rsp *rsp);
 
+client_t *
+gf_client_get(xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
+              char *subdir_mount);
+
 #endif /* !_SERVER_HELPERS_H */

@@ -1534,3 +1534,134 @@ unserialize_req_locklist_v2(gfx_setactivelk_req *req,
 out:
     return ret;
 }
+
+/* FIXME: This comes here from client_t.c, as this includes XDR/RPC
+   part in it. We would prefer not to have RPC in libglusterfs code
+   base. Also this is the only module using this function */
+/*
+ * Increments ref.bind if the client is already present or creates a new
+ * client with ref.bind = 1,ref.count = 1 it signifies that
+ * as long as ref.bind is > 0 client should be alive.
+ */
+client_t *
+gf_client_get(xlator_t *this, struct rpcsvc_auth_data *cred, char *client_uid,
+              char *subdir_mount)
+{
+    client_t *client = NULL;
+    cliententry_t *cliententry = NULL;
+    clienttable_t *clienttable = NULL;
+    unsigned int i = 0;
+
+    if (this == NULL || client_uid == NULL) {
+        gf_msg_callingfn("client_t", GF_LOG_ERROR, EINVAL, LG_MSG_INVALID_ARG,
+                         "invalid argument");
+        errno = EINVAL;
+        return NULL;
+    }
+
+    clienttable = this->ctx->clienttable;
+
+    LOCK(&clienttable->lock);
+    {
+        for (; i < clienttable->max_clients; i++) {
+            client = clienttable->cliententries[i].client;
+            if (client == NULL)
+                continue;
+            /*
+             * look for matching client_uid, _and_
+             * if auth was used, matching auth flavour and data
+             */
+            if (strcmp(client_uid, client->client_uid) == 0 &&
+                (cred->flavour != AUTH_NONE &&
+                 (cred->flavour == client->auth.flavour &&
+                  (size_t)cred->datalen == client->auth.len &&
+                  memcmp(cred->authdata, client->auth.data, client->auth.len) ==
+                      0))) {
+                GF_ATOMIC_INC(client->bind);
+                goto unlock;
+            }
+        }
+
+        client = GF_CALLOC(1, sizeof(client_t), gf_common_mt_client_t);
+        if (client == NULL) {
+            errno = ENOMEM;
+            goto unlock;
+        }
+
+        client->this = this;
+        if (subdir_mount != NULL)
+            client->subdir_mount = gf_strdup(subdir_mount);
+
+        LOCK_INIT(&client->scratch_ctx.lock);
+
+        client->client_uid = gf_strdup(client_uid);
+        if (client->client_uid == NULL) {
+            GF_FREE(client);
+            client = NULL;
+            errno = ENOMEM;
+            goto unlock;
+        }
+        client->scratch_ctx.count = GF_CLIENTCTX_INITIAL_SIZE;
+        client->scratch_ctx.ctx = GF_CALLOC(GF_CLIENTCTX_INITIAL_SIZE,
+                                            sizeof(struct client_ctx),
+                                            gf_common_mt_client_ctx);
+        if (client->scratch_ctx.ctx == NULL) {
+            GF_FREE(client->client_uid);
+            GF_FREE(client);
+            client = NULL;
+            errno = ENOMEM;
+            goto unlock;
+        }
+
+        GF_ATOMIC_INIT(client->bind, 1);
+        GF_ATOMIC_INIT(client->count, 1);
+        GF_ATOMIC_INIT(client->fd_cnt, 0);
+
+        client->auth.flavour = cred->flavour;
+        if (cred->flavour != AUTH_NONE) {
+            client->auth.data = GF_MALLOC(cred->datalen, gf_common_mt_client_t);
+            if (client->auth.data == NULL) {
+                GF_FREE(client->scratch_ctx.ctx);
+                GF_FREE(client->client_uid);
+                GF_FREE(client);
+                client = NULL;
+                errno = ENOMEM;
+                goto unlock;
+            }
+            memcpy(client->auth.data, cred->authdata, cred->datalen);
+            client->auth.len = cred->datalen;
+        }
+
+        client->tbl_index = clienttable->first_free;
+        cliententry = &clienttable->cliententries[clienttable->first_free];
+        if (cliententry->next_free == GF_CLIENTTABLE_END) {
+            int result = gf_client_clienttable_expand(
+                clienttable,
+                clienttable->max_clients + GF_CLIENTTABLE_INITIAL_SIZE);
+            if (result != 0) {
+                GF_FREE(client->scratch_ctx.ctx);
+                GF_FREE(client->client_uid);
+                GF_FREE(client);
+                client = NULL;
+                errno = result;
+                goto unlock;
+            }
+            cliententry = &clienttable->cliententries[client->tbl_index];
+            cliententry->next_free = clienttable->first_free;
+        }
+        cliententry->client = client;
+        clienttable->first_free = cliententry->next_free;
+        cliententry->next_free = GF_CLIENTENTRY_ALLOCATED;
+    }
+unlock:
+    UNLOCK(&clienttable->lock);
+
+    if (client)
+        gf_msg_callingfn("client_t", GF_LOG_DEBUG, 0, LG_MSG_BIND_REF,
+                         "%s: bind_ref: %" GF_PRI_ATOMIC
+                         ", ref: "
+                         "%" GF_PRI_ATOMIC,
+                         client->client_uid, GF_ATOMIC_GET(client->bind),
+                         GF_ATOMIC_GET(client->count));
+    return client;
+}
