@@ -326,11 +326,29 @@ parent:
 out:
     if (!op_ret && !gfidless && gf_uuid_is_null(buf.ia_gfid)) {
         gf_msg(this->name, GF_LOG_ERROR, ENODATA, P_MSG_NULL_GFID,
-               "buf->ia_gfid is null for "
-               "%s",
-               (real_path) ? real_path : "");
+               "buf->ia_gfid is null for %s", (real_path) ? real_path : "");
         op_ret = -1;
         op_errno = ENODATA;
+    }
+
+    /* TODO: get the path */
+    //"resolve-lookup"
+    if ((op_ret == 0) && (loc->path[0] == '<') &&
+        dict_get(xdata, "resolve-lookup")) {
+        /* */
+        /* Get the path */
+        char *path = NULL;
+        gf_log(this->name, GF_LOG_INFO, "Need to fetch path for %s (%s got %d)",
+               loc->path, op_ret);
+        /* We can save time by doing it ourselves instead of solving all
+         * problems looks like */
+        /*
+        int type = POSIX_ANCESTRY_PATH;
+        dict_t *dict = dict_new();
+         op_ret = posix_get_ancestry(this, loc->inode, NULL, &path, type,
+                                     &op_errno, dict);
+         dict_unref(dict);
+        */
     }
 
     if (op_ret == 0)
@@ -1339,6 +1357,7 @@ posix_unlink(call_frame_t *frame, xlator_t *this, loc_t *loc, int xflag,
             gf_msg(this->name, GF_LOG_WARNING, 0, P_MSG_SET_XDATA_FAIL,
                    "Failed to set %s in rsp dict", GF_GET_FILE_BLOCK_COUNT);
     }
+
 
     if (xdata && dict_get_sizen(xdata, GET_LINK_COUNT))
         get_link_count = _gf_true;

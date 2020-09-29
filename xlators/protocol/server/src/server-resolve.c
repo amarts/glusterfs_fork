@@ -86,9 +86,12 @@ resolve_gfid_entry_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     }
 
     link_inode = inode_link(inode, resolve_loc->parent, resolve_loc->name, buf);
-
     if (!link_inode)
         goto out;
+
+    if (dict_get(xdata, GF_NAMESPACE_KEY)) {
+        inode_set_namespace_inode(link_inode, link_inode);
+    }
 
     inode_lookup(link_inode);
 
@@ -136,6 +139,10 @@ resolve_gfid_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
         goto out;
     }
 
+    if (dict_get(xdata, GF_NAMESPACE_KEY)) {
+        inode_set_namespace_inode(link_inode, link_inode);
+    }
+
     inode_lookup(link_inode);
 
     /* wipe the loc only after the inode has been linked to the inode
@@ -174,6 +181,24 @@ resolve_gfid_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
                    "BUG: dict allocation failed (pargfid: %s, name: %s), "
                    "still continuing",
                    uuid_utoa(resolve_loc->gfid), resolve_loc->name);
+    }
+
+    dict = dict ? dict : dict_new();
+    if (dict) {
+        int ret = dict_set_int32(dict, "resolve-lookup", 1);
+        if (ret) {
+            gf_msg(this->name, GF_LOG_ERROR, ENOMEM, PS_MSG_NO_MEMORY,
+                   "BUG: dict set failed (pargfid: %s, name: %s), "
+                   "still continuing",
+                   uuid_utoa(resolve_loc->gfid), resolve_loc->name);
+        }
+        ret = dict_set_int32(dict, GF_NAMESPACE_KEY, 1);
+        if (ret) {
+            gf_msg(this->name, GF_LOG_ERROR, ENOMEM, PS_MSG_NO_MEMORY,
+                   "BUG: dict set failed (pargfid: %s, name: %s), "
+                   "still continuing",
+                   uuid_utoa(resolve_loc->gfid), resolve_loc->name);
+        }
     }
 
     STACK_WIND(frame, resolve_gfid_entry_cbk, frame->root->client->bound_xl,
@@ -217,7 +242,23 @@ resolve_gfid(call_frame_t *frame)
                    "still continuing",
                    uuid_utoa(resolve_loc->gfid));
     }
-
+    xdata = xdata ? xdata : dict_new();
+    if (xdata) {
+        int ret = dict_set_int32(xdata, "resolve-lookup", 1);
+        if (ret) {
+            gf_msg(this->name, GF_LOG_ERROR, ENOMEM, PS_MSG_NO_MEMORY,
+                   "BUG: dict set failed (pargfid: %s, name: %s), "
+                   "still continuing",
+                   uuid_utoa(resolve_loc->gfid), resolve_loc->name);
+        }
+        ret = dict_set_int32(xdata, GF_NAMESPACE_KEY, 1);
+        if (ret) {
+            gf_msg(this->name, GF_LOG_ERROR, ENOMEM, PS_MSG_NO_MEMORY,
+                   "BUG: dict set failed (pargfid: %s, name: %s), "
+                   "still continuing",
+                   uuid_utoa(resolve_loc->gfid), resolve_loc->name);
+        }
+    }
     STACK_WIND(frame, resolve_gfid_cbk, frame->root->client->bound_xl,
                frame->root->client->bound_xl->fops->lookup,
                &resolve->resolve_loc, xdata);

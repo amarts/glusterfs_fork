@@ -119,6 +119,8 @@ AC_CONFIG_FILES([Makefile
                 xlators/features/locks/src/Makefile
                 xlators/features/quota/Makefile
                 xlators/features/quota/src/Makefile
+                xlators/features/simple-quota/Makefile
+                xlators/features/simple-quota/src/Makefile
                 xlators/features/marker/Makefile
                 xlators/features/marker/src/Makefile
                 xlators/features/selinux/Makefile
