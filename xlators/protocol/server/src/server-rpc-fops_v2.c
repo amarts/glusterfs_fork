@@ -852,8 +852,9 @@ server4_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
 
     dict_to_xdr(xdata, &rsp.xdata);
 
+    state = CALL_STATE(frame);
+
     if (op_ret == -1) {
-        state = CALL_STATE(frame);
         if (op_errno != ENOTSUP)
             dict_foreach(state->dict, _gf_server_log_setxattr_failure, frame);
 
@@ -865,6 +866,12 @@ server4_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
                     "error-xlator=%s", STACK_ERR_XL_NAME(frame->root), NULL);
         }
         goto out;
+    }
+
+    if (dict_get(state->dict, "trusted.glusterfs.namespace")) {
+      /* This inode onwards we will set namespace */
+      inode_set_namespace_inode(state->loc.inode,
+				state->loc.inode);
     }
 
 out:
