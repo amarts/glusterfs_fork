@@ -29,6 +29,7 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf, struct iat
     INIT_LIST_HEAD(&mq_ctx->priv_list);
     mq_ctx->size = 0;
     tmp_mq = (uint64_t)(unsigned long)mq_ctx;
+    mq_ctx->ns = ns;
     ret = inode_ctx_put(ns, this, tmp_mq);
     if (ret < 0) {
       GF_FREE(mq_ctx);
@@ -52,8 +53,6 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf, struct iat
   }
   UNLOCK(&ns->lock);
 
-  gf_log(this->name, GF_LOG_INFO, "Size is %"PRId64, size);
-
 out:
 
   return;
@@ -68,6 +67,7 @@ quota_set_thread_proc(void *data)
     int ret = -1;
     mq_inode_t *tmp;
     int64_t size = 0;
+
     this = data;
     priv = this->private;
 
@@ -82,14 +82,15 @@ quota_set_thread_proc(void *data)
         ret = sleep(interval);
         if (ret > 0)
             break;
-        /* prevent thread errors while doing the health-check(s) */
-        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
+	if (list_empty(&priv->ns_list)) {
+	  continue;
+	}	  
 	/* TODO: the namespace inodes should flush thier sizes here */
 	list_for_each_entry(tmp, &priv->ns_list, priv_list)
 	  {
 	    size = 0;
-	    if (tmp->dirty) {
+	    if (tmp->dirty && tmp->ns) {
 	      LOCK(&tmp->ns->lock);
 	      {
 		size = tmp->size;
@@ -104,9 +105,6 @@ quota_set_thread_proc(void *data)
 	      //ret = syncop_xattrop(ns, size);
 	    }
 	  }
-	
-        /* Do the disk-check.*/
-        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     }
 
     gf_msg_debug(this->name, 0, "Quota Set thread exiting");
@@ -114,6 +112,7 @@ quota_set_thread_proc(void *data)
     return NULL;
 }
 
+/* FIXME: We should use timer instead */
 int
 quota_set_thread(xlator_t *xl)
 {
@@ -171,7 +170,7 @@ mq_forget(xlator_t *this, inode_t *inode)
 
   inode_ctx_get(inode, this, &tmp_mq);
   if (!tmp_mq)
-    return -1;
+    return 0;
   mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
   LOCK(&priv->lock);
   {
@@ -207,7 +206,7 @@ init(xlator_t *this)
     this->private = priv;
     quota_set_thread(this);
     
-    gf_log(this->name, GF_LOG_DEBUG, "Marker Quota xlator loaded");
+    gf_log(this->name, GF_LOG_INFO, "Marker Quota xlator loaded");
     return 0;
 }
 
