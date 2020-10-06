@@ -326,13 +326,24 @@ parent:
 out:
     if (!op_ret && !gfidless && gf_uuid_is_null(buf.ia_gfid)) {
         gf_msg(this->name, GF_LOG_ERROR, ENODATA, P_MSG_NULL_GFID,
-               "buf->ia_gfid is null for "
-               "%s",
+               "buf->ia_gfid is null for %s",
                (real_path) ? real_path : "");
         op_ret = -1;
         op_errno = ENODATA;
     }
 
+    /* TODO: get the path */
+    //"resolve-lookup"
+    if ((op_ret == 0) && (loc->path[0] == '<') && dict_get(xdata, "resolve-lookup")) {
+        /* */
+        /* Get the path */
+        int type = POSIX_ANCESTRY_PATH;
+	char *path;
+        op_ret = posix_get_ancestry(this, loc->inode, NULL, &path, type,
+                                    &op_errno, xdata);
+	gf_log(this->name, GF_LOG_INFO, "fail path fetching for %s (%s got %d)", loc->path, path, op_ret);
+    }
+      
     if (op_ret == 0)
         op_errno = 0;
     STACK_UNWIND_STRICT(lookup, frame, op_ret, op_errno,
