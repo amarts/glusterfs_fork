@@ -21,7 +21,6 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
     uint64_t tmp_mq;
-    int64_t size = 0;
     int ret = inode_ctx_get(ns, this, &tmp_mq);
     if (!tmp_mq) {
         mq_ctx = GF_MALLOC(sizeof(mq_inode_t), gf_common_mt_char);
@@ -30,17 +29,18 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
         INIT_LIST_HEAD(&mq_ctx->priv_list);
         mq_ctx->size = 0;
         tmp_mq = (uint64_t)(unsigned long)mq_ctx;
+	/* inode_ref() not required, as this keeps the ref of this inode only! */
         mq_ctx->ns = ns;
+        LOCK(&priv->lock);
+        {
+	    list_add_tail(&mq_ctx->priv_list, &priv->ns_list);
+        }
+        UNLOCK(&priv->lock);
         ret = inode_ctx_put(ns, this, tmp_mq);
         if (ret < 0) {
             GF_FREE(mq_ctx);
             goto out;
         }
-        LOCK(&priv->lock);
-        {
-            list_add(&priv->ns_list, &mq_ctx->priv_list);
-        }
-        UNLOCK(&priv->lock);
     }
 
     mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
@@ -49,7 +49,6 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
     {
         mq_ctx->size += op_ret;
         mq_ctx->dirty = true;
-        size = mq_ctx->size;
     }
     UNLOCK(&ns->lock);
 
@@ -66,6 +65,7 @@ quota_set_thread_proc(void *data)
     uint32_t interval = 0;
     int ret = -1;
     mq_inode_t *tmp;
+    mq_inode_t *tmp2;
     int64_t size = 0;
 
     this = data;
@@ -87,7 +87,7 @@ quota_set_thread_proc(void *data)
             continue;
         }
         /* TODO: the namespace inodes should flush thier sizes here */
-        list_for_each_entry(tmp, &priv->ns_list, priv_list)
+        list_for_each_entry_safe(tmp, tmp2, &priv->ns_list, priv_list)
         {
             size = 0;
             if (tmp->dirty && tmp->ns) {
@@ -99,10 +99,11 @@ quota_set_thread_proc(void *data)
                 }
                 UNLOCK(&tmp->ns->lock);
 
-                gf_log(this->name, GF_LOG_INFO, "%s: Writing size of %" PRId64,
+                gf_log(this->name, GF_LOG_TRACE, "%s: Writing size of %" PRId64,
                        uuid_utoa(tmp->ns->gfid), size);
                 /* Send the request to actual gfid */
                 // ret = syncop_xattrop(ns, size);
+		tmp = NULL;
             }
         }
     }
@@ -129,6 +130,7 @@ quota_set_thread(xlator_t *xl)
     }
     return ret;
 }
+/* ====================================== */
 
 int32_t
 mq_writev_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
