@@ -17,15 +17,16 @@
 static void
 mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf, struct iatt *postbuf, int32_t op_ret)
 {
-  mq_inode_t *mq_ctx = NULL;
+  mq_private_t *priv = this->private;
+  mq_inode_t *mq_ctx;
   uint64_t tmp_mq;
   int64_t size = 0;
   int ret = inode_ctx_get(ns, this, &tmp_mq);
   if (!tmp_mq) {
-    gf_log("", GF_LOG_INFO, "Here when no context");
     mq_ctx = GF_MALLOC(sizeof(mq_inode_t), gf_common_mt_char);
     if (!mq_ctx)
       goto out;
+    INIT_LIST_HEAD(&mq_ctx->priv_list);
     mq_ctx->size = 0;
     tmp_mq = (uint64_t)(unsigned long)mq_ctx;
     ret = inode_ctx_put(ns, this, tmp_mq);
@@ -33,6 +34,11 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf, struct iat
       GF_FREE(mq_ctx);
       goto out;
     }
+    LOCK(&priv->lock);
+    {
+      list_add(&priv->ns_list, &mq_ctx->priv_list);
+    }
+    UNLOCK(&priv->lock);
   }
 
   mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
@@ -46,8 +52,84 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf, struct iat
   }
   UNLOCK(&ns->lock);
 
- out:
-  gf_log("", GF_LOG_INFO, "Size is %"PRId64, size);
+  gf_log(this->name, GF_LOG_INFO, "Size is %"PRId64, size);
+
+out:
+
+  return;
+}
+
+static void *
+quota_set_thread_proc(void *data)
+{
+    xlator_t *this = NULL;
+    mq_private_t *priv = NULL;
+    uint32_t interval = 0;
+    int ret = -1;
+    mq_inode_t *tmp;
+    int64_t size = 0;
+    this = data;
+    priv = this->private;
+
+    interval = 5;
+    gf_msg_debug(this->name, 0,
+                 "disk-space thread started, "
+                 "interval = %d seconds",
+                 interval);
+    while (1) {
+        /* aborting sleep() is a request to exit this thread, sleep()
+         * will normally not return when cancelled */
+        ret = sleep(interval);
+        if (ret > 0)
+            break;
+        /* prevent thread errors while doing the health-check(s) */
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+
+	/* TODO: the namespace inodes should flush thier sizes here */
+	list_for_each_entry(tmp, &priv->ns_list, priv_list)
+	  {
+	    size = 0;
+	    if (tmp->dirty) {
+	      LOCK(&tmp->ns->lock);
+	      {
+		size = tmp->size;
+		tmp->size = 0;
+		tmp->dirty = false;
+	      }
+	      UNLOCK(&tmp->ns->lock);
+
+	      gf_log(this->name, GF_LOG_INFO,
+		     "%s: Writing size of %"PRId64, uuid_utoa(tmp->ns->gfid), size);
+	      /* Send the request to actual gfid */
+	      //ret = syncop_xattrop(ns, size);
+	    }
+	  }
+	
+        /* Do the disk-check.*/
+        pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    }
+
+    gf_msg_debug(this->name, 0, "Quota Set thread exiting");
+
+    return NULL;
+}
+
+int
+quota_set_thread(xlator_t *xl)
+{
+    mq_private_t *priv = NULL;
+    int ret = -1;
+
+    priv = xl->private;
+
+    ret = gf_thread_create(&priv->quota_set_thread, NULL,
+			   quota_set_thread_proc, xl,
+			   "quotaset");
+    if (ret) {
+      gf_log(xl->name, GF_LOG_ERROR,
+	     "unable to setup disk space check thread");
+    }
+    return ret;
 }
 
 int32_t
@@ -80,10 +162,31 @@ mq_writev(call_frame_t *frame, xlator_t *this, fd_t *fd,
     return 0;
 }
 
+int
+mq_forget(xlator_t *this, inode_t *inode)
+{
+  mq_private_t *priv = this->private;
+  mq_inode_t *mq_ctx;
+  uint64_t tmp_mq;
+
+  inode_ctx_get(inode, this, &tmp_mq);
+  if (!tmp_mq)
+    return -1;
+  mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
+  LOCK(&priv->lock);
+  {
+    list_del_init(&mq_ctx->priv_list);
+  }
+  UNLOCK(&priv->lock);
+  GF_FREE(mq_ctx);
+  return 0;
+}
+
+
 int32_t
 init(xlator_t *this)
 {
-    mq_private_t *priv = this->private;
+  mq_private_t *priv;
 
     if (!this->children || this->children->next) {
         gf_log("marker-quota", GF_LOG_ERROR,
@@ -99,7 +202,11 @@ init(xlator_t *this)
     if (!priv)
         return -1;
 
+    INIT_LIST_HEAD(&priv->ns_list);
+    LOCK_INIT(&priv->lock);
     this->private = priv;
+    quota_set_thread(this);
+    
     gf_log(this->name, GF_LOG_DEBUG, "Marker Quota xlator loaded");
     return 0;
 }
@@ -119,7 +226,9 @@ fini(xlator_t *this)
 
 struct xlator_fops fops = { .writev = mq_writev };
 
-struct xlator_cbks cbks;
+struct xlator_cbks cbks = {
+  .forget = mq_forget,
+};
 
 struct volume_options options[] = {
     {.key = {NULL}},
