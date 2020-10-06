@@ -11,6 +11,7 @@
 #include <glusterfs/glusterfs.h>
 #include <glusterfs/xlator.h>
 #include <glusterfs/logging.h>
+#include <glusterfs/syncop.h>
 
 #include "marker-quota.h"
 
@@ -29,11 +30,12 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
         INIT_LIST_HEAD(&mq_ctx->priv_list);
         mq_ctx->size = 0;
         tmp_mq = (uint64_t)(unsigned long)mq_ctx;
-	/* inode_ref() not required, as this keeps the ref of this inode only! */
+        /* inode_ref() not required, as this keeps the ref of this inode only!
+         */
         mq_ctx->ns = ns;
         LOCK(&priv->lock);
         {
-	    list_add_tail(&mq_ctx->priv_list, &priv->ns_list);
+            list_add_tail(&mq_ctx->priv_list, &priv->ns_list);
         }
         UNLOCK(&priv->lock);
         ret = inode_ctx_put(ns, this, tmp_mq);
@@ -67,7 +69,7 @@ quota_set_thread_proc(void *data)
     mq_inode_t *tmp;
     mq_inode_t *tmp2;
     int64_t size = 0;
-
+    loc_t loc = {};
     this = data;
     priv = this->private;
 
@@ -101,9 +103,35 @@ quota_set_thread_proc(void *data)
 
                 gf_log(this->name, GF_LOG_TRACE, "%s: Writing size of %" PRId64,
                        uuid_utoa(tmp->ns->gfid), size);
+
+                dict_t *dict = dict_new();
+                if (!dict) {
+                    continue;
+                }
+
+                // int64_t value_on_disk = hton64(size);
+                int64_t value_on_disk = size;
+                ret = dict_set_static_bin(dict, "trusted.glusterfs.consumption",
+                                          &value_on_disk, sizeof(int64_t *));
+                if (ret < 0) {
+                    dict_unref(dict);
+                    continue;
+                }
+
                 /* Send the request to actual gfid */
-                // ret = syncop_xattrop(ns, size);
-		tmp = NULL;
+                loc.inode = inode_ref(tmp->ns);
+                ret = syncop_xattrop(FIRST_CHILD(this), &loc,
+                                     GF_XATTROP_ADD_ARRAY64, dict, NULL, NULL,
+                                     NULL);
+                inode_unref(tmp->ns);
+                dict_unref(dict);
+                if (ret < 0) {
+                    gf_log(this->name, GF_LOG_ERROR,
+                           "%s: Quota value update failed",
+                           uuid_utoa(tmp->ns->gfid));
+                }
+
+                tmp = NULL;
             }
         }
     }
