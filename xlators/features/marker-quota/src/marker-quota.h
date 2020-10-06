@@ -11,16 +11,16 @@
 #define __MARKER_QUOTA__
 
 typedef struct {
-  gf_lock_t lock;
-  pthread_t quota_set_thread;
-  struct list_head ns_list;
+    gf_lock_t lock;
+    pthread_t quota_set_thread;
+    struct list_head ns_list;
 } mq_private_t;
 
 typedef struct {
-  struct list_head priv_list; /* list of ns entris in private */
-  inode_t *ns;                /* namespace inode */
-  int64_t size;
-  bool dirty;  
+    struct list_head priv_list; /* list of ns entris in private */
+    inode_t *ns;                /* namespace inode */
+    int64_t size;
+    bool dirty;
 } mq_inode_t;
 
 #endif /* __MARKER_QUOTA_H__ */
