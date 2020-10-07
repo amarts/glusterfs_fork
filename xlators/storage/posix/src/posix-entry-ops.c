@@ -337,11 +337,16 @@ out:
     if ((op_ret == 0) && (loc->path[0] == '<') && dict_get(xdata, "resolve-lookup")) {
         /* */
         /* Get the path */
+	char *path = NULL;
+	gf_log(this->name, GF_LOG_INFO, "Need to fetch path for %s (%s got %d)", loc->path, op_ret);
+	/* We can save time by doing it ourselves instead of solving all problems looks like */
+	/*
         int type = POSIX_ANCESTRY_PATH;
-	char *path;
-        op_ret = posix_get_ancestry(this, loc->inode, NULL, &path, type,
-                                    &op_errno, xdata);
-	gf_log(this->name, GF_LOG_INFO, "fail path fetching for %s (%s got %d)", loc->path, path, op_ret);
+	dict_t *dict = dict_new();
+         op_ret = posix_get_ancestry(this, loc->inode, NULL, &path, type,
+				     &op_errno, dict);
+	 dict_unref(dict);
+	*/
     }
       
     if (op_ret == 0)

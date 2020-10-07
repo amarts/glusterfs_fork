@@ -111,7 +111,7 @@ quota_set_thread_proc(void *data)
 
                 // int64_t value_on_disk = hton64(size);
                 int64_t value_on_disk = size;
-                ret = dict_set_static_bin(dict, "trusted.glusterfs.consumption",
+                ret = dict_set_static_bin(dict, QUOTA_SIZE_KEY,
                                           &value_on_disk, sizeof(int64_t *));
                 if (ret < 0) {
                     dict_unref(dict);
