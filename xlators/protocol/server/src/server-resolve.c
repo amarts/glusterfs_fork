@@ -179,6 +179,8 @@ resolve_gfid_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
                    "still continuing",
                    uuid_utoa(resolve_loc->gfid), resolve_loc->name);
     }
+
+    dict = dict ? dict : dict_new();
     if (dict) {
       int ret = dict_set_int32(dict, "resolve-lookup", 1);
       if (ret) {
@@ -237,7 +239,7 @@ resolve_gfid(call_frame_t *frame)
                    "still continuing",
                    uuid_utoa(resolve_loc->gfid));
     }
-
+    xdata = xdata ? xdata : dict_new();
     if (xdata) {
       int ret = dict_set_int32(xdata, "resolve-lookup", 1);
       if (ret) {

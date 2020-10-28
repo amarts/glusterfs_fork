@@ -21,6 +21,7 @@ typedef struct {
     inode_t *ns;                /* namespace inode */
     int64_t size;
     bool dirty;
+    int64_t hard_lim;
 } mq_inode_t;
 
 #endif /* __MARKER_QUOTA_H__ */
