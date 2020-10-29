@@ -35,18 +35,20 @@ mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
     mq_ctx->dirty = false;
 
     mq_ctx->ns = inode;
-    LOCK(&priv->lock);
-    {
-        list_add_tail(&mq_ctx->priv_list, &priv->ns_list);
-    }
-    UNLOCK(&priv->lock);
     tmp_mq = (uint64_t)(unsigned long)mq_ctx;
     ret = inode_ctx_put(inode, this, tmp_mq);
     if (ret < 0) {
         GF_FREE(mq_ctx);
         goto out;
     }
+    LOCK(&priv->lock);
+    {
+        list_add_tail(&mq_ctx->priv_list, &priv->ns_list);
+    }
+    UNLOCK(&priv->lock);
 
+    gf_log(this->name, GF_LOG_INFO,
+	   "hardlimit set on %s", uuid_utoa(inode->gfid));
     ret = 0;
 out:
     return ret;
@@ -59,25 +61,40 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
     uint64_t tmp_mq;
+
+    if (!ns)
+      goto out;
+
     int ret = inode_ctx_get(ns, this, &tmp_mq);
     if (!tmp_mq) {
         /* fall back to root */
+      gf_log(this->name, GF_LOG_INFO,
+	     "ctx value -- %ld", tmp_mq);
         if (ns != ns->table->root) {
             ret = inode_ctx_get(ns->table->root, this, &tmp_mq);
         }
     }
 
+    if (!tmp_mq)
+        goto out;
+    
     mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
+
+    gf_log(this->name, GF_LOG_INFO,
+	   "ctx value %p", mq_ctx);
+    
     if (ns != mq_ctx->ns) {
-        mq_ctx->ns = ns; /* Set this, as it is possible to have linked a wrong
-                            inode pointer in lookup */
+        mq_ctx->ns = ns; /* Set this, as it is possible to have linked a wrong                            inode pointer in lookup */
+	gf_log(this->name, GF_LOG_INFO,
+	       "entry ns different: %p", ns);
     }
-    LOCK(&ns->lock);
+
+    LOCK(&mq_ctx->ns->lock);
     {
         mq_ctx->size += op_ret;
         mq_ctx->dirty = true;
     }
-    UNLOCK(&ns->lock);
+    UNLOCK(&mq_ctx->ns->lock);
 
 out:
 
@@ -422,6 +439,7 @@ mq_lookup_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
         goto unwind;
 
 unwind:
+    gf_log("", GF_LOG_INFO, "Already set looked up inode %p", frame->local);
     frame->local = NULL;
 
     STACK_UNWIND_STRICT(lookup, frame, op_ret, op_errno, inode, buf, xdata,
@@ -434,7 +452,7 @@ mq_lookup(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
     /* Only in fresh lookup, send namespace and quota xattr */
     if (IATT_TYPE_VALID(loc->inode->ia_type)) {
-        gf_log("", GF_LOG_INFO, "Already set looked up inode");
+      gf_log("", GF_LOG_INFO, "Already set looked up inode %d", loc->inode->ia_type);
         goto wind;
     }
 

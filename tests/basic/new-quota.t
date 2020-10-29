@@ -22,11 +22,15 @@ echo -n helloworld > $M1/file2;
 mkdir $M1/test2;
 
 setfattr -n trusted.glusterfs.namespace -v true $M1/test2;
+setfattr -n trusted.glusterfs.quota-limit -v 10000 $M1/test2;
 
 echo -n helloworld > $M1/test2/file1;
 echo -n helloworld > $M1/test2/file2;
 echo -n helloworld > $M1/test/file1;
 echo -n helloworld > $M1/test/file2;
+
+df -B 1 $M1/test2;
+
 mkdir $M1/test2/dir2.1;
 mkdir $M1/test2/dir2.2;
 echo -n helloworld > $M1/test2/dir2.1/file1;
@@ -53,6 +57,8 @@ echo -n helloworld >> $M1/test2/dir2.1/file1;
 echo -n helloworld >> $M1/test2/dir2.2/file1;
 echo -n helloworld >> $M1/test2/file1;
 echo -n helloworld >> $M1/a/b/c/d/e/f/g;
+
+df -B 1 $M1/test2;
 
 sleep 6;
 
