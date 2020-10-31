@@ -18,12 +18,12 @@
 #define QUOTA_LIMIT_KEY "trusted.glusterfs.quota-limit"
 #define GF_NAMESPACE_KEY "trusted.glusterfs.namespace"
 
-static int
+static uint64_t
 mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
 {
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
-    uint64_t tmp_mq;
+    uint64_t tmp_mq = 0;
     int ret = -1;
 
     mq_ctx = GF_MALLOC(sizeof(mq_inode_t), gf_common_mt_char);
@@ -39,6 +39,7 @@ mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
     ret = inode_ctx_put(inode, this, tmp_mq);
     if (ret < 0) {
         GF_FREE(mq_ctx);
+	tmp_mq = 0;
         goto out;
     }
     LOCK(&priv->lock);
@@ -49,9 +50,8 @@ mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
 
     gf_log(this->name, GF_LOG_INFO,
 	   "hardlimit set on %s", uuid_utoa(inode->gfid));
-    ret = 0;
 out:
-    return ret;
+    return tmp_mq;
 }
 
 static void
@@ -75,9 +75,12 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
         }
     }
 
-    if (!tmp_mq)
+    if (!tmp_mq) {
+      tmp_mq = mq_set_ns_hardlimit(this, ns, 0);
+      if (!tmp_mq)
         goto out;
-    
+    }
+
     mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
 
     gf_log(this->name, GF_LOG_INFO,
@@ -434,9 +437,7 @@ mq_lookup_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
     if (!val)
         goto unwind;
 
-    ret = mq_set_ns_hardlimit(this, inode, val);
-    if (ret)
-        goto unwind;
+    mq_set_ns_hardlimit(this, inode, val);
 
 unwind:
     gf_log("", GF_LOG_INFO, "Already set looked up inode %p", frame->local);
@@ -495,10 +496,8 @@ mq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     }
 
     int64_t val = (int64_t)(unsigned long)cookie;
-    int ret = mq_set_ns_hardlimit(this, inode, val);
+    mq_set_ns_hardlimit(this, inode, val);
     inode_unref(inode);
-    if (ret)
-        goto unwind;
 
 unwind:
     frame->local = NULL;
