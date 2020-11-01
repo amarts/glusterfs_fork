@@ -23,7 +23,7 @@ echo -n helloworld > $M1/file2;
 mkdir $M1/test2;
 
 TEST setfattr -n trusted.glusterfs.namespace -v true $M1/test2;
-TEST setfattr -n trusted.glusterfs.quota-limit -v 10000 $M1/test2;
+TEST setfattr -n trusted.glusterfs.quota.limit-set -v 10000 $M1/test2;
 
 echo -n helloworld > $M1/test2/file1;
 echo -n helloworld > $M1/test2/file2;
@@ -50,7 +50,17 @@ TEST kill_brick $V0 $H0 $B0/${V0}3;
 sleep 3;
 TEST $CLI volume start $V0 force;
 
+sleep 1;
+
 TEST cat $M1/a/b/c/d/e/f/g;
+
+df $M1/test2;
+
+TEST $CLI volume stop $V0;
+TEST $CLI volume start $V0;
+sleep 3;
+
+ls $M1;
 
 echo -n helloworld >> $M1/test/file1;
 echo -n helloworld >> $M1/test/file2;
@@ -63,7 +73,7 @@ echo -n helloworld >> $M1/a/b/c/d/e/f/g;
 
 df $M1/test2;
 
-sleep 6;
+sleep 4;
 
 TEST echo "DONE"
 

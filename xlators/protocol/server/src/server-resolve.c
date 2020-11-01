@@ -86,7 +86,6 @@ resolve_gfid_entry_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     }
 
     link_inode = inode_link(inode, resolve_loc->parent, resolve_loc->name, buf);
-
     if (!link_inode)
         goto out;
 
@@ -94,6 +93,11 @@ resolve_gfid_entry_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
         inode_set_namespace_inode(link_inode, link_inode);
     }
 	
+    if (inode != link_inode) {
+      gf_log("", GF_LOG_INFO, "Just a check");
+        inode_ctx_merge(NULL, inode, link_inode);
+    }
+
     inode_lookup(link_inode);
 
     inode_unref(link_inode);
@@ -138,6 +142,15 @@ resolve_gfid_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
     if (!link_inode) {
         loc_wipe(resolve_loc);
         goto out;
+    }
+
+    if (dict_get(xdata, "trusted.glusterfs.namespace")) {
+        inode_set_namespace_inode(link_inode, link_inode);
+    }
+	
+    if (inode != link_inode) {
+      gf_log("", GF_LOG_INFO, "Just a check - 2");
+        inode_ctx_merge(NULL, inode, link_inode);
     }
 
     inode_lookup(link_inode);

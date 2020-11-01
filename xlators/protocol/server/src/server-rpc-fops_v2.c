@@ -139,7 +139,7 @@ server4_lookup_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
         goto out;
     }
 
-    server4_post_lookup(&rsp, frame, state, inode, stbuf);
+    server4_post_lookup(&rsp, frame, state, inode, stbuf, xdata);
 out:
     rsp.op_ret = op_ret;
     rsp.op_errno = gf_errno_to_error(op_errno);

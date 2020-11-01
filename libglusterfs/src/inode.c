@@ -377,7 +377,7 @@ inode_ctx_merge(fd_t *fd, inode_t *inode, inode_t *linked_inode)
     xlator_t *xl = NULL;
     xlator_t *old_THIS = NULL;
 
-    if (!fd || !inode || !linked_inode) {
+    if (!inode || !linked_inode) {
         gf_msg_callingfn(THIS->name, GF_LOG_WARNING, EINVAL, LG_MSG_INVALID_ARG,
                          "invalid inode");
         return;
@@ -395,7 +395,7 @@ inode_ctx_merge(fd_t *fd, inode_t *inode, inode_t *linked_inode)
 
             old_THIS = THIS;
             THIS = xl;
-            if (xl->cbks->ictxmerge)
+            if (fd && xl->cbks->ictxmerge)
                 xl->cbks->ictxmerge(xl, fd, inode, linked_inode);
             THIS = old_THIS;
         }
