@@ -19,7 +19,7 @@
 #define GF_NAMESPACE_KEY "trusted.glusterfs.namespace"
 
 static uint64_t
-mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
+mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, int64_t limit, int64_t size)
 {
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
@@ -31,8 +31,9 @@ mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
         goto out;
     INIT_LIST_HEAD(&mq_ctx->priv_list);
     mq_ctx->size = 0;
-    mq_ctx->hard_lim = limit;
     mq_ctx->dirty = false;
+    mq_ctx->hard_lim = limit;
+    mq_ctx->used_size = size;
 
     mq_ctx->ns = inode;
     tmp_mq = (uint64_t)(unsigned long)mq_ctx;
@@ -49,8 +50,9 @@ mq_set_ns_hardlimit(xlator_t *this, inode_t *inode, uint64_t limit)
     UNLOCK(&priv->lock);
 
     gf_log(this->name, GF_LOG_INFO,
-	   "hardlimit set on %s", uuid_utoa(inode->gfid));
+	   "hardlimit set on %s (%ld)", uuid_utoa(inode->gfid), limit);
 out:
+    gf_log("", GF_LOG_INFO, "Here %p", inode);
     return tmp_mq;
 }
 
@@ -60,7 +62,7 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
 {
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
-    uint64_t tmp_mq;
+    uint64_t tmp_mq = 0;
 
     if (!ns)
       goto out;
@@ -70,13 +72,13 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
         /* fall back to root */
       gf_log(this->name, GF_LOG_INFO,
 	     "ctx value -- %ld", tmp_mq);
-        if (ns != ns->table->root) {
+      if (ns != ns->table->root) {
             ret = inode_ctx_get(ns->table->root, this, &tmp_mq);
         }
     }
 
     if (!tmp_mq) {
-      tmp_mq = mq_set_ns_hardlimit(this, ns, 0);
+      tmp_mq = mq_set_ns_hardlimit(this, ns, 0, 0);
       if (!tmp_mq)
         goto out;
     }
@@ -95,12 +97,40 @@ mq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
     LOCK(&mq_ctx->ns->lock);
     {
         mq_ctx->size += op_ret;
+	mq_ctx->used_size += op_ret;
         mq_ctx->dirty = true;
     }
     UNLOCK(&mq_ctx->ns->lock);
 
 out:
+    gf_log("", GF_LOG_INFO, "Here %p", ns);
 
+    return;
+}
+
+static void
+mq_update_hard_limit(xlator_t *this, inode_t *ns, int64_t limit, int64_t size)
+{
+    mq_private_t *priv = this->private;
+    mq_inode_t *mq_ctx;
+    uint64_t tmp_mq = 0;
+
+    if (!ns)
+      goto out;
+
+    int ret = inode_ctx_get(ns, this, &tmp_mq);
+    if (!tmp_mq) {
+      tmp_mq = mq_set_ns_hardlimit(this, ns, limit, size);
+      if (!tmp_mq)
+        goto out;
+    } else {
+      gf_log("", GF_LOG_INFO, "%s %ld %ld", uuid_utoa(ns->gfid), limit, size);
+      mq_ctx = (mq_inode_t *)(uintptr_t)tmp_mq;
+      mq_ctx->hard_lim = limit;
+      mq_ctx->used_size = size;
+    }
+
+out:
     return;
 }
 
@@ -268,7 +298,7 @@ mq_forget(xlator_t *this, inode_t *inode)
 {
     mq_private_t *priv = this->private;
     mq_inode_t *mq_ctx;
-    uint64_t tmp_mq;
+    uint64_t tmp_mq = 0;
 
     inode_ctx_get(inode, this, &tmp_mq);
     if (!tmp_mq)
@@ -299,7 +329,7 @@ mq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
 
     /* This fop will fail mostly in case of client disconnect,
      * which is already logged. Hence, not logging here */
-    if (op_ret == -1)
+    if (IS_ERROR(op_ret))
         goto unwind;
     /*
      * We should never get here unless quota_statfs (below) sent us a
@@ -311,9 +341,10 @@ mq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
 
     inode_ctx_get(inode, this, &value);
     ctx = (mq_inode_t *)(unsigned long)value;
+    gf_log("", GF_LOG_INFO, "%s", uuid_utoa(inode->gfid));
     if (!ctx || ctx->hard_lim <= 0) {
         /* If this namespace is not root inode, fall back to root inode once */
-        if (inode != inode->table->root) {
+      if (inode != inode->table->root) {
             inode_ctx_get(inode->table->root, this, &value);
             ctx = (mq_inode_t *)(unsigned long)value;
             if (!ctx || ctx->hard_lim <= 0) {
@@ -325,9 +356,10 @@ mq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
             goto unwind;
         }
     }
+    gf_log("", GF_LOG_INFO, "%ld %ld", ctx->hard_lim, ctx->used_size);
 
     { /* statfs is adjusted in this code block */
-        usage = (ctx->size) / buf->f_bsize;
+        usage = (ctx->used_size) / buf->f_bsize;
 
         blocks = ctx->hard_lim / buf->f_bsize;
         buf->f_blocks = blocks;
@@ -357,7 +389,6 @@ mq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
                "Dict set failed, deem-statfs option may "
                "have no effect");
 unwind:
-
     if (inode)
         inode_unref(inode);
     frame->local = NULL;
@@ -372,6 +403,7 @@ unwind:
 int32_t
 mq_statfs(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
+    gf_log("", GF_LOG_INFO, "%s", loc->path);
     frame->local = inode_ref(loc->inode->ns_inode);
     STACK_WIND(frame, mq_statfs_cbk, FIRST_CHILD(this),
                FIRST_CHILD(this)->fops->statfs, loc, xdata);
@@ -432,15 +464,19 @@ mq_lookup_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
     if (!dict_get(xdata, GF_NAMESPACE_KEY))
         goto unwind;
 
-    int64_t val = 0;
-    int ret = dict_get_int64(xdata, QUOTA_LIMIT_KEY, &val);
-    if (!val)
+    int64_t limit = 0;
+    int64_t size = 0;
+    int ret = dict_get_int64(xdata, QUOTA_LIMIT_KEY, &limit);
+    if (!ret)
+        goto unwind;
+    ret = dict_get_int64(xdata, QUOTA_SIZE_KEY, &size);
+    if (!ret)
         goto unwind;
 
-    mq_set_ns_hardlimit(this, inode, val);
+    gf_log("", GF_LOG_INFO, "limit: %ld, size: %ld", limit, size);
+    mq_update_hard_limit(this, inode, limit, size);
 
 unwind:
-    gf_log("", GF_LOG_INFO, "Already set looked up inode %p", frame->local);
     frame->local = NULL;
 
     STACK_UNWIND_STRICT(lookup, frame, op_ret, op_errno, inode, buf, xdata,
@@ -453,7 +489,6 @@ mq_lookup(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 {
     /* Only in fresh lookup, send namespace and quota xattr */
     if (IATT_TYPE_VALID(loc->inode->ia_type)) {
-      gf_log("", GF_LOG_INFO, "Already set looked up inode %d", loc->inode->ia_type);
         goto wind;
     }
 
@@ -463,6 +498,13 @@ mq_lookup(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *xdata)
 
     /* namespace key would be set in server-protocol's resolve itself */
     int ret = dict_set_int32(xdata, QUOTA_LIMIT_KEY, 1);
+    if (ret) {
+        gf_log(this->name, GF_LOG_ERROR,
+               "BUG: dict set failed (pargfid: %s, name: %s), "
+               "still continuing",
+               uuid_utoa(loc->pargfid), loc->name);
+    }
+    ret = dict_set_int32(xdata, QUOTA_SIZE_KEY, 1);
     if (ret) {
         gf_log(this->name, GF_LOG_ERROR,
                "BUG: dict set failed (pargfid: %s, name: %s), "
@@ -496,7 +538,7 @@ mq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     }
 
     int64_t val = (int64_t)(unsigned long)cookie;
-    mq_set_ns_hardlimit(this, inode, val);
+    mq_update_hard_limit(this, inode, val, 0);
     inode_unref(inode);
 
 unwind:

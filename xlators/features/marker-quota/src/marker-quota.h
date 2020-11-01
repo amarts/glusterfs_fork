@@ -22,6 +22,7 @@ typedef struct {
     int64_t size;
     bool dirty;
     int64_t hard_lim;
+    int64_t used_size;
 } mq_inode_t;
 
 #endif /* __MARKER_QUOTA_H__ */
