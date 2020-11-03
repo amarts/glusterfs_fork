@@ -139,7 +139,7 @@ server4_lookup_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
         goto out;
     }
 
-    server4_post_lookup(&rsp, frame, state, inode, stbuf);
+    server4_post_lookup(&rsp, frame, state, inode, stbuf, xdata);
 out:
     rsp.op_ret = op_ret;
     rsp.op_errno = gf_errno_to_error(op_errno);
@@ -852,8 +852,9 @@ server4_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
 
     dict_to_xdr(xdata, &rsp.xdata);
 
+    state = CALL_STATE(frame);
+
     if (op_ret == -1) {
-        state = CALL_STATE(frame);
         if (op_errno != ENOTSUP)
             dict_foreach(state->dict, _gf_server_log_setxattr_failure, frame);
 
@@ -865,6 +866,11 @@ server4_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
                     "error-xlator=%s", STACK_ERR_XL_NAME(frame->root), NULL);
         }
         goto out;
+    }
+
+    if (dict_get(state->dict, GF_NAMESPACE_KEY)) {
+        /* This inode onwards we will set namespace */
+        inode_set_namespace_inode(state->loc.inode, state->loc.inode);
     }
 
 out:
@@ -3186,19 +3192,42 @@ int
 server4_lookup_resume(call_frame_t *frame, xlator_t *bound_xl)
 {
     server_state_t *state = NULL;
+    dict_t *xdata = NULL;
 
     state = CALL_STATE(frame);
 
     if (state->resolve.op_ret != 0)
         goto err;
 
-    if (!state->loc.inode)
+    xdata = state->xdata ? dict_ref(state->xdata) : dict_new();
+    if (!state->loc.inode) {
         state->loc.inode = server_inode_new(state->itable, state->loc.gfid);
-    else
+        if (xdata) {
+            int ret = dict_set_int32(xdata, GF_NAMESPACE_KEY, 1);
+            if (ret) {
+                gf_log(THIS->name, GF_LOG_DEBUG,
+                       "BUG: dict set failed (path: %s), still continuing",
+                       state->loc.path);
+            }
+            if (state->loc.path[0] == '<') {
+                /* This is a lookup on gfid : get full-path */
+                ret = dict_set_int32(xdata, "get-full-path", 1);
+                if (ret) {
+                    gf_log(THIS->name, GF_LOG_DEBUG,
+                           "BUG: dict set failed (path: %s), still continuing",
+                           state->loc.path);
+                }
+            }
+        }
+    } else {
         state->is_revalidate = 1;
+    }
 
     STACK_WIND(frame, server4_lookup_cbk, bound_xl, bound_xl->fops->lookup,
-               &state->loc, state->xdata);
+               &state->loc, xdata);
+
+    if (xdata)
+        dict_unref(xdata);
 
     return 0;
 err:
