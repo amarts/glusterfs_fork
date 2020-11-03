@@ -10,7 +10,7 @@ TEST pidof glusterd
 TEST $CLI volume info;
 
 TEST $CLI volume create $V0 $H0:$B0/${V0}{1,2,3};
-#TEST $CLI volume set $V0 quota-deem-statfs enable;
+TEST $CLI volume set $V0 feature.simple-quota-pass-through false;
 TEST $CLI volume start $V0;
 
 ## Mount FUSE
@@ -38,7 +38,7 @@ TEST mkdir -p $M1/a/b/c/d/e/f;
 
 echo hello world > $M1/a/b/c/d/e/f/g;
 
-TEST ! dd if=/dev/urandom of=$M1/test2/dd-file1 count=1 bs=4k
+TEST ! dd if=/dev/urandom of=$M1/test2/dd-file1 count=1 bs=8k
 
 sleep 5;
 
@@ -63,7 +63,7 @@ echo -n helloworld >> $M1/test2/dir2.2/file1;
 echo -n helloworld >> $M1/test2/file1;
 echo -n helloworld >> $M1/a/b/c/d/e/f/g;
 
-TEST ! dd if=/dev/urandom of=$M1/test2/dd-file2 count=1 bs=4k
+TEST ! dd if=/dev/urandom of=$M1/test2/dd-file2 count=3 bs=4k
 
 df $M1/test2;
 

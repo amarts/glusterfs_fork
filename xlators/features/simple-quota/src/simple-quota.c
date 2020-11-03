@@ -482,7 +482,7 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
     xdata = xdata ? dict_ref(xdata) : dict_new();
 
     int ret = dict_set_int32(xdata, "quota-deem-statfs", 1);
-    if (!ret) {
+    if (ret) {
         gf_log(this->name, GF_LOG_WARNING,
                "failed to set dict with 'deem-statfs'. Quota limits may not be "
                "properly displayed on client");
@@ -771,14 +771,23 @@ err:
     return 0;
 }
 
+int
+reconfigure(xlator_t *this, dict_t *options)
+{
+    GF_OPTION_RECONF("pass-through", this->pass_through, options, bool, out);
+
+out:
+    return 0;
+}
+
 int32_t
 init(xlator_t *this)
 {
     sq_private_t *priv;
 
     if (!this->children || this->children->next) {
-        gf_log("marker-quota", GF_LOG_ERROR,
-               "FATAL: marker-quota should have exactly one child");
+        gf_log(this->name, GF_LOG_ERROR,
+               "FATAL: simple-quota should have exactly one child");
         return -1;
     }
 
@@ -790,12 +799,15 @@ init(xlator_t *this)
     if (!priv)
         return -1;
 
+    GF_OPTION_INIT("pass-through", this->pass_through, bool, out);
+
     INIT_LIST_HEAD(&priv->ns_list);
     LOCK_INIT(&priv->lock);
     this->private = priv;
     // quota_set_thread(this);
 
-    gf_log(this->name, GF_LOG_INFO, "Marker Quota xlator loaded");
+    gf_log(this->name, GF_LOG_INFO, "Simple Quota xlator loaded");
+out:
     return 0;
 }
 
@@ -845,6 +857,13 @@ struct xlator_cbks cbks = {
 };
 
 struct volume_options options[] = {
+    {.key = {"pass-through"},
+     .type = GF_OPTION_TYPE_BOOL,
+     .default_value = "true",
+     .op_version = {GD_OP_VERSION_9_0},
+     .flags = OPT_FLAG_SETTABLE,
+     .tags = {"quota", "simple-quota"},
+     .description = "Enable/Disable simple-quota translator"},
     {.key = {NULL}},
 };
 
@@ -856,6 +875,7 @@ xlator_api_t xlator_api = {
     .cbks = &cbks,
     .options = options,
     .notify = notify,
+    .reconfigure = reconfigure,
     .identifier = "simple-quota",
     .category = GF_EXPERIMENTAL,
 };

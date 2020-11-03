@@ -1,9 +1,10 @@
-# quota v2
+# simple-quota
 
 It provides feature of managing blocks used below a given namespace. (Expects the inodes to be linked to the proper namespace). It follows a simple logic for quota implementation: I manage only the local data, but if someone 'trusted' tells me, there is more usage in other places, I will consider it. I don't preserve the information about cluster view, so, everytime I am restarted, someone should give me global data to be proper.
 
 This translator is designed to be sitting on brick side (ie, somewhere above `storage/posix` in same graph).
 
+More on the reasons for this translator is given in [this RFC](https://kadalu.io/rfcs/0006-optimized-quota-feature-with-namespace.html)
 
 ## Usage
 
