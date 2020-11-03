@@ -2232,6 +2232,26 @@ out:
 }
 
 static int
+brick_graph_add_simple_quota(volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
+                             dict_t *set_dict, glusterd_brickinfo_t *brickinfo)
+{
+    xlator_t *xl = NULL;
+    xlator_t *this = THIS;
+    GF_ASSERT(this);
+
+    if (!graph || !volinfo || !set_dict) {
+        gf_smsg(this->name, GF_LOG_ERROR, errno, GD_MSG_INVALID_ARGUMENT, NULL);
+        goto out;
+    }
+
+    xl = volgen_graph_add(graph, "features/simple-quota", volinfo->volname);
+    if (!xl)
+        goto out;
+out:
+    return 0;
+}
+
+static int
 brick_graph_add_ro(volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
                    dict_t *set_dict, glusterd_brickinfo_t *brickinfo)
 {
@@ -2644,6 +2664,7 @@ static volgen_brick_xlator_t server_graph_table[] = {
     {brick_graph_add_namespace, "namespace"},
     {brick_graph_add_cdc, NULL},
     {brick_graph_add_quota, "quota"},
+    {brick_graph_add_simple_quota, NULL},
     {brick_graph_add_index, "index"},
     {brick_graph_add_barrier, NULL},
     {brick_graph_add_marker, "marker"},
