@@ -102,6 +102,7 @@ struct _inode {
     uuid_t gfid;
     gf_lock_t lock;
     gf_atomic_t nlookup;
+    gf_atomic_t kids;
     uint32_t fd_count;            /* Open fd count */
     uint32_t active_fd_count;     /* Active open fd count */
     uint32_t ref;                 /* reference count on this inode */
@@ -115,7 +116,6 @@ struct _inode {
     struct _inode_ctx *_ctx; /* replacement for dict_t *(inode->ctx) */
     bool in_invalidate_list; /* Set if inode is in table invalidate list */
     bool invalidate_sent;    /* Set it if invalidator_fn is called for inode */
-    gf_atomic_t kids;
 };
 
 #define UUID0_STR "00000000-0000-0000-0000-000000000000"

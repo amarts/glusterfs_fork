@@ -868,7 +868,7 @@ server4_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
         goto out;
     }
 
-    if (dict_get(state->dict, GF_NAMESPACE_KEY)) {
+    if (dict_get_sizen(state->dict, GF_NAMESPACE_KEY)) {
         /* This inode onwards we will set namespace */
         inode_set_namespace_inode(state->loc.inode, state->loc.inode);
     }

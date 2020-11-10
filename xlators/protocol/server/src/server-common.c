@@ -796,7 +796,7 @@ server4_post_lookup(gfx_common_2iatt_rsp *rsp, call_frame_t *frame,
         link_inode = inode_link(inode, state->loc.parent, state->loc.name,
                                 stbuf);
         if (link_inode) {
-            if (dict_get(xdata, GF_NAMESPACE_KEY)) {
+            if (dict_get_sizen(xdata, GF_NAMESPACE_KEY)) {
                 inode_set_namespace_inode(link_inode, link_inode);
             }
 

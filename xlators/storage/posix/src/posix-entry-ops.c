@@ -337,7 +337,7 @@ out:
        leaving it as TODO. Good to have logic of resolving GFID only access
        to a path for many other features too. But initial version can just
        be knowning that we are hitting the scenario in certain usecases */
-    if ((op_ret == 0) && (dict_get(xdata, "get-full-path"))) {
+    if ((op_ret == 0) && (dict_get_sizen(xdata, "get-full-path"))) {
         /* Get the path */
         gf_log(this->name, GF_LOG_INFO,
                "%s: inode path not completely resolved. Asking for full path",
