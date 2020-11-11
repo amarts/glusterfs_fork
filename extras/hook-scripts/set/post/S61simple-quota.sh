@@ -84,7 +84,7 @@ if [ -n "$LIMIT" ]; then
 
 	# TODO: Start a script which runs in while true loop also checking for 'df ' output
 	# -14 defined in common-utils.h for simple-quota
-	glusterfs -s localhost --volfile-id=$VOL --client-pid=-14 $MOUNT_DIR;
+	glusterfs -s localhost --volfile-id=$VOL --client-pid=-14 --process-name=quota $MOUNT_DIR;
 	if [ 0 -ne $? ]; then
 	    exit $?;
 	fi

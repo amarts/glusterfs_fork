@@ -2247,6 +2247,15 @@ brick_graph_add_simple_quota(volgen_graph_t *graph, glusterd_volinfo_t *volinfo,
     xl = volgen_graph_add(graph, "features/simple-quota", volinfo->volname);
     if (!xl)
         goto out;
+
+    /* set no-distribute option in valid cases */
+    int dist_count = volinfo->brick_count / volinfo->dist_leaf_count;
+    if (dist_count > 1)
+        goto out;
+
+    int ret = xlator_set_fixed_option(xl, "no-distribute", "true");
+    if (ret)
+        return -1;
 out:
     return 0;
 }

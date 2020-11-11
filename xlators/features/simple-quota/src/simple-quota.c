@@ -21,6 +21,7 @@
 static int64_t
 sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
 {
+    sq_private_t *priv = this->private;
     int ret = -1;
     loc_t loc = {};
 
@@ -61,6 +62,8 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
                uuid_utoa(ictx->ns->gfid));
     } else {
         ictx->xattr_size = value_on_disk;
+        if (priv->no_distribute)
+            ictx->total_usage = value_on_disk;
     }
 
     inode_unref(ictx->ns);
@@ -208,7 +211,7 @@ out:
 }
 
 static int
-sq_check_usage(xlator_t *this, inode_t *inode, size_t size)
+sq_check_usage(xlator_t *this, inode_t *inode, size_t new_size)
 {
     sq_inode_t *sq_ctx;
     uint64_t tmp_mq = 0;
@@ -223,7 +226,7 @@ sq_check_usage(xlator_t *this, inode_t *inode, size_t size)
         return 0;
 
     /* FIXME: lock? */
-    int64_t compare_size = sq_ctx->total_size + size +
+    int64_t compare_size = sq_ctx->total_size + new_size +
                            GF_ATOMIC_GET(sq_ctx->pending_update);
     if (sq_ctx->hard_lim < compare_size)
         return EDQUOT;
@@ -460,9 +463,9 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
 
     /* This step is crucial for a proper sync of xattr at right intervals */
     if (frame->uid == GF_CLIENT_QUOTA_HELPER) {
-      used = sync_data_to_disk(this, ctx);
+        used = sync_data_to_disk(this, ctx);
     } else {
-      used = ctx->xattr_size + GF_ATOMIC_GET(ctx->pending_update);
+        used = ctx->xattr_size + GF_ATOMIC_GET(ctx->pending_update);
     }
 
     { /* statfs is adjusted in this code block */
@@ -740,14 +743,17 @@ sq_setxattr(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
             int32_t flags, dict_t *xdata)
 {
     int ret = 0;
+    int32_t op_errno = EPERM;
     int64_t val = 0;
 
     ret = dict_get_int64(dict, QUOTA_USAGE_KEY, &val);
     if (!ret) {
         /* if this operation is not sent on namespace, fail the operation */
-        if (loc->inode != loc->inode->ns_inode) {
+        if (loc->inode != loc->inode->ns_inode)
             goto err;
-        }
+
+        if (frame->pid != GF_CLIENT_PID_QUOTA_HELPER)
+            goto err;
 
         sq_update_total_usage(this, loc->inode, val);
 
@@ -759,6 +765,9 @@ sq_setxattr(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
     ret = dict_get_int64(dict, SQUOTA_LIMIT_KEY, &val);
     if (ret)
         goto wind;
+
+    if (frame->pid != GF_CLIENT_PID_QUOTA_HELPER)
+        goto err;
 
     /* if this operation is not sent on namespace, fail the operation */
     if (loc->inode != loc->inode->ns_inode)
@@ -774,7 +783,7 @@ wind:
     return 0;
 
 err:
-    STACK_UNWIND_STRICT(setxattr, frame, -1, EINVAL, xdata);
+    STACK_UNWIND_STRICT(setxattr, frame, -1, op_errno, xdata);
     return 0;
 }
 
@@ -807,6 +816,7 @@ init(xlator_t *this)
         return -1;
 
     GF_OPTION_INIT("pass-through", this->pass_through, bool, out);
+    GF_OPTION_INIT("no-distribute", priv->no_distribute, bool, out);
 
     INIT_LIST_HEAD(&priv->ns_list);
     LOCK_INIT(&priv->lock);
@@ -869,6 +879,14 @@ struct volume_options options[] = {
      .flags = OPT_FLAG_SETTABLE,
      .tags = {"quota", "simple-quota"},
      .description = "Enable/Disable simple-quota translator"},
+    {.key = {"no-distribute"},
+     .type = GF_OPTION_TYPE_BOOL,
+     .default_value = "false",
+     .op_version = {GD_OP_VERSION_9_0},
+     .tags = {"quota", "simple-quota"},
+     .description =
+         "Set to true by volfile generators when there is no distribute in "
+         "the volume. For example (1x3) type of volumes"},
     {.key = {NULL}},
 };
 
