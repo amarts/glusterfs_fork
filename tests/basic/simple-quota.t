@@ -22,8 +22,13 @@ echo -n helloworld > $M1/file2;
 
 mkdir $M1/test2;
 
-TEST setfattr -n trusted.glusterfs.namespace -v true $M1/test2;
-TEST setfattr -n trusted.gfs.squota.limit -v 10000 $M1/test2;
+TEST ! setfattr -n trusted.glusterfs.namespace -v true $M1/test2;
+
+## Mount FUSE
+TEST $GFS -s $H0 --volfile-id $V0 --client-pid=-14 --process-name=quota $M2;
+
+TEST setfattr -n trusted.glusterfs.namespace -v true $M2/test2;
+TEST setfattr -n trusted.gfs.squota.limit -v 10000 $M2/test2;
 
 echo -n helloworld > $M1/test2/file1;
 echo -n helloworld > $M1/test2/file2;
@@ -32,7 +37,7 @@ echo -n helloworld > $M1/test/file2;
 
 TEST dd if=/dev/urandom of=$M1/test2/dd-file count=2 bs=8k
 
-df $M1/test2;
+df $M2/test2;
 
 mkdir $M1/test2/dir2.1;
 mkdir $M1/test2/dir2.2;
@@ -52,7 +57,7 @@ TEST $CLI volume start $V0 force;
 
 TEST cat $M1/a/b/c/d/e/f/g;
 
-df $M1/test2;
+df $M2/test2;
 
 TEST $CLI volume stop $V0;
 TEST $CLI volume start $V0;
