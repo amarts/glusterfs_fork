@@ -175,8 +175,6 @@ sq_update_total_usage(xlator_t *this, inode_t *inode, int64_t val)
     }
     sq_inode_t *sq_ctx = (sq_inode_t *)(uintptr_t)tmp_mq;
     sq_ctx->total_size = val;
-    sq_ctx->xattr_size = sync_data_to_disk(this, sq_ctx);
-
 out:
     return;
 }
@@ -461,7 +459,11 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
     }
 
     /* This step is crucial for a proper sync of xattr at right intervals */
-    used = ctx->xattr_size + GF_ATOMIC_GET(ctx->pending_update);
+    if (frame->uid == GF_CLIENT_QUOTA_HELPER) {
+      used = sync_data_to_disk(this, ctx);
+    } else {
+      used = ctx->xattr_size + GF_ATOMIC_GET(ctx->pending_update);
+    }
 
     { /* statfs is adjusted in this code block */
         usage = (used) / buf->f_bsize;
