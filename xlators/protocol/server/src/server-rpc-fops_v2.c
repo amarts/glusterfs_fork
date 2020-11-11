@@ -2920,6 +2920,18 @@ server4_setxattr_resume(call_frame_t *frame, xlator_t *bound_xl)
     if (state->resolve.op_ret != 0)
         goto err;
 
+    /* Let the namespace setting can happen only from special mounts, this should
+       prevent all mounts creating fake namespace. */
+    if ((frame->pid >= 0) &&
+	dict_get_sizen(state->dict, GF_NAMESPACE_KEY)) {
+        gf_smsg("server", GF_LOG_ERROR, 0, PS_MSG_SETXATTR_INFO, "path=%s",
+                state->loc.path, "key=%s", GF_NAMESPACE_KEY,
+                NULL);
+	state->resolve.op_ret = -1;
+	state->resolve.op_errno = EPERM;
+	goto err;
+    }
+
     STACK_WIND(frame, server4_setxattr_cbk, bound_xl, bound_xl->fops->setxattr,
                &state->loc, state->dict, state->flags, state->xdata);
     return 0;
