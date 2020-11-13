@@ -2922,7 +2922,7 @@ server4_setxattr_resume(call_frame_t *frame, xlator_t *bound_xl)
 
     /* Let the namespace setting can happen only from special mounts, this should
        prevent all mounts creating fake namespace. */
-    if ((frame->pid >= 0) &&
+    if ((frame->root->pid >= 0) &&
 	dict_get_sizen(state->dict, GF_NAMESPACE_KEY)) {
         gf_smsg("server", GF_LOG_ERROR, 0, PS_MSG_SETXATTR_INFO, "path=%s",
                 state->loc.path, "key=%s", GF_NAMESPACE_KEY,

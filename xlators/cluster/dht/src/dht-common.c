@@ -6422,7 +6422,7 @@ dht_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int op_ret,
 
         /* when simple-quota is present, DHT acts as aggregator */
         if (local->simple_quota) {
-            if (!local->statvfs.f_bsize) {
+            if (!local->statvfs.f_blocks) {
                 local->statvfs = *statvfs;
             } else {
                 /* Used space reduces */
@@ -6465,7 +6465,7 @@ unlock:
                 /* handle averaging the block usage */
                 int64_t avg_usage = (local->statvfs.f_blocks -
                                      local->statvfs.f_bfree) /
-                                    (conf->suvolume_cnt - local->file_count);
+                                    (conf->subvolume_cnt - local->file_count);
                 int64_t update = avg_usage * local->file_count;
                 if (update > local->statvfs.f_bfree) {
                     local->statvfs.f_bfree = 0;

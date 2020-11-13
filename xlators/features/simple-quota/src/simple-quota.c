@@ -23,7 +23,7 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
 {
     sq_private_t *priv = this->private;
     int ret = -1;
-    loc_t loc = {};
+    loc_t loc = {0};
 
     if (!ictx || !ictx->ns) {
         return 0;
@@ -34,6 +34,7 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
         return ictx->xattr_size;
     }
 
+    gf_log("", GF_LOG_INFO, "TEST before get");
     // int64_t value_on_disk = hton64(size);
     int64_t size = GF_ATOMIC_GET(ictx->pending_update);
     /* TODO: how do you get and set to 0? */
@@ -49,11 +50,12 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
         return value_on_disk;
     }
 
-    gf_log("quota2", GF_LOG_DEBUG, "%s: Writing size of %" PRId64,
-           uuid_utoa(ictx->ns->gfid), value_on_disk);
-
     /* Send the request to actual gfid */
     loc.inode = inode_ref(ictx->ns);
+
+    gf_log("quota2", GF_LOG_INFO, "%s: Writing size of %" PRId64,
+           uuid_utoa(ictx->ns->gfid), value_on_disk);
+
     /* As we are doing only operation from server side */
     ret = syncop_setxattr(FIRST_CHILD(this), &loc, dict, 0, NULL, NULL);
     if (ret < 0) {
@@ -63,12 +65,15 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
     } else {
         ictx->xattr_size = value_on_disk;
         if (priv->no_distribute)
-            ictx->total_usage = value_on_disk;
+            ictx->total_size = value_on_disk;
     }
 
+    gf_log("",GF_LOG_INFO, "done");
     inode_unref(ictx->ns);
     dict_unref(dict);
 
+ out:
+    gf_log("", GF_LOG_INFO, "done with syncing");
     return value_on_disk;
 }
 
@@ -125,7 +130,7 @@ sq_set_ns_hardlimit(xlator_t *this, inode_t *inode, int64_t limit, int64_t size,
     }
     UNLOCK(&priv->lock);
 
-    gf_log(this->name, GF_LOG_DEBUG,
+    gf_log(this->name, GF_LOG_INFO,
            "hardlimit set on %s (%" PRId64 ", %" PRId64 ")",
            uuid_utoa(inode->gfid), limit, size);
 out:
@@ -199,7 +204,7 @@ sq_update_hard_limit(xlator_t *this, inode_t *ns, int64_t limit, int64_t size)
             goto out;
     }
 
-    gf_log(this->name, GF_LOG_DEBUG,
+    gf_log(this->name, GF_LOG_INFO,
            "hardlimit update: %s %" PRId64 " %" PRId64, uuid_utoa(ns->gfid),
            limit, size);
     sq_ctx = (sq_inode_t *)(uintptr_t)tmp_mq;
@@ -462,7 +467,7 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
     }
 
     /* This step is crucial for a proper sync of xattr at right intervals */
-    if (frame->uid == GF_CLIENT_QUOTA_HELPER) {
+    if (frame->root->pid == GF_CLIENT_PID_QUOTA_HELPER) {
         used = sync_data_to_disk(this, ctx);
     } else {
         used = ctx->xattr_size + GF_ATOMIC_GET(ctx->pending_update);
@@ -489,6 +494,8 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
         buf->f_bavail = buf->f_bfree;
     }
 
+    gf_log("", GF_LOG_INFO, "Here %ld", avail);
+    
     xdata = xdata ? dict_ref(xdata) : dict_new();
 
     int ret = dict_set_int32(xdata, "simple-quota", 1);
@@ -722,7 +729,8 @@ sq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     int64_t val = (int64_t)(unsigned long)cookie;
     uint64_t setval = 1;
     int ret = 0;
-    sq_update_hard_limit(this, inode, val, 0);
+    if (val)
+      sq_update_hard_limit(this, inode, val, 0);
     /* Setting this flag wouldn't bother lookup() call much */
     ret = inode_ctx_set1(inode, this, &setval);
     if (ret) {
@@ -732,6 +740,7 @@ sq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
 
     inode_unref(inode);
 
+    gf_log("", GF_LOG_INFO, "Here %ld", val);
 unwind:
     frame->local = NULL;
     STACK_UNWIND_STRICT(setxattr, frame, op_ret, op_errno, xdata);
@@ -752,7 +761,7 @@ sq_setxattr(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
         if (loc->inode != loc->inode->ns_inode)
             goto err;
 
-        if (frame->pid != GF_CLIENT_PID_QUOTA_HELPER)
+        if (frame->root->pid != GF_CLIENT_PID_QUOTA_HELPER)
             goto err;
 
         sq_update_total_usage(this, loc->inode, val);
@@ -766,7 +775,7 @@ sq_setxattr(call_frame_t *frame, xlator_t *this, loc_t *loc, dict_t *dict,
     if (ret)
         goto wind;
 
-    if (frame->pid != GF_CLIENT_PID_QUOTA_HELPER)
+    if (frame->root->pid != GF_CLIENT_PID_QUOTA_HELPER)
         goto err;
 
     /* if this operation is not sent on namespace, fail the operation */

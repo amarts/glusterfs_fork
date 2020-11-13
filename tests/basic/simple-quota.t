@@ -62,6 +62,9 @@ df $M2/test2;
 TEST $CLI volume stop $V0;
 TEST $CLI volume start $V0;
 
+# Have a mechanism to check connection and then continue ops
+sleep 3;
+
 echo -n helloworld >> $M1/test/file1;
 echo -n helloworld >> $M1/test/file2;
 echo -n helloworld >> $M1/file1;

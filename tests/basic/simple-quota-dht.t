@@ -18,16 +18,22 @@ TEST $GFS -s $H0 --volfile-id $V0 $M1;
 
 mkdir $M1/test2;
 
-TEST setfattr -n trusted.glusterfs.namespace -v true $M1/test2;
-TEST setfattr -n trusted.gfs.squota.limit -v 10000 $M1/test2;
+
+TEST $GFS -s $H0 --client-pid=-14 --process-name=quota --volfile-id $V0 $M2;
+TEST setfattr -n trusted.glusterfs.namespace -v true $M2/test2;
+TEST setfattr -n trusted.gfs.squota.limit -v 10000 $M2/test2;
 
 echo -n helloworld > $M1/test2/file1;
 echo -n helloworld > $M1/test2/file2;
 TEST dd if=/dev/urandom of=$M1/test2/dd-file count=1 bs=8k
 
 df  $M1/test2;
-used_size=$(df --block-size=1 --output=used $M1/test2 | tail -n1);
-TEST setfattr -n glusterfs.quota.total-usage -v $used_size $M1/test2;
+
+echo "Test"
+used_size=$(df --block-size=1 --output=used $M2/test2 | tail -n1);
+echo $used_size;
+TEST setfattr -n glusterfs.quota.total-usage -v $used_size $M2/test2;
+echo setfattr complete;
 
 mkdir $M1/test2/dir2.1;
 mkdir $M1/test2/dir2.2;
