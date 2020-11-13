@@ -491,10 +491,10 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
 
     xdata = xdata ? dict_ref(xdata) : dict_new();
 
-    int ret = dict_set_int32(xdata, "quota-deem-statfs", 1);
+    int ret = dict_set_int32(xdata, "simple-quota", 1);
     if (ret) {
         gf_log(this->name, GF_LOG_WARNING,
-               "failed to set dict with 'deem-statfs'. Quota limits may not be "
+               "failed to set dict with 'simple-quota'. Quota limits may not be "
                "properly displayed on client");
     }
 unwind:
