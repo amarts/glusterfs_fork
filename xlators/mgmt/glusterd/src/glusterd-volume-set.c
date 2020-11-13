@@ -3153,6 +3153,15 @@ struct volopt_map_entry glusterd_volopt_map[] = {
                        "volume. Disabled by default",
         .op_version = GD_OP_VERSION_9_0,
     },
+    {
+        .key = "feature.simple-quota.use-backend",
+        .voltype = "features/simple-quota",
+        .option = "use-backend",
+        .value = "false",
+        .description = "enable/disable backend filesystem's accounting for "
+                       "quota. Disabled by default",
+        .op_version = GD_OP_VERSION_9_0,
+    },
     {.key = "cluster.use-anonymous-inode",
      .voltype = "cluster/replicate",
      .op_version = GD_OP_VERSION_9_0,

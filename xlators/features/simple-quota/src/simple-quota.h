@@ -15,6 +15,7 @@ typedef struct {
     pthread_t quota_set_thread;
     struct list_head ns_list;
     bool no_distribute;
+    bool use_backend;
 } sq_private_t;
 
 typedef struct {

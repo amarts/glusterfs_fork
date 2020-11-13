@@ -29,12 +29,14 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
         return 0;
     }
 
+    if (priv->use_backend)
+        return 0;
+
     dict_t *dict = dict_new();
     if (!dict) {
         return ictx->xattr_size;
     }
 
-    gf_log("", GF_LOG_INFO, "TEST before get");
     // int64_t value_on_disk = hton64(size);
     int64_t size = GF_ATOMIC_GET(ictx->pending_update);
     /* TODO: how do you get and set to 0? */
@@ -53,7 +55,7 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
     /* Send the request to actual gfid */
     loc.inode = inode_ref(ictx->ns);
 
-    gf_log("quota2", GF_LOG_INFO, "%s: Writing size of %" PRId64,
+    gf_log("quota2", GF_LOG_DEBUG, "%s: Writing size of %" PRId64,
            uuid_utoa(ictx->ns->gfid), value_on_disk);
 
     /* As we are doing only operation from server side */
@@ -68,12 +70,9 @@ sync_data_to_disk(xlator_t *this, sq_inode_t *ictx)
             ictx->total_size = value_on_disk;
     }
 
-    gf_log("",GF_LOG_INFO, "done");
     inode_unref(ictx->ns);
     dict_unref(dict);
 
- out:
-    gf_log("", GF_LOG_INFO, "done with syncing");
     return value_on_disk;
 }
 
@@ -141,9 +140,13 @@ static void
 sq_update_namespace(xlator_t *this, inode_t *ns, struct iatt *prebuf,
                     struct iatt *postbuf, int64_t size)
 {
+    sq_private_t *priv = this->private;
     sq_inode_t *sq_ctx;
     uint64_t tmp_mq = 0;
     if (!ns)
+        goto out;
+
+    if (priv->use_backend)
         goto out;
 
     if (!size)
@@ -204,9 +207,8 @@ sq_update_hard_limit(xlator_t *this, inode_t *ns, int64_t limit, int64_t size)
             goto out;
     }
 
-    gf_log(this->name, GF_LOG_INFO,
-           "hardlimit update: %s %" PRId64 " %" PRId64, uuid_utoa(ns->gfid),
-           limit, size);
+    gf_log(this->name, GF_LOG_INFO, "hardlimit update: %s %" PRId64 " %" PRId64,
+           uuid_utoa(ns->gfid), limit, size);
     sq_ctx = (sq_inode_t *)(uintptr_t)tmp_mq;
     sq_ctx->hard_lim = limit;
     /* shouldn't come here with 'size > 0' */
@@ -437,6 +439,7 @@ int32_t
 sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
               int32_t op_errno, struct statvfs *buf, dict_t *xdata)
 {
+    sq_private_t *priv = this->private;
     inode_t *inode = NULL;
     uint64_t value = 0;
     int64_t usage = -1;
@@ -466,6 +469,19 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
         goto unwind;
     }
 
+    xdata = xdata ? dict_ref(xdata) : dict_new();
+
+    int ret = dict_set_int32(xdata, "simple-quota", 1);
+    if (ret) {
+        gf_log(
+            this->name, GF_LOG_WARNING,
+            "failed to set dict with 'simple-quota'. Quota limits may not be "
+            "properly displayed on client");
+    }
+
+    if (priv->use_backend)
+        goto unwind;
+
     /* This step is crucial for a proper sync of xattr at right intervals */
     if (frame->root->pid == GF_CLIENT_PID_QUOTA_HELPER) {
         used = sync_data_to_disk(this, ctx);
@@ -494,16 +510,6 @@ sq_statfs_cbk(call_frame_t *frame, void *cookie, xlator_t *this, int32_t op_ret,
         buf->f_bavail = buf->f_bfree;
     }
 
-    gf_log("", GF_LOG_INFO, "Here %ld", avail);
-    
-    xdata = xdata ? dict_ref(xdata) : dict_new();
-
-    int ret = dict_set_int32(xdata, "simple-quota", 1);
-    if (ret) {
-        gf_log(this->name, GF_LOG_WARNING,
-               "failed to set dict with 'simple-quota'. Quota limits may not be "
-               "properly displayed on client");
-    }
 unwind:
     if (inode)
         inode_unref(inode);
@@ -730,7 +736,7 @@ sq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
     uint64_t setval = 1;
     int ret = 0;
     if (val)
-      sq_update_hard_limit(this, inode, val, 0);
+        sq_update_hard_limit(this, inode, val, 0);
     /* Setting this flag wouldn't bother lookup() call much */
     ret = inode_ctx_set1(inode, this, &setval);
     if (ret) {
@@ -740,7 +746,6 @@ sq_setxattr_cbk(call_frame_t *frame, void *cookie, xlator_t *this,
 
     inode_unref(inode);
 
-    gf_log("", GF_LOG_INFO, "Here %ld", val);
 unwind:
     frame->local = NULL;
     STACK_UNWIND_STRICT(setxattr, frame, op_ret, op_errno, xdata);
@@ -826,6 +831,7 @@ init(xlator_t *this)
 
     GF_OPTION_INIT("pass-through", this->pass_through, bool, out);
     GF_OPTION_INIT("no-distribute", priv->no_distribute, bool, out);
+    GF_OPTION_INIT("use-backend", priv->use_backend, bool, out);
 
     INIT_LIST_HEAD(&priv->ns_list);
     LOCK_INIT(&priv->lock);
@@ -881,21 +887,33 @@ struct xlator_cbks cbks = {
 };
 
 struct volume_options options[] = {
-    {.key = {"pass-through"},
-     .type = GF_OPTION_TYPE_BOOL,
-     .default_value = "true",
-     .op_version = {GD_OP_VERSION_9_0},
-     .flags = OPT_FLAG_SETTABLE,
-     .tags = {"quota", "simple-quota"},
-     .description = "Enable/Disable simple-quota translator"},
-    {.key = {"no-distribute"},
-     .type = GF_OPTION_TYPE_BOOL,
-     .default_value = "false",
-     .op_version = {GD_OP_VERSION_9_0},
-     .tags = {"quota", "simple-quota"},
-     .description =
-         "Set to true by volfile generators when there is no distribute in "
-         "the volume. For example (1x3) type of volumes"},
+    {
+        .key = {"pass-through"},
+        .type = GF_OPTION_TYPE_BOOL,
+        .default_value = "true",
+        .op_version = {GD_OP_VERSION_9_0},
+        .flags = OPT_FLAG_SETTABLE,
+        .tags = {"quota", "simple-quota"},
+        .description = "Enable/Disable simple-quota translator",
+    },
+    {
+        .key = {"no-distribute"},
+        .type = GF_OPTION_TYPE_BOOL,
+        .default_value = "false",
+        .op_version = {GD_OP_VERSION_9_0},
+        .tags = {"quota", "simple-quota"},
+        .description =
+            "Set to true by volfile generators when there is no distribute in "
+            "the volume. For example (1x3) type of volumes",
+    },
+    {
+        .key = {"use-backend"},
+        .type = GF_OPTION_TYPE_BOOL,
+        .default_value = "false",
+        .op_version = {GD_OP_VERSION_9_0},
+        .tags = {"quota", "simple-quota"},
+        .description = "use backend fs's quota for accounting",
+    },
     {.key = {NULL}},
 };
 
