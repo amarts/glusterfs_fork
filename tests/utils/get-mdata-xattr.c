@@ -14,7 +14,7 @@
 #include <time.h>
 #include <string.h>
 #include <inttypes.h>
-#include <sys/types.h>
+
 #include <sys/xattr.h>
 #include <errno.h>
 

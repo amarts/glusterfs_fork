@@ -29,7 +29,7 @@
 #define _XOPEN_SOURCE 500
 
 #include <dlfcn.h>
-#include <sys/types.h>
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

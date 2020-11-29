@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/types.h>
+
 #include <sys/stat.h>
 
 int fuse_mnt_check_empty(const char *progname, const char *mnt,

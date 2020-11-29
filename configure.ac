@@ -16,6 +16,9 @@ AC_SUBST([PACKAGE_RELEASE],
 
 AM_INIT_AUTOMAKE([tar-pax foreign])
 
+# libtool init, was required on alpine
+LT_INIT
+
 # Removes warnings when using automake 1.14 around (...but option 'subdir-objects' is disabled )
 #but libglusterfs fails to build with contrib (Then are not set up that way?)
 #AM_INIT_AUTOMAKE([subdir-objects])
@@ -497,6 +500,13 @@ AC_ARG_WITH([server],
             [with_server='yes'],
             )
 AM_CONDITIONAL([WITH_SERVER], [test x$with_server = xyes])
+
+AC_ARG_WITH([gfapi],
+            [AS_HELP_STRING([--without-gfapi], [do not build gfapi components])],
+            [API_SUBDIR=''],
+            [API_SUBDIR='api'],
+            )
+AC_SUBST(API_SUBDIR)
 
 # LEX needs a check
 AC_PROG_LEX

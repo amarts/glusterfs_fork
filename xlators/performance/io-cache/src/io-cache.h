@@ -11,7 +11,7 @@
 #ifndef __IO_CACHE_H
 #define __IO_CACHE_H
 
-#include <sys/types.h>
+
 #include <glusterfs/compat-errno.h>
 
 #include <glusterfs/glusterfs.h>

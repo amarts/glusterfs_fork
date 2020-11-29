@@ -11,7 +11,7 @@
 #ifndef _NLM4_H_
 #define _NLM4_H_
 
-#include <sys/types.h>
+
 #include <signal.h>
 #include "rpcsvc.h"
 #include <glusterfs/dict.h>

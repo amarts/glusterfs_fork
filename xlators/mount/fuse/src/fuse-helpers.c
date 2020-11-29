@@ -14,7 +14,7 @@
 #if defined(GF_SOLARIS_HOST_OS)
 #include <sys/procfs.h>
 #elif defined(__FreeBSD__)
-#include <sys/types.h>
+
 #include <libutil.h>
 #elif defined(CTL_KERN)
 #include <sys/sysctl.h>

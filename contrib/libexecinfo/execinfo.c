@@ -32,7 +32,7 @@
 #endif
 
 #ifndef HAVE_BACKTRACE
-#include <sys/types.h>
+
 #include <sys/uio.h>
 #include <dlfcn.h>
 #include <math.h>

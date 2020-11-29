@@ -12,7 +12,7 @@
 #define _XDR_NFS3_H
 
 #include <rpc/rpc.h>
-#include <sys/types.h>
+
 
 #define NFS3_FHSIZE 64
 #define NFS3_COOKIEVERFSIZE 8

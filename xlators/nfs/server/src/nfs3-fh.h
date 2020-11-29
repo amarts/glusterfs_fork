@@ -14,7 +14,7 @@
 #include <glusterfs/xlator.h>
 #include "xdr-nfs3.h"
 #include <glusterfs/iatt.h>
-#include <sys/types.h>
+
 #include <glusterfs/compat-uuid.h>
 
 /* BIG FAT WARNING: The file handle code is tightly coupled to NFSv3 file

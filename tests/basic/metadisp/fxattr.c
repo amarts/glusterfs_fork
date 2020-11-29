@@ -4,7 +4,7 @@
 
 #include <fcntl.h>
 #include <string.h>
-#include <sys/types.h>
+
 #include <sys/xattr.h>
 
 static char MY_XATTR[] = "user.fxtest";

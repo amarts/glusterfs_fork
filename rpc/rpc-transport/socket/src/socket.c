@@ -23,11 +23,7 @@
 #include "rpcsvc.h"
 
 /* for TCP_USER_TIMEOUT */
-#if !defined(TCP_USER_TIMEOUT) && defined(GF_LINUX_HOST_OS)
-#include <linux/tcp.h>
-#else
 #include <netinet/tcp.h>
-#endif
 
 #include <errno.h>
 #include <rpc/xdr.h>

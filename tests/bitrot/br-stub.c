@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>
-#include <sys/types.h>
+
 #include <sys/xattr.h>
 #include <errno.h>
 

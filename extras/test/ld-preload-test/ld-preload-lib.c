@@ -19,7 +19,7 @@
  */
 
 #include <dlfcn.h>
-#include <sys/types.h>
+
 #include <sys/uio.h>
 #include <stdio.h>
 #include <stdarg.h>

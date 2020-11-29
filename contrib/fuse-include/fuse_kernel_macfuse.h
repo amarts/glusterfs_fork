@@ -33,7 +33,7 @@
 */
 
 #ifndef linux
-#include <sys/types.h>
+
 #define __u64 uint64_t
 #define __u32 uint32_t
 #define __s32 int32_t

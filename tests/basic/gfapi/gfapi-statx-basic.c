@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
-#include <sys/types.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <glusterfs/api/glfs.h>

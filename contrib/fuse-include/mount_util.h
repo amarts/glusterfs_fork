@@ -6,7 +6,7 @@
   See the file COPYING.LIB.
 */
 
-#include <sys/types.h>
+
 
 int fuse_mnt_add_mount(const char *progname, const char *fsname,
 		       const char *mnt, const char *type, const char *opts);

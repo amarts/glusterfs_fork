@@ -51,7 +51,7 @@
 #include <stdlib.h>     /* malloc, calloc, free, exit */
 #include <stdio.h>      /* fprintf, fopen, ftello64, fread, stdin, stdout, _fileno (when present) */
 #include <string.h>     /* strcmp */
-#include <sys/types.h>  /* stat, stat64, _stat64 */
+  /* stat, stat64, _stat64 */
 #include <sys/stat.h>   /* stat, stat64, _stat64 */
 #include <time.h>       /* clock_t, clock, CLOCKS_PER_SEC */
 #include <assert.h>     /* assert */

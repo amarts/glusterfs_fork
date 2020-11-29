@@ -11,7 +11,7 @@
 #include <sys/uio.h>
 #include <rpc/rpc.h>
 #include <rpc/xdr.h>
-#include <sys/types.h>
+
 
 #include "xdr-nfs3.h"
 #include "msg-nfs3.h"

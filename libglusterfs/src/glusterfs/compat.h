@@ -22,9 +22,8 @@
 #define UNIX_PATH_MAX 108
 
 #include <sys/un.h>
-#include <linux/limits.h>
+#include <limits.h>
 #include <sys/xattr.h>
-#include <linux/xattr.h>
 #include <endian.h>
 #ifdef HAVE_LINUX_FALLOC_H
 #include <linux/falloc.h>

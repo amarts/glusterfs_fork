@@ -14,7 +14,7 @@
 #include "xdr-nfs3.h"
 #include "nlm4-xdr.h"
 #include "acl3-xdr.h"
-#include <sys/types.h>
+
 #include <sys/uio.h>
 
 extern ssize_t

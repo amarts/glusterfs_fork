@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/types.h>
+
 #include <sys/stat.h>
 #include <sys/xattr.h>
 #include <errno.h>
@@ -30,7 +30,7 @@
 
 #ifndef linux
 #include <sys/socket.h>
-#include <sys/types.h>
+
 #include <sys/un.h>
 #endif
 

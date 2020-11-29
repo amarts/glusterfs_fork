@@ -18,7 +18,7 @@
 #define FUSE_DEVFD_ENV "_FUSE_DEVFD"
 
 #ifdef __FreeBSD__
-#include <sys/types.h>
+
 #include <sys/uio.h>
 #include <unistd.h>
 #endif /* __FreeBSD__ */

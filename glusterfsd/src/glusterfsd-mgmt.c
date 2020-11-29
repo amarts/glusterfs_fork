@@ -8,7 +8,7 @@
    cases as published by the Free Software Foundation.
 */
 #include <stdio.h>
-#include <sys/types.h>
+
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <signal.h>
