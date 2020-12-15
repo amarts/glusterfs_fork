@@ -506,7 +506,6 @@ AC_ARG_WITH([gfapi],
             [API_SUBDIR=''],
             [API_SUBDIR='api'],
             )
-AM_CONDITIONAL([WITH_GFAPI], [test x$API_SUBDIR = xapi])
 AC_SUBST(API_SUBDIR)
 
 # LEX needs a check

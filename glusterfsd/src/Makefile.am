@@ -1,9 +1,6 @@
 sbin_PROGRAMS = glusterfsd
 if WITH_SERVER
 sbin_PROGRAMS += glusterfsd
-if WITH_GFAPI
-sbin_PROGRAM += gf_attach
-endif
 endif
 
 glusterfsd_SOURCES = glusterfsd.c glusterfsd-mgmt.c
