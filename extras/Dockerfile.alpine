@@ -4,10 +4,10 @@ RUN apk add git automake autoconf libtool build-base rpcgen flex bison openssl-d
 RUN apk add libuuid util-linux-dev acl-dev zlib-dev python3-dev libxml2-dev argp-standalone
 RUN apk add libtirpc-dev userspace-rcu-dev fuse-dev libucontext-dev
 
-RUN rm -rf glusterfs
-RUN git clone --depth 2 https://github.com/amarts/glusterfs_fork --branch alpine_compile --single-branch glusterfs
+RUN git clone --depth 1 https://github.com/amarts/glusterfs_fork --branch alpine_compile --single-branch glusterfs
 
-RUN cd glusterfs && ./autogen.sh && GF_LDFLAGS="/usr/lib/libargp.a -lucontext" ./configure --without-gfapi --disable-fusermount && make
+RUN cd glusterfs && ./autogen.sh && GF_LDFLAGS="/usr/lib/libargp.a -lucontext" ./configure --without-gfapi --disable-fusermount
+RUN cd glusterfs && make -k
 
 # Debugging, Comment the above line and
 # uncomment below line
