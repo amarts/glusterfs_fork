@@ -3,15 +3,15 @@ xlator_LTLIBRARIES = volfile-server.la
 endif
 
 xlatordir = $(libdir)/glusterfs/$(PACKAGE_VERSION)/xlator/mgmt
-glusterd_la_CPPFLAGS = $(AM_CPPFLAGS) \
+volfile_server_la_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DFILTERDIR=\"$(libdir)/glusterfs/$(PACKAGE_VERSION)/filter\" \
 	-DXLATORDIR=\"$(libdir)/glusterfs/$(PACKAGE_VERSION)/xlator\" \
 	-I$(top_srcdir)/libglusterd/src/
 
-glusterd_la_LDFLAGS = -module $(GF_XLATOR_DEFAULT_LDFLAGS)
-glusterd_la_SOURCES = glusterd.c glusterd-handshake.c
+volfile_server_la_LDFLAGS = -module $(GF_XLATOR_DEFAULT_LDFLAGS)
+volfile_server_la_SOURCES = glusterd.c glusterd-handshake.c
 
-glusterd_la_LIBADD = $(top_builddir)/libglusterfs/src/libglusterfs.la \
+volfile_server_la_LIBADD = $(top_builddir)/libglusterfs/src/libglusterfs.la \
 	$(top_builddir)/rpc/xdr/src/libgfxdr.la \
 	$(top_builddir)/rpc/rpc-lib/src/libgfrpc.la \
 	$(XML_LIBS) -lcrypto $(URCU_LIBS) $(URCU_CDS_LIBS) $(LIB_DL) $(GF_XLATOR_MGNT_LIBADD)

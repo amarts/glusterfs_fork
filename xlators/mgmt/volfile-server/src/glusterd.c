@@ -17,6 +17,7 @@
 #include <glusterfs/compat-uuid.h>
 
 #include "glusterd.h"
+#include "glusterd-messages.h"
 #include "rpcsvc.h"
 #include "fnmatch.h"
 #include <glusterfs/xlator.h>
@@ -28,8 +29,6 @@
 #include <glusterfs/compat.h>
 #include <glusterfs/compat-errno.h>
 #include <glusterfs/syscall.h>
-#include "glusterd-statedump.h"
-#include "glusterd-svc-mgmt.h"
 #include <glusterfs/common-utils.h>
 #include <glusterfs/run.h>
 #include "rpc-common-xdr.h"
@@ -166,7 +165,6 @@ glusterd_rpcsvc_notify(rpcsvc_t *rpc, void *xl, rpcsvc_event_t event,
             pthread_mutex_lock(&priv->xprt_lock);
             list_del(&xprt->list);
             pthread_mutex_unlock(&priv->xprt_lock);
-            pmap_port_remove(this, 0, NULL, xprt, _gf_false);
             break;
         }
 
@@ -234,7 +232,7 @@ out:
 int
 init(xlator_t *this)
 {
-  int32_t ret, len = -1;
+    int32_t ret, len = -1;
     rpcsvc_t *rpc = NULL;
     glusterd_conf_t *conf = NULL;
     data_t *dir_data = NULL;
@@ -249,7 +247,7 @@ init(xlator_t *this)
 
     if (!dir_data) {
         // Use default working dir
-        len = snprintf(workdir, PATH_MAX, "%s", GLUSTERD_DEFAULT_WORKDIR);
+        len = snprintf(workdir, PATH_MAX, "%s", GLUSTERD_DEFAULT_SPECDIR);
     } else {
         len = snprintf(workdir, PATH_MAX, "%s", dir_data->data);
     }
@@ -308,16 +306,15 @@ init(xlator_t *this)
         goto out;
     }
     
-    for (i = 0; i < gd_inet_programs_count; i++) {
-        ret = glusterd_program_register(this, rpc, gd_inet_programs[i]);
-        if (ret) {
-            i--;
-            for (; i >= 0; i--)
-                rpcsvc_program_unregister(rpc, gd_inet_programs[i]);
-
-            goto out;
-        }
+    ret = rpcsvc_program_register(rpc, &gluster_handshake_prog, _gf_false);
+    if (ret) {
+      gf_msg(this->name, GF_LOG_ERROR, 0, GD_MSG_RPC_LISTENER_CREATE_FAIL,
+               "adding programs failed");	
+      rpcsvc_program_unregister(rpc, &gluster_handshake_prog);
+      goto out;
     }
+
+    conf = GF_CALLOC(1, sizeof(glusterd_conf_t), gf_gld_mt_glusterd_conf_t);
 
     pthread_mutex_init(&conf->mutex, NULL);
     conf->rpc = rpc;
