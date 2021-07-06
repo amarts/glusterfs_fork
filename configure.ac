@@ -37,6 +37,7 @@ AC_CONFIG_FILES([Makefile
                 geo-replication/syncdaemon/conf.py
                 geo-replication/gsyncd.conf
                 extras/snap_scheduler/conf.py
+                extras/volfile-server/Makefile
                 glusterfsd/Makefile
                 glusterfsd/src/Makefile
                 rpc/Makefile
